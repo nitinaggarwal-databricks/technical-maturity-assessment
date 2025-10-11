@@ -28,6 +28,16 @@ const recommendationEngine = new RecommendationEngine();
 
 // Routes
 
+// Root status endpoint (for debugging)
+app.get('/status', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Databricks Maturity Assessment API is running',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Get assessment framework
 app.get('/api/assessment/framework', (req, res) => {
   try {
@@ -846,15 +856,15 @@ app.post('/api/assessment/:id/debug/complete', (req, res) => {
 
 // Serve React app for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
+  // Catch-all handler for non-API routes - must be LAST
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  });
-} else {
-  // 404 handler for development
-  app.use('*', (req, res) => {
-    res.status(404).json({
-      success: false,
-      message: 'Endpoint not found'
+    const indexPath = path.join(__dirname, '../client/build', 'index.html');
+    console.log(`Serving index.html from: ${indexPath}`);
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application');
+      }
     });
   });
 }
