@@ -1,0 +1,40 @@
+{
+  "name": "databricks-maturity-assessment",
+  "version": "1.0.0",
+  "description": "A comprehensive Databricks maturity assessment application",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd client && npm install",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "uuid": "^9.0.0",
+    "jspdf": "^2.5.1",
+    "xlsx": "^0.18.5",
+    "nodemailer": "^6.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "databricks",
+    "maturity",
+    "assessment",
+    "analytics",
+    "data"
+  ],
+  "author": "Databricks Maturity Assessment Team",
+  "license": "MIT"
+}
+
+
+
+
