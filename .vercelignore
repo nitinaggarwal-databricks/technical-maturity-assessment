@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+.env.local
+npm-debug.log
+.DS_Store
+*.log
+server/data/assessments.json
+
