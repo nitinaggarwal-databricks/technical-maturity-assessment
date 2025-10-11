@@ -33,7 +33,11 @@
     "data"
   ],
   "author": "Databricks Maturity Assessment Team",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
 }
 
 
