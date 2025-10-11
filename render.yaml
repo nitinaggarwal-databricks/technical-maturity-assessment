@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: databricks-maturity-assessment
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && cd client && npm install && npm run build && cd ..
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
+    autoDeploy: true
+
