@@ -6,6 +6,7 @@ const path = require('path');
 
 const assessmentFramework = require('./data/assessmentFramework');
 const RecommendationEngine = require('./services/recommendationEngine');
+const AdaptiveRecommendationEngine = require('./services/adaptiveRecommendationEngine');
 const DataStore = require('./utils/dataStore');
 
 const app = express();
@@ -25,6 +26,7 @@ if (process.env.NODE_ENV === 'production') {
 const dataFilePath = path.join(__dirname, 'data', 'assessments.json');
 const assessments = new DataStore(dataFilePath);
 const recommendationEngine = new RecommendationEngine();
+const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
 
 // Routes
 
@@ -386,6 +388,74 @@ app.post('/api/assessment/:id/save-progress', (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error saving progress',
+      error: error.message
+    });
+  }
+});
+
+// Generate adaptive assessment results (NEW - uses all inputs)
+app.get('/api/assessment/:id/adaptive-results', (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessment = assessments.get(id);
+
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    console.log('🎯 Generating ADAPTIVE results for assessment:', id);
+    console.log('Using: Current state, Future state, Pain points, and Comments');
+    
+    const hasAnyResponses = Object.keys(assessment.responses).length > 0;
+    
+    if (!hasAnyResponses) {
+      return res.json({
+        success: true,
+        data: {
+          message: 'No responses yet',
+          assessmentInfo: {
+            id: assessment.id,
+            assessmentName: assessment.assessmentName,
+            startedAt: assessment.startedAt
+          }
+        }
+      });
+    }
+    
+    // Use adaptive engine
+    const recommendations = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
+      assessment.responses,
+      assessment.completedCategories.length > 0 ? assessment.completedCategories : null
+    );
+    
+    console.log('✅ Adaptive recommendations generated successfully');
+    console.log('Pain point recommendations:', recommendations.painPointRecommendations.length);
+    console.log('Gap-based actions:', recommendations.gapBasedActions.length);
+    console.log('Comment insights:', recommendations.commentBasedInsights.length);
+    
+    res.json({
+      success: true,
+      data: {
+        assessmentInfo: {
+          id: assessment.id,
+          assessmentName: assessment.assessmentName,
+          organizationName: assessment.organizationName,
+          startedAt: assessment.startedAt,
+          completedAt: assessment.completedAt
+        },
+        ...recommendations,
+        _engineType: 'adaptive'
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error generating adaptive results:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating adaptive assessment results',
       error: error.message
     });
   }
