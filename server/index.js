@@ -739,10 +739,15 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     // Calculate detailed category scores from ADAPTIVE engine (for all areas with responses)
     const categoryDetails = {};
     
+    // Ensure areaScores exists
+    if (!recommendations.areaScores) {
+      recommendations.areaScores = {};
+    }
+    
     areasWithResponses.forEach(area => {
       const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
-      const currentScore = areaScore.current;
-      const futureScore = areaScore.future;
+      const currentScore = areaScore.current || 0;
+      const futureScore = areaScore.future || 0;
       const isCompleted = assessment.completedCategories.includes(area.id);
       
       categoryDetails[area.id] = {
@@ -1018,6 +1023,11 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
 
     console.log('✅ Adaptive recommendations generated for pillar:', pillarId);
 
+    // Ensure areaScores exists
+    if (!adaptiveResults.areaScores) {
+      adaptiveResults.areaScores = {};
+    }
+
     // Enhance with live data if enabled
     if (process.env.USE_LIVE_DATA === 'true') {
       console.log('🔄 Enhancing pillar results with live data...');
@@ -1038,10 +1048,10 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       }
     }
 
-    // Calculate pillar-specific scores
+    // Calculate pillar-specific scores (with safety checks)
     const areaScore = adaptiveResults.areaScores[pillarId] || { current: 0, future: 0 };
-    const currentScore = areaScore.current;
-    const futureScore = areaScore.future;
+    const currentScore = areaScore.current || 0;
+    const futureScore = areaScore.future || 0;
     const gap = futureScore - currentScore;
     
     // Get pillar details
