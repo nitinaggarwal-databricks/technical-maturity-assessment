@@ -327,7 +327,7 @@ const PillarResults = () => {
     );
   }
 
-  if (!results || !results.pillarDetails || !results.recommendations) {
+  if (!results || !results.pillarDetails) {
     return (
       <ResultsContainer>
         <ContentWrapper>
@@ -337,7 +337,7 @@ const PillarResults = () => {
             <div style={{ marginTop: '20px', color: '#6b7280', fontSize: '0.9rem' }}>
               Debug info: assessmentId={assessmentId}, pillarId={pillarId}, 
               hasResults={!!results}, hasPillarDetails={!!results?.pillarDetails},
-              hasRecommendations={!!results?.recommendations}
+              hasPainPoints={!!results?.painPointRecommendations}
             </div>
             <button 
               onClick={() => window.location.reload()} 
@@ -501,39 +501,166 @@ const PillarResults = () => {
         >
           <SectionTitle>
             <FiTrendingUp />
-            Recommendations for {results.pillarDetails.name}
+            Adaptive Recommendations for {results.pillarDetails.name}
           </SectionTitle>
 
-          {results.recommendations.categories?.[results.pillarId]?.recommendations ? (
-            <RecommendationCard
-              priority={results.recommendations.categories[results.pillarId].recommendations.priority}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.8 }}
-            >
-              <RecommendationTitle>
-                {getPriorityIcon(results.recommendations.categories[results.pillarId].recommendations.priority)}
-                {results.recommendations.categories[results.pillarId].recommendations.title}
-              </RecommendationTitle>
-              <RecommendationDescription>
-                {results.recommendations.categories[results.pillarId].recommendations.description}
-              </RecommendationDescription>
-              {results.recommendations.categories[results.pillarId].recommendations.actions && (
-                <ActionItems>
-                  {results.recommendations.categories[results.pillarId].recommendations.actions.map((item, itemIndex) => (
-                    <ActionItem key={itemIndex}>{item}</ActionItem>
-                  ))}
-                </ActionItems>
-              )}
-              {results.recommendations.categories[results.pillarId].recommendations.timeline && (
-                <div style={{ marginTop: '16px', color: '#6b7280', fontSize: '0.9rem' }}>
-                  <div><strong>Timeline:</strong> {results.recommendations.categories[results.pillarId].recommendations.timeline}</div>
-                  <div><strong>Effort:</strong> {results.recommendations.categories[results.pillarId].recommendations.effort}</div>
-                  <div><strong>Impact:</strong> {results.recommendations.categories[results.pillarId].recommendations.impact}</div>
-                </div>
-              )}
-            </RecommendationCard>
-          ) : (
+          {/* Pain Point Recommendations */}
+          {results.painPointRecommendations && results.painPointRecommendations.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiAlertCircle size={20} style={{ color: '#ef4444' }} />
+                Critical Pain Points to Address
+              </h3>
+              {results.painPointRecommendations.map((rec, idx) => (
+                <RecommendationCard
+                  priority={rec.priority}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 0.8 + idx * 0.1 }}
+                  key={idx}
+                >
+                  <RecommendationTitle>
+                    {getPriorityIcon(rec.priority)}
+                    {rec.solution}
+                  </RecommendationTitle>
+                  <RecommendationDescription>
+                    <strong>Addresses:</strong> {rec.painPointNames.join(', ')}
+                  </RecommendationDescription>
+                  {rec.latestSolutions && rec.latestSolutions.length > 0 && (
+                    <div style={{ marginTop: '12px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
+                      <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <FiZap size={16} /> Latest Databricks Solutions:
+                      </strong>
+                      {rec.latestSolutions.map((sol, solIdx) => (
+                        <div key={solIdx} style={{ marginTop: '8px', fontSize: '0.9rem' }}>
+                          <div style={{ fontWeight: 600, color: '#047857' }}>{sol.name}</div>
+                          <div style={{ color: '#6b7280', marginTop: '4px' }}>{sol.description}</div>
+                          {sol.benefit && <div style={{ color: '#059669', marginTop: '4px', fontStyle: 'italic' }}>✓ {sol.benefit}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ marginTop: '12px', fontSize: '0.85rem', color: '#6b7280' }}>
+                    <strong>Priority:</strong> <span style={{ color: getPriorityColor(rec.priority), fontWeight: 600 }}>{rec.priority.toUpperCase()}</span>
+                  </div>
+                </RecommendationCard>
+              ))}
+            </div>
+          )}
+
+          {/* Gap-Based Actions */}
+          {results.gapBasedActions && results.gapBasedActions.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiTarget size={20} style={{ color: '#3b82f6' }} />
+                Bridge the Gap: Current → Future
+              </h3>
+              {results.gapBasedActions.map((action, idx) => (
+                <RecommendationCard
+                  priority="medium"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.0 + idx * 0.1 }}
+                  key={idx}
+                >
+                  <RecommendationTitle>
+                    <FiArrowRight />
+                    {action.dimension}
+                  </RecommendationTitle>
+                  <RecommendationDescription>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span><strong>Current:</strong> Level {action.current}/5</span>
+                      <span><strong>Target:</strong> Level {action.future}/5</span>
+                      <span><strong>Gap:</strong> {action.gap} levels</span>
+                    </div>
+                    <div><strong>Recommended Action:</strong> {action.recommendation}</div>
+                  </RecommendationDescription>
+                </RecommendationCard>
+              ))}
+            </div>
+          )}
+
+          {/* Comment-Based Insights */}
+          {results.commentBasedInsights && results.commentBasedInsights.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiCheckCircle size={20} style={{ color: '#8b5cf6' }} />
+                Insights from Your Notes
+              </h3>
+              {results.commentBasedInsights.map((insight, idx) => (
+                <RecommendationCard
+                  priority="low"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.2 + idx * 0.1 }}
+                  key={idx}
+                  style={{ background: '#faf5ff', borderLeft: '4px solid #8b5cf6' }}
+                >
+                  <RecommendationTitle style={{ color: '#7c3aed' }}>
+                    <FiCheckCircle />
+                    {insight.dimension}
+                  </RecommendationTitle>
+                  <RecommendationDescription>
+                    <div style={{ fontStyle: 'italic', color: '#6b7280', marginBottom: '8px' }}>
+                      "{insight.originalComment}"
+                    </div>
+                    <div><strong>Insight:</strong> {insight.insight}</div>
+                  </RecommendationDescription>
+                </RecommendationCard>
+              ))}
+            </div>
+          )}
+
+          {/* What's New from Databricks */}
+          {results.whatsNew && results.whatsNew.relevantToYou && results.whatsNew.relevantToYou.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiZap size={20} style={{ color: '#10b981' }} />
+                Latest Databricks Features Relevant to You
+              </h3>
+              {results.whatsNew.relevantToYou.map((feature, idx) => (
+                <RecommendationCard
+                  priority="high"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.4 + idx * 0.1 }}
+                  key={idx}
+                  style={{ background: '#f0fdf4', borderLeft: '4px solid #10b981' }}
+                >
+                  <RecommendationTitle style={{ color: '#059669' }}>
+                    <FiZap />
+                    {feature.name}
+                  </RecommendationTitle>
+                  <RecommendationDescription>
+                    <div>{feature.description}</div>
+                    {feature.benefit && (
+                      <div style={{ marginTop: '8px', color: '#047857', fontWeight: 600 }}>
+                        ✓ {feature.benefit}
+                      </div>
+                    )}
+                    {feature.relevanceReason && (
+                      <div style={{ marginTop: '8px', padding: '8px', background: 'white', borderRadius: '6px', fontSize: '0.9rem' }}>
+                        <strong>Why this matters to you:</strong> {feature.relevanceReason}
+                      </div>
+                    )}
+                    {feature.guide && (
+                      <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#6b7280' }}>
+                        <strong>Implementation:</strong> {feature.guide}
+                      </div>
+                    )}
+                    <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      <strong>Relevance Score:</strong> {feature.relevanceScore}/100 | <strong>Impact:</strong> {feature.impact} | <strong>Difficulty:</strong> {feature.difficulty}
+                    </div>
+                  </RecommendationDescription>
+                </RecommendationCard>
+              ))}
+            </div>
+          )}
+
+          {/* Show message if no recommendations */}
+          {(!results.painPointRecommendations || results.painPointRecommendations.length === 0) &&
+           (!results.gapBasedActions || results.gapBasedActions.length === 0) &&
+           (!results.commentBasedInsights || results.commentBasedInsights.length === 0) && (
             <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
               <FiCheckCircle size={48} style={{ marginBottom: '16px' }} />
               <h3>Excellent Work!</h3>

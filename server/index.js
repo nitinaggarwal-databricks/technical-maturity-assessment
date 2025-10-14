@@ -930,8 +930,8 @@ app.delete('/api/assessment/:id', (req, res) => {
   }
 });
 
-// Get pillar-specific results
-app.get('/api/assessment/:id/pillar/:pillarId/results', (req, res) => {
+// Get pillar-specific ADAPTIVE results (uses all inputs + latest features)
+app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
   try {
     const { id, pillarId } = req.params;
     const assessment = assessments.get(id);
@@ -960,21 +960,45 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', (req, res) => {
       });
     }
 
-    console.log(`Generating results for pillar: ${pillarId}`);
+    console.log(`🎯 Generating ADAPTIVE results for pillar: ${pillarId}`);
+    console.log('Using: Current state, Future state, Pain points, and Comments');
 
-    // Generate recommendations for this specific pillar
-    const recommendations = recommendationEngine.generateRecommendations(
+    // Generate ADAPTIVE recommendations for this specific pillar
+    let adaptiveResults = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
       assessment.responses, 
       [pillarId] // Only analyze this pillar
     );
 
+    console.log('✅ Adaptive recommendations generated for pillar:', pillarId);
+
+    // Enhance with live data if enabled
+    if (process.env.USE_LIVE_DATA === 'true') {
+      console.log('🔄 Enhancing pillar results with live data...');
+      try {
+        adaptiveResults = await liveDataEnhancer.enhanceRecommendations(
+          adaptiveResults,
+          {
+            currentScore: adaptiveResults.areaScores[pillarId]?.current || 0,
+            painPoints: adaptiveResults.painPointRecommendations.filter(p => p.pillar === pillarId),
+            gaps: adaptiveResults.gapBasedActions.filter(g => g.pillar === pillarId),
+            pillarId: pillarId
+          }
+        );
+        console.log('✅ Live data enhancement completed for pillar');
+      } catch (error) {
+        console.error('❌ Live data enhancement failed:', error);
+        console.log('⚠️  Continuing with base recommendations');
+      }
+    }
+
     // Calculate pillar-specific scores
-    const overallScore = recommendationEngine.calculateAreaScore(pillar, assessment.responses);
-    const currentScore = recommendationEngine.calculateAreaScoreByPerspective(pillar, assessment.responses, 'current_state');
-    const futureScore = recommendationEngine.calculateAreaScoreByPerspective(pillar, assessment.responses, 'future_state');
+    const areaScore = adaptiveResults.areaScores[pillarId] || { current: 0, future: 0 };
+    const currentScore = areaScore.current;
+    const futureScore = areaScore.future;
+    const gap = futureScore - currentScore;
     
     // Get pillar details
-    const roundedScore = Math.round(overallScore);
+    const roundedScore = Math.round(currentScore);
     const pillarDetails = {
       id: pillar.id,
       name: pillar.name,
@@ -982,10 +1006,17 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', (req, res) => {
       score: roundedScore,
       currentScore: Math.round(currentScore),
       futureScore: Math.round(futureScore),
-      maturityLevel: assessmentFramework.maturityLevels[Math.max(1, Math.min(5, roundedScore))],
+      gap: Math.round(gap),
+      maturityLevel: adaptiveRecommendationEngine.getMaturityLevel(currentScore),
       dimensionsCompleted: pillar.dimensions.length,
       questionsAnswered: pillar.dimensions.reduce((total, dim) => total + (dim.questions?.length || 0), 0)
     };
+
+    // Filter recommendations for this specific pillar
+    const pillarPainPoints = adaptiveResults.painPointRecommendations.filter(p => p.pillar === pillarId);
+    const pillarGapActions = adaptiveResults.gapBasedActions.filter(g => g.pillar === pillarId);
+    const pillarCommentInsights = adaptiveResults.commentBasedInsights.filter(c => c.pillar === pillarId);
+    const pillarPrioritizedActions = adaptiveResults.prioritizedActions.filter(a => a.pillar === pillarId);
 
     res.json({
       success: true,
@@ -993,13 +1024,21 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', (req, res) => {
         assessmentId: id,
         pillarId,
         pillarDetails,
-        recommendations,
+        painPointRecommendations: pillarPainPoints,
+        gapBasedActions: pillarGapActions,
+        commentBasedInsights: pillarCommentInsights,
+        prioritizedActions: pillarPrioritizedActions,
+        whatsNew: adaptiveResults.whatsNew, // Latest Databricks features
         generatedAt: new Date().toISOString(),
-        isPillarSpecific: true
+        isPillarSpecific: true,
+        _engineType: 'adaptive',
+        _liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
+        _liveDataSource: adaptiveResults.whatsNew?.lastUpdated ? 'active' : 'disabled'
       }
     });
   } catch (error) {
-    console.error('Error generating pillar results:', error);
+    console.error('❌ Error generating pillar results:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'Error generating pillar results',
