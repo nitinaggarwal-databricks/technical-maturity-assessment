@@ -667,10 +667,14 @@ class AdaptiveRecommendationEngine {
     let questionCount = 0;
     
     const questions = this.getAreaQuestions(area);
+    console.log(`[Score Calc] Area: ${area.name}, Questions: ${questions.length}, Perspective: ${perspectiveFilter}`);
     
     questions.forEach(question => {
       const skipKey = `${question.id}_skipped`;
-      if (responses[skipKey]) return;
+      if (responses[skipKey]) {
+        console.log(`[Score Calc] Question ${question.id} skipped`);
+        return;
+      }
       
       let questionScore = 0;
       let perspectiveCount = 0;
@@ -681,22 +685,33 @@ class AdaptiveRecommendationEngine {
         const responseKey = `${question.id}_${perspective.id}`;
         const response = responses[responseKey];
         
+        console.log(`[Score Calc] Checking ${responseKey}: response=${response}, type=${perspective.type}`);
+        
         if (response && perspective.type === 'single_choice') {
           const selectedOption = perspective.options.find(opt => opt.value === response);
           if (selectedOption) {
+            console.log(`[Score Calc] Found option for ${responseKey}: score=${selectedOption.score}`);
             questionScore += selectedOption.score;
             perspectiveCount++;
+          } else {
+            console.log(`[Score Calc] No matching option found for ${responseKey}, response=${response}`);
+            console.log(`[Score Calc] Available options:`, perspective.options.map(o => o.value));
           }
+        } else if (!response) {
+          console.log(`[Score Calc] No response for ${responseKey}`);
         }
       });
       
       if (perspectiveCount > 0) {
         areaScore += questionScore / perspectiveCount;
         questionCount++;
+        console.log(`[Score Calc] Question ${question.id} avg score: ${questionScore / perspectiveCount}`);
       }
     });
     
-    return questionCount > 0 ? areaScore / questionCount : 0;
+    const finalScore = questionCount > 0 ? areaScore / questionCount : 0;
+    console.log(`[Score Calc] Final area score: ${finalScore} (from ${questionCount} questions)`);
+    return finalScore;
   }
 
   getAreaQuestions(area) {

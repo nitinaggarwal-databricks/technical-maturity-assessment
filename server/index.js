@@ -1029,13 +1029,23 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       });
     }
 
-    // Check if this pillar has been completed
-    if (!assessment.completedCategories.includes(pillarId)) {
+    // Check if this pillar has responses (don't require it to be "completed")
+    const pillarResponses = Object.keys(assessment.responses || {}).filter(key => {
+      if (key.includes('_comment') || key.includes('_skipped')) return false;
+      // Check if this response belongs to this pillar
+      const pillarQuestions = pillar.dimensions.flatMap(d => d.questions).map(q => q.id);
+      const questionId = key.split('_current_state')[0].split('_future_state')[0].split('_technical_pain')[0].split('_business_pain')[0];
+      return pillarQuestions.includes(questionId);
+    });
+    
+    if (pillarResponses.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Pillar has not been completed yet'
+        message: 'No responses found for this pillar yet. Please answer some questions first.'
       });
     }
+    
+    console.log(`Found ${pillarResponses.length} responses for pillar ${pillarId}`);
 
     console.log(`🎯 Generating ADAPTIVE results for pillar: ${pillarId}`);
     console.log('Using: Current state, Future state, Pain points, and Comments');
