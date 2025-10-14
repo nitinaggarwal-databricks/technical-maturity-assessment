@@ -25,6 +25,9 @@ if (process.env.NODE_ENV === 'production') {
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
+console.log('🔍 DEBUG: Checking DATA_DIR environment variable...');
+console.log('🔍 DEBUG: process.env.DATA_DIR =', process.env.DATA_DIR);
+console.log('🔍 DEBUG: __dirname =', __dirname);
 const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 const dataFilePath = path.join(dataDir, 'assessments.json');
 console.log(`📁 Data directory: ${dataDir}`);
