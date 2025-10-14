@@ -32,6 +32,34 @@ const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 const dataFilePath = path.join(dataDir, 'assessments.json');
 console.log(`📁 Data directory: ${dataDir}`);
 console.log(`📄 Data file path: ${dataFilePath}`);
+
+// Validate storage is writable on startup
+const fs = require('fs');
+try {
+  if (!fs.existsSync(dataDir)) {
+    console.log(`📁 Creating data directory: ${dataDir}`);
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  
+  // Test write to ensure volume is mounted correctly
+  const testFile = path.join(dataDir, '.write-test');
+  fs.writeFileSync(testFile, 'test', 'utf8');
+  fs.unlinkSync(testFile);
+  console.log('✅ Storage is writable - data persistence confirmed');
+  
+  if (process.env.DATA_DIR) {
+    console.log('✅ Using Railway persistent volume at:', process.env.DATA_DIR);
+  } else {
+    console.warn('⚠️  WARNING: DATA_DIR not set - using local storage (data will be lost on redeploy!)');
+    console.warn('⚠️  Set DATA_DIR environment variable to use persistent storage');
+  }
+} catch (error) {
+  console.error('❌ CRITICAL: Storage is NOT writable!');
+  console.error('❌ Error:', error.message);
+  console.error('❌ Data directory:', dataDir);
+  console.error('⚠️  ALL DATA WILL BE LOST ON RESTART!');
+}
+
 const assessments = new DataStore(dataFilePath);
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
