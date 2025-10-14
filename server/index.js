@@ -797,8 +797,12 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       recommendations.areaScores = {};
     }
     
+    console.log('🔍 DEBUG: recommendations.areaScores:', JSON.stringify(recommendations.areaScores, null, 2));
+    console.log('🔍 DEBUG: areasWithResponses:', areasWithResponses.map(a => a.id));
+    
     areasWithResponses.forEach(area => {
       const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
+      console.log(`🔍 DEBUG: Area ${area.id} - areaScore from recommendations:`, areaScore);
       const currentScore = areaScore.current || 0;
       const futureScore = areaScore.future || 0;
       const isCompleted = assessment.completedCategories.includes(area.id);
