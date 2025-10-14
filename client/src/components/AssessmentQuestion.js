@@ -406,11 +406,18 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     const storedEmail = sessionStorage.getItem('assessmentEditorEmail');
     if (storedEmail) {
       setEditorEmail(storedEmail);
-    } else {
-      // Show email prompt after a short delay to let page load
-      setTimeout(() => setShowEmailPrompt(true), 500);
+    } else if (currentAssessment) {
+      // Only show email prompt if this is an EXISTING assessment with responses
+      // (not a brand new assessment that was just created)
+      const hasExistingResponses = currentAssessment.responses && 
+                                    Object.keys(currentAssessment.responses).length > 0;
+      
+      if (hasExistingResponses) {
+        // Show email prompt after a short delay to let page load
+        setTimeout(() => setShowEmailPrompt(true), 500);
+      }
     }
-  }, []);
+  }, [currentAssessment]);
 
   // Calculate and update progress
   const updateProgress = useCallback(() => {
