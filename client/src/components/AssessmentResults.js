@@ -2008,18 +2008,20 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                     </PriorityBadge>
                     </PillarHeader>
                     
-                    <RationaleText color={priorityColor}>
-                      {pillarRec.rationale.split('\n').map((line, i) => (
-                        <span key={i}>
-                          {line.includes('**') ? (
-                            line.split('**').map((part, j) => 
-                              j % 2 === 0 ? part : <strong key={j}>{part}</strong>
-                            )
-                          ) : line}
-                          {i < pillarRec.rationale.split('\n').length - 1 && <br />}
-                        </span>
-                      ))}
-                    </RationaleText>
+                    {pillarRec.rationale && (
+                      <RationaleText color={priorityColor}>
+                        {pillarRec.rationale.split('\n').map((line, i) => (
+                          <span key={i}>
+                            {line.includes('**') ? (
+                              line.split('**').map((part, j) => 
+                                j % 2 === 0 ? part : <strong key={j}>{part}</strong>
+                              )
+                            ) : line}
+                            {i < pillarRec.rationale.split('\n').length - 1 && <br />}
+                          </span>
+                        ))}
+                      </RationaleText>
+                    )}
                     
                     {pillarRec.features && pillarRec.features.length > 0 && (
                       <FeaturesGrid>
