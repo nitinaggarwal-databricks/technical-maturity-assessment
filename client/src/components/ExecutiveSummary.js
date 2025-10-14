@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiAlertCircle } from 'react-icons/fi';
+import { FiArrowLeft, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 
 const SummaryContainer = styled.div`
@@ -56,6 +57,7 @@ const ExecutiveSummary = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -74,7 +76,7 @@ const ExecutiveSummary = () => {
     if (assessmentId) {
       fetchResults();
     }
-  }, [assessmentId]);
+  }, [assessmentId, refreshKey]);
 
   if (loading) {
     return (
@@ -113,12 +115,70 @@ const ExecutiveSummary = () => {
       </BackButton>
 
       <HeaderSection>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '12px', letterSpacing: '-0.02em' }}>
-          Executive Summary
-        </h1>
-        <p style={{ fontSize: '1.1rem', color: '#6b7280', margin: 0 }}>
-          Strategic insights and business value analysis for {results.assessmentInfo?.assessmentName || 'your organization'}
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '12px', letterSpacing: '-0.02em' }}>
+              Executive Summary
+            </h1>
+            <p style={{ fontSize: '1.1rem', color: '#6b7280', margin: 0 }}>
+              Strategic insights and business value analysis for {results.assessmentInfo?.assessmentName || 'your organization'}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => {
+                navigate(`/assessment/${assessmentId}/platform_governance`);
+                toast.success('Edit your responses to update this summary');
+              }}
+              style={{
+                padding: '10px 20px',
+                background: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.background = '#2563eb'}
+              onMouseOut={(e) => e.target.style.background = '#3b82f6'}
+              title="Edit assessment responses"
+            >
+              <FiEdit2 size={16} />
+              Edit Assessment
+            </button>
+            <button
+              onClick={() => {
+                setRefreshKey(prev => prev + 1);
+                toast.success('Regenerating executive summary with latest data...');
+              }}
+              style={{
+                padding: '10px 20px',
+                background: 'white',
+                color: '#6b7280',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.borderColor = '#3b82f6'}
+              onMouseOut={(e) => e.target.style.borderColor = '#e5e7eb'}
+              title="Refresh summary with latest recommendations"
+            >
+              <FiRefreshCw size={16} />
+              Refresh
+            </button>
+          </div>
+        </div>
       </HeaderSection>
 
       <Section

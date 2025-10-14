@@ -130,14 +130,15 @@ export const getAssessmentResults = async (assessmentId) => {
 /**
  * Auto-save progress for individual question responses
  */
-export const saveProgress = async (assessmentId, questionId, perspectiveId, value, comment, isSkipped) => {
+export const saveProgress = async (assessmentId, questionId, perspectiveId, value, comment, isSkipped, editorEmail) => {
   try {
     const response = await api.post(`/assessment/${assessmentId}/save-progress`, {
       questionId,
       perspectiveId,
       value,
       comment,
-      isSkipped
+      isSkipped,
+      editorEmail
     });
     return response.data;
   } catch (error) {
@@ -187,6 +188,19 @@ export const deleteAssessment = async (assessmentId) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting assessment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update assessment metadata (name, email, etc.)
+ */
+export const updateAssessmentMetadata = async (assessmentId, metadata) => {
+  try {
+    const response = await api.patch(`/assessment/${assessmentId}/metadata`, metadata);
+    return response;
+  } catch (error) {
+    console.error('Error updating assessment metadata:', error);
     throw error;
   }
 };

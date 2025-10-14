@@ -9,8 +9,10 @@ import {
   FiCircle, 
   FiTarget,
   FiBarChart2,
-  FiPlay
+  FiPlay,
+  FiEdit3
 } from 'react-icons/fi';
+import EditAssessmentModal from './EditAssessmentModal';
 
 const NavigationContainer = styled.div`
   width: 350px;
@@ -31,15 +33,48 @@ const NavigationHeader = styled.div`
   background: #f8f9fa;
 `;
 
+const NavigationTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+`;
+
 const NavigationTitle = styled.h3`
   margin: 0;
   color: #1f2937;
   font-size: 18px;
   font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const EditButton = styled.button`
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
 `;
 
 const NavigationSubtitle = styled.p`
-  margin: 4px 0 0;
+  margin: 8px 0 0;
   color: #6b7280;
   font-size: 14px;
 `;
@@ -252,13 +287,14 @@ const PillarResultButton = styled(motion.button)`
   }
 `;
 
-const NavigationPanel = ({ framework, currentAssessment }) => {
+const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) => {
   const navigate = useNavigate();
   const { categoryId, assessmentId: routeAssessmentId } = useParams();
   // Use currentAssessment.assessmentId if routeAssessmentId is not available
   const assessmentId = routeAssessmentId || currentAssessment?.assessmentId;
   const [expandedPillars, setExpandedPillars] = useState(new Set());
   const [pillarProgress, setPillarProgress] = useState({});
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Initialize expanded state and progress
   useEffect(() => {
@@ -336,11 +372,37 @@ const NavigationPanel = ({ framework, currentAssessment }) => {
   return (
     <NavigationContainer>
       <NavigationHeader>
-        <NavigationTitle>Assessment Navigation</NavigationTitle>
+        <NavigationTitleRow>
+          <NavigationTitle title={currentAssessment?.assessmentName}>
+            {currentAssessment?.assessmentName || 'Assessment Navigation'}
+          </NavigationTitle>
+          {currentAssessment && (
+            <EditButton onClick={() => setShowEditModal(true)} title="Edit assessment information">
+              <FiEdit3 size={12} />
+              Edit
+            </EditButton>
+          )}
+        </NavigationTitleRow>
         <NavigationSubtitle>
+          {currentAssessment?.organizationName && `${currentAssessment.organizationName} • `}
           {currentAssessment?.completedCategories?.length || 0} of {framework.assessmentAreas?.length || 0} pillars completed
         </NavigationSubtitle>
       </NavigationHeader>
+
+      {showEditModal && currentAssessment && (
+        <EditAssessmentModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          assessment={currentAssessment}
+          onUpdate={(updatedData) => {
+            if (onAssessmentUpdate) {
+              onAssessmentUpdate(updatedData);
+            }
+            // Refresh the page to show updated data
+            window.location.reload();
+          }}
+        />
+      )}
 
       <PillarList>
         {framework.assessmentAreas?.map((pillar) => {

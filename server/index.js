@@ -7,6 +7,7 @@ const path = require('path');
 const assessmentFramework = require('./data/assessmentFramework');
 const RecommendationEngine = require('./services/recommendationEngine');
 const AdaptiveRecommendationEngine = require('./services/adaptiveRecommendationEngine');
+const LiveDataEnhancer = require('./services/liveDataEnhancer');
 const DataStore = require('./utils/dataStore');
 
 const app = express();
@@ -23,10 +24,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Persistent storage for assessments
-const dataFilePath = path.join(__dirname, 'data', 'assessments.json');
+// Use Railway volume path if available, otherwise fallback to local path
+const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
+const dataFilePath = path.join(dataDir, 'assessments.json');
+console.log(`📁 Data directory: ${dataDir}`);
+console.log(`📄 Data file path: ${dataFilePath}`);
 const assessments = new DataStore(dataFilePath);
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
+const liveDataEnhancer = new LiveDataEnhancer();
 
 // Routes
 
@@ -126,12 +132,22 @@ app.get('/api/assessment/:id/status', (req, res) => {
 
         const progress = (assessment.completedCategories.length / assessmentFramework.assessmentAreas.length) * 100;
 
+    // Ensure legacy assessments have default names
+    if (!assessment.assessmentName) {
+      assessment.assessmentName = `Databricks Maturity Assessment ${new Date(assessment.startedAt).toLocaleDateString()}`;
+      assessments.set(id, assessment);
+    }
+
     res.json({
       success: true,
       data: {
         id: assessment.id,
         assessmentId: assessment.id, // Add for consistency with start endpoint
+        assessmentName: assessment.assessmentName,
+        assessmentDescription: assessment.assessmentDescription || '',
         organizationName: assessment.organizationName,
+        contactEmail: assessment.contactEmail,
+        industry: assessment.industry,
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
@@ -331,11 +347,11 @@ app.post('/api/assessment/:id/category/:categoryId/submit', (req, res) => {
   }
 });
 
-// Auto-save individual question responses
-app.post('/api/assessment/:id/save-progress', (req, res) => {
+// Update assessment metadata (name, email, etc.)
+app.patch('/api/assessment/:id/metadata', (req, res) => {
   try {
     const { id } = req.params;
-    const { questionId, perspectiveId, value, comment, isSkipped } = req.body;
+    const { assessmentName, organizationName, contactEmail, industry, assessmentDescription, editorEmail } = req.body;
     
     const assessment = assessments.get(id);
     if (!assessment) {
@@ -343,6 +359,97 @@ app.post('/api/assessment/:id/save-progress', (req, res) => {
         success: false,
         message: 'Assessment not found'
       });
+    }
+
+    // Initialize edit history if it doesn't exist
+    if (!assessment.editHistory) {
+      assessment.editHistory = [];
+    }
+
+    // Track what changed
+    const changes = {};
+    if (assessmentName && assessmentName !== assessment.assessmentName) {
+      changes.assessmentName = { from: assessment.assessmentName, to: assessmentName };
+      assessment.assessmentName = assessmentName;
+    }
+    if (organizationName && organizationName !== assessment.organizationName) {
+      changes.organizationName = { from: assessment.organizationName, to: organizationName };
+      assessment.organizationName = organizationName;
+    }
+    if (contactEmail && contactEmail !== assessment.contactEmail) {
+      changes.contactEmail = { from: assessment.contactEmail, to: contactEmail };
+      assessment.contactEmail = contactEmail;
+    }
+    if (industry && industry !== assessment.industry) {
+      changes.industry = { from: assessment.industry, to: industry };
+      assessment.industry = industry;
+    }
+    if (assessmentDescription !== undefined && assessmentDescription !== assessment.assessmentDescription) {
+      changes.assessmentDescription = { from: assessment.assessmentDescription, to: assessmentDescription };
+      assessment.assessmentDescription = assessmentDescription;
+    }
+
+    // Add to edit history
+    if (Object.keys(changes).length > 0) {
+      assessment.editHistory.push({
+        timestamp: new Date().toISOString(),
+        editorEmail: editorEmail || contactEmail || 'Unknown',
+        changes: changes
+      });
+    }
+
+    // Update last modified
+    assessment.lastModified = new Date().toISOString();
+    assessments.set(id, assessment);
+
+    res.json({
+      success: true,
+      message: 'Assessment metadata updated',
+      data: {
+        id: assessment.id,
+        assessmentName: assessment.assessmentName,
+        organizationName: assessment.organizationName,
+        contactEmail: assessment.contactEmail,
+        industry: assessment.industry,
+        assessmentDescription: assessment.assessmentDescription,
+        lastModified: assessment.lastModified,
+        editHistory: assessment.editHistory
+      }
+    });
+  } catch (error) {
+    console.error('Error updating assessment metadata:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating assessment metadata',
+      error: error.message
+    });
+  }
+});
+
+// Auto-save individual question responses (with editor tracking)
+app.post('/api/assessment/:id/save-progress', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { questionId, perspectiveId, value, comment, isSkipped, editorEmail } = req.body;
+    
+    const assessment = assessments.get(id);
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    // Track who made this edit
+    if (editorEmail) {
+      if (!assessment.editors) {
+        assessment.editors = [];
+      }
+      if (!assessment.editors.includes(editorEmail)) {
+        assessment.editors.push(editorEmail);
+      }
+      assessment.lastEditor = editorEmail;
+      assessment.lastEditedAt = new Date().toISOString();
     }
 
     // Handle skipped questions
@@ -394,7 +501,7 @@ app.post('/api/assessment/:id/save-progress', (req, res) => {
 });
 
 // Generate adaptive assessment results (NEW - uses all inputs)
-app.get('/api/assessment/:id/adaptive-results', (req, res) => {
+app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   try {
     const { id } = req.params;
     const assessment = assessments.get(id);
@@ -426,7 +533,7 @@ app.get('/api/assessment/:id/adaptive-results', (req, res) => {
     }
     
     // Use adaptive engine
-    const recommendations = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
+    let recommendations = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
       assessment.responses,
       assessment.completedCategories.length > 0 ? assessment.completedCategories : null
     );
@@ -435,6 +542,25 @@ app.get('/api/assessment/:id/adaptive-results', (req, res) => {
     console.log('Pain point recommendations:', recommendations.painPointRecommendations.length);
     console.log('Gap-based actions:', recommendations.gapBasedActions.length);
     console.log('Comment insights:', recommendations.commentBasedInsights.length);
+    
+    // Enhance with live data if enabled
+    if (process.env.USE_LIVE_DATA === 'true') {
+      console.log('🔄 Enhancing with live data...');
+      try {
+        recommendations = await liveDataEnhancer.enhanceRecommendations(
+          recommendations,
+          {
+            currentScore: recommendations.overall.currentScore,
+            painPoints: recommendations.painPointRecommendations,
+            gaps: recommendations.gapBasedActions
+          }
+        );
+        console.log('✅ Live data enhancement completed');
+      } catch (error) {
+        console.error('❌ Live data enhancement failed:', error);
+        console.log('⚠️  Continuing with base recommendations');
+      }
+    }
     
     res.json({
       success: true,
@@ -447,7 +573,9 @@ app.get('/api/assessment/:id/adaptive-results', (req, res) => {
           completedAt: assessment.completedAt
         },
         ...recommendations,
-        _engineType: 'adaptive'
+        _engineType: 'adaptive',
+        _liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
+        _liveDataSource: recommendations.whatsNew?.lastUpdated ? 'active' : 'disabled'
       }
     });
   } catch (error) {

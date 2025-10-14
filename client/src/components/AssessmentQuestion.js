@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import UserEmailPrompt from './UserEmailPrompt';
 import NavigationPanel from './NavigationPanel';
 
 // Debounce utility function
@@ -394,9 +395,22 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
+  const [editorEmail, setEditorEmail] = useState(null);
 
   // Get dimension from query parameter
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
+
+  // Check for editor email in session storage on mount
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem('assessmentEditorEmail');
+    if (storedEmail) {
+      setEditorEmail(storedEmail);
+    } else {
+      // Show email prompt after a short delay to let page load
+      setTimeout(() => setShowEmailPrompt(true), 500);
+    }
+  }, []);
 
   // Calculate and update progress
   const updateProgress = useCallback(() => {
@@ -519,7 +533,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const currentDimension = getCurrentDimension();
 
   // Auto-save function with debouncing
-  const autoSave = async (questionId, perspectiveId, value, comment) => {
+  const autoSave = async (questionId, perspectiveId, value, comment, isSkipped) => {
     if (!assessmentId || !questionId) return;
     
     setAutoSaveStatus('saving');
@@ -530,7 +544,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         questionId, 
         perspectiveId, 
         value, 
-        comment
+        comment,
+        isSkipped,
+        editorEmail // Track who made the change
       );
       
       if (result.success) {
@@ -550,10 +566,10 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
   // Debounced auto-save for comments
   const debouncedAutoSave = useCallback(
-    debounce((questionId, perspectiveId, value, comment) => {
-      autoSave(questionId, perspectiveId, value, comment);
+    debounce((questionId, perspectiveId, value, comment, isSkipped) => {
+      autoSave(questionId, perspectiveId, value, comment, isSkipped);
     }, 1000),
-    [assessmentId]
+    [assessmentId, editorEmail]
   );
 
   const handlePerspectiveResponse = (questionId, perspectiveId, value, isMultiple = false) => {
@@ -595,7 +611,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
     // Auto-save skip status
     try {
-      await assessmentService.saveProgress(assessmentId, questionId, 'skip_status', '', '', isSkipped);
+      await assessmentService.saveProgress(assessmentId, questionId, 'skip_status', '', '', isSkipped, editorEmail);
       setAutoSaveStatus('saved');
       setLastSaved(new Date());
     } catch (error) {
@@ -920,6 +936,17 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           </NextButton>
         </NavigationSection>
       </ContentWrapper>
+
+      {/* Email Prompt Modal */}
+      {showEmailPrompt && (
+        <UserEmailPrompt
+          assessmentName={currentAssessment?.assessmentName || 'Assessment'}
+          onSubmit={(email) => {
+            setEditorEmail(email);
+            setShowEmailPrompt(false);
+          }}
+        />
+      )}
     </AssessmentContainer>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle } from 'react-icons/fi';
+import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Radar } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
@@ -902,6 +902,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const loadResults = async () => {
@@ -921,7 +922,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
     };
 
     loadResults();
-  }, [assessmentId]);
+  }, [assessmentId, refreshKey]);
 
   const getMaturityLevelName = (score) => {
     const levels = {
@@ -1466,7 +1467,37 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
               </div>
               
               {/* Right: Action Buttons */}
-              <div style={{ flex: '0 0 auto', display: 'flex', gap: '12px' }}>
+              <div style={{ flex: '0 0 auto', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <SecondaryButton
+                  onClick={() => {
+                    // Navigate to first category to edit responses
+                    const firstCategory = framework?.assessmentAreas?.[0];
+                    if (firstCategory) {
+                      navigate(`/assessment/${assessmentId}/${firstCategory.id}`);
+                      toast.success('Edit your responses. Results will update automatically when you save.');
+                    }
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#3b82f6', color: 'white' }}
+                  title="Edit assessment responses and regenerate results"
+                >
+                  <FiEdit2 size={14} />
+                  Edit Assessment
+                </SecondaryButton>
+                <SecondaryButton
+                  onClick={() => {
+                    setRefreshKey(prev => prev + 1);
+                    toast.success('Refreshing results with latest data...');
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                  title="Reload results and recommendations"
+                >
+                  <FiRefreshCw size={14} />
+                  Refresh
+                </SecondaryButton>
                 <SecondaryButton
                   onClick={() => navigate(`/executive-summary/${assessmentId}`)}
                   whileHover={{ scale: 1.02 }}
@@ -1474,7 +1505,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                 >
                   <FiFileText size={14} />
-                  View Executive Summary
+                  Executive Summary
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={handleExportPDF}
@@ -1483,7 +1514,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                 >
                   <FiDownload size={14} />
-                  Export Full Report
+                  Export Report
                 </PrimaryButton>
               </div>
             </div>
