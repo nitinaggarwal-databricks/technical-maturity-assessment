@@ -41,12 +41,37 @@ const liveDataEnhancer = new LiveDataEnhancer();
 
 // Root status endpoint (for debugging)
 app.get('/status', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Databricks Maturity Assessment API is running',
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
-  });
+  try {
+    const fs = require('fs');
+    const assessmentData = assessments.getAll();
+    const assessmentCount = Object.keys(assessmentData).length;
+    const dataFileExists = fs.existsSync(dataFilePath);
+    
+    res.json({
+      success: true,
+      message: 'Databricks Maturity Assessment API is running',
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString(),
+      storage: {
+        dataDir: dataDir,
+        dataFilePath: dataFilePath,
+        dataFileExists: dataFileExists,
+        assessmentCount: assessmentCount,
+        volumeMounted: process.env.DATA_DIR ? true : false,
+        dataDirEnv: process.env.DATA_DIR || 'not set (using default)',
+      },
+      features: {
+        liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
+        openAIConfigured: !!process.env.OPENAI_API_KEY,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
 });
 
 // Get assessment framework
