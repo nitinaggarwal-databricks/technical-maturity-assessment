@@ -75,6 +75,14 @@ class DataStore {
   get size() {
     return this.data.size;
   }
+
+  getAll() {
+    return Object.fromEntries(this.data);
+  }
+
+  entries() {
+    return this.data.entries();
+  }
 }
 
 module.exports = DataStore;
