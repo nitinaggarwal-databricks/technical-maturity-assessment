@@ -206,7 +206,8 @@ const ExecutiveSummary = () => {
             </h3>
             <div style={{ fontSize: '1.05rem', color: '#374151', lineHeight: '1.9' }}>
               {(() => {
-                const lines = results.summary.split('\n').filter(line => line.trim());
+                const summaryText = results.overall?.summary || results.summary || '';
+                const lines = summaryText.split('\n').filter(line => line.trim());
                 const strategicSection = lines.findIndex(line => line.includes('STRATEGIC SITUATION'));
                 const constraintsSection = lines.findIndex(line => line.includes('CRITICAL CONSTRAINTS'));
                 
@@ -235,7 +236,8 @@ const ExecutiveSummary = () => {
             </h3>
             <div style={{ fontSize: '1.05rem', color: '#991b1b', lineHeight: '1.9' }}>
               {(() => {
-                const lines = results.summary.split('\n').filter(line => line.trim());
+                const summaryText = results.overall?.summary || results.summary || '';
+                const lines = summaryText.split('\n').filter(line => line.trim());
                 const constraintsSection = lines.findIndex(line => line.includes('CRITICAL CONSTRAINTS'));
                 const enablersSection = lines.findIndex(line => line.includes('STRATEGIC ENABLERS'));
                 
@@ -268,7 +270,8 @@ const ExecutiveSummary = () => {
             </h3>
             <div style={{ fontSize: '1.05rem', color: '#166534', lineHeight: '1.9' }}>
               {(() => {
-                const lines = results.summary.split('\n').filter(line => line.trim());
+                const summaryText = results.overall?.summary || results.summary || '';
+                const lines = summaryText.split('\n').filter(line => line.trim());
                 const enablersSection = lines.findIndex(line => line.includes('STRATEGIC ENABLERS'));
                 const roadmapSection = lines.findIndex(line => line.includes('STRATEGIC ROADMAP'));
                 const valueSection = lines.findIndex(line => line.includes('EXPECTED BUSINESS OUTCOMES'));

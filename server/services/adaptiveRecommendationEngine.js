@@ -428,26 +428,88 @@ class AdaptiveRecommendationEngine {
     
     const urgentComments = commentInsights.filter(c => c.keywords.urgency).length;
     
-    let summary = `Your current Databricks maturity is at level ${avgCurrent}, with an aspiration to reach level ${avgFuture}. `;
+    // Get maturity level names
+    const currentLevel = assessmentFramework.maturityLevels[avgCurrent] || assessmentFramework.maturityLevels[1];
+    const futureLevel = assessmentFramework.maturityLevels[avgFuture] || assessmentFramework.maturityLevels[5];
+    
+    // Build structured summary sections
+    let summary = '## STRATEGIC SITUATION & BUSINESS VALUE\n\n';
+    
+    summary += `**Current Maturity:** Level ${avgCurrent} - ${currentLevel.level}\n`;
+    summary += `${currentLevel.description}\n\n`;
+    
+    summary += `**Target Maturity:** Level ${avgFuture} - ${futureLevel.level}\n`;
+    summary += `${futureLevel.description}\n\n`;
     
     if (avgGap > 1) {
-      summary += `This ${avgGap}-level gap represents significant ambition and will require focused investment. `;
+      summary += `**Transformation Scope:** This ${avgGap}-level gap represents significant ambition requiring focused investment and organizational commitment. Success will require executive sponsorship and dedicated resources.\n\n`;
     } else if (avgGap === 1) {
-      summary += `This 1-level improvement is achievable with targeted initiatives. `;
+      summary += `**Improvement Scope:** This 1-level improvement is achievable with targeted initiatives and focused effort over the next 6-12 months.\n\n`;
     } else {
-      summary += `You're close to your target state, requiring fine-tuning rather than transformation. `;
+      summary += `**Optimization Focus:** You're close to your target state, requiring fine-tuning and optimization rather than major transformation.\n\n`;
     }
     
-    if (totalTechnicalPain > 5 || totalBusinessPain > 5) {
-      summary += `You've identified ${totalTechnicalPain} technical and ${totalBusinessPain} business pain points that require immediate attention. `;
+    // Critical Constraints section
+    summary += '## CRITICAL CONSTRAINTS IMPACTING PERFORMANCE\n\n';
+    
+    if (totalTechnicalPain > 0 || totalBusinessPain > 0) {
+      if (totalTechnicalPain > 0) {
+        summary += `**Technical Pain Points:** ${totalTechnicalPain} technical challenges identified that are blocking progress and limiting platform capabilities.\n`;
+      }
+      if (totalBusinessPain > 0) {
+        summary += `**Business Pain Points:** ${totalBusinessPain} business impacts identified including productivity losses, cost inefficiencies, and competitive gaps.\n`;
+      }
+      summary += '\n';
+      
+      // List top pain points
+      const allAreas = Object.keys(painPointAnalysis);
+      const topPainPoints = [];
+      allAreas.forEach(areaId => {
+        const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
+        const pains = painPointAnalysis[areaId];
+        if (pains.technical.length > 0) {
+          topPainPoints.push(`• ${area.name}: ${pains.technical.length} technical issues requiring immediate attention`);
+        }
+        if (pains.business.length > 0) {
+          topPainPoints.push(`• ${area.name}: ${pains.business.length} business impacts limiting value realization`);
+        }
+      });
+      summary += topPainPoints.slice(0, 5).join('\n') + '\n\n';
+    } else {
+      summary += 'No significant pain points identified. Your platform is performing well and meeting current needs.\n\n';
     }
     
     if (urgentComments > 0) {
-      summary += `${urgentComments} of your comments indicate urgent concerns that should be prioritized. `;
+      summary += `**Urgent Concerns:** ${urgentComments} of your comments indicate time-sensitive issues that should be prioritized immediately.\n\n`;
     }
     
-    summary += `Our recommendations are tailored to address your specific situation, pain points, and goals.`;
+    // Strategic Enablers section
+    summary += '## STRATEGIC ENABLERS & RECOMMENDED ACTIONS\n\n';
     
+    // Identify areas with biggest gaps
+    const areasWithGaps = Object.entries(areaScores)
+      .filter(([_, scores]) => scores.gap > 0)
+      .sort((a, b) => b[1].gap - a[1].gap)
+      .slice(0, 3);
+    
+    if (areasWithGaps.length > 0) {
+      summary += '**Priority Focus Areas:**\n';
+      areasWithGaps.forEach(([areaId, scores]) => {
+        const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
+        summary += `• **${area.name}**: Bridge ${scores.gap}-level gap (Current: ${scores.current} → Target: ${scores.future})\n`;
+      });
+      summary += '\n';
+    }
+    
+    summary += '**Next Steps:**\n';
+    summary += '• Review adaptive recommendations tailored to your specific pain points and gaps\n';
+    summary += '• Explore latest Databricks features that can address your challenges\n';
+    summary += '• Prioritize quick wins that deliver immediate value with minimal effort\n';
+    summary += '• Build a phased roadmap aligning platform evolution with business goals\n\n';
+    
+    const allAreas = Object.keys(areaScores);
+    summary += `**Assessment Confidence:** Based on responses across ${allAreas.length} pillars with ${commentInsights.length} detailed comments, providing high-quality insights for decision making.`;
+
     return summary;
   }
 
