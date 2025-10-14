@@ -81,6 +81,11 @@ export const startAssessment = async (organizationInfo) => {
 export const getAssessmentStatus = async (assessmentId) => {
   try {
     const response = await api.get(`/assessment/${assessmentId}/status`);
+    // Backend returns { success: true, data: { ... } }
+    if (response.data && response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    // Fallback for backwards compatibility
     return response.data;
   } catch (error) {
     console.error('Error fetching assessment status:', error);
@@ -122,6 +127,7 @@ export const submitCategoryResponses = async (assessmentId, categoryId, response
 export const getAssessmentResults = async (assessmentId) => {
   try {
     const response = await api.get(`/assessment/${assessmentId}/results`);
+    // Backend returns data directly for results endpoint
     return response.data;
   } catch (error) {
     console.error('Error fetching assessment results:', error);
@@ -216,23 +222,21 @@ export const getPillarResults = async (assessmentId, pillarId) => {
     const response = await api.get(`/assessment/${assessmentId}/pillar/${pillarId}/results`);
     console.log('[getPillarResults] Raw response:', response);
     console.log('[getPillarResults] Response data:', response.data);
-    console.log('[getPillarResults] Response.data type:', typeof response.data);
-    console.log('[getPillarResults] Response.data.success:', response.data?.success);
-    console.log('[getPillarResults] Response.data.data:', response.data?.data);
     
-    // Check if response.data is the actual data (axios already unwrapped it)
+    // Backend returns { success: true, data: { pillarDetails, ... } }
     if (response.data && response.data.success && response.data.data) {
       console.log('[getPillarResults] Returning response.data.data');
       return response.data.data;
     }
     
-    // Or if response.data is already the data object
-    if (response.data && response.data.pillarDetails && response.data.recommendations) {
+    // Fallback: if response.data has pillarDetails directly
+    if (response.data && response.data.pillarDetails) {
       console.log('[getPillarResults] Returning response.data directly');
       return response.data;
     }
     
     console.error('[getPillarResults] Unexpected response structure:', response);
+    console.error('[getPillarResults] Expected: { success: true, data: { pillarDetails, ... } }');
     throw new Error('API returned unexpected response structure');
   } catch (error) {
     console.error('[getPillarResults] Error fetching pillar results:', error);

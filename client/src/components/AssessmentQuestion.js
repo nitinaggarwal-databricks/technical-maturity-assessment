@@ -764,6 +764,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       <NavigationPanel 
         framework={framework}
         currentAssessment={currentAssessment}
+        onAssessmentUpdate={onUpdateStatus}
       />
       <ContentWrapper>
         <ProgressSection>
