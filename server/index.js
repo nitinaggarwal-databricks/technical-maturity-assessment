@@ -592,8 +592,8 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   }
 });
 
-// Generate assessment results and recommendations
-app.get('/api/assessment/:id/results', (req, res) => {
+// Generate assessment results and recommendations (ADAPTIVE with live data)
+app.get('/api/assessment/:id/results', async (req, res) => {
   try {
     const { id } = req.params;
     const assessment = assessments.get(id);
@@ -677,48 +677,83 @@ app.get('/api/assessment/:id/results', (req, res) => {
     
     console.log(`Total areas with responses: ${areasWithResponses.length}`);
     
-    // Generate recommendations (for all areas with responses, or provide defaults)
+    // Generate ADAPTIVE recommendations (uses all inputs + latest features)
     let recommendations;
     if (hasAnyResponses) {
       const areaIdsWithResponses = areasWithResponses.map(a => a.id);
-      recommendations = recommendationEngine.generateRecommendations(
+      
+      console.log('🎯 Generating ADAPTIVE recommendations for overall assessment');
+      console.log('Using: Current state, Future state, Pain points, and Comments');
+      
+      recommendations = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
         assessment.responses, 
         areaIdsWithResponses.length > 0 ? areaIdsWithResponses : assessment.completedCategories
       );
-      console.log('Generated recommendations successfully');
+      console.log('✅ Generated ADAPTIVE recommendations successfully');
+      console.log('Pain point recommendations:', recommendations.painPointRecommendations.length);
+      console.log('Gap-based actions:', recommendations.gapBasedActions.length);
+      console.log('Comment insights:', recommendations.commentBasedInsights.length);
+      
+      // Enhance with live data if enabled
+      if (process.env.USE_LIVE_DATA === 'true') {
+        console.log('🔄 Enhancing overall results with live data...');
+        try {
+          recommendations = await liveDataEnhancer.enhanceRecommendations(
+            recommendations,
+            {
+              currentScore: recommendations.overall.currentScore,
+              painPoints: recommendations.painPointRecommendations,
+              gaps: recommendations.gapBasedActions
+            }
+          );
+          console.log('✅ Live data enhancement completed for overall assessment');
+        } catch (error) {
+          console.error('❌ Live data enhancement failed:', error);
+          console.log('⚠️  Continuing with base recommendations');
+        }
+      }
     } else {
       // Provide default empty recommendations structure
       recommendations = {
         overall: {
-          score: 0,
+          currentScore: 0,
+          futureScore: 0,
+          gap: 0,
           level: assessmentFramework.maturityLevels[1],
           summary: 'No responses yet. Start answering questions to see your maturity assessment results.'
         },
+        areaScores: {},
         categories: {},
+        painPointRecommendations: [],
+        gapBasedActions: [],
+        commentBasedInsights: [],
         prioritizedActions: [],
         roadmap: { immediate: [], shortTerm: [], longTerm: [] },
         quickWins: [],
-        riskAreas: []
+        riskAreas: [],
+        executiveSummary: ''
       };
       console.log('No responses yet - using default empty state');
     }
     
-    // Calculate detailed category scores (for all areas with responses)
+    // Calculate detailed category scores from ADAPTIVE engine (for all areas with responses)
     const categoryDetails = {};
     
     areasWithResponses.forEach(area => {
-      const areaScore = recommendationEngine.calculateAreaScore(area, assessment.responses);
-      const currentScore = recommendationEngine.calculateAreaScoreByPerspective(area, assessment.responses, 'current_state');
-      const futureScore = recommendationEngine.calculateAreaScoreByPerspective(area, assessment.responses, 'future_state');
+      const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
+      const currentScore = areaScore.current;
+      const futureScore = areaScore.future;
       const isCompleted = assessment.completedCategories.includes(area.id);
       
       categoryDetails[area.id] = {
+        id: area.id,
         name: area.name,
         description: area.description,
-        score: Math.round(areaScore),
+        score: Math.round(currentScore), // Use current score as overall score
         currentScore: Math.round(currentScore),
         futureScore: Math.round(futureScore),
-        level: assessmentFramework.maturityLevels[Math.max(1, Math.min(5, Math.round(areaScore)))],
+        gap: Math.round(futureScore - currentScore),
+        level: adaptiveRecommendationEngine.getMaturityLevel(currentScore),
         weight: areasWithResponses.length > 0 ? 1 / areasWithResponses.length : 0,
         isPartial: !isCompleted
       };
@@ -740,17 +775,23 @@ app.get('/api/assessment/:id/results', (req, res) => {
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,
         totalQuestions: totalQuestions,
-        completionPercentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0
+        completionPercentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0,
+        lastModified: assessment.lastModified,
+        lastEditor: assessment.lastEditor,
+        editHistory: assessment.editHistory || []
       },
-      overallScore: recommendations.overall.score,
-      overallLevel: recommendations.overall.level,
-      summary: recommendations.overall.summary,
+      overall: recommendations.overall, // ADAPTIVE: includes currentScore, futureScore, gap, level, summary
       categoryDetails,
-      recommendations: recommendations.categories,
+      categories: recommendations.categories,
+      painPointRecommendations: recommendations.painPointRecommendations || [], // ADAPTIVE: Critical pain points to address
+      gapBasedActions: recommendations.gapBasedActions || [], // ADAPTIVE: Actions to bridge current → future gap
+      commentBasedInsights: recommendations.commentBasedInsights || [], // ADAPTIVE: Insights from user notes
       prioritizedActions: recommendations.prioritizedActions,
       roadmap: recommendations.roadmap,
       quickWins: recommendations.quickWins,
       riskAreas: recommendations.riskAreas,
+      executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
+      whatsNew: recommendations.whatsNew, // ADAPTIVE: Latest Databricks features
       pillarStatus: assessmentFramework.assessmentAreas.map(area => {
         const isCompleted = assessment.completedCategories.includes(area.id);
         const hasResponses = areasWithResponses.some(a => a.id === area.id);
@@ -760,9 +801,15 @@ app.get('/api/assessment/:id/results', (req, res) => {
           completed: isCompleted,
           hasResponses: hasResponses,
           isPartial: hasResponses && !isCompleted,
-          score: hasResponses ? categoryDetails[area.id]?.score : null
+          score: hasResponses ? categoryDetails[area.id]?.score : null,
+          currentScore: hasResponses ? categoryDetails[area.id]?.currentScore : null,
+          futureScore: hasResponses ? categoryDetails[area.id]?.futureScore : null,
+          gap: hasResponses ? categoryDetails[area.id]?.gap : null
         };
-      })
+      }),
+      _engineType: 'adaptive',
+      _liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
+      _liveDataSource: recommendations.whatsNew?.lastUpdated ? 'active' : 'disabled'
     };
 
     // Cache results
