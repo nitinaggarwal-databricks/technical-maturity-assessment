@@ -762,6 +762,46 @@ class AdaptiveRecommendationEngine {
         insight: c.comment.substring(0, 150)
       }));
   }
+
+  /**
+   * Get maturity level for a given score
+   * @param {number} score - Maturity score (1-5)
+   * @returns {object} Maturity level details
+   */
+  getMaturityLevel(score) {
+    const roundedScore = Math.round(score);
+    const level = Math.max(1, Math.min(5, roundedScore)); // Clamp between 1-5
+    
+    const maturityLevels = {
+      1: {
+        level: 'Initial',
+        description: 'Ad-hoc processes, limited capabilities',
+        color: '#ff4444'
+      },
+      2: {
+        level: 'Developing',
+        description: 'Basic implementation with some structure',
+        color: '#ff8800'
+      },
+      3: {
+        level: 'Defined',
+        description: 'Structured approach with established processes',
+        color: '#ffaa00'
+      },
+      4: {
+        level: 'Managed',
+        description: 'Advanced capabilities with strong governance',
+        color: '#88cc00'
+      },
+      5: {
+        level: 'Optimized',
+        description: 'Industry-leading, AI-driven optimization',
+        color: '#00cc44'
+      }
+    };
+    
+    return maturityLevels[level];
+  }
 }
 
 module.exports = AdaptiveRecommendationEngine;
