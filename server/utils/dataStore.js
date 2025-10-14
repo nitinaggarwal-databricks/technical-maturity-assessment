@@ -93,8 +93,13 @@ class DataStore {
   }
 
   set(key, value) {
+    console.log(`📝 DataStore.set() called for key: ${key}`);
+    console.log(`📝 Current data size before set: ${this.data.size}`);
     this.data.set(key, value);
+    console.log(`📝 Current data size after set: ${this.data.size}`);
+    console.log(`📝 Calling saveData()...`);
     this.saveData();
+    console.log(`📝 saveData() completed`);
   }
 
   get(key) {
