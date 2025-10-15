@@ -691,20 +691,28 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       
       toast.success('Area completed successfully!');
       
-      if (result.isCompleted) {
+      // Backend returns { success, data: { isCompleted, nextCategory } }
+      const resultData = result.data || result; // Support both formats
+      
+      if (resultData.isCompleted) {
         // Assessment is complete, go to results
         navigate(`/results/${assessmentId}`);
-      } else if (result.nextCategory) {
+      } else if (resultData.nextCategory) {
         // Move to next area
-        navigate(`/assessment/${assessmentId}/${result.nextCategory}`);
+        navigate(`/assessment/${assessmentId}/${resultData.nextCategory}`);
       } else {
         // Go to results even if not all areas are complete
         navigate(`/results/${assessmentId}`);
       }
       
-      // Update assessment status
+      // Update assessment status (non-blocking - don't let this fail the whole operation)
       if (onUpdateStatus) {
-        await onUpdateStatus(assessmentId);
+        try {
+          await onUpdateStatus(assessmentId);
+        } catch (statusError) {
+          console.warn('Failed to update status, but submission succeeded:', statusError);
+          // Don't show error toast since the main operation succeeded
+        }
       }
     } catch (error) {
       console.error('Error submitting area responses:', error);
