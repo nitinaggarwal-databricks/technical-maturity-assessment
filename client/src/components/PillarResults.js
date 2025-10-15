@@ -521,10 +521,25 @@ const PillarResults = () => {
                 >
                   <RecommendationTitle>
                     {getPriorityIcon(rec.priority)}
-                    {rec.solution}
+                    {rec.title || rec.solution}
                   </RecommendationTitle>
                   <RecommendationDescription>
-                    <strong>Addresses:</strong> {rec.painPointNames.join(', ')}
+                    {rec.impact && <div><strong>Impact:</strong> {rec.impact}</div>}
+                    {rec.actions && rec.actions.length > 0 && (
+                      <div style={{ marginTop: '8px' }}>
+                        <strong>Actions:</strong>
+                        <ul style={{ marginTop: '4px', marginLeft: '20px' }}>
+                          {rec.actions.map((action, actionIdx) => (
+                            <li key={actionIdx}>{action}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {rec.painPointNames && rec.painPointNames.length > 0 && (
+                      <div style={{ marginTop: '8px' }}>
+                        <strong>Addresses:</strong> {rec.painPointNames.join(', ')}
+                      </div>
+                    )}
                   </RecommendationDescription>
                   {rec.latestSolutions && rec.latestSolutions.length > 0 && (
                     <div style={{ marginTop: '12px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
