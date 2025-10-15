@@ -427,21 +427,18 @@ class AdaptiveRecommendationEngine {
     const currentLevel = assessmentFramework.maturityLevels[avgCurrent] || assessmentFramework.maturityLevels[1];
     const futureLevel = assessmentFramework.maturityLevels[avgFuture] || assessmentFramework.maturityLevels[5];
     
-    // Collect all pain points with their impact descriptions
-    const allPainPoints = [];
+    // Collect pain points by area
+    const painPointsByArea = {};
     Object.entries(painPointAnalysis).forEach(([areaId, pains]) => {
       const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
-      pains.technical.forEach(pain => {
-        if (this.impactMap[pain]) {
-          allPainPoints.push({ area: area.name, type: 'Technical', pain, impact: this.impactMap[pain] });
-        }
-      });
-      pains.business.forEach(pain => {
-        if (this.impactMap[pain]) {
-          allPainPoints.push({ area: area.name, type: 'Business', pain, impact: this.impactMap[pain] });
-        }
-      });
+      if (!painPointsByArea[area.name]) {
+        painPointsByArea[area.name] = { technical: [], business: [] };
+      }
+      painPointsByArea[area.name].technical = pains.technical;
+      painPointsByArea[area.name].business = pains.business;
     });
+    
+    const totalPainPoints = Object.values(painPointAnalysis).reduce((sum, p) => sum + p.technical.length + p.business.length, 0);
     
     // Identify areas with biggest gaps for roadmap
     const areasWithGaps = Object.entries(areaScores)
@@ -469,19 +466,21 @@ class AdaptiveRecommendationEngine {
     // Critical Constraints - be specific about actual pain points
     summary += '## CRITICAL CONSTRAINTS IMPACTING PERFORMANCE\n\n';
     
-    if (allPainPoints.length > 0) {
-      // Group by pillar and show top 5 most impactful
-      const pillarGroups = {};
-      allPainPoints.forEach(p => {
-        if (!pillarGroups[p.area]) pillarGroups[p.area] = [];
-        pillarGroups[p.area].push(p);
-      });
+    if (totalPainPoints > 0) {
+      summary += 'Your assessment identified specific challenges across multiple pillars:\n\n';
       
-      Object.entries(pillarGroups).forEach(([area, points]) => {
-        if (points.length > 0) {
-          summary += `**${area}:** ${points.slice(0, 3).map(p => p.impact).join('; ')}\n\n`;
+      Object.entries(painPointsByArea).forEach(([area, pains]) => {
+        const totalInArea = pains.technical.length + pains.business.length;
+        if (totalInArea > 0) {
+          summary += `**${area}:** `;
+          const issues = [];
+          if (pains.technical.length > 0) issues.push(`${pains.technical.length} technical constraints`);
+          if (pains.business.length > 0) issues.push(`${pains.business.length} business impacts`);
+          summary += issues.join(' and ') + '\n';
         }
       });
+      summary += '\n';
+      summary += 'These constraints are limiting platform capabilities, team productivity, and business agility. The transformation roadmap below addresses these specific challenges.\n\n';
     } else {
       summary += 'No significant pain points identified. Your platform is performing well and meeting current needs.\n\n';
     }
@@ -523,7 +522,7 @@ class AdaptiveRecommendationEngine {
     summary += '• Enhanced compliance and audit capabilities\n\n';
     
     const allAreas = Object.keys(areaScores);
-    summary += `**Assessment Confidence:** Based on ${allAreas.length} pillar(s) with ${allPainPoints.length} specific challenges identified`;
+    summary += `**Assessment Confidence:** Based on ${allAreas.length} pillar(s) with ${totalPainPoints} specific challenges identified`;
 
     return summary;
   }
