@@ -285,6 +285,30 @@ class AssessmentRepository {
   }
 
   /**
+   * Get assessment statistics
+   */
+  async getStats() {
+    const query = `
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as active,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed
+      FROM assessments
+    `;
+    try {
+      const result = await db.query(query);
+      return {
+        total: parseInt(result.rows[0].total),
+        active: parseInt(result.rows[0].active),
+        completed: parseInt(result.rows[0].completed)
+      };
+    } catch (error) {
+      console.error('Error getting assessment stats:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Map database row to assessment object
    */
   mapRowToAssessment(row) {
