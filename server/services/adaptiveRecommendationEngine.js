@@ -699,17 +699,21 @@ class AdaptiveRecommendationEngine {
         const responseKey = `${question.id}_${perspective.id}`;
         const response = responses[responseKey];
         
-        console.log(`[Score Calc] Checking ${responseKey}: response=${response}, type=${perspective.type}`);
+        console.log(`[Score Calc] Checking ${responseKey}: response=${response}, type=${typeof response}, perspective.type=${perspective.type}`);
         
         if (response && perspective.type === 'single_choice') {
-          const selectedOption = perspective.options.find(opt => opt.value === response);
+          // CRITICAL FIX: Convert response to number if it's a string
+          // Responses are saved as strings but options use numeric values
+          const normalizedResponse = typeof response === 'string' ? parseInt(response, 10) : response;
+          
+          const selectedOption = perspective.options.find(opt => opt.value === normalizedResponse);
           if (selectedOption) {
-            console.log(`[Score Calc] Found option for ${responseKey}: score=${selectedOption.score}`);
+            console.log(`[Score Calc] ✅ Found option for ${responseKey}: score=${selectedOption.score}`);
             questionScore += selectedOption.score;
             perspectiveCount++;
           } else {
-            console.log(`[Score Calc] No matching option found for ${responseKey}, response=${response}`);
-            console.log(`[Score Calc] Available options:`, perspective.options.map(o => o.value));
+            console.log(`[Score Calc] ❌ No matching option found for ${responseKey}, response=${response} (normalized: ${normalizedResponse})`);
+            console.log(`[Score Calc] Available options:`, perspective.options.map(o => ({ value: o.value, type: typeof o.value })));
           }
         } else if (!response) {
           console.log(`[Score Calc] No response for ${responseKey}`);
