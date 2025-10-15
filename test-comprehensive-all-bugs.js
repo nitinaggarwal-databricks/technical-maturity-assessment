@@ -475,18 +475,110 @@ async function testFullAssessmentConsistency() {
 }
 
 // ============================================================================
-// TEST CATEGORY 7: EDGE CASES & ERROR HANDLING
+// TEST CATEGORY 7: API RESPONSE STRUCTURE & FRONTEND COMPATIBILITY
+// ============================================================================
+async function testApiResponseStructure() {
+  log('\n' + '='.repeat(80), colors.bright);
+  log('TEST CATEGORY 7: API RESPONSE STRUCTURE (Bug Fix #4)', colors.bright + colors.cyan);
+  log('='.repeat(80), colors.bright);
+
+  // Create test assessment with data
+  const createResult = await apiCall('POST', '/assessment/start', {
+    assessmentName: 'API Structure Test',
+    organizationName: 'Test Org',
+    contactEmail: 'structure-test@example.com',
+    industry: 'Technology'
+  });
+  
+  const assessmentId = createResult.data?.data?.assessmentId;
+  recordTest('API Structure', 'Create assessment for structure tests', createResult.success && !!assessmentId);
+
+  if (!assessmentId) {
+    log('  ⚠️  Skipping API structure tests', colors.yellow);
+    return;
+  }
+
+  // Add some responses
+  await apiCall('POST', `/assessment/${assessmentId}/save-progress`, {
+    questionId: 'env_standardization',
+    perspectiveId: 'current_state',
+    value: '3',
+    editorEmail: 'test@example.com'
+  });
+  
+  await apiCall('POST', `/assessment/${assessmentId}/save-progress`, {
+    questionId: 'env_standardization',
+    perspectiveId: 'future_state',
+    value: '4',
+    editorEmail: 'test@example.com'
+  });
+  
+  await apiCall('POST', `/assessment/${assessmentId}/save-progress`, {
+    questionId: 'env_standardization',
+    perspectiveId: 'technical_pain',
+    value: ['security_gaps'],
+    editorEmail: 'test@example.com'
+  });
+
+  await delay(1500);
+
+  // Test 29: Pillar results API returns proper structure
+  const pillarResult = await apiCall('GET', `/assessment/${assessmentId}/pillar/platform_governance/results`);
+  const hasPillarDetails = pillarResult.data?.data?.pillarDetails !== undefined;
+  recordTest('API Structure', 'Pillar results has pillarDetails field', hasPillarDetails);
+
+  // Test 30: Pillar results has recommendations (not painPointNames)
+  const hasRecommendations = pillarResult.data?.data?.recommendations !== undefined;
+  recordTest('API Structure', 'Pillar results has recommendations array', hasRecommendations);
+
+  // Test 31: Recommendations have correct structure (Bug #4 fix)
+  if (pillarResult.data?.data?.recommendations && pillarResult.data.data.recommendations.length > 0) {
+    const rec = pillarResult.data.data.recommendations[0];
+    const hasTitle = rec.title !== undefined;
+    const hasActions = rec.actions !== undefined;
+    const hasImpact = rec.impact !== undefined;
+    const structureValid = hasTitle && hasActions && hasImpact;
+    
+    recordTest('API Structure', 'Recommendations have title, actions, impact (not solution, painPointNames)', 
+      structureValid,
+      `Has title: ${hasTitle}, actions: ${hasActions}, impact: ${hasImpact}`);
+    
+    // Test 32: Actions is an array
+    const actionsIsArray = Array.isArray(rec.actions);
+    recordTest('API Structure', 'Recommendation actions is an array', actionsIsArray,
+      `Type: ${typeof rec.actions}, isArray: ${actionsIsArray}`);
+  } else {
+    recordTest('API Structure', 'Recommendations have proper structure', false, 
+      'No recommendations returned');
+  }
+
+  // Test 33: Pain point recommendations exist
+  const hasPainPointRecs = pillarResult.data?.data?.painPointRecommendations !== undefined;
+  recordTest('API Structure', 'Pillar results has painPointRecommendations', hasPainPointRecs);
+
+  // Test 34: Overall results structure
+  const overallResult = await apiCall('GET', `/assessment/${assessmentId}/results`);
+  const hasOverall = overallResult.data?.data?.overall !== undefined;
+  recordTest('API Structure', 'Overall results has overall field', hasOverall);
+
+  // Test 35: CategoryDetails structure
+  const hasCategoryDetails = overallResult.data?.data?.categoryDetails !== undefined;
+  recordTest('API Structure', 'Overall results has categoryDetails', hasCategoryDetails);
+}
+
+// ============================================================================
+// TEST CATEGORY 8: EDGE CASES & ERROR HANDLING
 // ============================================================================
 async function testEdgeCasesAndErrorHandling() {
   log('\n' + '='.repeat(80), colors.bright);
   log('TEST CATEGORY 7: EDGE CASES & ERROR HANDLING', colors.bright + colors.cyan);
   log('='.repeat(80), colors.bright);
 
-  // Test 24: Get non-existent assessment
+  // Test 36: Get non-existent assessment
   const notFound = await apiCall('GET', '/assessment/non-existent-id/status');
   recordTest('Edge Cases', 'Non-existent assessment returns 404', notFound.status === 404);
 
-  // Test 25: Save progress to non-existent assessment
+  // Test 37: Save progress to non-existent assessment
   const saveToNonExistent = await apiCall('POST', '/assessment/non-existent-id/save-progress', {
     questionId: 'test',
     perspectiveId: 'current_state',
@@ -494,7 +586,7 @@ async function testEdgeCasesAndErrorHandling() {
   });
   recordTest('Edge Cases', 'Save to non-existent assessment fails gracefully', !saveToNonExistent.success);
 
-  // Test 26: Get results for non-existent pillar
+  // Test 38: Get results for non-existent pillar
   const createResult = await apiCall('POST', '/assessment/start', {
     assessmentName: 'Edge Test',
     organizationName: 'Test Org',
@@ -508,7 +600,7 @@ async function testEdgeCasesAndErrorHandling() {
     recordTest('Edge Cases', 'Non-existent pillar returns 404', badPillar.status === 404);
   }
 
-  // Test 27: Skip a question
+  // Test 39: Skip a question
   if (assessmentId) {
     const skipResult = await apiCall('POST', `/assessment/${assessmentId}/save-progress`, {
       questionId: 'env_standardization',
@@ -518,7 +610,7 @@ async function testEdgeCasesAndErrorHandling() {
     recordTest('Edge Cases', 'Skip question works', skipResult.success);
   }
 
-  // Test 28: Save with invalid score value (should still save as string)
+  // Test 40: Save with invalid score value (should still save as string)
   if (assessmentId) {
     const invalidScore = await apiCall('POST', `/assessment/${assessmentId}/save-progress`, {
       questionId: 'scaling_effectiveness',
@@ -561,6 +653,7 @@ async function runAllTests() {
     await testSaveProgressAndPersistence();
     await testPartialAssessmentUpdates();
     await testFullAssessmentConsistency();
+    await testApiResponseStructure();
     await testEdgeCasesAndErrorHandling();
   } catch (error) {
     log(`\n❌ FATAL ERROR: ${error.message}`, colors.red + colors.bright);
