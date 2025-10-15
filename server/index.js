@@ -8,6 +8,7 @@ const assessmentFramework = require('./data/assessmentFramework');
 const RecommendationEngine = require('./services/recommendationEngine');
 const AdaptiveRecommendationEngine = require('./services/adaptiveRecommendationEngine');
 const LiveDataEnhancer = require('./services/liveDataEnhancer');
+const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const StorageAdapter = require('./utils/storageAdapter');
 
 const app = express();
@@ -65,6 +66,7 @@ const assessments = new StorageAdapter(dataFilePath);
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
 const liveDataEnhancer = new LiveDataEnhancer();
+const openAIContentGenerator = new OpenAIContentGenerator();
 
 // Initialize storage asynchronously
 let storageReady = false;
@@ -762,41 +764,18 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     console.log(`Total areas with responses: ${areasWithResponses.length}`);
     
-    // Generate ADAPTIVE recommendations (uses all inputs + latest features)
+    // Generate content using OpenAI (dynamically generates ALL content based on assessment data)
     let recommendations;
     if (hasAnyResponses) {
-      const areaIdsWithResponses = areasWithResponses.map(a => a.id);
+      console.log('🤖 Generating content using OpenAI for overall assessment');
+      console.log('Sending ALL assessment data: Current state, Future state, Pain points, Comments');
       
-      console.log('🎯 Generating ADAPTIVE recommendations for overall assessment');
-      console.log('Using: Current state, Future state, Pain points, and Comments');
+      // Use OpenAI to generate fresh content on every request
+      recommendations = await openAIContentGenerator.generateAssessmentContent(assessment, null);
       
-      recommendations = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
-        assessment.responses, 
-        areaIdsWithResponses.length > 0 ? areaIdsWithResponses : assessment.completedCategories
-      );
-      console.log('✅ Generated ADAPTIVE recommendations successfully');
-      console.log('Pain point recommendations:', recommendations.painPointRecommendations.length);
-      console.log('Gap-based actions:', recommendations.gapBasedActions.length);
-      console.log('Comment insights:', recommendations.commentBasedInsights.length);
-      
-      // Enhance with live data if enabled
-      if (process.env.USE_LIVE_DATA === 'true') {
-        console.log('🔄 Enhancing overall results with live data...');
-        try {
-          recommendations = await liveDataEnhancer.enhanceRecommendations(
-            recommendations,
-            {
-              currentScore: recommendations.overall.currentScore,
-              painPoints: recommendations.painPointRecommendations,
-              gaps: recommendations.gapBasedActions
-            }
-          );
-          console.log('✅ Live data enhancement completed for overall assessment');
-        } catch (error) {
-          console.error('❌ Live data enhancement failed:', error);
-          console.log('⚠️  Continuing with base recommendations');
-        }
-      }
+      console.log('✅ OpenAI content generation completed');
+      console.log('Overall scores:', recommendations.overall);
+      console.log('Recommendations:', recommendations.prioritizedActions?.length || 0);
     } else {
       // Provide default empty recommendations structure
       recommendations = {
@@ -901,9 +880,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
           gap: hasResponses ? categoryDetails[area.id]?.gap : null
         };
       }),
-      _engineType: 'adaptive',
-      _liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
-      _liveDataSource: recommendations.whatsNew?.lastUpdated ? 'active' : 'disabled'
+      _engineType: 'openai',
+      _contentSource: 'openai-generated'
     };
 
     // Cache results
@@ -1120,68 +1098,32 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
     
     console.log(`Found ${pillarResponses.length} responses for pillar ${pillarId}`);
 
-    console.log(`🎯 Generating ADAPTIVE results for pillar: ${pillarId}`);
-    console.log('Using: Current state, Future state, Pain points, and Comments');
+    console.log(`🤖 Generating content using OpenAI for pillar: ${pillarId}`);
+    console.log('Sending ALL assessment data for this pillar to OpenAI');
 
-    // Generate ADAPTIVE recommendations for this specific pillar
-    let adaptiveResults = adaptiveRecommendationEngine.generateAdaptiveRecommendations(
-      assessment.responses, 
-      [pillarId] // Only analyze this pillar
-    );
+    // Use OpenAI to generate fresh content for this specific pillar
+    let pillarResults = await openAIContentGenerator.generateAssessmentContent(assessment, pillarId);
 
-    console.log('✅ Adaptive recommendations generated for pillar:', pillarId);
+    console.log('✅ OpenAI pillar content generation completed:', pillarId);
 
-    // Ensure areaScores exists
-    if (!adaptiveResults.areaScores) {
-      adaptiveResults.areaScores = {};
-    }
-
-    // Enhance with live data if enabled
-    if (process.env.USE_LIVE_DATA === 'true') {
-      console.log('🔄 Enhancing pillar results with live data...');
-      try {
-        adaptiveResults = await liveDataEnhancer.enhanceRecommendations(
-          adaptiveResults,
-          {
-            currentScore: adaptiveResults.areaScores[pillarId]?.current || 0,
-            painPoints: adaptiveResults.painPointRecommendations.filter(p => p.pillar === pillarId),
-            gaps: adaptiveResults.gapBasedActions.filter(g => g.pillar === pillarId),
-            pillarId: pillarId
-          }
-        );
-        console.log('✅ Live data enhancement completed for pillar');
-      } catch (error) {
-        console.error('❌ Live data enhancement failed:', error);
-        console.log('⚠️  Continuing with base recommendations');
-      }
-    }
-
-    // Calculate pillar-specific scores (with safety checks)
-    const areaScore = adaptiveResults.areaScores[pillarId] || { current: 0, future: 0 };
-    const currentScore = areaScore.current || 0;
-    const futureScore = areaScore.future || 0;
-    const gap = futureScore - currentScore;
+    // Extract scores from the pillar results
+    const currentScore = pillarResults.pillar.currentScore || 0;
+    const futureScore = pillarResults.pillar.futureScore || 0;
+    const gap = pillarResults.pillar.gap || 0;
     
-    // Get pillar details
-    const roundedScore = Math.round(currentScore);
+    // Use pillar details from OpenAI
     const pillarDetails = {
       id: pillar.id,
       name: pillar.name,
       description: pillar.description,
-      score: roundedScore,
+      score: Math.round(currentScore),
       currentScore: Math.round(currentScore),
       futureScore: Math.round(futureScore),
       gap: Math.round(gap),
-      maturityLevel: adaptiveRecommendationEngine.getMaturityLevel(currentScore),
+      maturityLevel: pillarResults.pillar.level,
       dimensionsCompleted: pillar.dimensions.length,
       questionsAnswered: pillar.dimensions.reduce((total, dim) => total + (dim.questions?.length || 0), 0)
     };
-
-    // Filter recommendations for this specific pillar
-    const pillarPainPoints = adaptiveResults.painPointRecommendations.filter(p => p.pillar === pillarId);
-    const pillarGapActions = adaptiveResults.gapBasedActions.filter(g => g.pillar === pillarId);
-    const pillarCommentInsights = adaptiveResults.commentBasedInsights.filter(c => c.pillar === pillarId);
-    const pillarPrioritizedActions = adaptiveResults.prioritizedActions.filter(a => a.pillar === pillarId);
 
     res.json({
       success: true,
@@ -1189,16 +1131,17 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
         assessmentId: id,
         pillarId,
         pillarDetails,
-        painPointRecommendations: pillarPainPoints,
-        gapBasedActions: pillarGapActions,
-        commentBasedInsights: pillarCommentInsights,
-        prioritizedActions: pillarPrioritizedActions,
-        whatsNew: adaptiveResults.whatsNew, // Latest Databricks features
+        summary: pillarResults.summary || '',
+        recommendations: pillarResults.recommendations || [],
+        databricksFeatures: pillarResults.databricksFeatures || [],
+        painPointRecommendations: pillarResults.painPointRecommendations || [],
+        gapBasedActions: pillarResults.gapBasedActions || [],
+        commentBasedInsights: pillarResults.commentBasedInsights || [],
+        prioritizedActions: pillarResults.recommendations || [],
         generatedAt: new Date().toISOString(),
         isPillarSpecific: true,
-        _engineType: 'adaptive',
-        _liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
-        _liveDataSource: adaptiveResults.whatsNew?.lastUpdated ? 'active' : 'disabled'
+        _engineType: 'openai',
+        _contentSource: 'openai-generated'
       }
     });
   } catch (error) {
