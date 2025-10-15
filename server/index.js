@@ -933,7 +933,12 @@ app.use((err, req, res, next) => {
 // Get all assessments (for past assessments management)
 app.get('/api/assessments', async (req, res) => {
   try {
+    console.log('📋 Fetching all assessments...');
+    console.log('Storage type:', assessments.getStorageType());
     const allAssessments = await assessments.values(); // Await the async call
+    console.log('📊 Retrieved assessments:', allAssessments ? allAssessments.length : 'null');
+    console.log('First assessment:', allAssessments && allAssessments[0] ? JSON.stringify(allAssessments[0]).substring(0, 200) : 'none');
+    
     const assessmentsList = allAssessments.map(assessment => ({
       id: assessment.id,
       organizationName: assessment.organizationName,
