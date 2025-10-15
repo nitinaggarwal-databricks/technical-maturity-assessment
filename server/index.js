@@ -672,6 +672,14 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 // Generate assessment results and recommendations (ADAPTIVE with live data)
 app.get('/api/assessment/:id/results', async (req, res) => {
   try {
+    // CRITICAL: Prevent caching of dynamic results
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+
     const { id } = req.params;
     const assessment = await assessments.get(id);
 
@@ -1067,6 +1075,14 @@ app.delete('/api/assessment/:id', async (req, res) => {
 // Get pillar-specific ADAPTIVE results (uses all inputs + latest features)
 app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
   try {
+    // CRITICAL: Prevent caching of dynamic pillar results
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+
     const { id, pillarId } = req.params;
     const assessment = await assessments.get(id);
 
