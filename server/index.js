@@ -401,6 +401,9 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
       assessment.completedAt = new Date().toISOString();
     }
 
+    // CRITICAL: Clear cached results when category is submitted
+    delete assessment.results;
+
     await assessments.set(id, assessment);
 
     res.json({
@@ -556,6 +559,10 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
 
     // Update last saved timestamp
     assessment.lastSaved = new Date().toISOString();
+    
+    // CRITICAL: Clear cached results when responses change
+    delete assessment.results;
+    
     await assessments.set(id, assessment);
 
     res.json({
