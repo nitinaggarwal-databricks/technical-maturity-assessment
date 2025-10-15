@@ -758,14 +758,14 @@
           "id": "platform_governance",
           "name": "🧱 Platform",
           "description": "Assess how well the Databricks foundation is secured, scalable, and governed.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -774,14 +774,14 @@
           "id": "data_engineering",
           "name": "💾 Data",
           "description": "Evaluate how efficiently data is ingested, transformed, and managed within Databricks.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -790,14 +790,14 @@
           "id": "analytics_bi",
           "name": "📊 Analytics",
           "description": "Assess how Databricks supports governed analytics, performance, and self-service access.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -806,14 +806,14 @@
           "id": "machine_learning",
           "name": "🧠 ML",
           "description": "Understand how Databricks is leveraged for classical and predictive ML use cases.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 3,
+          "currentScore": 3,
+          "futureScore": 4,
+          "gap": 1,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -822,14 +822,14 @@
           "id": "generative_ai",
           "name": "🤖 GenAI",
           "description": "Evaluate readiness to operationalize GenAI and agent-based intelligence within Databricks.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -838,14 +838,14 @@
           "id": "operational_excellence",
           "name": "🚀 Adoption",
           "description": "Measure organizational readiness, adoption velocity, and realized value from Databricks.",
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0,
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1,
           "level": {
-            "level": "Initial",
-            "description": "Ad-hoc processes, limited capabilities",
-            "color": "#ff4444"
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
           },
           "weight": 0.16666666666666666,
           "isPartial": false
@@ -1589,10 +1589,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1
         },
         {
           "id": "data_engineering",
@@ -1600,10 +1600,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2
         },
         {
           "id": "analytics_bi",
@@ -1611,10 +1611,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1
         },
         {
           "id": "machine_learning",
@@ -1622,10 +1622,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 3,
+          "currentScore": 3,
+          "futureScore": 4,
+          "gap": 1
         },
         {
           "id": "generative_ai",
@@ -1633,10 +1633,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2
         },
         {
           "id": "operational_excellence",
@@ -1644,10 +1644,10 @@
           "completed": true,
           "hasResponses": true,
           "isPartial": false,
-          "score": 0,
-          "currentScore": 0,
-          "futureScore": 0,
-          "gap": 0
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1
         }
       ],
       "_engineType": "adaptive",
