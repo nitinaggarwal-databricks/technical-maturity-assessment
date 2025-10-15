@@ -227,6 +227,7 @@ class AdaptiveRecommendationEngine {
         level: assessmentFramework.maturityLevels[Math.max(1, Math.min(5, overallScore))],
         summary: this.generateAdaptiveSummary(areaScores, painPointAnalysis, commentInsights)
       },
+      areaScores: areaScores, // CRITICAL: Include area scores for pillar-level results
       categories: {},
       painPointRecommendations: this.generatePainPointRecommendations(painPointAnalysis),
       gapBasedActions: this.generateGapBasedActions(areaGaps, areaScores),

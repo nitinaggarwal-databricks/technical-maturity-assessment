@@ -1,0 +1,3808 @@
+{
+  "26bb28c0-f258-460b-9fbe-a0f54c4fe502": {
+    "id": "26bb28c0-f258-460b-9fbe-a0f54c4fe502",
+    "organizationName": "Not specified",
+    "contactEmail": "test@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "Testing Dimension Display",
+    "assessmentDescription": "Verifying pillar and dimension names show correctly",
+    "startedAt": "2025-10-09T07:01:13.364Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "results": {
+      "assessmentInfo": {
+        "id": "26bb28c0-f258-460b-9fbe-a0f54c4fe502",
+        "organizationName": "Not specified",
+        "contactEmail": "test@databricks.com",
+        "industry": "Not specified",
+        "startedAt": "2025-10-09T07:01:13.364Z",
+        "isPartialAssessment": true,
+        "completedPillars": 0,
+        "totalPillars": 6,
+        "pillarsWithResponses": 0
+      },
+      "overallScore": 0,
+      "overallLevel": {
+        "level": "Initial",
+        "description": "Ad-hoc processes, limited capabilities",
+        "color": "#ff4444"
+      },
+      "summary": "No responses yet. Start answering questions to see your maturity assessment results.",
+      "categoryDetails": {},
+      "recommendations": {},
+      "prioritizedActions": [],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [],
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform & Governance",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data Engineering & Integration",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics & BI Modernization",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 Machine Learning & MLOps",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 Generative AI & Agentic Capabilities",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Operational Excellence & Adoption",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        }
+      ]
+    }
+  },
+  "5b64e00b-f818-4f43-b840-8c8b6f9e754d": {
+    "id": "5b64e00b-f818-4f43-b840-8c8b6f9e754d",
+    "organizationName": "Not specified",
+    "contactEmail": "nitinaggarwal12@gmail.com",
+    "industry": "Not specified",
+    "assessmentName": "Amgen",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-10T03:26:43.424Z",
+    "status": "completed",
+    "responses": {
+      "env_standardization_current_state": 1,
+      "env_standardization_future_state": 2,
+      "env_standardization_technical_pain": [
+        "poor_isolation",
+        "deployment_issues",
+        "resource_conflicts",
+        "inconsistent_configs",
+        "manual_provisioning"
+      ],
+      "env_standardization_business_pain": [
+        "team_bottlenecks",
+        "quality_issues",
+        "compliance_risks",
+        "slow_deployment",
+        "environment_costs"
+      ],
+      "scaling_effectiveness_current_state": 2,
+      "scaling_effectiveness_future_state": 4,
+      "scaling_effectiveness_technical_pain": [
+        "complex_scaling",
+        "infrastructure_limits"
+      ],
+      "scaling_effectiveness_business_pain": [
+        "team_blocking",
+        "competitive_disadvantage"
+      ],
+      "auth_consistency_current_state": 1,
+      "auth_consistency_future_state": 3,
+      "auth_consistency_technical_pain": [
+        "security_gaps",
+        "audit_trails"
+      ],
+      "auth_consistency_business_pain": [
+        "access_delays",
+        "compliance_violations",
+        "user_frustration"
+      ],
+      "security_controls_current_state": 1,
+      "security_controls_future_state": 2,
+      "security_controls_technical_pain": [
+        "encryption_gaps",
+        "monitoring_blind_spots"
+      ],
+      "security_controls_business_pain": [
+        "audit_failures",
+        "business_disruption"
+      ],
+      "governance_centralization_current_state": 1,
+      "governance_centralization_future_state": 2,
+      "governance_centralization_technical_pain": [
+        "manual_processes"
+      ],
+      "governance_centralization_business_pain": [
+        "operational_inefficiency"
+      ],
+      "compliance_management_current_state": 2,
+      "compliance_management_future_state": 3,
+      "compliance_management_business_pain": [
+        "business_risk",
+        "audit_costs"
+      ],
+      "compliance_management_technical_pain": [
+        "change_tracking",
+        "reporting_gaps"
+      ],
+      "visibility_comprehensiveness_current_state": 2,
+      "visibility_comprehensiveness_future_state": 4,
+      "visibility_comprehensiveness_technical_pain": [
+        "tool_fragmentation",
+        "performance_impact"
+      ],
+      "visibility_comprehensiveness_business_pain": [
+        "resource_waste",
+        "sla_breaches"
+      ],
+      "proactive_monitoring_current_state": 1,
+      "proactive_monitoring_future_state": 2,
+      "proactive_monitoring_technical_pain": [
+        "alert_fatigue",
+        "root_cause_analysis"
+      ],
+      "proactive_monitoring_business_pain": [
+        "operational_costs",
+        "team_burnout"
+      ],
+      "cost_tracking_current_state": 3,
+      "cost_tracking_future_state": 3,
+      "cost_tracking_technical_pain": [
+        "reporting_complexity",
+        "tagging_inconsistency"
+      ],
+      "cost_tracking_business_pain": [
+        "no_accountability",
+        "inefficient_spending"
+      ],
+      "optimization_practices_current_state": 2,
+      "optimization_practices_future_state": 4,
+      "optimization_practices_technical_pain": [
+        "automation_gaps",
+        "performance_impact",
+        "tool_integration"
+      ],
+      "optimization_practices_business_pain": [
+        "team_conflicts",
+        "roi_unclear",
+        "competitive_disadvantage"
+      ],
+      "ingestion_automation_current_state": 2,
+      "ingestion_automation_future_state": 3,
+      "ingestion_automation_technical_pain": [
+        "pipeline_maintenance",
+        "error_handling",
+        "performance_bottlenecks"
+      ],
+      "ingestion_automation_business_pain": [
+        "business_agility",
+        "missed_opportunities"
+      ],
+      "ingestion_resilience_current_state": 1,
+      "ingestion_resilience_future_state": 4,
+      "ingestion_resilience_technical_pain": [
+        "data_quality_issues",
+        "manual_intervention",
+        "monitoring_gaps"
+      ],
+      "ingestion_resilience_business_pain": [
+        "business_disruption",
+        "operational_overhead",
+        "sla_misses",
+        "data_outages"
+      ],
+      "data_layer_structure_current_state": 2,
+      "data_layer_structure_future_state": 4,
+      "data_layer_structure_technical_pain": [
+        "performance_issues",
+        "metadata_management"
+      ],
+      "data_layer_structure_business_pain": [
+        "compliance_risk",
+        "data_trust"
+      ],
+      "architecture_adaptability_current_state": 2,
+      "architecture_adaptability_future_state": 4,
+      "architecture_adaptability_technical_pain": [
+        "api_constraints"
+      ],
+      "architecture_adaptability_business_pain": [
+        "competitive_lag"
+      ],
+      "pipeline_reliability_current_state": 1,
+      "pipeline_reliability_future_state": 4,
+      "pipeline_reliability_technical_pain": [
+        "scheduling_conflicts",
+        "error_propagation"
+      ],
+      "pipeline_reliability_business_pain": [
+        "data_delays",
+        "sla_misses",
+        "operational_overhead",
+        "business_impact",
+        "team_productivity"
+      ],
+      "pipeline_lifecycle_current_state": 3,
+      "pipeline_lifecycle_future_state": 3,
+      "pipeline_lifecycle_technical_pain": [
+        "deployment_complexity",
+        "testing_gaps",
+        "version_control"
+      ],
+      "pipeline_lifecycle_business_pain": [
+        "quality_issues",
+        "slow_releases"
+      ],
+      "quality_processes_current_state": 1,
+      "quality_processes_future_state": 3,
+      "quality_processes_technical_pain": [
+        "recovery_processes"
+      ],
+      "quality_processes_business_pain": [
+        "trust_erosion"
+      ],
+      "quality_monitoring_current_state": 2,
+      "quality_monitoring_future_state": 4,
+      "quality_monitoring_technical_pain": [
+        "stakeholder_access",
+        "real_time_gaps"
+      ],
+      "quality_monitoring_business_pain": [
+        "reputation_risk",
+        "regulatory_issues"
+      ],
+      "pipeline_optimization_current_state": 1,
+      "pipeline_optimization_future_state": 3,
+      "pipeline_optimization_technical_pain": [
+        "scaling_issues"
+      ],
+      "pipeline_optimization_business_pain": [
+        "cost_inefficiency",
+        "business_delays"
+      ],
+      "dynamic_scaling_current_state": 1,
+      "dynamic_scaling_future_state": 3,
+      "dynamic_scaling_technical_pain": [
+        "scaling_complexity"
+      ],
+      "dynamic_scaling_business_pain": [
+        "operational_overhead"
+      ],
+      "response_times_current_state": 1,
+      "response_times_future_state": 5,
+      "response_times_technical_pain": [
+        "resource_contention",
+        "optimization_complexity",
+        "slow_queries",
+        "caching_issues",
+        "monitoring_gaps"
+      ],
+      "response_times_business_pain": [
+        "productivity_loss",
+        "competitive_disadvantage",
+        "user_frustration",
+        "delayed_decisions"
+      ],
+      "optimization_approach_current_state": 1,
+      "optimization_approach_future_state": 4,
+      "optimization_approach_technical_pain": [
+        "complex_queries",
+        "optimization_expertise",
+        "tooling_limitations",
+        "performance_regression",
+        "resource_planning"
+      ],
+      "optimization_approach_business_pain": [
+        "user_complaints",
+        "high_costs"
+      ],
+      "semantic_consistency_current_state": 2,
+      "semantic_consistency_future_state": 3,
+      "semantic_consistency_technical_pain": [
+        "metadata_management",
+        "version_control"
+      ],
+      "semantic_consistency_business_pain": [
+        "decision_conflicts",
+        "compliance_risk"
+      ],
+      "dataset_discovery_current_state": 2,
+      "dataset_discovery_future_state": 3,
+      "dataset_discovery_technical_pain": [
+        "access_complexity",
+        "metadata_gaps"
+      ],
+      "dataset_discovery_business_pain": [
+        "analyst_frustration",
+        "missed_opportunities"
+      ],
+      "tool_integration_current_state": 2,
+      "tool_integration_future_state": 3,
+      "tool_integration_technical_pain": [
+        "performance_impact",
+        "security_gaps"
+      ],
+      "tool_integration_business_pain": [
+        "user_frustration",
+        "tool_proliferation"
+      ],
+      "reporting_governance_current_state": 3,
+      "reporting_governance_future_state": 4,
+      "reporting_governance_technical_pain": [
+        "approval_workflows",
+        "change_management"
+      ],
+      "reporting_governance_business_pain": [
+        "report_proliferation",
+        "user_confusion"
+      ],
+      "user_empowerment_current_state": 1,
+      "user_empowerment_future_state": 2,
+      "user_empowerment_technical_pain": [
+        "data_access"
+      ],
+      "user_empowerment_business_pain": [
+        "low_adoption"
+      ],
+      "governance_balance_current_state": 2,
+      "governance_balance_future_state": 3,
+      "governance_balance_technical_pain": [
+        "audit_trails"
+      ],
+      "governance_balance_business_pain": [
+        "data_quality_issues"
+      ],
+      "data_sharing_current_state": 2,
+      "data_sharing_future_state": 3,
+      "data_sharing_technical_pain": [
+        "version_management"
+      ],
+      "data_sharing_business_pain": [
+        "manual_overhead",
+        "security_breaches"
+      ],
+      "cross_domain_analytics_current_state": 1,
+      "cross_domain_analytics_future_state": 3,
+      "cross_domain_analytics_technical_pain": [
+        "schema_conflicts"
+      ],
+      "cross_domain_analytics_business_pain": [
+        "duplicate_efforts"
+      ],
+      "experiment_tracking_systematic_current_state": 2,
+      "experiment_tracking_systematic_future_state": 3,
+      "experiment_tracking_systematic_technical_pain": [
+        "metadata_loss",
+        "result_comparison",
+        "version_control"
+      ],
+      "experiment_tracking_systematic_business_pain": [
+        "compliance_risk",
+        "knowledge_loss",
+        "scaling_challenges"
+      ],
+      "model_reproducibility_current_state": 3,
+      "model_reproducibility_future_state": 4,
+      "model_reproducibility_technical_pain": [
+        "container_complexity"
+      ],
+      "model_reproducibility_business_pain": [
+        "audit_failures",
+        "productivity_loss"
+      ],
+      "deployment_automation_current_state": 3,
+      "deployment_automation_future_state": 4,
+      "deployment_automation_technical_pain": [
+        "approval_delays"
+      ],
+      "deployment_automation_business_pain": [
+        "limited_innovation"
+      ],
+      "model_monitoring_retraining_current_state": 3,
+      "model_monitoring_retraining_future_state": 3,
+      "model_monitoring_retraining_technical_pain": [
+        "retraining_complexity"
+      ],
+      "model_monitoring_retraining_business_pain": [
+        "reputation_damage"
+      ],
+      "feature_catalog_current_state": 5,
+      "feature_catalog_future_state": 5,
+      "feature_catalog_technical_pain": [
+        "consistency_problems",
+        "quality_concerns"
+      ],
+      "feature_catalog_business_pain": [
+        "lost_knowledge",
+        "scaling_limitations"
+      ],
+      "data_preparation_consistency_current_state": 2,
+      "data_preparation_consistency_future_state": 3,
+      "data_preparation_consistency_technical_pain": [
+        "validation_gaps"
+      ],
+      "data_preparation_consistency_business_pain": [
+        "maintenance_burden",
+        "collaboration_friction"
+      ],
+      "ownership_processes_current_state": 3,
+      "ownership_processes_future_state": 3,
+      "ownership_processes_technical_pain": [
+        "lack_documentation"
+      ],
+      "ownership_processes_business_pain": [
+        "delayed_deployment",
+        "quality_issues"
+      ],
+      "compliance_lineage_current_state": 3,
+      "compliance_lineage_future_state": 4,
+      "compliance_lineage_technical_pain": [
+        "compliance_gaps",
+        "tool_fragmentation"
+      ],
+      "compliance_lineage_business_pain": [
+        "lost_trust",
+        "business_restrictions"
+      ],
+      "production_delivery_current_state": 2,
+      "production_delivery_future_state": 3,
+      "production_delivery_technical_pain": [
+        "integration_complexity",
+        "monitoring_gaps"
+      ],
+      "production_delivery_business_pain": [
+        "unclear_impact",
+        "stakeholder_frustration"
+      ],
+      "scaling_use_cases_current_state": 3,
+      "scaling_use_cases_future_state": 4,
+      "scaling_use_cases_technical_pain": [
+        "onboarding_complexity"
+      ],
+      "scaling_use_cases_business_pain": [
+        "resource_constraints",
+        "competitive_disadvantage",
+        "high_costs"
+      ],
+      "genai_alignment_current_state": 2,
+      "genai_alignment_future_state": 3,
+      "genai_alignment_technical_pain": [
+        "platform_gaps",
+        "integration_challenges"
+      ],
+      "genai_alignment_business_pain": [
+        "unclear_value",
+        "stakeholder_confusion"
+      ],
+      "genai_use_cases_current_state": 3,
+      "genai_use_cases_future_state": 4,
+      "genai_use_cases_technical_pain": [
+        "model_selection",
+        "proof_of_concept",
+        "unclear_requirements"
+      ],
+      "genai_use_cases_business_pain": [
+        "resource_allocation",
+        "competing_priorities"
+      ],
+      "data_landscape_readiness_current_state": 4,
+      "data_landscape_readiness_future_state": 5,
+      "data_landscape_readiness_technical_pain": [
+        "scaling_issues",
+        "chunking_strategies"
+      ],
+      "data_landscape_readiness_business_pain": [
+        "high_costs",
+        "delayed_value",
+        "user_frustration"
+      ],
+      "knowledge_governance_current_state": 2,
+      "knowledge_governance_future_state": 3,
+      "knowledge_governance_technical_pain": [
+        "source_tracking",
+        "version_control"
+      ],
+      "knowledge_governance_business_pain": [
+        "reputation_damage",
+        "user_adoption"
+      ],
+      "genai_capabilities_current_state": 2,
+      "genai_capabilities_future_state": 3,
+      "genai_capabilities_technical_pain": [
+        "context_management",
+        "prompt_engineering"
+      ],
+      "genai_capabilities_business_pain": [
+        "slow_development",
+        "competitive_gap"
+      ],
+      "integration_standardization_current_state": 2,
+      "integration_standardization_future_state": 3,
+      "integration_standardization_technical_pain": [
+        "maintenance_burden",
+        "security_concerns"
+      ],
+      "integration_standardization_business_pain": [
+        "quality_variance",
+        "technical_debt"
+      ],
+      "output_validation_current_state": 2,
+      "output_validation_future_state": 4,
+      "output_validation_technical_pain": [
+        "edge_cases",
+        "regression_detection"
+      ],
+      "output_validation_business_pain": [
+        "slow_releases",
+        "lost_trust"
+      ],
+      "performance_monitoring_current_state": 2,
+      "performance_monitoring_future_state": 3,
+      "performance_monitoring_technical_pain": [
+        "drift_tracking",
+        "alert_noise"
+      ],
+      "performance_monitoring_business_pain": [
+        "reputation_damage",
+        "reactive_mode",
+        "cost_overruns"
+      ],
+      "ethical_guardrails_current_state": 2,
+      "ethical_guardrails_future_state": 3,
+      "ethical_guardrails_technical_pain": [
+        "audit_trails"
+      ],
+      "ethical_guardrails_business_pain": [
+        "deployment_delays"
+      ],
+      "transparency_traceability_current_state": 3,
+      "transparency_traceability_future_state": 4,
+      "transparency_traceability_technical_pain": [
+        "audit_readiness",
+        "data_retention"
+      ],
+      "transparency_traceability_business_pain": [
+        "legal_exposure",
+        "trust_deficit"
+      ],
+      "coe_structure_current_state": 2,
+      "coe_structure_future_state": 3,
+      "coe_structure_technical_pain": [
+        "best_practices",
+        "support_gaps"
+      ],
+      "coe_structure_business_pain": [
+        "scaling_challenges",
+        "roi_impact"
+      ],
+      "coe_effectiveness_current_state": 2,
+      "coe_effectiveness_future_state": 3,
+      "coe_effectiveness_technical_pain": [
+        "unclear_impact",
+        "resource_constraints"
+      ],
+      "coe_effectiveness_business_pain": [
+        "initiative_failures",
+        "competitive_disadvantage"
+      ],
+      "collaboration_culture_current_state": 3,
+      "collaboration_culture_future_state": 4,
+      "collaboration_culture_technical_pain": [
+        "reinventing_wheel",
+        "learning_barriers"
+      ],
+      "collaboration_culture_business_pain": [
+        "talent_retention",
+        "inconsistent_quality"
+      ],
+      "asset_sharing_current_state": 3,
+      "asset_sharing_future_state": 4,
+      "asset_sharing_technical_pain": [
+        "versioning_issues",
+        "integration_challenges",
+        "discovery_difficulty"
+      ],
+      "asset_sharing_business_pain": [
+        "missed_synergies",
+        "limited_scaling"
+      ],
+      "enablement_programs_current_state": 2,
+      "enablement_programs_future_state": 4,
+      "enablement_programs_technical_pain": [
+        "assessment_gaps"
+      ],
+      "enablement_programs_business_pain": [
+        "hiring_challenges",
+        "dependency_bottlenecks",
+        "quality_issues",
+        "slow_productivity"
+      ],
+      "capability_introduction_current_state": 1,
+      "capability_introduction_future_state": 2,
+      "capability_introduction_technical_pain": [
+        "inconsistent_adoption"
+      ],
+      "capability_introduction_business_pain": [
+        "competitive_lag",
+        "poor_roi"
+      ],
+      "cost_value_linkage_current_state": 2,
+      "cost_value_linkage_future_state": 3,
+      "cost_value_linkage_technical_pain": [
+        "value_measurement",
+        "data_fragmentation"
+      ],
+      "cost_value_linkage_business_pain": [
+        "budget_justification",
+        "inefficient_spending"
+      ],
+      "usage_review_current_state": 3,
+      "usage_review_future_state": 4,
+      "usage_review_technical_pain": [
+        "optimization_complexity",
+        "delayed_action"
+      ],
+      "usage_review_business_pain": [
+        "budget_pressures",
+        "value_erosion"
+      ],
+      "capability_evaluation_current_state": 3,
+      "capability_evaluation_future_state": 4,
+      "capability_evaluation_technical_pain": [
+        "evaluation_resources",
+        "pilot_process",
+        "risk_aversion"
+      ],
+      "capability_evaluation_business_pain": [
+        "technical_debt",
+        "missed_opportunities",
+        "platform_underutilization"
+      ],
+      "feedback_incorporation_current_state": 2,
+      "feedback_incorporation_future_state": 3,
+      "feedback_incorporation_technical_pain": [
+        "prioritization_difficulty",
+        "action_tracking",
+        "communication_gaps"
+      ],
+      "feedback_incorporation_business_pain": [
+        "roadmap_misalignment",
+        "adoption_resistance"
+      ]
+    },
+    "completedCategories": [
+      "platform_governance",
+      "data_engineering",
+      "analytics_bi",
+      "machine_learning",
+      "generative_ai",
+      "operational_excellence"
+    ],
+    "currentCategory": "operational_excellence",
+    "lastSaved": "2025-10-13T23:28:24.859Z",
+    "completedAt": "2025-10-10T03:33:14.495Z",
+    "results": {
+      "assessmentInfo": {
+        "id": "5b64e00b-f818-4f43-b840-8c8b6f9e754d",
+        "assessmentName": "Amgen",
+        "assessmentDescription": "",
+        "organizationName": "Not specified",
+        "contactEmail": "nitinaggarwal12@gmail.com",
+        "industry": "Not specified",
+        "completedAt": "2025-10-10T03:33:14.495Z",
+        "startedAt": "2025-10-10T03:26:43.424Z",
+        "isPartialAssessment": false,
+        "completedPillars": 6,
+        "totalPillars": 6,
+        "pillarsWithResponses": 6,
+        "questionsAnswered": 60,
+        "totalQuestions": 60,
+        "completionPercentage": 100,
+        "editHistory": []
+      },
+      "overall": {
+        "currentScore": 2,
+        "futureScore": 3,
+        "gap": 1,
+        "level": {
+          "level": "Defined",
+          "description": "Structured approach with established processes",
+          "color": "#ffaa00"
+        },
+        "summary": "## STRATEGIC SITUATION & BUSINESS VALUE\n\n**Current Maturity:** Level 2 - Developing\nBasic implementation with some structure\n\n**Target Maturity:** Level 4 - Managed\nAdvanced capabilities with strong governance\n\n**Transformation Scope:** This 2-level gap represents significant ambition requiring focused investment and organizational commitment. Success will require executive sponsorship and dedicated resources.\n\n## CRITICAL CONSTRAINTS IMPACTING PERFORMANCE\n\n**Technical Pain Points:** 119 technical challenges identified that are blocking progress and limiting platform capabilities.\n**Business Pain Points:** 123 business impacts identified including productivity losses, cost inefficiencies, and competitive gaps.\n\n• 🧱 Platform: 22 technical issues requiring immediate attention\n• 🧱 Platform: 23 business impacts limiting value realization\n• 💾 Data: 19 technical issues requiring immediate attention\n• 💾 Data: 19 business impacts limiting value realization\n• 📊 Analytics: 22 technical issues requiring immediate attention\n\n## STRATEGIC ENABLERS & RECOMMENDED ACTIONS\n\n**Priority Focus Areas:**\n• **💾 Data**: Bridge 2-level gap (Current: 2 → Target: 4)\n• **📊 Analytics**: Bridge 2-level gap (Current: 2 → Target: 3)\n• **🧱 Platform**: Bridge 1-level gap (Current: 2 → Target: 3)\n\n**Next Steps:**\n• Review adaptive recommendations tailored to your specific pain points and gaps\n• Explore latest Databricks features that can address your challenges\n• Prioritize quick wins that deliver immediate value with minimal effort\n• Build a phased roadmap aligning platform evolution with business goals\n\n**Assessment Confidence:** Based on responses across 6 pillars with 0 detailed comments, providing high-quality insights for decision making."
+      },
+      "categoryDetails": {
+        "platform_governance": {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "description": "Assess how well the Databricks foundation is secured, scalable, and governed.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        },
+        "data_engineering": {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "description": "Evaluate how efficiently data is ingested, transformed, and managed within Databricks.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        },
+        "analytics_bi": {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "description": "Assess how Databricks supports governed analytics, performance, and self-service access.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        },
+        "machine_learning": {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "description": "Understand how Databricks is leveraged for classical and predictive ML use cases.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        },
+        "generative_ai": {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "description": "Evaluate readiness to operationalize GenAI and agent-based intelligence within Databricks.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        },
+        "operational_excellence": {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "description": "Measure organizational readiness, adoption velocity, and realized value from Databricks.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.16666666666666666,
+          "isPartial": false
+        }
+      },
+      "categories": {
+        "platform_governance": {
+          "name": "🧱 Platform",
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Strengthen Security Posture",
+              "actions": [
+                "Implement Unity Catalog for centralized governance",
+                "Enable audit logging and compliance monitoring",
+                "Deploy column and row-level security",
+                "Implement secrets management and credential vaulting"
+              ],
+              "impact": "Closes your identified security gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "high",
+              "title": "Close 1-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 3.",
+              "actions": [
+                "Assess current 🧱 Platform capabilities",
+                "Define roadmap from level 2 to level 3",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "4-6 months"
+            }
+          ]
+        },
+        "data_engineering": {
+          "name": "💾 Data",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 💾 Data capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            },
+            {
+              "priority": "critical",
+              "title": "Implement Data Quality Framework",
+              "actions": [
+                "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+                "Establish data validation checkpoints in pipelines",
+                "Implement automated data profiling and anomaly detection",
+                "Create data quality dashboards and alerts"
+              ],
+              "impact": "Addresses your reported data quality concerns directly",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "high",
+              "title": "Optimize Performance and Query Speed",
+              "actions": [
+                "Enable Photon engine for query acceleration",
+                "Implement Delta Lake optimization (Z-ordering, compaction)",
+                "Review and optimize cluster configurations",
+                "Implement caching strategies for frequently accessed data"
+              ],
+              "impact": "Resolves your performance bottlenecks",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "medium",
+              "title": "Enhance Monitoring and Observability",
+              "actions": [
+                "Deploy comprehensive monitoring dashboards",
+                "Implement alerting for critical metrics",
+                "Integrate with enterprise monitoring tools",
+                "Establish SLAs and SLO tracking"
+              ],
+              "impact": "Fills your monitoring gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            }
+          ]
+        },
+        "analytics_bi": {
+          "name": "📊 Analytics",
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 3.",
+              "actions": [
+                "Assess current 📊 Analytics capabilities",
+                "Define roadmap from level 2 to level 3",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            },
+            {
+              "priority": "critical",
+              "title": "Strengthen Security Posture",
+              "actions": [
+                "Implement Unity Catalog for centralized governance",
+                "Enable audit logging and compliance monitoring",
+                "Deploy column and row-level security",
+                "Implement secrets management and credential vaulting"
+              ],
+              "impact": "Closes your identified security gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "critical",
+              "title": "Implement Data Quality Framework",
+              "actions": [
+                "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+                "Establish data validation checkpoints in pipelines",
+                "Implement automated data profiling and anomaly detection",
+                "Create data quality dashboards and alerts"
+              ],
+              "impact": "Addresses your reported data quality concerns directly",
+              "rationale": "Addresses your reported business pain point",
+              "source": "business_pain_point"
+            },
+            {
+              "priority": "medium",
+              "title": "Enhance Monitoring and Observability",
+              "actions": [
+                "Deploy comprehensive monitoring dashboards",
+                "Implement alerting for critical metrics",
+                "Integrate with enterprise monitoring tools",
+                "Establish SLAs and SLO tracking"
+              ],
+              "impact": "Fills your monitoring gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "medium",
+              "title": "Improve Change Management",
+              "actions": [
+                "Establish clear adoption roadmap",
+                "Create executive sponsorship program",
+                "Deploy pilot projects for quick wins",
+                "Implement regular training and communication"
+              ],
+              "impact": "Addresses your change management challenges",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            }
+          ]
+        },
+        "machine_learning": {
+          "name": "🧠 ML",
+          "currentScore": 3,
+          "futureScore": 4,
+          "gap": 1,
+          "level": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "high",
+              "title": "Close 1-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 3 to 4.",
+              "actions": [
+                "Assess current 🧠 ML capabilities",
+                "Define roadmap from level 3 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "4-6 months"
+            },
+            {
+              "priority": "high",
+              "title": "Simplify Integration Architecture",
+              "actions": [
+                "Implement Databricks Partner Connect for common integrations",
+                "Standardize on REST APIs and streaming interfaces",
+                "Deploy integration templates and reusable connectors",
+                "Document integration patterns and best practices"
+              ],
+              "impact": "Reduces integration complexity you're experiencing",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "medium",
+              "title": "Enhance Monitoring and Observability",
+              "actions": [
+                "Deploy comprehensive monitoring dashboards",
+                "Implement alerting for critical metrics",
+                "Integrate with enterprise monitoring tools",
+                "Establish SLAs and SLO tracking"
+              ],
+              "impact": "Fills your monitoring gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            }
+          ]
+        },
+        "generative_ai": {
+          "name": "🤖 GenAI",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 1,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "high",
+              "title": "Close 1-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 🤖 GenAI capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "4-6 months"
+            }
+          ]
+        },
+        "operational_excellence": {
+          "name": "🚀 Adoption",
+          "currentScore": 2,
+          "futureScore": 3,
+          "gap": 1,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "recommendations": [
+            {
+              "priority": "high",
+              "title": "Close 1-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 3.",
+              "actions": [
+                "Assess current 🚀 Adoption capabilities",
+                "Define roadmap from level 2 to level 3",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "4-6 months"
+            }
+          ]
+        }
+      },
+      "painPointRecommendations": [
+        {
+          "priority": "critical",
+          "title": "Strengthen Security Posture",
+          "actions": [
+            "Implement Unity Catalog for centralized governance",
+            "Enable audit logging and compliance monitoring",
+            "Deploy column and row-level security",
+            "Implement secrets management and credential vaulting"
+          ],
+          "impact": "Closes your identified security gaps",
+          "frequency": 2,
+          "type": "technical"
+        },
+        {
+          "priority": "critical",
+          "title": "Implement Data Quality Framework",
+          "actions": [
+            "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+            "Establish data validation checkpoints in pipelines",
+            "Implement automated data profiling and anomaly detection",
+            "Create data quality dashboards and alerts"
+          ],
+          "impact": "Addresses your reported data quality concerns directly",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "medium",
+          "title": "Enhance Monitoring and Observability",
+          "actions": [
+            "Deploy comprehensive monitoring dashboards",
+            "Implement alerting for critical metrics",
+            "Integrate with enterprise monitoring tools",
+            "Establish SLAs and SLO tracking"
+          ],
+          "impact": "Fills your monitoring gaps",
+          "frequency": 3,
+          "type": "technical"
+        },
+        {
+          "priority": "high",
+          "title": "Optimize Performance and Query Speed",
+          "actions": [
+            "Enable Photon engine for query acceleration",
+            "Implement Delta Lake optimization (Z-ordering, compaction)",
+            "Review and optimize cluster configurations",
+            "Implement caching strategies for frequently accessed data"
+          ],
+          "impact": "Resolves your performance bottlenecks",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "medium",
+          "title": "Improve Change Management",
+          "actions": [
+            "Establish clear adoption roadmap",
+            "Create executive sponsorship program",
+            "Deploy pilot projects for quick wins",
+            "Implement regular training and communication"
+          ],
+          "impact": "Addresses your change management challenges",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "high",
+          "title": "Simplify Integration Architecture",
+          "actions": [
+            "Implement Databricks Partner Connect for common integrations",
+            "Standardize on REST APIs and streaming interfaces",
+            "Deploy integration templates and reusable connectors",
+            "Document integration patterns and best practices"
+          ],
+          "impact": "Reduces integration complexity you're experiencing",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "critical",
+          "title": "Implement Data Quality Framework",
+          "actions": [
+            "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+            "Establish data validation checkpoints in pipelines",
+            "Implement automated data profiling and anomaly detection",
+            "Create data quality dashboards and alerts"
+          ],
+          "impact": "Addresses your reported data quality concerns directly",
+          "frequency": 1,
+          "type": "technical"
+        }
+      ],
+      "gapBasedActions": [
+        {
+          "area": "💾 Data",
+          "areaId": "data_engineering",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 1.9,
+          "priority": "medium",
+          "title": "Bridge 1.9-level gap in 💾 Data",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "📊 Analytics",
+          "areaId": "analytics_bi",
+          "currentLevel": 2,
+          "targetLevel": 3,
+          "gap": 1.5999999999999999,
+          "priority": "medium",
+          "title": "Bridge 1.5999999999999999-level gap in 📊 Analytics",
+          "description": "You've indicated a desired improvement from level 2 to level 3. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "🧱 Platform",
+          "areaId": "platform_governance",
+          "currentLevel": 2,
+          "targetLevel": 3,
+          "gap": 1.2999999999999998,
+          "priority": "medium",
+          "title": "Bridge 1.2999999999999998-level gap in 🧱 Platform",
+          "description": "You've indicated a desired improvement from level 2 to level 3. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "🤖 GenAI",
+          "areaId": "generative_ai",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 1.1,
+          "priority": "medium",
+          "title": "Bridge 1.1-level gap in 🤖 GenAI",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "🚀 Adoption",
+          "areaId": "operational_excellence",
+          "currentLevel": 2,
+          "targetLevel": 3,
+          "gap": 1.1,
+          "priority": "medium",
+          "title": "Bridge 1.1-level gap in 🚀 Adoption",
+          "description": "You've indicated a desired improvement from level 2 to level 3. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "🧠 ML",
+          "areaId": "machine_learning",
+          "currentLevel": 3,
+          "targetLevel": 4,
+          "gap": 0.7000000000000002,
+          "priority": "low",
+          "title": "Bridge 0.7000000000000002-level gap in 🧠 ML",
+          "description": "You've indicated a desired improvement from level 3 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        }
+      ],
+      "commentBasedInsights": [],
+      "prioritizedActions": [
+        {
+          "priority": "critical",
+          "title": "Strengthen Security Posture",
+          "actions": [
+            "Implement Unity Catalog for centralized governance",
+            "Enable audit logging and compliance monitoring",
+            "Deploy column and row-level security",
+            "Implement secrets management and credential vaulting"
+          ],
+          "impact": "Closes your identified security gaps",
+          "frequency": 2,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "critical",
+          "title": "Implement Data Quality Framework",
+          "actions": [
+            "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+            "Establish data validation checkpoints in pipelines",
+            "Implement automated data profiling and anomaly detection",
+            "Create data quality dashboards and alerts"
+          ],
+          "impact": "Addresses your reported data quality concerns directly",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "high",
+          "title": "Optimize Performance and Query Speed",
+          "actions": [
+            "Enable Photon engine for query acceleration",
+            "Implement Delta Lake optimization (Z-ordering, compaction)",
+            "Review and optimize cluster configurations",
+            "Implement caching strategies for frequently accessed data"
+          ],
+          "impact": "Resolves your performance bottlenecks",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 💾 Data",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 📊 Analytics",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "medium",
+          "title": "Enhance Monitoring and Observability",
+          "actions": [
+            "Deploy comprehensive monitoring dashboards",
+            "Implement alerting for critical metrics",
+            "Integrate with enterprise monitoring tools",
+            "Establish SLAs and SLO tracking"
+          ],
+          "impact": "Fills your monitoring gaps",
+          "frequency": 3,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "medium",
+          "title": "Improve Change Management",
+          "actions": [
+            "Establish clear adoption roadmap",
+            "Create executive sponsorship program",
+            "Deploy pilot projects for quick wins",
+            "Implement regular training and communication"
+          ],
+          "impact": "Addresses your change management challenges",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        }
+      ],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [],
+        "mediumTerm": [],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [],
+      "executiveSummary": {
+        "currentState": {
+          "score": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "description": "Your organization is currently at maturity level 2"
+        },
+        "desiredState": {
+          "score": 3,
+          "level": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "description": "Your target is to reach maturity level 3"
+        },
+        "gap": {
+          "levels": 1,
+          "description": "Incremental improvement needed",
+          "effort": "Medium"
+        },
+        "keyPainPoints": {
+          "technical": [
+            {
+              "painPoint": "version_control",
+              "count": 4,
+              "description": "version_control"
+            },
+            {
+              "painPoint": "audit_trails",
+              "count": 3,
+              "description": "audit_trails"
+            },
+            {
+              "painPoint": "monitoring_gaps",
+              "count": 3,
+              "description": "Enhance Monitoring and Observability"
+            },
+            {
+              "painPoint": "security_gaps",
+              "count": 2,
+              "description": "Strengthen Security Posture"
+            },
+            {
+              "painPoint": "tool_fragmentation",
+              "count": 2,
+              "description": "tool_fragmentation"
+            }
+          ],
+          "business": [
+            {
+              "painPoint": "quality_issues",
+              "count": 4,
+              "description": "quality_issues"
+            },
+            {
+              "painPoint": "competitive_disadvantage",
+              "count": 4,
+              "description": "competitive_disadvantage"
+            },
+            {
+              "painPoint": "user_frustration",
+              "count": 3,
+              "description": "user_frustration"
+            },
+            {
+              "painPoint": "missed_opportunities",
+              "count": 3,
+              "description": "missed_opportunities"
+            },
+            {
+              "painPoint": "compliance_risk",
+              "count": 3,
+              "description": "compliance_risk"
+            }
+          ]
+        },
+        "criticalActions": [
+          {
+            "priority": "critical",
+            "title": "Strengthen Security Posture",
+            "actions": [
+              "Implement Unity Catalog for centralized governance",
+              "Enable audit logging and compliance monitoring",
+              "Deploy column and row-level security",
+              "Implement secrets management and credential vaulting"
+            ],
+            "impact": "Closes your identified security gaps",
+            "frequency": 2,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          },
+          {
+            "priority": "critical",
+            "title": "Implement Data Quality Framework",
+            "actions": [
+              "Deploy data quality monitoring with Great Expectations or Databricks data quality rules",
+              "Establish data validation checkpoints in pipelines",
+              "Implement automated data profiling and anomaly detection",
+              "Create data quality dashboards and alerts"
+            ],
+            "impact": "Addresses your reported data quality concerns directly",
+            "frequency": 1,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          }
+        ],
+        "topPriorities": [
+          {
+            "priority": "high",
+            "title": "Optimize Performance and Query Speed",
+            "actions": [
+              "Enable Photon engine for query acceleration",
+              "Implement Delta Lake optimization (Z-ordering, compaction)",
+              "Review and optimize cluster configurations",
+              "Implement caching strategies for frequently accessed data"
+            ],
+            "impact": "Resolves your performance bottlenecks",
+            "frequency": 1,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          },
+          {
+            "priority": "high",
+            "category": "Capability Gap",
+            "title": "Close gap in 💾 Data",
+            "gap": 2,
+            "impact": "Achieves your stated maturity goals"
+          },
+          {
+            "priority": "high",
+            "category": "Capability Gap",
+            "title": "Close gap in 📊 Analytics",
+            "gap": 2,
+            "impact": "Achieves your stated maturity goals"
+          }
+        ],
+        "quickWins": [],
+        "estimatedTimeline": "6-12 months for significant improvements",
+        "investmentLevel": "Medium to High",
+        "keyInsights": []
+      },
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        }
+      ],
+      "_engineType": "adaptive",
+      "_liveDataEnabled": false,
+      "_liveDataSource": "disabled"
+    }
+  },
+  "6d8f35db-b506-4487-a456-0e25b90f2ddd": {
+    "id": "6d8f35db-b506-4487-a456-0e25b90f2ddd",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "Mark Lee",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-13T14:37:24.364Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance"
+  },
+  "aa5e1eb3-707e-4b0e-a6fb-02a86fc6cd40": {
+    "id": "aa5e1eb3-707e-4b0e-a6fb-02a86fc6cd40",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin.aggarwal@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "NYU Langone",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-13T16:52:13.660Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "results": {
+      "assessmentInfo": {
+        "id": "aa5e1eb3-707e-4b0e-a6fb-02a86fc6cd40",
+        "assessmentName": "NYU Langone",
+        "assessmentDescription": "",
+        "organizationName": "Not specified",
+        "contactEmail": "nitin.aggarwal@databricks.com",
+        "industry": "Not specified",
+        "startedAt": "2025-10-13T16:52:13.660Z",
+        "isPartialAssessment": true,
+        "completedPillars": 0,
+        "totalPillars": 6,
+        "pillarsWithResponses": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 60,
+        "completionPercentage": 0
+      },
+      "overallScore": 0,
+      "overallLevel": {
+        "level": "Initial",
+        "description": "Ad-hoc processes, limited capabilities",
+        "color": "#ff4444"
+      },
+      "summary": "No responses yet. Start answering questions to see your maturity assessment results.",
+      "categoryDetails": {},
+      "recommendations": {},
+      "prioritizedActions": [],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [],
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        }
+      ]
+    }
+  },
+  "4fd7cfc6-0a71-4c6b-9615-d4ead2f4c87c": {
+    "id": "4fd7cfc6-0a71-4c6b-9615-d4ead2f4c87c",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin.aggarwal@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "MSKCC",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-13T16:58:35.012Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance"
+  },
+  "f67cd55c-e231-497f-885c-6097b3503e55": {
+    "id": "f67cd55c-e231-497f-885c-6097b3503e55",
+    "organizationName": "Test Corp",
+    "contactEmail": "test@example.com",
+    "industry": "Technology",
+    "assessmentName": "Adaptive Engine Test",
+    "assessmentDescription": "Testing adaptive recommendations",
+    "startedAt": "2025-10-13T17:49:42.342Z",
+    "status": "in_progress",
+    "responses": {
+      "env_standardization_current_state": 2,
+      "env_standardization_future_state": 4,
+      "env_standardization_technical_pain": [
+        "performance_issues",
+        "data_quality_issues"
+      ],
+      "env_standardization_business_pain": [
+        "slow_time_to_insights",
+        "compliance_challenges"
+      ],
+      "env_standardization_comment": "We have URGENT data quality problems affecting our regulatory reports. This needs immediate attention!"
+    },
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "lastSaved": "2025-10-13T17:49:42.466Z",
+    "results": {
+      "assessmentInfo": {
+        "id": "f67cd55c-e231-497f-885c-6097b3503e55",
+        "assessmentName": "Adaptive Engine Test",
+        "assessmentDescription": "Testing adaptive recommendations",
+        "organizationName": "Test Corp",
+        "contactEmail": "test@example.com",
+        "industry": "Technology",
+        "startedAt": "2025-10-13T17:49:42.342Z",
+        "isPartialAssessment": true,
+        "completedPillars": 0,
+        "totalPillars": 6,
+        "pillarsWithResponses": 1,
+        "questionsAnswered": 1,
+        "totalQuestions": 60,
+        "completionPercentage": 2
+      },
+      "overallScore": 3,
+      "overallLevel": {
+        "level": "Defined",
+        "description": "Structured approach with established processes",
+        "color": "#ffaa00"
+      },
+      "summary": "**🎯 STRATEGIC SITUATION & BUSINESS IMPERATIVES**\n\nYour organization operates at **Level 2 maturity** (\"Reactive operations\"), positioning you in the **bottom 40% of the market**. Your assessment reveals a strategic opportunity to reach **Level 4** (\"Proactive optimization\"), elevating to the **top 30%** where data becomes a true competitive weapon.\n\n**Strategic Inflection Point:** Your organization has established foundational capabilities but faces 1 critical constraint blocking value acceleration:\n\n• **Growth Enablement**: Addressing identified gaps can **improve operating margins by 8-12%** through faster decision velocity, reduced operational overhead, and improved resource allocation (IDC, 2024)\n\n• **Market Responsiveness**: Current weeks to deliver insights vs. future hours to deliver insights represents **40-60% acceleration** in responding to competitive threats. **Organizations with mature analytics capabilities make decisions 5x faster** than competitors (Forrester, 2023)\n\n• **Innovation Capacity**: Closing maturity gaps frees **25-35% of data team capacity** currently spent on maintenance. **Top-performing organizations spend 70% of IT budget on innovation vs. 30% for laggards** (Gartner, 2024)\n\n• **Risk Mitigation**: Mature data governance reduces compliance exposure by **60-70%**. **The average cost of a data breach is now 4.45M USD**, with poor governance a leading cause (IBM/Ponemon Institute, 2023)\n\n**⚠️ CRITICAL CONSTRAINTS IMPACTING BUSINESS PERFORMANCE**\n\nYour teams identified specific operational barriers that translate to measurable business impact:\n\n**1. Trust Deficit & Rework Tax:** Data quality issues undermine stakeholder confidence, forcing 2-3x validation cycles. **Poor data quality costs organizations 15-25% of revenue** and wastes **30-40% of analyst productivity** (Gartner, 2023)\n\n**2. Decision Velocity Constraint:** Query latency forces executives to make strategic decisions on stale data. **Real-time analytics capabilities improve decision quality by 30-40%** and reduce time-to-decision by **5-10x** (Forrester, 2024)\n\n\n\n**🚀 STRATEGIC ENABLERS: TECHNOLOGY-POWERED BUSINESS TRANSFORMATION**\n\nClosing your maturity gaps unlocks modern data platform capabilities that drive measurable business outcomes:\n\nYour advanced maturity level positions you to leverage cutting-edge capabilities—focus on **optimizing ROI through deeper platform adoption**, **expanding AI/ML use cases**, and **accelerating innovation velocity** to maintain competitive leadership\n\n**📋 STRATEGIC ROADMAP: 90-DAY → 12-MONTH TRANSFORMATION**\n\nRecommended phased approach to maximize value velocity while managing organizational change:\n\n**Phase 1 (0-90 days): Address Critical Gap** → **Expected Impact: 15-20% improvement in key bottleneck area**\n• Focused transformation of Platform (current bottleneck blocking enterprise progress)\n• Quick-win deployment of 2-3 modern capabilities with **measurable ROI in 30-60 days**\n• Establish measurement framework tracking business value realization (**critical for executive buy-in**)\n\n**Phase 2 (3-9 months): Scale & Optimize** → **Expected Impact: 40-60% overall capability improvement**\n• Systematic closure of remaining maturity gaps across 1 pillars (**holistic transformation**)\n• Deploy advanced capabilities (AI/ML, GenAI, real-time analytics) on stabilized foundation\n• Scale adoption across business units with change management & training (**70% adoption target**, IDC)\n\n\n**💎 EXPECTED BUSINESS OUTCOMES & VALUE REALIZATION**\n\nTransformation to Level 4 maturity delivers quantifiable business value across 5 dimensions (benchmarked against industry research):\n\n**1. Innovation Velocity** → **40-50% faster innovation cycles**\n• **40-50% faster data product delivery** accelerates time-to-revenue (Forrester, 2024)\n• **3-5x ML model velocity** enables AI-powered products and competitive differentiation (Gartner, 2024)\n• GenAI deployment creates **40-60% productivity gains** for knowledge workers (IDC, 2024)\n\n**2. Operational Efficiency** → **30-40% cost reduction + automation**\n• **30-40% TCO reduction** through optimization, automation, and platform consolidation (Gartner, 2024)\n• **25-35% team capacity** reclaimed from maintenance, redirected to strategic work (Forrester, 2023)\n• Quality improvements (**70-80% fewer incidents**) preserve business continuity (IDC, 2024)\n\n**3. Strategic Positioning** → **Market Leadership & Competitive Moat**\n• Market leadership position (**top 30%**) creates competitive barriers (Gartner, 2024)\n• Advanced capabilities enable **new business models** and **15-25% revenue growth** from data monetization (Forrester, 2024)\n• Platform optionality supports M&A, partnerships, and **strategic agility** (IDC, 2023)\n\n**Expected ROI:** **150-250% over 12-18 months** (industry benchmark: IDC reports top-quartile organizations achieve 200%+ ROI on data platforms)\n\n**⚠️ Assessment Incomplete:** 5 pillars not yet evaluated. Complete all 6 pillars to uncover cross-functional dependencies and optimization opportunities that may not be visible in isolated pillar analysis.",
+      "categoryDetails": {
+        "platform_governance": {
+          "name": "🧱 Platform",
+          "description": "Assess how well the Databricks foundation is secured, scalable, and governed.",
+          "score": 3,
+          "currentScore": 2,
+          "futureScore": 4,
+          "level": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "weight": 1,
+          "isPartial": true
+        }
+      },
+      "recommendations": {
+        "platform_governance": {
+          "score": 3,
+          "level": {
+            "level": "Defined",
+            "description": "Structured approach with established processes",
+            "color": "#ffaa00"
+          },
+          "recommendations": {
+            "priority": "medium",
+            "title": "Optimize Current Architecture",
+            "description": "Your infrastructure is solid but can be optimized for better performance and cost efficiency.",
+            "actions": [
+              "Implement advanced optimization techniques (caching, indexing)",
+              "Establish multi-cluster management for cost optimization",
+              "Enhance monitoring and alerting capabilities",
+              "Implement automated scaling policies"
+            ],
+            "timeline": "2-4 months",
+            "effort": "medium",
+            "impact": "medium"
+          }
+        }
+      },
+      "prioritizedActions": [
+        {
+          "pillarId": "platform_governance",
+          "pillarName": "🧱 Platform",
+          "currentScore": 2,
+          "targetScore": 4,
+          "gap": 2,
+          "priority": "critical",
+          "title": "Unity Catalog & Governance Foundation",
+          "rationale": "Current Score: 2/5 → Target: 4/5. Establishing centralized governance is critical for data trust, compliance, and scalability.\n\n**Your Key Challenges:** Your data quality inconsistencies are undermining trust and causing downstream analytics errors. Siloed data access controls are creating security risks and preventing effective data sharing. These critical gaps are preventing you from moving from maturity level 2 to 4. The features recommended below provide a systematic path to close these gaps and transform your capabilities.",
+          "features": [
+            {
+              "name": "Lakehouse Monitoring",
+              "status": "GA",
+              "action": "Implement data quality monitoring with Lakehouse Monitoring",
+              "why": "Automated drift detection and quality metrics reduce manual oversight by 70%",
+              "effort": "3-4 weeks",
+              "impact": "High - Proactive data quality management"
+            },
+            {
+              "name": "Unity Catalog",
+              "status": "GA",
+              "action": "Migrate to Unity Catalog for centralized metadata, access control, and data lineage",
+              "why": "Provides fine-grained access control, automatic lineage, and cross-workspace governance",
+              "effort": "2-3 months",
+              "impact": "High - Enables secure data sharing and compliance"
+            },
+            {
+              "name": "AI-Generated Comments",
+              "status": "Public Preview",
+              "action": "Enable AI-generated documentation for tables and columns",
+              "why": "Automatically generates metadata descriptions, improving discoverability",
+              "effort": "1-2 weeks",
+              "impact": "Medium - Accelerates data catalog adoption"
+            }
+          ],
+          "timeline": "3-6 months",
+          "effort": "high",
+          "impact": "critical",
+          "theGood": [
+            "Platform ready for Unity Catalog migration with clear ROI path",
+            "Solid foundation established—ready for next-level capabilities",
+            "Team has identified clear improvement path with measurable targets",
+            "Assessment shows realistic gaps—achievable with focused investment"
+          ],
+          "theBad": [
+            "Cannot use Serverless SQL or Photon acceleration—5-10 min queries drive users to Excel, wasting $400K platform investment",
+            "Downstream quality problems require 10x the effort to fix vs prevention",
+            "Without Unity Catalog, you cannot leverage AI/ML governance, dynamic views, or row/column-level security—blocking production AI workloads",
+            "Manual access controls consume 40+ hours/month of admin time and create 2-3 week delays for data requests"
+          ]
+        }
+      ],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [
+          {
+            "category": "platform_governance",
+            "title": "Optimize Current Architecture",
+            "priority": "medium",
+            "effort": "medium",
+            "impact": "medium"
+          }
+        ],
+        "mediumTerm": [],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [],
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "completed": false,
+          "hasResponses": true,
+          "isPartial": true,
+          "score": 3
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        }
+      ]
+    }
+  },
+  "61c204b7-82e5-48e3-9893-60e586076668": {
+    "id": "61c204b7-82e5-48e3-9893-60e586076668",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin.aggarwal@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "Walt",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-13T19:36:00.640Z",
+    "status": "in_progress",
+    "responses": {
+      "env_standardization_current_state": 1,
+      "env_standardization_future_state": 3,
+      "env_standardization_technical_pain": [
+        "poor_isolation",
+        "deployment_issues"
+      ],
+      "env_standardization_business_pain": [
+        "team_bottlenecks",
+        "compliance_risks"
+      ]
+    },
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "lastSaved": "2025-10-13T19:37:16.806Z"
+  },
+  "55673421-82a5-480b-9ce7-27b44d04c982": {
+    "id": "55673421-82a5-480b-9ce7-27b44d04c982",
+    "organizationName": "OpenAI Test Corp",
+    "contactEmail": "test@openai-test.com",
+    "industry": "Technology",
+    "assessmentName": "OpenAI Integration Test",
+    "assessmentDescription": "Testing live Databricks feature fetching",
+    "startedAt": "2025-10-13T22:06:33.824Z",
+    "status": "in_progress",
+    "responses": {
+      "env_standardization_current_state": 2
+    },
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "lastSaved": "2025-10-13T22:06:33.853Z",
+    "results": {
+      "assessmentInfo": {
+        "id": "55673421-82a5-480b-9ce7-27b44d04c982",
+        "assessmentName": "OpenAI Integration Test",
+        "assessmentDescription": "Testing live Databricks feature fetching",
+        "organizationName": "OpenAI Test Corp",
+        "contactEmail": "test@openai-test.com",
+        "industry": "Technology",
+        "startedAt": "2025-10-13T22:06:33.824Z",
+        "isPartialAssessment": true,
+        "completedPillars": 0,
+        "totalPillars": 6,
+        "pillarsWithResponses": 1,
+        "questionsAnswered": 1,
+        "totalQuestions": 60,
+        "completionPercentage": 2
+      },
+      "overallScore": 2,
+      "overallLevel": {
+        "level": "Developing",
+        "description": "Basic implementation with some structure",
+        "color": "#ff8800"
+      },
+      "summary": "**🎯 STRATEGIC SITUATION & BUSINESS IMPERATIVES**\n\nYour organization operates at **Level 2 maturity** (\"Reactive operations\"), positioning you in the **bottom 40% of the market**. Your assessment reveals a strategic opportunity to reach **Level 0** (\"Proactive optimization\"), elevating to the **top 30%** where data becomes a true competitive weapon.\n\n**Strategic Inflection Point:** Your organization has established foundational capabilities but faces 1 critical constraint blocking value acceleration:\n\n• **Growth Enablement**: Addressing identified gaps can **improve operating margins by 8-12%** through faster decision velocity, reduced operational overhead, and improved resource allocation (IDC, 2024)\n\n• **Market Responsiveness**: Current weeks to deliver insights vs. future hours to deliver insights represents **40-60% acceleration** in responding to competitive threats. **Organizations with mature analytics capabilities make decisions 5x faster** than competitors (Forrester, 2023)\n\n• **Innovation Capacity**: Closing maturity gaps frees **25-35% of data team capacity** currently spent on maintenance. **Top-performing organizations spend 70% of IT budget on innovation vs. 30% for laggards** (Gartner, 2024)\n\n• **Risk Mitigation**: Mature data governance reduces compliance exposure by **60-70%**. **The average cost of a data breach is now 4.45M USD**, with poor governance a leading cause (IBM/Ponemon Institute, 2023)\n\n**🚀 STRATEGIC ENABLERS: TECHNOLOGY-POWERED BUSINESS TRANSFORMATION**\n\nClosing your maturity gaps unlocks modern data platform capabilities that drive measurable business outcomes:\n\nYour advanced maturity level positions you to leverage cutting-edge capabilities—focus on **optimizing ROI through deeper platform adoption**, **expanding AI/ML use cases**, and **accelerating innovation velocity** to maintain competitive leadership\n\n**📋 STRATEGIC ROADMAP: 90-DAY → 12-MONTH TRANSFORMATION**\n\nRecommended phased approach to maximize value velocity while managing organizational change:\n\n**Phase 1 (0-90 days): Address Critical Gap** → **Expected Impact: 15-20% improvement in key bottleneck area**\n• Focused transformation of Platform (current bottleneck blocking enterprise progress)\n• Quick-win deployment of 2-3 modern capabilities with **measurable ROI in 30-60 days**\n• Establish measurement framework tracking business value realization (**critical for executive buy-in**)\n\n**Phase 2 (3-9 months): Scale & Optimize** → **Expected Impact: 40-60% overall capability improvement**\n• Systematic closure of remaining maturity gaps across 1 pillars (**holistic transformation**)\n• Deploy advanced capabilities (AI/ML, GenAI, real-time analytics) on stabilized foundation\n• Scale adoption across business units with change management & training (**70% adoption target**, IDC)\n\n\n**💎 EXPECTED BUSINESS OUTCOMES & VALUE REALIZATION**\n\nTransformation to Level 0 maturity delivers quantifiable business value across 5 dimensions (benchmarked against industry research):\n\n**1. Innovation Velocity** → **40-50% faster innovation cycles**\n• **40-50% faster data product delivery** accelerates time-to-revenue (Forrester, 2024)\n• **3-5x ML model velocity** enables AI-powered products and competitive differentiation (Gartner, 2024)\n• GenAI deployment creates **40-60% productivity gains** for knowledge workers (IDC, 2024)\n\n**2. Operational Efficiency** → **30-40% cost reduction + automation**\n• **30-40% TCO reduction** through optimization, automation, and platform consolidation (Gartner, 2024)\n• **25-35% team capacity** reclaimed from maintenance, redirected to strategic work (Forrester, 2023)\n• Quality improvements (**70-80% fewer incidents**) preserve business continuity (IDC, 2024)\n\n**3. Strategic Positioning** → **Market Leadership & Competitive Moat**\n• Market leadership position (**top 30%**) creates competitive barriers (Gartner, 2024)\n• Advanced capabilities enable **new business models** and **15-25% revenue growth** from data monetization (Forrester, 2024)\n• Platform optionality supports M&A, partnerships, and **strategic agility** (IDC, 2023)\n\n**Expected ROI:** **150-250% over 12-18 months** (industry benchmark: IDC reports top-quartile organizations achieve 200%+ ROI on data platforms)\n\n**⚠️ Assessment Incomplete:** 5 pillars not yet evaluated. Complete all 6 pillars to uncover cross-functional dependencies and optimization opportunities that may not be visible in isolated pillar analysis.",
+      "categoryDetails": {
+        "platform_governance": {
+          "name": "🧱 Platform",
+          "description": "Assess how well the Databricks foundation is secured, scalable, and governed.",
+          "score": 2,
+          "currentScore": 2,
+          "futureScore": 0,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "weight": 1,
+          "isPartial": true
+        }
+      },
+      "recommendations": {
+        "platform_governance": {
+          "score": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "recommendations": {
+            "priority": "high",
+            "title": "Enhance Data Processing Capabilities",
+            "description": "Upgrade your data processing to handle larger volumes and enable real-time analytics.",
+            "actions": [
+              "Implement Databricks for unified batch and streaming processing",
+              "Migrate ETL processes to modern ELT patterns with Delta Live Tables",
+              "Establish data quality monitoring and automated testing",
+              "Optimize data storage with partitioning and Z-ordering"
+            ],
+            "timeline": "4-8 months",
+            "effort": "medium-high",
+            "impact": "high"
+          }
+        }
+      },
+      "prioritizedActions": [
+        {
+          "pillarId": "platform_governance",
+          "pillarName": "🧱 Platform",
+          "currentScore": 2,
+          "targetScore": 0,
+          "gap": -2,
+          "priority": "medium",
+          "title": "Unity Catalog & Governance Foundation",
+          "rationale": "Current Score: 2/5 → Target: 0/5. Establishing centralized governance is critical for data trust, compliance, and scalability.",
+          "features": [
+            {
+              "name": "Unity Catalog",
+              "status": "GA",
+              "action": "Migrate to Unity Catalog for centralized metadata, access control, and data lineage",
+              "why": "Provides fine-grained access control, automatic lineage, and cross-workspace governance",
+              "effort": "1-2 months",
+              "impact": "High - Enables secure data sharing and compliance"
+            },
+            {
+              "name": "Lakehouse Monitoring",
+              "status": "GA",
+              "action": "Implement data quality monitoring with Lakehouse Monitoring",
+              "why": "Automated drift detection and quality metrics reduce manual oversight by 70%",
+              "effort": "3-4 weeks",
+              "impact": "High - Proactive data quality management"
+            },
+            {
+              "name": "AI-Generated Comments",
+              "status": "Public Preview",
+              "action": "Enable AI-generated documentation for tables and columns",
+              "why": "Automatically generates metadata descriptions, improving discoverability",
+              "effort": "1-2 weeks",
+              "impact": "Medium - Accelerates data catalog adoption"
+            }
+          ],
+          "timeline": "2-3 months",
+          "effort": "low",
+          "impact": "medium",
+          "theGood": [
+            "Platform ready for Unity Catalog migration with clear ROI path",
+            "Solid foundation established—ready for next-level capabilities",
+            "Team has identified clear improvement path with measurable targets",
+            "Assessment shows realistic gaps—achievable with focused investment"
+          ],
+          "theBad": [
+            "Without Unity Catalog, you cannot leverage AI/ML governance, dynamic views, or row/column-level security—blocking production AI workloads",
+            "Manual access controls consume 40+ hours/month of admin time and create 2-3 week delays for data requests",
+            "Current maturity level limits ability to leverage advanced Databricks capabilities",
+            "Identified gaps increase total cost of ownership and operational overhead"
+          ]
+        }
+      ],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [],
+        "mediumTerm": [
+          {
+            "category": "platform_governance",
+            "title": "Enhance Data Processing Capabilities",
+            "priority": "high",
+            "effort": "medium-high",
+            "impact": "high"
+          }
+        ],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [
+        {
+          "category": "platform_governance",
+          "name": "🧱 Platform",
+          "score": 2,
+          "risk": "High",
+          "description": "This area requires immediate attention to avoid potential issues."
+        }
+      ],
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "completed": false,
+          "hasResponses": true,
+          "isPartial": true,
+          "score": 2
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "completed": false,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null
+        }
+      ]
+    }
+  },
+  "07ee767d-61f1-48b8-af96-56c62688c3a6": {
+    "id": "07ee767d-61f1-48b8-af96-56c62688c3a6",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin.aggarwal@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "DBX",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-14T03:06:17.065Z",
+    "status": "in_progress",
+    "responses": {
+      "env_standardization_current_state": 1,
+      "env_standardization_future_state": 3,
+      "env_standardization_technical_pain": [
+        "deployment_issues"
+      ],
+      "env_standardization_business_pain": [
+        "quality_issues",
+        "compliance_risks"
+      ]
+    },
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "lastSaved": "2025-10-14T03:06:45.892Z"
+  },
+  "fae58f1a-f65f-4a54-9b20-572c343c62df": {
+    "id": "fae58f1a-f65f-4a54-9b20-572c343c62df",
+    "organizationName": "Test Org",
+    "contactEmail": "test@example.com",
+    "industry": "Tech",
+    "assessmentName": "Adaptive Engine Test",
+    "assessmentDescription": "Testing adaptive recommendations",
+    "startedAt": "2025-10-14T07:00:58.249Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance"
+  },
+  "792a616a-6648-43b4-b31b-ffdf001aeca7": {
+    "id": "792a616a-6648-43b4-b31b-ffdf001aeca7",
+    "organizationName": "Sample Organization",
+    "contactEmail": "sample@databricks.com",
+    "industry": "Technology",
+    "assessmentName": "Sample Assessment for Testing",
+    "assessmentDescription": "Comprehensive sample with data across all pillars for functional testing",
+    "startedAt": "2025-10-14T07:11:50.062Z",
+    "status": "completed",
+    "responses": {
+      "env_standardization_current_state": 2,
+      "env_standardization_future_state": 4,
+      "env_standardization_technical_pain": [
+        "poor_isolation",
+        "manual_provisioning"
+      ],
+      "env_standardization_business_pain": [
+        "team_bottlenecks"
+      ],
+      "env_standardization_comment": "Currently using manual scripts for environment setup. Need automation.",
+      "scaling_effectiveness_current_state": 2,
+      "scaling_effectiveness_future_state": 5,
+      "scaling_effectiveness_technical_pain": [
+        "infrastructure_limits",
+        "complex_scaling"
+      ],
+      "scaling_effectiveness_business_pain": [
+        "growth_blocked",
+        "competitive_disadvantage"
+      ],
+      "auth_consistency_current_state": 3,
+      "auth_consistency_future_state": 4,
+      "auth_consistency_technical_pain": [
+        "audit_trails"
+      ],
+      "auth_consistency_business_pain": [
+        "admin_overhead"
+      ],
+      "auth_consistency_comment": "Unity Catalog implemented but need better audit trails",
+      "security_controls_current_state": 3,
+      "security_controls_future_state": 4,
+      "security_controls_technical_pain": [
+        "encryption_gaps"
+      ],
+      "security_controls_business_pain": [
+        "compliance_risk"
+      ],
+      "visibility_monitoring_current_state": 2,
+      "visibility_monitoring_future_state": 4,
+      "visibility_monitoring_technical_pain": [
+        "monitoring_blind_spots",
+        "alert_fatigue"
+      ],
+      "visibility_monitoring_business_pain": [
+        "reactive_mode",
+        "team_burnout"
+      ],
+      "configuration_management_current_state": 2,
+      "configuration_management_future_state": 4,
+      "configuration_management_technical_pain": [
+        "version_management",
+        "change_tracking"
+      ],
+      "configuration_management_business_pain": [
+        "deployment_delays"
+      ],
+      "metadata_governance_current_state": 2,
+      "metadata_governance_future_state": 5,
+      "metadata_governance_technical_pain": [
+        "metadata_gaps"
+      ],
+      "metadata_governance_business_pain": [
+        "data_quality_issues"
+      ],
+      "metadata_governance_comment": "Need better data discovery and lineage tracking",
+      "sql_warehouse_adoption_current_state": 3,
+      "sql_warehouse_adoption_future_state": 4,
+      "sql_warehouse_adoption_technical_pain": [
+        "performance_impact"
+      ],
+      "sql_warehouse_adoption_business_pain": [
+        "analyst_frustration"
+      ],
+      "access_control_maturity_current_state": 3,
+      "access_control_maturity_future_state": 4,
+      "access_control_maturity_technical_pain": [
+        "security_gaps"
+      ],
+      "access_control_maturity_business_pain": [
+        "compliance_risks"
+      ],
+      "proactive_monitoring_current_state": 2,
+      "proactive_monitoring_future_state": 4,
+      "proactive_monitoring_technical_pain": [
+        "alert_fatigue"
+      ],
+      "proactive_monitoring_business_pain": [
+        "team_burnout"
+      ],
+      "cost_tracking_current_state": 2,
+      "cost_tracking_future_state": 4,
+      "cost_tracking_technical_pain": [
+        "reporting_complexity"
+      ],
+      "cost_tracking_business_pain": [
+        "no_accountability",
+        "inefficient_spending"
+      ],
+      "cost_tracking_comment": "Need better cost visibility per team and project",
+      "optimization_practices_current_state": 2,
+      "optimization_practices_future_state": 4,
+      "optimization_practices_technical_pain": [
+        "performance_impact",
+        "tool_integration"
+      ],
+      "optimization_practices_business_pain": [
+        "roi_unclear",
+        "wasted_spend"
+      ],
+      "ingestion_automation_current_state": 2,
+      "ingestion_automation_future_state": 4,
+      "ingestion_automation_technical_pain": [
+        "manual_processes",
+        "slow_pipelines"
+      ],
+      "ingestion_automation_business_pain": [
+        "slow_insights",
+        "team_bottlenecks"
+      ],
+      "ingestion_automation_comment": "Using custom Python scripts. Want to adopt Auto Loader and Delta Live Tables.",
+      "ingestion_resilience_current_state": 2,
+      "ingestion_resilience_future_state": 4,
+      "ingestion_resilience_technical_pain": [
+        "schema_conflicts",
+        "fragile_pipelines"
+      ],
+      "ingestion_resilience_business_pain": [
+        "business_disruption"
+      ],
+      "data_layer_structure_current_state": 3,
+      "data_layer_structure_future_state": 4,
+      "data_layer_structure_technical_pain": [
+        "layer_clarity"
+      ],
+      "data_layer_structure_business_pain": [
+        "user_confusion"
+      ],
+      "data_layer_structure_comment": "Medallion architecture partially implemented.",
+      "architecture_adaptability_current_state": 2,
+      "architecture_adaptability_future_state": 4,
+      "architecture_adaptability_technical_pain": [
+        "integration_complexity"
+      ],
+      "architecture_adaptability_business_pain": [
+        "slow_development"
+      ],
+      "pipeline_reliability_current_state": 2,
+      "pipeline_reliability_future_state": 5,
+      "pipeline_reliability_technical_pain": [
+        "manual_retries",
+        "monitoring_gaps"
+      ],
+      "pipeline_reliability_business_pain": [
+        "on_call_burden",
+        "lost_trust"
+      ],
+      "pipeline_reliability_comment": "Pipeline failures require manual intervention. Need better orchestration.",
+      "pipeline_lifecycle_current_state": 2,
+      "pipeline_lifecycle_future_state": 4,
+      "pipeline_lifecycle_technical_pain": [
+        "deployment_issues",
+        "version_management"
+      ],
+      "pipeline_lifecycle_business_pain": [
+        "deployment_delays"
+      ],
+      "quality_processes_current_state": 2,
+      "quality_processes_future_state": 4,
+      "quality_processes_technical_pain": [
+        "data_quality",
+        "validation_gaps"
+      ],
+      "quality_processes_business_pain": [
+        "quality_issues",
+        "user_frustration"
+      ],
+      "quality_processes_comment": "Ad-hoc data quality checks. Need automated DQ framework.",
+      "quality_monitoring_current_state": 2,
+      "quality_monitoring_future_state": 4,
+      "quality_monitoring_technical_pain": [
+        "alert_fatigue",
+        "monitoring_blind_spots"
+      ],
+      "quality_monitoring_business_pain": [
+        "reactive_mode"
+      ],
+      "observability_approach_current_state": 2,
+      "observability_approach_future_state": 4,
+      "observability_approach_technical_pain": [
+        "monitoring_gaps"
+      ],
+      "observability_approach_business_pain": [
+        "troubleshooting_time"
+      ],
+      "pipeline_performance_current_state": 2,
+      "pipeline_performance_future_state": 4,
+      "pipeline_performance_technical_pain": [
+        "slow_pipelines",
+        "performance_issues"
+      ],
+      "pipeline_performance_business_pain": [
+        "slow_insights",
+        "high_costs"
+      ],
+      "response_times_current_state": 3,
+      "response_times_future_state": 4,
+      "response_times_technical_pain": [
+        "performance_issues"
+      ],
+      "response_times_business_pain": [
+        "user_frustration"
+      ],
+      "response_times_comment": "Most queries are fast, but some large aggregations need optimization.",
+      "optimization_approach_current_state": 2,
+      "optimization_approach_future_state": 4,
+      "optimization_approach_technical_pain": [
+        "performance_impact",
+        "tool_integration"
+      ],
+      "optimization_approach_business_pain": [
+        "analyst_frustration"
+      ],
+      "semantic_consistency_current_state": 2,
+      "semantic_consistency_future_state": 4,
+      "semantic_consistency_technical_pain": [
+        "schema_conflicts",
+        "metric_divergence"
+      ],
+      "semantic_consistency_business_pain": [
+        "user_confusion",
+        "trust_deficit"
+      ],
+      "semantic_consistency_comment": "Different teams define metrics differently. Need central semantic layer.",
+      "dataset_discovery_current_state": 2,
+      "dataset_discovery_future_state": 4,
+      "dataset_discovery_technical_pain": [
+        "metadata_gaps"
+      ],
+      "dataset_discovery_business_pain": [
+        "duplicate_efforts",
+        "low_adoption"
+      ],
+      "tool_integration_current_state": 3,
+      "tool_integration_future_state": 4,
+      "tool_integration_technical_pain": [
+        "connection_issues"
+      ],
+      "tool_integration_business_pain": [
+        "tool_proliferation"
+      ],
+      "tool_integration_comment": "Using Tableau and Power BI. Some integration challenges.",
+      "reporting_governance_current_state": 2,
+      "reporting_governance_future_state": 4,
+      "reporting_governance_technical_pain": [
+        "refresh_failures",
+        "version_chaos"
+      ],
+      "reporting_governance_business_pain": [
+        "report_proliferation",
+        "trust_deficit"
+      ],
+      "user_empowerment_current_state": 2,
+      "user_empowerment_future_state": 4,
+      "user_empowerment_technical_pain": [
+        "steep_learning_curve"
+      ],
+      "user_empowerment_business_pain": [
+        "analyst_frustration",
+        "team_bottlenecks"
+      ],
+      "user_empowerment_comment": "Most users rely on IT for data access. Need better self-service.",
+      "governance_balance_current_state": 2,
+      "governance_balance_future_state": 4,
+      "governance_balance_technical_pain": [
+        "access_complexity"
+      ],
+      "governance_balance_business_pain": [
+        "approval_workflows"
+      ],
+      "data_sharing_current_state": 2,
+      "data_sharing_future_state": 4,
+      "data_sharing_technical_pain": [
+        "security_gaps",
+        "complex_permissions"
+      ],
+      "data_sharing_business_pain": [
+        "collaboration_friction"
+      ],
+      "cross_domain_analytics_current_state": 2,
+      "cross_domain_analytics_future_state": 4,
+      "cross_domain_analytics_technical_pain": [
+        "integration_complexity"
+      ],
+      "cross_domain_analytics_business_pain": [
+        "missed_synergies"
+      ],
+      "experimentation_tracking_current_state": 2,
+      "experimentation_tracking_future_state": 4,
+      "experimentation_tracking_technical_pain": [
+        "knowledge_loss",
+        "duplicate_efforts"
+      ],
+      "experimentation_tracking_business_pain": [
+        "slow_development"
+      ],
+      "experimentation_tracking_comment": "Some MLflow usage but not standardized across teams.",
+      "reproducibility_approach_current_state": 2,
+      "reproducibility_approach_future_state": 4,
+      "reproducibility_approach_technical_pain": [
+        "version_management",
+        "environment_drift"
+      ],
+      "reproducibility_approach_business_pain": [
+        "compliance_risk"
+      ],
+      "feature_engineering_current_state": 2,
+      "feature_engineering_future_state": 4,
+      "feature_engineering_technical_pain": [
+        "duplicate_efforts",
+        "slow_pipelines"
+      ],
+      "feature_engineering_business_pain": [
+        "slow_development",
+        "quality_variance"
+      ],
+      "feature_engineering_comment": "No shared feature store. Teams rebuild same features.",
+      "feature_reuse_current_state": 2,
+      "feature_reuse_future_state": 5,
+      "feature_reuse_technical_pain": [
+        "metadata_gaps"
+      ],
+      "feature_reuse_business_pain": [
+        "duplicate_efforts",
+        "missed_synergies"
+      ],
+      "model_lifecycle_current_state": 2,
+      "model_lifecycle_future_state": 4,
+      "model_lifecycle_technical_pain": [
+        "deployment_issues",
+        "manual_processes"
+      ],
+      "model_lifecycle_business_pain": [
+        "slow_releases",
+        "competitive_lag"
+      ],
+      "model_lifecycle_comment": "Manual model deployment. Want MLOps automation.",
+      "deployment_automation_current_state": 2,
+      "deployment_automation_future_state": 4,
+      "deployment_automation_technical_pain": [
+        "deployment_issues"
+      ],
+      "deployment_automation_business_pain": [
+        "deployment_delays"
+      ],
+      "monitoring_detection_current_state": 2,
+      "monitoring_detection_future_state": 4,
+      "monitoring_detection_technical_pain": [
+        "monitoring_gaps",
+        "drift_detection"
+      ],
+      "monitoring_detection_business_pain": [
+        "lost_trust",
+        "reactive_mode"
+      ],
+      "monitoring_detection_comment": "Limited model monitoring. Need automated drift detection.",
+      "retraining_approach_current_state": 2,
+      "retraining_approach_future_state": 4,
+      "retraining_approach_technical_pain": [
+        "manual_processes"
+      ],
+      "retraining_approach_business_pain": [
+        "model_degradation"
+      ],
+      "governance_compliance_current_state": 2,
+      "governance_compliance_future_state": 4,
+      "governance_compliance_technical_pain": [
+        "audit_trails",
+        "lineage_gaps"
+      ],
+      "governance_compliance_business_pain": [
+        "compliance_risk",
+        "deployment_blocks"
+      ],
+      "model_explainability_current_state": 2,
+      "model_explainability_future_state": 4,
+      "model_explainability_technical_pain": [
+        "black_box_models"
+      ],
+      "model_explainability_business_pain": [
+        "trust_deficit",
+        "regulatory_blocks"
+      ],
+      "llm_infrastructure_current_state": 1,
+      "llm_infrastructure_future_state": 4,
+      "llm_infrastructure_technical_pain": [
+        "infrastructure_limits",
+        "integration_complexity"
+      ],
+      "llm_infrastructure_business_pain": [
+        "competitive_gap",
+        "missed_opportunities"
+      ],
+      "llm_infrastructure_comment": "Just starting GenAI exploration. Need proper infrastructure.",
+      "model_access_current_state": 1,
+      "model_access_future_state": 4,
+      "model_access_technical_pain": [
+        "api_complexity"
+      ],
+      "model_access_business_pain": [
+        "slow_development"
+      ],
+      "vector_search_current_state": 1,
+      "vector_search_future_state": 4,
+      "vector_search_technical_pain": [
+        "missing_capability",
+        "performance_issues"
+      ],
+      "vector_search_business_pain": [
+        "competitive_gap",
+        "use_case_blocked"
+      ],
+      "vector_search_comment": "No vector search capability yet. Critical for RAG applications.",
+      "retrieval_architecture_current_state": 1,
+      "retrieval_architecture_future_state": 4,
+      "retrieval_architecture_technical_pain": [
+        "integration_complexity"
+      ],
+      "retrieval_architecture_business_pain": [
+        "slow_development"
+      ],
+      "prompt_engineering_current_state": 2,
+      "prompt_engineering_future_state": 4,
+      "prompt_engineering_technical_pain": [
+        "no_standards",
+        "version_chaos"
+      ],
+      "prompt_engineering_business_pain": [
+        "inconsistent_quality",
+        "knowledge_loss"
+      ],
+      "prompt_engineering_comment": "Individual experimentation. Need standardized approach.",
+      "prompt_lifecycle_current_state": 1,
+      "prompt_lifecycle_future_state": 4,
+      "prompt_lifecycle_technical_pain": [
+        "version_management"
+      ],
+      "prompt_lifecycle_business_pain": [
+        "quality_variance"
+      ],
+      "security_compliance_current_state": 2,
+      "security_compliance_future_state": 4,
+      "security_compliance_technical_pain": [
+        "data_exposure_risk",
+        "audit_trails"
+      ],
+      "security_compliance_business_pain": [
+        "compliance_risk",
+        "legal_exposure"
+      ],
+      "security_compliance_comment": "Security concerns blocking GenAI adoption.",
+      "cost_governance_current_state": 1,
+      "cost_governance_future_state": 4,
+      "cost_governance_technical_pain": [
+        "no_cost_visibility"
+      ],
+      "cost_governance_business_pain": [
+        "cost_overruns",
+        "budget_pressures"
+      ],
+      "app_development_current_state": 1,
+      "app_development_future_state": 4,
+      "app_development_technical_pain": [
+        "integration_complexity",
+        "deployment_issues"
+      ],
+      "app_development_business_pain": [
+        "slow_development",
+        "competitive_gap"
+      ],
+      "production_readiness_current_state": 1,
+      "production_readiness_future_state": 4,
+      "production_readiness_technical_pain": [
+        "monitoring_gaps",
+        "scalability_limits"
+      ],
+      "production_readiness_business_pain": [
+        "initiative_failures"
+      ],
+      "team_organization_current_state": 2,
+      "team_organization_future_state": 4,
+      "team_organization_technical_pain": [
+        "knowledge_silos",
+        "handoff_delays"
+      ],
+      "team_organization_business_pain": [
+        "team_bottlenecks",
+        "missed_synergies"
+      ],
+      "team_organization_comment": "Teams work in silos. Need better collaboration model.",
+      "skills_enablement_current_state": 2,
+      "skills_enablement_future_state": 4,
+      "skills_enablement_technical_pain": [
+        "skill_gaps"
+      ],
+      "skills_enablement_business_pain": [
+        "slow_productivity",
+        "talent_retention"
+      ],
+      "change_management_current_state": 2,
+      "change_management_future_state": 4,
+      "change_management_technical_pain": [
+        "change_management"
+      ],
+      "change_management_business_pain": [
+        "adoption_resistance",
+        "initiative_failures"
+      ],
+      "change_management_comment": "Resistance to new tools and processes. Need better change management.",
+      "communication_approach_current_state": 2,
+      "communication_approach_future_state": 4,
+      "communication_approach_technical_pain": [
+        "documentation_gaps"
+      ],
+      "communication_approach_business_pain": [
+        "user_confusion"
+      ],
+      "maturity_assessment_current_state": 2,
+      "maturity_assessment_future_state": 4,
+      "maturity_assessment_technical_pain": [
+        "no_metrics"
+      ],
+      "maturity_assessment_business_pain": [
+        "unclear_value",
+        "budget_justification"
+      ],
+      "maturity_assessment_comment": "No systematic approach to tracking platform maturity.",
+      "roadmap_alignment_current_state": 2,
+      "roadmap_alignment_future_state": 4,
+      "roadmap_alignment_technical_pain": [
+        "unclear_priorities"
+      ],
+      "roadmap_alignment_business_pain": [
+        "roadmap_misalignment",
+        "competing_priorities"
+      ],
+      "investment_decisions_current_state": 2,
+      "investment_decisions_future_state": 4,
+      "investment_decisions_technical_pain": [
+        "no_cost_visibility"
+      ],
+      "investment_decisions_business_pain": [
+        "poor_roi",
+        "value_erosion"
+      ],
+      "investment_decisions_comment": "Investment decisions lack data-driven approach.",
+      "value_measurement_current_state": 2,
+      "value_measurement_future_state": 4,
+      "value_measurement_technical_pain": [
+        "metric_correlation"
+      ],
+      "value_measurement_business_pain": [
+        "unclear_value"
+      ],
+      "documentation_approach_current_state": 2,
+      "documentation_approach_future_state": 4,
+      "documentation_approach_technical_pain": [
+        "documentation_gaps"
+      ],
+      "documentation_approach_business_pain": [
+        "knowledge_loss",
+        "slow_productivity"
+      ],
+      "knowledge_transfer_current_state": 2,
+      "knowledge_transfer_future_state": 4,
+      "knowledge_transfer_technical_pain": [
+        "knowledge_silos"
+      ],
+      "knowledge_transfer_business_pain": [
+        "dependency_bottlenecks",
+        "talent_retention"
+      ]
+    },
+    "completedCategories": [
+      "platform_governance",
+      "data_engineering",
+      "analytics_bi",
+      "machine_learning",
+      "generative_ai",
+      "operational_excellence"
+    ],
+    "currentCategory": "operational_excellence",
+    "completedAt": "2025-10-14T07:13:53.095Z",
+    "results": {
+      "assessmentInfo": {
+        "id": "792a616a-6648-43b4-b31b-ffdf001aeca7",
+        "assessmentName": "Sample Assessment for Testing",
+        "assessmentDescription": "Comprehensive sample with data across all pillars for functional testing",
+        "organizationName": "Sample Organization",
+        "contactEmail": "sample@databricks.com",
+        "industry": "Technology",
+        "completedAt": "2025-10-14T07:13:53.095Z",
+        "startedAt": "2025-10-14T07:11:50.062Z",
+        "isPartialAssessment": true,
+        "completedPillars": 6,
+        "totalPillars": 6,
+        "pillarsWithResponses": 4,
+        "questionsAnswered": 62,
+        "totalQuestions": 60,
+        "completionPercentage": 103,
+        "editHistory": []
+      },
+      "overall": {
+        "currentScore": 2,
+        "futureScore": 4,
+        "gap": 2,
+        "level": {
+          "level": "Defined",
+          "description": "Structured approach with established processes",
+          "color": "#ffaa00"
+        },
+        "summary": "## STRATEGIC SITUATION & BUSINESS VALUE\n\n**Current Maturity:** Level 2 - Developing\nBasic implementation with some structure\n\n**Target Maturity:** Level 4 - Managed\nAdvanced capabilities with strong governance\n\n**Transformation Scope:** This 2-level gap represents significant ambition requiring focused investment and organizational commitment. Success will require executive sponsorship and dedicated resources.\n\n## CRITICAL CONSTRAINTS IMPACTING PERFORMANCE\n\n**Technical Pain Points:** 39 technical challenges identified that are blocking progress and limiting platform capabilities.\n**Business Pain Points:** 34 business impacts identified including productivity losses, cost inefficiencies, and competitive gaps.\n\n• 🧱 Platform: 10 technical issues requiring immediate attention\n• 🧱 Platform: 10 business impacts limiting value realization\n• 💾 Data: 14 technical issues requiring immediate attention\n• 💾 Data: 11 business impacts limiting value realization\n• 📊 Analytics: 14 technical issues requiring immediate attention\n\n## STRATEGIC ENABLERS & RECOMMENDED ACTIONS\n\n**Priority Focus Areas:**\n• **🧱 Platform**: Bridge 2-level gap (Current: 2 → Target: 4)\n• **💾 Data**: Bridge 2-level gap (Current: 2 → Target: 4)\n• **📊 Analytics**: Bridge 2-level gap (Current: 2 → Target: 4)\n\n**Next Steps:**\n• Review adaptive recommendations tailored to your specific pain points and gaps\n• Explore latest Databricks features that can address your challenges\n• Prioritize quick wins that deliver immediate value with minimal effort\n• Build a phased roadmap aligning platform evolution with business goals\n\n**Assessment Confidence:** Based on responses across 4 pillars with 11 detailed comments, providing high-quality insights for decision making."
+      },
+      "categoryDetails": {
+        "platform_governance": {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "description": "Assess how well the Databricks foundation is secured, scalable, and governed.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.25,
+          "isPartial": false
+        },
+        "data_engineering": {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "description": "Evaluate how efficiently data is ingested, transformed, and managed within Databricks.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.25,
+          "isPartial": false
+        },
+        "analytics_bi": {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "description": "Assess how Databricks supports governed analytics, performance, and self-service access.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.25,
+          "isPartial": false
+        },
+        "machine_learning": {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "description": "Understand how Databricks is leveraged for classical and predictive ML use cases.",
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0,
+          "level": {
+            "level": "Initial",
+            "description": "Ad-hoc processes, limited capabilities",
+            "color": "#ff4444"
+          },
+          "weight": 0.25,
+          "isPartial": false
+        }
+      },
+      "categories": {
+        "platform_governance": {
+          "name": "🧱 Platform",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 🧱 Platform capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            },
+            {
+              "priority": "high",
+              "title": "Cost Optimization Initiative",
+              "description": "Address cost concerns mentioned in your comments",
+              "actions": [
+                "Conduct cost analysis and optimization review",
+                "Implement cost monitoring and budgeting",
+                "Review and rightsize resources"
+              ],
+              "rationale": "Based on cost concerns in your comments",
+              "source": "user_comment"
+            }
+          ]
+        },
+        "data_engineering": {
+          "name": "💾 Data",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 💾 Data capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            },
+            {
+              "priority": "high",
+              "title": "Simplify Integration Architecture",
+              "actions": [
+                "Implement Databricks Partner Connect for common integrations",
+                "Standardize on REST APIs and streaming interfaces",
+                "Deploy integration templates and reusable connectors",
+                "Document integration patterns and best practices"
+              ],
+              "impact": "Reduces integration complexity you're experiencing",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "medium",
+              "title": "Enhance Monitoring and Observability",
+              "actions": [
+                "Deploy comprehensive monitoring dashboards",
+                "Implement alerting for critical metrics",
+                "Integrate with enterprise monitoring tools",
+                "Establish SLAs and SLO tracking"
+              ],
+              "impact": "Fills your monitoring gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            }
+          ]
+        },
+        "analytics_bi": {
+          "name": "📊 Analytics",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 📊 Analytics capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            },
+            {
+              "priority": "critical",
+              "title": "Strengthen Security Posture",
+              "actions": [
+                "Implement Unity Catalog for centralized governance",
+                "Enable audit logging and compliance monitoring",
+                "Deploy column and row-level security",
+                "Implement secrets management and credential vaulting"
+              ],
+              "impact": "Closes your identified security gaps",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "high",
+              "title": "Optimize Performance and Query Speed",
+              "actions": [
+                "Enable Photon engine for query acceleration",
+                "Implement Delta Lake optimization (Z-ordering, compaction)",
+                "Review and optimize cluster configurations",
+                "Implement caching strategies for frequently accessed data"
+              ],
+              "impact": "Resolves your performance bottlenecks",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            },
+            {
+              "priority": "high",
+              "title": "Simplify Integration Architecture",
+              "actions": [
+                "Implement Databricks Partner Connect for common integrations",
+                "Standardize on REST APIs and streaming interfaces",
+                "Deploy integration templates and reusable connectors",
+                "Document integration patterns and best practices"
+              ],
+              "impact": "Reduces integration complexity you're experiencing",
+              "rationale": "Addresses your reported technical pain point",
+              "source": "technical_pain_point"
+            }
+          ]
+        },
+        "machine_learning": {
+          "name": "🧠 ML",
+          "currentScore": 2,
+          "futureScore": 4,
+          "gap": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "targetLevel": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "recommendations": [
+            {
+              "priority": "critical",
+              "title": "Close 2-Level Maturity Gap",
+              "description": "Based on your input, you want to improve from level 2 to 4.",
+              "actions": [
+                "Assess current 🧠 ML capabilities",
+                "Define roadmap from level 2 to level 4",
+                "Identify and address capability gaps",
+                "Implement best practices and standards",
+                "Measure progress and adjust strategy"
+              ],
+              "rationale": "Directly addresses your stated ambition and goals",
+              "timeline": "9-12 months"
+            }
+          ]
+        }
+      },
+      "painPointRecommendations": [
+        {
+          "priority": "high",
+          "title": "Simplify Integration Architecture",
+          "actions": [
+            "Implement Databricks Partner Connect for common integrations",
+            "Standardize on REST APIs and streaming interfaces",
+            "Deploy integration templates and reusable connectors",
+            "Document integration patterns and best practices"
+          ],
+          "impact": "Reduces integration complexity you're experiencing",
+          "frequency": 2,
+          "type": "technical"
+        },
+        {
+          "priority": "medium",
+          "title": "Enhance Monitoring and Observability",
+          "actions": [
+            "Deploy comprehensive monitoring dashboards",
+            "Implement alerting for critical metrics",
+            "Integrate with enterprise monitoring tools",
+            "Establish SLAs and SLO tracking"
+          ],
+          "impact": "Fills your monitoring gaps",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "high",
+          "title": "Optimize Performance and Query Speed",
+          "actions": [
+            "Enable Photon engine for query acceleration",
+            "Implement Delta Lake optimization (Z-ordering, compaction)",
+            "Review and optimize cluster configurations",
+            "Implement caching strategies for frequently accessed data"
+          ],
+          "impact": "Resolves your performance bottlenecks",
+          "frequency": 1,
+          "type": "technical"
+        },
+        {
+          "priority": "critical",
+          "title": "Strengthen Security Posture",
+          "actions": [
+            "Implement Unity Catalog for centralized governance",
+            "Enable audit logging and compliance monitoring",
+            "Deploy column and row-level security",
+            "Implement secrets management and credential vaulting"
+          ],
+          "impact": "Closes your identified security gaps",
+          "frequency": 1,
+          "type": "technical"
+        }
+      ],
+      "gapBasedActions": [
+        {
+          "area": "💾 Data",
+          "areaId": "data_engineering",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 2,
+          "priority": "high",
+          "title": "Bridge 2-level gap in 💾 Data",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "high",
+          "timeline": "6-12 months"
+        },
+        {
+          "area": "🧠 ML",
+          "areaId": "machine_learning",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 2,
+          "priority": "high",
+          "title": "Bridge 2-level gap in 🧠 ML",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "high",
+          "timeline": "6-12 months"
+        },
+        {
+          "area": "🧱 Platform",
+          "areaId": "platform_governance",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 1.8571428571428577,
+          "priority": "medium",
+          "title": "Bridge 1.8571428571428577-level gap in 🧱 Platform",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        },
+        {
+          "area": "📊 Analytics",
+          "areaId": "analytics_bi",
+          "currentLevel": 2,
+          "targetLevel": 4,
+          "gap": 1.7999999999999998,
+          "priority": "medium",
+          "title": "Bridge 1.7999999999999998-level gap in 📊 Analytics",
+          "description": "You've indicated a desired improvement from level 2 to level 4. This represents significant ambition and requires focused effort.",
+          "effort": "medium",
+          "timeline": "3-6 months"
+        }
+      ],
+      "commentBasedInsights": [
+        {
+          "areaId": "platform_governance",
+          "areaName": "🧱 Platform",
+          "questionId": "env_standardization",
+          "comment": "Currently using manual scripts for environment setup. Need automation.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "platform_governance",
+          "areaName": "🧱 Platform",
+          "questionId": "auth_consistency",
+          "comment": "Unity Catalog implemented but need better audit trails",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "platform_governance",
+          "areaName": "🧱 Platform",
+          "questionId": "cost_tracking",
+          "comment": "Need better cost visibility per team and project",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": true,
+            "time": false
+          }
+        },
+        {
+          "areaId": "data_engineering",
+          "areaName": "💾 Data",
+          "questionId": "ingestion_automation",
+          "comment": "Using custom Python scripts. Want to adopt Auto Loader and Delta Live Tables.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "data_engineering",
+          "areaName": "💾 Data",
+          "questionId": "data_layer_structure",
+          "comment": "Medallion architecture partially implemented.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "data_engineering",
+          "areaName": "💾 Data",
+          "questionId": "pipeline_reliability",
+          "comment": "Pipeline failures require manual intervention. Need better orchestration.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "data_engineering",
+          "areaName": "💾 Data",
+          "questionId": "quality_processes",
+          "comment": "Ad-hoc data quality checks. Need automated DQ framework.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "analytics_bi",
+          "areaName": "📊 Analytics",
+          "questionId": "response_times",
+          "comment": "Most queries are fast, but some large aggregations need optimization.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": true
+          }
+        },
+        {
+          "areaId": "analytics_bi",
+          "areaName": "📊 Analytics",
+          "questionId": "semantic_consistency",
+          "comment": "Different teams define metrics differently. Need central semantic layer.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "analytics_bi",
+          "areaName": "📊 Analytics",
+          "questionId": "tool_integration",
+          "comment": "Using Tableau and Power BI. Some integration challenges.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": true,
+            "cost": false,
+            "time": false
+          }
+        },
+        {
+          "areaId": "analytics_bi",
+          "areaName": "📊 Analytics",
+          "questionId": "user_empowerment",
+          "comment": "Most users rely on IT for data access. Need better self-service.",
+          "keywords": {
+            "urgency": false,
+            "positive": false,
+            "negative": false,
+            "cost": false,
+            "time": false
+          }
+        }
+      ],
+      "prioritizedActions": [
+        {
+          "priority": "critical",
+          "title": "Strengthen Security Posture",
+          "actions": [
+            "Implement Unity Catalog for centralized governance",
+            "Enable audit logging and compliance monitoring",
+            "Deploy column and row-level security",
+            "Implement secrets management and credential vaulting"
+          ],
+          "impact": "Closes your identified security gaps",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "high",
+          "title": "Simplify Integration Architecture",
+          "actions": [
+            "Implement Databricks Partner Connect for common integrations",
+            "Standardize on REST APIs and streaming interfaces",
+            "Deploy integration templates and reusable connectors",
+            "Document integration patterns and best practices"
+          ],
+          "impact": "Reduces integration complexity you're experiencing",
+          "frequency": 2,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "high",
+          "title": "Optimize Performance and Query Speed",
+          "actions": [
+            "Enable Photon engine for query acceleration",
+            "Implement Delta Lake optimization (Z-ordering, compaction)",
+            "Review and optimize cluster configurations",
+            "Implement caching strategies for frequently accessed data"
+          ],
+          "impact": "Resolves your performance bottlenecks",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 🧱 Platform",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 💾 Data",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 📊 Analytics",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "high",
+          "category": "Capability Gap",
+          "title": "Close gap in 🧠 ML",
+          "gap": 2,
+          "impact": "Achieves your stated maturity goals"
+        },
+        {
+          "priority": "medium",
+          "title": "Enhance Monitoring and Observability",
+          "actions": [
+            "Deploy comprehensive monitoring dashboards",
+            "Implement alerting for critical metrics",
+            "Integrate with enterprise monitoring tools",
+            "Establish SLAs and SLO tracking"
+          ],
+          "impact": "Fills your monitoring gaps",
+          "frequency": 1,
+          "type": "technical",
+          "category": "Pain Point Resolution"
+        }
+      ],
+      "roadmap": {
+        "immediate": [],
+        "shortTerm": [],
+        "mediumTerm": [],
+        "longTerm": []
+      },
+      "quickWins": [],
+      "riskAreas": [],
+      "executiveSummary": {
+        "currentState": {
+          "score": 2,
+          "level": {
+            "level": "Developing",
+            "description": "Basic implementation with some structure",
+            "color": "#ff8800"
+          },
+          "description": "Your organization is currently at maturity level 2"
+        },
+        "desiredState": {
+          "score": 4,
+          "level": {
+            "level": "Managed",
+            "description": "Advanced capabilities with strong governance",
+            "color": "#88cc00"
+          },
+          "description": "Your target is to reach maturity level 4"
+        },
+        "gap": {
+          "levels": 2,
+          "description": "Significant transformation required",
+          "effort": "High"
+        },
+        "keyPainPoints": {
+          "technical": [
+            {
+              "painPoint": "alert_fatigue",
+              "count": 2,
+              "description": "alert_fatigue"
+            },
+            {
+              "painPoint": "performance_impact",
+              "count": 2,
+              "description": "performance_impact"
+            },
+            {
+              "painPoint": "tool_integration",
+              "count": 2,
+              "description": "tool_integration"
+            },
+            {
+              "painPoint": "schema_conflicts",
+              "count": 2,
+              "description": "schema_conflicts"
+            },
+            {
+              "painPoint": "integration_complexity",
+              "count": 2,
+              "description": "Simplify Integration Architecture"
+            }
+          ],
+          "business": [
+            {
+              "painPoint": "team_bottlenecks",
+              "count": 3,
+              "description": "team_bottlenecks"
+            },
+            {
+              "painPoint": "user_confusion",
+              "count": 2,
+              "description": "user_confusion"
+            },
+            {
+              "painPoint": "deployment_delays",
+              "count": 2,
+              "description": "deployment_delays"
+            },
+            {
+              "painPoint": "user_frustration",
+              "count": 2,
+              "description": "user_frustration"
+            },
+            {
+              "painPoint": "growth_blocked",
+              "count": 1,
+              "description": "growth_blocked"
+            }
+          ]
+        },
+        "criticalActions": [
+          {
+            "priority": "critical",
+            "title": "Strengthen Security Posture",
+            "actions": [
+              "Implement Unity Catalog for centralized governance",
+              "Enable audit logging and compliance monitoring",
+              "Deploy column and row-level security",
+              "Implement secrets management and credential vaulting"
+            ],
+            "impact": "Closes your identified security gaps",
+            "frequency": 1,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          }
+        ],
+        "topPriorities": [
+          {
+            "priority": "high",
+            "title": "Simplify Integration Architecture",
+            "actions": [
+              "Implement Databricks Partner Connect for common integrations",
+              "Standardize on REST APIs and streaming interfaces",
+              "Deploy integration templates and reusable connectors",
+              "Document integration patterns and best practices"
+            ],
+            "impact": "Reduces integration complexity you're experiencing",
+            "frequency": 2,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          },
+          {
+            "priority": "high",
+            "title": "Optimize Performance and Query Speed",
+            "actions": [
+              "Enable Photon engine for query acceleration",
+              "Implement Delta Lake optimization (Z-ordering, compaction)",
+              "Review and optimize cluster configurations",
+              "Implement caching strategies for frequently accessed data"
+            ],
+            "impact": "Resolves your performance bottlenecks",
+            "frequency": 1,
+            "type": "technical",
+            "category": "Pain Point Resolution"
+          },
+          {
+            "priority": "high",
+            "category": "Capability Gap",
+            "title": "Close gap in 🧱 Platform",
+            "gap": 2,
+            "impact": "Achieves your stated maturity goals"
+          },
+          {
+            "priority": "high",
+            "category": "Capability Gap",
+            "title": "Close gap in 💾 Data",
+            "gap": 2,
+            "impact": "Achieves your stated maturity goals"
+          },
+          {
+            "priority": "high",
+            "category": "Capability Gap",
+            "title": "Close gap in 📊 Analytics",
+            "gap": 2,
+            "impact": "Achieves your stated maturity goals"
+          }
+        ],
+        "quickWins": [],
+        "estimatedTimeline": "6-12 months for significant improvements",
+        "investmentLevel": "Medium to High",
+        "keyInsights": [
+          {
+            "area": "📊 Analytics",
+            "insight": "Using Tableau and Power BI. Some integration challenges."
+          }
+        ]
+      },
+      "pillarStatus": [
+        {
+          "id": "platform_governance",
+          "name": "🧱 Platform",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "data_engineering",
+          "name": "💾 Data",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "analytics_bi",
+          "name": "📊 Analytics",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "machine_learning",
+          "name": "🧠 ML",
+          "completed": true,
+          "hasResponses": true,
+          "isPartial": false,
+          "score": 0,
+          "currentScore": 0,
+          "futureScore": 0,
+          "gap": 0
+        },
+        {
+          "id": "generative_ai",
+          "name": "🤖 GenAI",
+          "completed": true,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null,
+          "currentScore": null,
+          "futureScore": null,
+          "gap": null
+        },
+        {
+          "id": "operational_excellence",
+          "name": "🚀 Adoption",
+          "completed": true,
+          "hasResponses": false,
+          "isPartial": false,
+          "score": null,
+          "currentScore": null,
+          "futureScore": null,
+          "gap": null
+        }
+      ],
+      "_engineType": "adaptive",
+      "_liveDataEnabled": false,
+      "_liveDataSource": "disabled"
+    }
+  },
+  "7192a9cf-bbb0-44c8-9076-4218d085b8e9": {
+    "id": "7192a9cf-bbb0-44c8-9076-4218d085b8e9",
+    "organizationName": "Not specified",
+    "contactEmail": "nitin.aggarwal@databricks.com",
+    "industry": "Not specified",
+    "assessmentName": "DBX",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-14T17:44:03.886Z",
+    "status": "in_progress",
+    "responses": {
+      "env_standardization_current_state": 1,
+      "env_standardization_future_state": 2,
+      "env_standardization_technical_pain": [
+        "poor_isolation"
+      ],
+      "env_standardization_business_pain": [
+        "quality_issues"
+      ],
+      "scaling_effectiveness_current_state": 2,
+      "scaling_effectiveness_future_state": 4,
+      "scaling_effectiveness_technical_pain": [
+        "infrastructure_limits",
+        "complex_scaling"
+      ],
+      "scaling_effectiveness_business_pain": [
+        "high_costs",
+        "poor_utilization"
+      ],
+      "auth_consistency_current_state": 3,
+      "auth_consistency_future_state": 4,
+      "auth_consistency_technical_pain": [
+        "access_management",
+        "security_gaps",
+        "audit_trails"
+      ],
+      "auth_consistency_business_pain": [
+        "access_delays",
+        "admin_overhead",
+        "user_frustration"
+      ],
+      "security_controls_current_state": 2,
+      "security_controls_future_state": 3,
+      "security_controls_technical_pain": [
+        "monitoring_blind_spots",
+        "encryption_gaps"
+      ],
+      "security_controls_business_pain": [
+        "business_disruption",
+        "regulatory_risk"
+      ],
+      "governance_centralization_current_state": 2,
+      "governance_centralization_future_state": 3,
+      "governance_centralization_technical_pain": [
+        "metadata_management"
+      ],
+      "governance_centralization_business_pain": [
+        "operational_inefficiency"
+      ]
+    },
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editors": [
+      "anonymous@assessment.com"
+    ],
+    "lastEditor": "anonymous@assessment.com",
+    "lastEditedAt": "2025-10-14T18:11:50.696Z",
+    "lastSaved": "2025-10-14T18:11:50.696Z"
+  }
+}

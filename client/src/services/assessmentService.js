@@ -80,7 +80,7 @@ export const startAssessment = async (organizationInfo) => {
  */
 export const getAssessmentStatus = async (assessmentId) => {
   try {
-    const response = await api.get(`/assessment/${assessmentId}/status`);
+    const response = await api.get(`/assessment/${assessmentId}image.png/status`);
     // Backend returns { success: true, data: { ... } }
     if (response.data && response.data.success && response.data.data) {
       return response.data.data;
