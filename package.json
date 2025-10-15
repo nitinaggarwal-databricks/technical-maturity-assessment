@@ -11,7 +11,9 @@
     "install-all": "npm install && cd client && npm install",
     "start": "NODE_ENV=production node server/index.js",
     "heroku-postbuild": "cd client && npm install && CI=false npm run build",
-    "vercel-build": "cd client && npm install && CI=false npm run build"
+    "vercel-build": "cd client && npm install && CI=false npm run build",
+    "migrate": "node server/db/migrate.js",
+    "db:migrate": "node server/db/migrate.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
@@ -20,6 +22,7 @@
     "jspdf": "^2.5.1",
     "nodemailer": "^6.9.1",
     "openai": "^6.3.0",
+    "pg": "^8.16.3",
     "uuid": "^9.0.0",
     "xlsx": "^0.18.5"
   },

@@ -8,7 +8,7 @@ const assessmentFramework = require('./data/assessmentFramework');
 const RecommendationEngine = require('./services/recommendationEngine');
 const AdaptiveRecommendationEngine = require('./services/adaptiveRecommendationEngine');
 const LiveDataEnhancer = require('./services/liveDataEnhancer');
-const DataStore = require('./utils/dataStore');
+const StorageAdapter = require('./utils/storageAdapter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -60,19 +60,31 @@ try {
   console.error('⚠️  ALL DATA WILL BE LOST ON RESTART!');
 }
 
-const assessments = new DataStore(dataFilePath);
+// Initialize storage adapter (PostgreSQL with file-based fallback)
+const assessments = new StorageAdapter(dataFilePath);
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
 const liveDataEnhancer = new LiveDataEnhancer();
 
+// Initialize storage asynchronously
+let storageReady = false;
+assessments.initialize().then(() => {
+  storageReady = true;
+  console.log(`✅ Storage ready: ${assessments.getStorageType()}`);
+}).catch(error => {
+  console.error('❌ Failed to initialize storage:', error);
+  process.exit(1);
+});
+
 // Routes
 
 // Root status endpoint (for debugging)
-app.get('/status', (req, res) => {
+app.get('/status', async (req, res) => {
   try {
     const fs = require('fs');
-    const assessmentData = assessments.getAll();
-    const assessmentCount = Object.keys(assessmentData).length;
+    const assessmentCount = await assessments.size();
+    const stats = await assessments.getStats();
+    const storageType = assessments.getStorageType();
     const dataFileExists = fs.existsSync(dataFilePath);
     
     res.json({
@@ -81,12 +93,16 @@ app.get('/status', (req, res) => {
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString(),
       storage: {
+        type: storageType,
+        assessmentCount: assessmentCount,
+        stats: stats,
+        // Keep legacy fields for compatibility
         dataDir: dataDir,
         dataFilePath: dataFilePath,
         dataFileExists: dataFileExists,
-        assessmentCount: assessmentCount,
         volumeMounted: process.env.DATA_DIR ? true : false,
         dataDirEnv: process.env.DATA_DIR || 'not set (using default)',
+        postgresConfigured: !!process.env.DATABASE_URL,
       },
       features: {
         liveDataEnabled: process.env.USE_LIVE_DATA === 'true',
@@ -103,7 +119,7 @@ app.get('/status', (req, res) => {
 });
 
 // Get assessment framework
-app.get('/api/assessment/framework', (req, res) => {
+app.get('/api/assessment/framework', async (req, res) => {
   try {
     res.json({
       success: true,
@@ -119,7 +135,7 @@ app.get('/api/assessment/framework', (req, res) => {
 });
 
 // Start new assessment
-app.post('/api/assessment/start', (req, res) => {
+app.post('/api/assessment/start', async (req, res) => {
   try {
     const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
     
@@ -149,10 +165,11 @@ app.post('/api/assessment/start', (req, res) => {
       status: 'in_progress',
       responses: {},
       completedCategories: [],
-      currentCategory: assessmentFramework.assessmentAreas[0].id
+      currentCategory: assessmentFramework.assessmentAreas[0].id,
+      editHistory: []
     };
 
-    assessments.set(assessmentId, assessment);
+    await await assessments.set(assessmentId, assessment);
 
     res.json({
       success: true,
@@ -174,10 +191,10 @@ app.post('/api/assessment/start', (req, res) => {
 });
 
 // Get assessment status
-app.get('/api/assessment/:id/status', (req, res) => {
+app.get('/api/assessment/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -191,7 +208,7 @@ app.get('/api/assessment/:id/status', (req, res) => {
     // Ensure legacy assessments have default names
     if (!assessment.assessmentName) {
       assessment.assessmentName = `Databricks Maturity Assessment ${new Date(assessment.startedAt).toLocaleDateString()}`;
-      assessments.set(id, assessment);
+      await assessments.set(id, assessment);
     }
 
     res.json({
@@ -222,10 +239,10 @@ app.get('/api/assessment/:id/status', (req, res) => {
 });
 
 // Get questions for a specific assessment area
-app.get('/api/assessment/:id/category/:categoryId', (req, res) => {
+app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
   try {
     const { id, categoryId } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -295,12 +312,12 @@ app.get('/api/assessment/:id/category/:categoryId', (req, res) => {
 });
 
 // Submit responses for a category
-app.post('/api/assessment/:id/category/:categoryId/submit', (req, res) => {
+app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => {
   try {
     const { id, categoryId } = req.params;
     const { responses } = req.body;
     
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -384,7 +401,7 @@ app.post('/api/assessment/:id/category/:categoryId/submit', (req, res) => {
       assessment.completedAt = new Date().toISOString();
     }
 
-    assessments.set(id, assessment);
+    await assessments.set(id, assessment);
 
     res.json({
       success: true,
@@ -404,12 +421,12 @@ app.post('/api/assessment/:id/category/:categoryId/submit', (req, res) => {
 });
 
 // Update assessment metadata (name, email, etc.)
-app.patch('/api/assessment/:id/metadata', (req, res) => {
+app.patch('/api/assessment/:id/metadata', async (req, res) => {
   try {
     const { id } = req.params;
     const { assessmentName, organizationName, contactEmail, industry, assessmentDescription, editorEmail } = req.body;
     
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -456,7 +473,7 @@ app.patch('/api/assessment/:id/metadata', (req, res) => {
 
     // Update last modified
     assessment.lastModified = new Date().toISOString();
-    assessments.set(id, assessment);
+    await assessments.set(id, assessment);
 
     res.json({
       success: true,
@@ -483,12 +500,12 @@ app.patch('/api/assessment/:id/metadata', (req, res) => {
 });
 
 // Auto-save individual question responses (with editor tracking)
-app.post('/api/assessment/:id/save-progress', (req, res) => {
+app.post('/api/assessment/:id/save-progress', async (req, res) => {
   try {
     const { id } = req.params;
     const { questionId, perspectiveId, value, comment, isSkipped, editorEmail } = req.body;
     
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -539,7 +556,7 @@ app.post('/api/assessment/:id/save-progress', (req, res) => {
 
     // Update last saved timestamp
     assessment.lastSaved = new Date().toISOString();
-    assessments.set(id, assessment);
+    await assessments.set(id, assessment);
 
     res.json({
       success: true,
@@ -560,7 +577,7 @@ app.post('/api/assessment/:id/save-progress', (req, res) => {
 app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -649,7 +666,7 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 app.get('/api/assessment/:id/results', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -876,7 +893,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
 
     // Cache results
     assessment.results = results;
-    assessments.set(id, assessment);
+    await assessments.set(id, assessment);
 
     res.json({
       success: true,
@@ -894,7 +911,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   res.json({
     success: true,
     message: 'Databricks Maturity Assessment API is running',
@@ -914,7 +931,7 @@ app.use((err, req, res, next) => {
 });
 
 // Get all assessments (for past assessments management)
-app.get('/api/assessments', (req, res) => {
+app.get('/api/assessments', async (req, res) => {
   try {
     const assessmentsList = Array.from(assessments.values()).map(assessment => ({
       id: assessment.id,
@@ -949,12 +966,12 @@ app.get('/api/assessments', (req, res) => {
 });
 
 // Clone an existing assessment
-app.post('/api/assessment/:id/clone', (req, res) => {
+app.post('/api/assessment/:id/clone', async (req, res) => {
   try {
     const { id } = req.params;
     const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
     
-    const originalAssessment = assessments.get(id);
+    const originalAssessment = await assessments.get(id);
     if (!originalAssessment) {
       return res.status(404).json({
         success: false,
@@ -987,7 +1004,7 @@ app.post('/api/assessment/:id/clone', (req, res) => {
       clonedAt: new Date().toISOString()
     };
 
-    assessments.set(newAssessmentId, clonedAssessment);
+    await assessments.set(newAssessmentId, clonedAssessment);
 
     res.json({
       success: true,
@@ -1012,11 +1029,11 @@ app.post('/api/assessment/:id/clone', (req, res) => {
 });
 
 // Delete an assessment
-app.delete('/api/assessment/:id', (req, res) => {
+app.delete('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    if (!assessments.has(id)) {
+    if (!await assessments.has(id)) {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
@@ -1043,7 +1060,7 @@ app.delete('/api/assessment/:id', (req, res) => {
 app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
   try {
     const { id, pillarId } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -1172,10 +1189,10 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
 });
 
 // Debug endpoint to manually complete an assessment for testing
-app.post('/api/assessment/:id/debug/complete', (req, res) => {
+app.post('/api/assessment/:id/debug/complete', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = assessments.get(id);
+    const assessment = await assessments.get(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -1199,7 +1216,7 @@ app.post('/api/assessment/:id/debug/complete', (req, res) => {
     assessment.status = 'completed';
     assessment.completedAt = new Date().toISOString();
     
-    assessments.set(id, assessment);
+    await assessments.set(id, assessment);
 
     res.json({
       success: true,
@@ -1221,7 +1238,7 @@ app.post('/api/assessment/:id/debug/complete', (req, res) => {
 // Serve React app for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
   // Catch-all handler for non-API routes - must be LAST
-  app.get('*', (req, res) => {
+  app.get('*', async (req, res) => {
     const indexPath = path.join(__dirname, '../client/build', 'index.html');
     console.log(`Serving index.html from: ${indexPath}`);
     res.sendFile(indexPath, (err) => {
