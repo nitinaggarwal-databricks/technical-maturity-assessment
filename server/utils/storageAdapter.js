@@ -225,7 +225,7 @@ class StorageAdapter {
    */
   async getStats() {
     if (this.usePostgres) {
-      return await db.getStats();
+      return await assessmentRepo.getStats();
     } else {
       const all = this.fileStore.getAll();
       const assessments = Object.values(all);

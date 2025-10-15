@@ -1219,10 +1219,18 @@ if (process.env.NODE_ENV === 'production') {
 
 // Start server (only if not in serverless environment)
 if (process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`🚀 Databricks Maturity Assessment API running on port ${PORT}`);
     console.log(`📊 Assessment framework loaded with ${assessmentFramework.assessmentAreas.length} areas`);
-    console.log(`💾 ${assessments.size} assessment(s) loaded from persistent storage`);
+    
+    // Get assessment count asynchronously
+    try {
+      const count = await assessments.size();
+      console.log(`💾 ${count} assessment(s) loaded from persistent storage`);
+    } catch (error) {
+      console.log(`💾 Assessment storage initialized (count unavailable)`);
+    }
+    
     console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
   });
 }
