@@ -169,7 +169,7 @@ app.post('/api/assessment/start', async (req, res) => {
       editHistory: []
     };
 
-    await await assessments.set(assessmentId, assessment);
+    await assessments.set(assessmentId, assessment);
 
     res.json({
       success: true,
