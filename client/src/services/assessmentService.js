@@ -126,7 +126,9 @@ export const submitCategoryResponses = async (assessmentId, categoryId, response
  */
 export const getAssessmentResults = async (assessmentId) => {
   try {
-    const response = await api.get(`/assessment/${assessmentId}/results`);
+    // Add cache-busting timestamp to force fresh fetch
+    const cacheBuster = Date.now();
+    const response = await api.get(`/assessment/${assessmentId}/results?_=${cacheBuster}`);
     // Backend returns data directly for results endpoint
     return response.data;
   } catch (error) {
@@ -219,7 +221,9 @@ export const updateAssessmentMetadata = async (assessmentId, metadata) => {
 export const getPillarResults = async (assessmentId, pillarId) => {
   try {
     console.log(`[getPillarResults] Fetching for assessment: ${assessmentId}, pillar: ${pillarId}`);
-    const response = await api.get(`/assessment/${assessmentId}/pillar/${pillarId}/results`);
+    // Add cache-busting timestamp to force fresh fetch
+    const cacheBuster = Date.now();
+    const response = await api.get(`/assessment/${assessmentId}/pillar/${pillarId}/results?_=${cacheBuster}`);
     console.log('[getPillarResults] Raw response:', response);
     console.log('[getPillarResults] Response data:', response.data);
     
