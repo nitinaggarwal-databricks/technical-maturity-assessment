@@ -423,17 +423,33 @@ class AdaptiveRecommendationEngine {
     const avgFuture = Math.round(Object.values(areaScores).reduce((sum, s) => sum + s.future, 0) / Object.values(areaScores).length);
     const avgGap = avgFuture - avgCurrent;
     
-    // Count pain points
-    const totalTechnicalPain = Object.values(painPointAnalysis).reduce((sum, p) => sum + p.technical.length, 0);
-    const totalBusinessPain = Object.values(painPointAnalysis).reduce((sum, p) => sum + p.business.length, 0);
-    
-    const urgentComments = commentInsights.filter(c => c.keywords.urgency).length;
-    
     // Get maturity level names
     const currentLevel = assessmentFramework.maturityLevels[avgCurrent] || assessmentFramework.maturityLevels[1];
     const futureLevel = assessmentFramework.maturityLevels[avgFuture] || assessmentFramework.maturityLevels[5];
     
-    // Build structured summary sections
+    // Collect all pain points with their impact descriptions
+    const allPainPoints = [];
+    Object.entries(painPointAnalysis).forEach(([areaId, pains]) => {
+      const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
+      pains.technical.forEach(pain => {
+        if (this.impactMap[pain]) {
+          allPainPoints.push({ area: area.name, type: 'Technical', pain, impact: this.impactMap[pain] });
+        }
+      });
+      pains.business.forEach(pain => {
+        if (this.impactMap[pain]) {
+          allPainPoints.push({ area: area.name, type: 'Business', pain, impact: this.impactMap[pain] });
+        }
+      });
+    });
+    
+    // Identify areas with biggest gaps for roadmap
+    const areasWithGaps = Object.entries(areaScores)
+      .filter(([_, scores]) => scores.gap > 0)
+      .sort((a, b) => b[1].gap - a[1].gap)
+      .slice(0, 3);
+    
+    // Build executive narrative
     let summary = '## STRATEGIC SITUATION & BUSINESS VALUE\n\n';
     
     summary += `**Current Maturity:** Level ${avgCurrent} - ${currentLevel.level}\n`;
@@ -443,73 +459,71 @@ class AdaptiveRecommendationEngine {
     summary += `${futureLevel.description}\n\n`;
     
     if (avgGap > 1) {
-      summary += `**Transformation Scope:** This ${avgGap}-level gap represents significant ambition requiring focused investment and organizational commitment. Success will require executive sponsorship and dedicated resources.\n\n`;
+      summary += `**Improvement Scope:** This ${avgGap}-level improvement is achievable with targeted initiatives and focused effort over the next 6-12 months.\n\n`;
     } else if (avgGap === 1) {
       summary += `**Improvement Scope:** This 1-level improvement is achievable with targeted initiatives and focused effort over the next 6-12 months.\n\n`;
     } else {
       summary += `**Optimization Focus:** You're close to your target state, requiring fine-tuning and optimization rather than major transformation.\n\n`;
     }
     
-    // Critical Constraints section
+    // Critical Constraints - be specific about actual pain points
     summary += '## CRITICAL CONSTRAINTS IMPACTING PERFORMANCE\n\n';
     
-    if (totalTechnicalPain > 0 || totalBusinessPain > 0) {
-      if (totalTechnicalPain > 0) {
-        summary += `**Technical Pain Points:** ${totalTechnicalPain} technical challenges identified that are blocking progress and limiting platform capabilities.\n`;
-      }
-      if (totalBusinessPain > 0) {
-        summary += `**Business Pain Points:** ${totalBusinessPain} business impacts identified including productivity losses, cost inefficiencies, and competitive gaps.\n`;
-      }
-      summary += '\n';
+    if (allPainPoints.length > 0) {
+      // Group by pillar and show top 5 most impactful
+      const pillarGroups = {};
+      allPainPoints.forEach(p => {
+        if (!pillarGroups[p.area]) pillarGroups[p.area] = [];
+        pillarGroups[p.area].push(p);
+      });
       
-      // List top pain points
-      const allAreas = Object.keys(painPointAnalysis);
-      const topPainPoints = [];
-      allAreas.forEach(areaId => {
-        const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
-        const pains = painPointAnalysis[areaId];
-        if (pains.technical.length > 0) {
-          topPainPoints.push(`• ${area.name}: ${pains.technical.length} technical issues requiring immediate attention`);
-        }
-        if (pains.business.length > 0) {
-          topPainPoints.push(`• ${area.name}: ${pains.business.length} business impacts limiting value realization`);
+      Object.entries(pillarGroups).forEach(([area, points]) => {
+        if (points.length > 0) {
+          summary += `**${area}:** ${points.slice(0, 3).map(p => p.impact).join('; ')}\n\n`;
         }
       });
-      summary += topPainPoints.slice(0, 5).join('\n') + '\n\n';
     } else {
       summary += 'No significant pain points identified. Your platform is performing well and meeting current needs.\n\n';
     }
     
-    if (urgentComments > 0) {
-      summary += `**Urgent Concerns:** ${urgentComments} of your comments indicate time-sensitive issues that should be prioritized immediately.\n\n`;
-    }
-    
-    // Strategic Enablers section
-    summary += '## STRATEGIC ENABLERS & RECOMMENDED ACTIONS\n\n';
-    
-    // Identify areas with biggest gaps
-    const areasWithGaps = Object.entries(areaScores)
-      .filter(([_, scores]) => scores.gap > 0)
-      .sort((a, b) => b[1].gap - a[1].gap)
-      .slice(0, 3);
+    // Transformation Roadmap - show clear path
+    summary += '## TRANSFORMATION ROADMAP & BUSINESS VALUE\n\n';
     
     if (areasWithGaps.length > 0) {
-      summary += '**Priority Focus Areas:**\n';
-      areasWithGaps.forEach(([areaId, scores]) => {
+      summary += '**Priority Initiatives:**\n\n';
+      areasWithGaps.forEach(([areaId, scores], idx) => {
         const area = assessmentFramework.assessmentAreas.find(a => a.id === areaId);
-        summary += `• **${area.name}**: Bridge ${scores.gap}-level gap (Current: ${scores.current} → Target: ${scores.future})\n`;
+        const timeline = scores.gap >= 2 ? '6-12 months' : '3-6 months';
+        summary += `${idx + 1}. **${area.name}** (Level ${scores.current} → ${scores.future})\n`;
+        summary += `   Timeline: ${timeline} | Impact: ${scores.gap >= 2 ? 'High' : 'Medium'}\n`;
+        
+        // Add specific Databricks features to adopt
+        if (areaId === 'platform_governance') {
+          summary += '   Key Actions: Implement Unity Catalog for centralized governance, enable audit logging, deploy RBAC with attribute-based access control\n';
+        } else if (areaId === 'data_engineering') {
+          summary += '   Key Actions: Adopt Delta Live Tables for automated pipelines, implement Lakehouse Monitoring for data quality, enable Auto Loader for streaming ingestion\n';
+        } else if (areaId === 'analytics_bi') {
+          summary += '   Key Actions: Deploy Databricks SQL with Serverless compute, enable AI/BI dashboards, implement Genie for natural language queries\n';
+        } else if (areaId === 'machine_learning') {
+          summary += '   Key Actions: Adopt MLflow for experiment tracking, deploy Feature Store for reusable features, implement Model Registry for governance\n';
+        } else if (areaId === 'generative_ai') {
+          summary += '   Key Actions: Deploy Vector Search for RAG applications, use Model Serving for LLM deployment, implement Agent Framework for AI applications\n';
+        } else if (areaId === 'operational_excellence') {
+          summary += '   Key Actions: Enable Serverless Compute for cost optimization, implement FinOps dashboards, deploy automated scaling policies\n';
+        }
+        summary += '\n';
       });
-      summary += '\n';
     }
     
-    summary += '**Next Steps:**\n';
-    summary += '• Review adaptive recommendations tailored to your specific pain points and gaps\n';
-    summary += '• Explore latest Databricks features that can address your challenges\n';
-    summary += '• Prioritize quick wins that deliver immediate value with minimal effort\n';
-    summary += '• Build a phased roadmap aligning platform evolution with business goals\n\n';
+    summary += '**Expected Business Outcomes:**\n';
+    summary += '• Improved data platform reliability and governance posture\n';
+    summary += '• Faster time-to-insight with modern Databricks capabilities\n';
+    summary += '• Reduced manual effort through automation and AI\n';
+    summary += '• Better cost efficiency through serverless and optimized compute\n';
+    summary += '• Enhanced compliance and audit capabilities\n\n';
     
     const allAreas = Object.keys(areaScores);
-    summary += `**Assessment Confidence:** Based on responses across ${allAreas.length} pillars with ${commentInsights.length} detailed comments, providing high-quality insights for decision making.`;
+    summary += `**Assessment Confidence:** Based on ${allAreas.length} pillar(s) with ${allPainPoints.length} specific challenges identified`;
 
     return summary;
   }
