@@ -692,6 +692,19 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       });
     }
 
+    // DEBUG: Log what we retrieved
+    console.log('🔍 Results endpoint - Retrieved assessment:', id);
+    console.log('🔍 Assessment object keys:', Object.keys(assessment));
+    console.log('🔍 Assessment.responses type:', typeof assessment.responses);
+    console.log('🔍 Assessment.responses null/undefined?:', assessment.responses === null || assessment.responses === undefined);
+    console.log('🔍 Assessment.responses is object?:', assessment.responses && typeof assessment.responses === 'object');
+
+    // FIX: Ensure responses exists and is an object
+    if (!assessment.responses || typeof assessment.responses !== 'object') {
+      console.warn('⚠️  WARNING: Assessment responses is null/undefined or not an object! Initializing to empty object.');
+      assessment.responses = {};
+    }
+
     // Allow results even with no responses - will show zero state
     const hasAnyResponses = Object.keys(assessment.responses).length > 0;
     const hasCompletedCategories = assessment.completedCategories.length > 0;
@@ -1069,6 +1082,17 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
         success: false,
         message: 'Assessment not found'
       });
+    }
+
+    // DEBUG: Log what we retrieved for pillar
+    console.log('🔍 Pillar endpoint - Retrieved assessment:', id);
+    console.log('🔍 Assessment.responses type:', typeof assessment.responses);
+    console.log('🔍 Assessment.responses null/undefined?:', assessment.responses === null || assessment.responses === undefined);
+
+    // FIX: Ensure responses exists and is an object
+    if (!assessment.responses || typeof assessment.responses !== 'object') {
+      console.warn('⚠️  WARNING: Assessment responses is null/undefined or not an object! Initializing to empty object.');
+      assessment.responses = {};
     }
 
     // Find the specific pillar

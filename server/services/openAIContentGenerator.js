@@ -111,18 +111,28 @@ Return ONLY valid JSON with the exact structure requested.`;
   buildOverallPrompt(assessment) {
     const { responses } = assessment;
     
+    // DEBUG: Log what we're receiving
+    console.log('🔍 buildOverallPrompt called');
+    console.log('🔍 Assessment ID:', assessment.id);
+    console.log('🔍 Responses type:', typeof responses);
+    console.log('🔍 Responses null/undefined?:', responses === null || responses === undefined);
+    console.log('🔍 Responses keys:', responses ? Object.keys(responses).length : 0);
+    
+    // FIX: Ensure responses is an object
+    const validResponses = responses || {};
+    
     // Extract all filled responses by pillar
     const pillarData = assessmentFramework.assessmentAreas.map(area => {
       const questions = this.getAreaQuestions(area);
       const filledQuestions = [];
       
       questions.forEach(question => {
-        const currentState = responses[`${question.id}_current_state`];
-        const futureState = responses[`${question.id}_future_state`];
-        const technicalPain = responses[`${question.id}_technical_pain`] || [];
-        const businessPain = responses[`${question.id}_business_pain`] || [];
-        const comment = responses[`${question.id}_comment`] || '';
-        const skipped = responses[`${question.id}_skipped`] || false;
+        const currentState = validResponses[`${question.id}_current_state`];
+        const futureState = validResponses[`${question.id}_future_state`];
+        const technicalPain = validResponses[`${question.id}_technical_pain`] || [];
+        const businessPain = validResponses[`${question.id}_business_pain`] || [];
+        const comment = validResponses[`${question.id}_comment`] || '';
+        const skipped = validResponses[`${question.id}_skipped`] || false;
         
         if (!skipped && (currentState || futureState)) {
           filledQuestions.push({
@@ -233,16 +243,25 @@ Return JSON with this structure:
       throw new Error(`Pillar ${pillarId} not found`);
     }
     
+    // DEBUG: Log what we're receiving
+    console.log('🔍 buildPillarPrompt called for pillar:', pillarId);
+    console.log('🔍 Assessment ID:', assessment.id);
+    console.log('🔍 Responses null/undefined?:', responses === null || responses === undefined);
+    console.log('🔍 Responses keys:', responses ? Object.keys(responses).length : 0);
+    
+    // FIX: Ensure responses is an object
+    const validResponses = responses || {};
+    
     const questions = this.getAreaQuestions(area);
     const filledQuestions = [];
     
     questions.forEach(question => {
-      const currentState = responses[`${question.id}_current_state`];
-      const futureState = responses[`${question.id}_future_state`];
-      const technicalPain = responses[`${question.id}_technical_pain`] || [];
-      const businessPain = responses[`${question.id}_business_pain`] || [];
-      const comment = responses[`${question.id}_comment`] || '';
-      const skipped = responses[`${question.id}_skipped`] || false;
+      const currentState = validResponses[`${question.id}_current_state`];
+      const futureState = validResponses[`${question.id}_future_state`];
+      const technicalPain = validResponses[`${question.id}_technical_pain`] || [];
+      const businessPain = validResponses[`${question.id}_business_pain`] || [];
+      const comment = validResponses[`${question.id}_comment`] || '';
+      const skipped = validResponses[`${question.id}_skipped`] || false;
       
       if (!skipped && (currentState || futureState)) {
         filledQuestions.push({
@@ -416,6 +435,12 @@ Return JSON with this structure:
    */
   generateFallbackContent(assessment, pillarId) {
     console.log('⚠️  Generating fallback content (OpenAI unavailable)');
+    console.log('🔍 Fallback - Assessment ID:', assessment.id);
+    console.log('🔍 Fallback - Responses null/undefined?:', assessment.responses === null || assessment.responses === undefined);
+    console.log('🔍 Fallback - Responses keys:', assessment.responses ? Object.keys(assessment.responses).length : 0);
+    
+    // FIX: Ensure responses is not null
+    const validResponses = assessment.responses || {};
     
     // Import the adaptive engine for fallback
     const AdaptiveRecommendationEngine = require('./adaptiveRecommendationEngine');
@@ -424,7 +449,7 @@ Return JSON with this structure:
     if (pillarId) {
       // Generate pillar-specific fallback
       const recommendations = engine.generateAdaptiveRecommendations(
-        assessment.responses,
+        validResponses,
         [pillarId]
       );
       
@@ -451,7 +476,7 @@ Return JSON with this structure:
     } else {
       // Generate overall fallback
       const recommendations = engine.generateAdaptiveRecommendations(
-        assessment.responses
+        validResponses
       );
       
       return recommendations;
