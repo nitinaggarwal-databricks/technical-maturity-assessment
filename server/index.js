@@ -933,7 +933,8 @@ app.use((err, req, res, next) => {
 // Get all assessments (for past assessments management)
 app.get('/api/assessments', async (req, res) => {
   try {
-    const assessmentsList = Array.from(assessments.values()).map(assessment => ({
+    const allAssessments = await assessments.values(); // Await the async call
+    const assessmentsList = allAssessments.map(assessment => ({
       id: assessment.id,
       organizationName: assessment.organizationName,
       contactEmail: assessment.contactEmail,
