@@ -1,6 +1,8 @@
 // Pillar 1: Platform & Governance
 // 🧱 Platform & Governance - Assess how well the Databricks foundation is secured, scalable, and governed.
 
+const { generateMaturityOptions } = require('../standardMaturityLevels');
+
 const platformGovernancePillar = {
   id: 'platform_governance',
   name: '🧱 Platform',
@@ -19,25 +21,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Ad-hoc environments with no standardization', score: 1 },
-                { value: 2, label: 'Basic environment separation with some standards', score: 2 },
-                { value: 3, label: 'Standardized environments with consistent configs', score: 3 },
-                { value: 4, label: 'Fully automated environment provisioning', score: 4 },
-                { value: 5, label: 'Self-service environment management with governance', score: 5 }
-              ]
+              options: generateMaturityOptions('environment')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Maintain current approach', score: 1 },
-                { value: 2, label: 'Implement basic standardization', score: 2 },
-                { value: 3, label: 'Achieve full environment automation', score: 3 },
-                { value: 4, label: 'Enable self-service with governance', score: 4 },
-                { value: 5, label: 'Industry-leading environment management', score: 5 }
-              ]
+              options: generateMaturityOptions('environment')
             },
             {
               id: 'technical_pain',
@@ -77,25 +67,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Single team, limited scalability', score: 1 },
-                { value: 2, label: 'Few teams with resource contention', score: 2 },
-                { value: 3, label: 'Multiple teams with some isolation', score: 3 },
-                { value: 4, label: 'Well-scaled multi-tenant architecture', score: 4 },
-                { value: 5, label: 'Elastic, self-service scaling for all teams', score: 5 }
-              ]
+              options: generateMaturityOptions('scaling')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Support current teams only', score: 1 },
-                { value: 2, label: 'Scale to 5-10 teams', score: 2 },
-                { value: 3, label: 'Scale to 10-50 teams', score: 3 },
-                { value: 4, label: 'Scale to 50+ teams', score: 4 },
-                { value: 5, label: 'Unlimited elastic scaling', score: 5 }
-              ]
+              options: generateMaturityOptions('scaling')
             },
             {
               id: 'technical_pain',
@@ -141,25 +119,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Inconsistent auth across workspaces', score: 1 },
-                { value: 2, label: 'Basic SSO with some inconsistencies', score: 2 },
-                { value: 3, label: 'Standardized SSO and RBAC', score: 3 },
-                { value: 4, label: 'Advanced identity governance', score: 4 },
-                { value: 5, label: 'Zero-trust security model', score: 5 }
-              ]
+              options: generateMaturityOptions('authentication')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Maintain current approach', score: 1 },
-                { value: 2, label: 'Implement consistent SSO', score: 2 },
-                { value: 3, label: 'Advanced RBAC and governance', score: 3 },
-                { value: 4, label: 'Zero-trust architecture', score: 4 },
-                { value: 5, label: 'AI-powered security controls', score: 5 }
-              ]
+              options: generateMaturityOptions('authentication')
             },
             {
               id: 'technical_pain',
@@ -199,25 +165,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Basic security with broad access', score: 1 },
-                { value: 2, label: 'Some data classification and controls', score: 2 },
-                { value: 3, label: 'Comprehensive data protection', score: 3 },
-                { value: 4, label: 'Advanced least-privilege enforcement', score: 4 },
-                { value: 5, label: 'AI-powered security monitoring', score: 5 }
-              ]
+              options: generateMaturityOptions('security')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Maintain current security level', score: 1 },
-                { value: 2, label: 'Implement data classification', score: 2 },
-                { value: 3, label: 'Comprehensive data protection', score: 3 },
-                { value: 4, label: 'Advanced threat detection', score: 4 },
-                { value: 5, label: 'AI-powered security ecosystem', score: 5 }
-              ]
+              options: generateMaturityOptions('security')
             },
             {
               id: 'technical_pain',
@@ -263,25 +217,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'No formal governance framework', score: 1 },
-                { value: 2, label: 'Basic policies with manual enforcement', score: 2 },
-                { value: 3, label: 'Centralized governance with some automation', score: 3 },
-                { value: 4, label: 'Comprehensive automated governance', score: 4 },
-                { value: 5, label: 'AI-powered governance with real-time enforcement', score: 5 }
-              ]
+              options: generateMaturityOptions('governance')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Establish basic governance', score: 1 },
-                { value: 2, label: 'Implement centralized policies', score: 2 },
-                { value: 3, label: 'Automate governance processes', score: 3 },
-                { value: 4, label: 'Advanced policy automation', score: 4 },
-                { value: 5, label: 'AI-driven governance intelligence', score: 5 }
-              ]
+              options: generateMaturityOptions('governance')
             },
             {
               id: 'technical_pain',
@@ -321,25 +263,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Manual compliance tracking', score: 1 },
-                { value: 2, label: 'Basic audit trails and documentation', score: 2 },
-                { value: 3, label: 'Automated compliance monitoring', score: 3 },
-                { value: 4, label: 'Comprehensive compliance framework', score: 4 },
-                { value: 5, label: 'Continuous compliance with real-time monitoring', score: 5 }
-              ]
+              options: generateMaturityOptions('compliance')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Improve current manual processes', score: 1 },
-                { value: 2, label: 'Implement automated audit trails', score: 2 },
-                { value: 3, label: 'Comprehensive compliance automation', score: 3 },
-                { value: 4, label: 'Real-time compliance monitoring', score: 4 },
-                { value: 5, label: 'Predictive compliance management', score: 5 }
-              ]
+              options: generateMaturityOptions('compliance')
             },
             {
               id: 'technical_pain',
@@ -385,25 +315,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Basic logging with limited visibility', score: 1 },
-                { value: 2, label: 'Some monitoring dashboards', score: 2 },
-                { value: 3, label: 'Comprehensive monitoring across key metrics', score: 3 },
-                { value: 4, label: 'Advanced observability with custom metrics', score: 4 },
-                { value: 5, label: 'AI-powered predictive monitoring', score: 5 }
-              ]
+              options: generateMaturityOptions('monitoring')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Improve basic monitoring', score: 1 },
-                { value: 2, label: 'Implement comprehensive dashboards', score: 2 },
-                { value: 3, label: 'Advanced observability platform', score: 3 },
-                { value: 4, label: 'Predictive monitoring and alerting', score: 4 },
-                { value: 5, label: 'Self-healing systems with AI', score: 5 }
-              ]
+              options: generateMaturityOptions('monitoring')
             },
             {
               id: 'technical_pain',
@@ -443,25 +361,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Reactive issue resolution only', score: 1 },
-                { value: 2, label: 'Basic alerting with manual response', score: 2 },
-                { value: 3, label: 'Proactive monitoring with automated alerts', score: 3 },
-                { value: 4, label: 'Predictive issue detection', score: 4 },
-                { value: 5, label: 'Self-healing systems with minimal intervention', score: 5 }
-              ]
+              options: generateMaturityOptions('monitoring')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Improve reactive processes', score: 1 },
-                { value: 2, label: 'Implement proactive alerting', score: 2 },
-                { value: 3, label: 'Predictive issue detection', score: 3 },
-                { value: 4, label: 'Automated issue resolution', score: 4 },
-                { value: 5, label: 'Fully autonomous operations', score: 5 }
-              ]
+              options: generateMaturityOptions('monitoring')
             },
             {
               id: 'technical_pain',
@@ -507,25 +413,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'No cost tracking or visibility', score: 1 },
-                { value: 2, label: 'Basic overall cost monitoring', score: 2 },
-                { value: 3, label: 'Cost allocation by team/project', score: 3 },
-                { value: 4, label: 'Detailed usage analytics and chargeback', score: 4 },
-                { value: 5, label: 'Real-time cost optimization with automation', score: 5 }
-              ]
+              options: generateMaturityOptions('cost')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Implement basic cost tracking', score: 1 },
-                { value: 2, label: 'Cost allocation by business unit', score: 2 },
-                { value: 3, label: 'Comprehensive usage analytics', score: 3 },
-                { value: 4, label: 'Automated cost optimization', score: 4 },
-                { value: 5, label: 'AI-driven cost management', score: 5 }
-              ]
+              options: generateMaturityOptions('cost')
             },
             {
               id: 'technical_pain',
@@ -565,25 +459,13 @@ const platformGovernancePillar = {
               id: 'current_state',
               label: 'Current State',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'No optimization or chargeback practices', score: 1 },
-                { value: 2, label: 'Ad-hoc optimization efforts', score: 2 },
-                { value: 3, label: 'Regular optimization reviews', score: 3 },
-                { value: 4, label: 'Automated optimization with chargeback', score: 4 },
-                { value: 5, label: 'Continuous optimization with ML-driven insights', score: 5 }
-              ]
+              options: generateMaturityOptions('cost')
             },
             {
               id: 'future_state',
               label: 'Future State Vision',
               type: 'single_choice',
-              options: [
-                { value: 1, label: 'Establish basic optimization practices', score: 1 },
-                { value: 2, label: 'Implement regular optimization reviews', score: 2 },
-                { value: 3, label: 'Automated optimization and chargeback', score: 3 },
-                { value: 4, label: 'Predictive cost optimization', score: 4 },
-                { value: 5, label: 'Self-optimizing cost management', score: 5 }
-              ]
+              options: generateMaturityOptions('cost')
             },
             {
               id: 'technical_pain',
