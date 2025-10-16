@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
@@ -54,6 +54,7 @@ const Section = styled(motion.div)`
 const ExecutiveSummary = () => {
   const { assessmentId } = useParams();
   const navigate = useNavigate();
+  const routerLocation = useLocation(); // renamed to avoid eslint warning
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,7 +77,7 @@ const ExecutiveSummary = () => {
     if (assessmentId) {
       fetchResults();
     }
-  }, [assessmentId, refreshKey]);
+  }, [assessmentId, refreshKey, routerLocation.key]);
 
   if (loading) {
     return (

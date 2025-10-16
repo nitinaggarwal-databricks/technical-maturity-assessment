@@ -382,6 +382,53 @@ const LoadingSpinner = styled.div`
   }
 `;
 
+const FilterSection = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+`;
+
+const FilterLabel = styled.span`
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+`;
+
+const FilterButton = styled.button`
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid ${props => props.active ? '#ff6b35' : '#e5e7eb'};
+  background: ${props => props.active ? '#ff6b35' : 'white'};
+  color: ${props => props.active ? 'white' : '#666'};
+  font-weight: ${props => props.active ? '600' : '500'};
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    border-color: #ff6b35;
+    ${props => !props.active && 'background: #fff5f2;'}
+  }
+`;
+
+const FilterBadge = styled.span`
+  background: ${props => props.active ? 'rgba(255,255,255,0.3)' : '#f3f4f6'};
+  color: ${props => props.active ? 'white' : '#666'};
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+`;
+
 const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) => {
   const { assessmentId, categoryId } = useParams();
   const [searchParams] = useSearchParams();
@@ -397,9 +444,15 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [editorEmail, setEditorEmail] = useState(null);
+  const [questionFilter, setQuestionFilter] = useState('all'); // 'all', 'completed', 'not_started', 'without_notes'
 
   // Get dimension from query parameter
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
+
+  // Reset question index when filter changes
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+  }, [questionFilter]);
 
   // Check for editor email in session storage on mount
   useEffect(() => {
@@ -518,9 +571,86 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     }
   }, [currentArea, currentQuestionIndex]);
 
-  const currentQuestion = currentArea?.questions?.[currentQuestionIndex];
   const totalQuestions = currentArea?.questions?.length || 0;
   const progress = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
+
+  // Check if a question is completed (has all required perspective responses)
+  const isQuestionCompleted = (question) => {
+    if (!question) return false;
+    
+    // Check if all perspectives have responses
+    const allPerspectivesAnswered = question.perspectives.every(perspective => {
+      const responseKey = `${question.id}_${perspective.id}`;
+      const response = responses[responseKey];
+      return response && (Array.isArray(response) ? response.length > 0 : true);
+    });
+    
+    return allPerspectivesAnswered;
+  };
+
+  // Check if question has notes/comments
+  const hasNotes = (question) => {
+    const commentKey = `${question.id}_comment`;
+    return responses[commentKey] && responses[commentKey].trim().length > 0;
+  };
+
+  // Get filtered questions based on selected filter
+  const getFilteredQuestions = () => {
+    if (!currentArea?.questions) return [];
+    
+    return currentArea.questions.filter((question, index) => {
+      const isCompleted = isQuestionCompleted(question);
+      const hasComment = hasNotes(question);
+      
+      switch (questionFilter) {
+        case 'completed':
+          return isCompleted;
+        case 'not_started':
+          return !isCompleted;
+        case 'without_notes':
+          return isCompleted && !hasComment;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+  };
+
+  // Calculate filter statistics
+  const getFilterStats = () => {
+    if (!currentArea?.questions) return { completed: 0, notStarted: 0, withoutNotes: 0, total: 0 };
+    
+    let completed = 0;
+    let notStarted = 0;
+    let withoutNotes = 0;
+    
+    currentArea.questions.forEach(question => {
+      const isCompleted = isQuestionCompleted(question);
+      const hasComment = hasNotes(question);
+      
+      if (isCompleted) {
+        completed++;
+        if (!hasComment) withoutNotes++;
+      } else {
+        notStarted++;
+      }
+    });
+    
+    return {
+      completed,
+      notStarted,
+      withoutNotes,
+      total: currentArea.questions.length
+    };
+  };
+
+  const filteredQuestions = getFilteredQuestions();
+  const filterStats = getFilterStats();
+  
+  // Get the actual current question from filtered list or original list
+  const currentQuestion = questionFilter === 'all' 
+    ? currentArea?.questions?.[currentQuestionIndex]
+    : filteredQuestions[currentQuestionIndex >= filteredQuestions.length ? 0 : currentQuestionIndex];
 
   // Get current dimension for display
   const getCurrentDimension = () => {
@@ -662,10 +792,18 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       return;
     }
 
-    if (currentQuestionIndex < totalQuestions - 1) {
+    const maxIndex = (questionFilter === 'all' ? totalQuestions : filteredQuestions.length) - 1;
+    if (currentQuestionIndex < maxIndex) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      handleSubmitArea();
+      if (questionFilter === 'all') {
+        handleSubmitArea();
+      } else {
+        toast('You have reached the end of filtered questions. Switch to "All" to submit the pillar.', {
+          icon: 'ℹ️',
+          duration: 4000
+        });
+      }
     }
   };
 
@@ -812,7 +950,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 )}
               </AutoSaveStatus>
               <ProgressText>
-                Question {currentQuestionIndex + 1} of {totalQuestions}
+                Question {currentQuestionIndex + 1} of {questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
+                {questionFilter !== 'all' && <span style={{ color: '#ff6b35', fontWeight: 600 }}> (Filtered)</span>}
               </ProgressText>
             </div>
           </ProgressInfo>
@@ -820,6 +959,46 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             <ProgressFill progress={progress} />
           </ProgressBar>
         </ProgressSection>
+
+        <FilterSection>
+          <FilterLabel>Filter Questions:</FilterLabel>
+          <FilterButton 
+            active={questionFilter === 'all'} 
+            onClick={() => setQuestionFilter('all')}
+          >
+            All
+            <FilterBadge active={questionFilter === 'all'}>
+              {filterStats.total}
+            </FilterBadge>
+          </FilterButton>
+          <FilterButton 
+            active={questionFilter === 'completed'} 
+            onClick={() => setQuestionFilter('completed')}
+          >
+            Completed
+            <FilterBadge active={questionFilter === 'completed'}>
+              {filterStats.completed}
+            </FilterBadge>
+          </FilterButton>
+          <FilterButton 
+            active={questionFilter === 'not_started'} 
+            onClick={() => setQuestionFilter('not_started')}
+          >
+            Not Started
+            <FilterBadge active={questionFilter === 'not_started'}>
+              {filterStats.notStarted}
+            </FilterBadge>
+          </FilterButton>
+          <FilterButton 
+            active={questionFilter === 'without_notes'} 
+            onClick={() => setQuestionFilter('without_notes')}
+          >
+            Completed Without Notes
+            <FilterBadge active={questionFilter === 'without_notes'}>
+              {filterStats.withoutNotes}
+            </FilterBadge>
+          </FilterButton>
+        </FilterSection>
 
         <ScrollableContent>
           <AnimatePresence mode="wait">
@@ -864,7 +1043,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                     {perspective.type === 'single_choice' ? (
                       perspective.options.map((option) => {
                         const responseKey = `${currentQuestion.id}_${perspective.id}`;
-                        const isSelected = responses[responseKey] === option.value;
+                        const storedValue = responses[responseKey];
+                        // Normalize comparison: convert both to strings to handle type mismatch
+                        const isSelected = storedValue != null && String(storedValue) === String(option.value);
                         
                         return (
                           <OptionButton
@@ -884,7 +1065,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                       perspective.options.map((option) => {
                         const responseKey = `${currentQuestion.id}_${perspective.id}`;
                         const selectedValues = responses[responseKey] || [];
-                        const isSelected = selectedValues.includes(option.value);
+                        // Normalize comparison: handle type mismatch for array values
+                        const isSelected = Array.isArray(selectedValues) && 
+                          selectedValues.some(val => String(val) === String(option.value));
                         
                         return (
                           <MultiSelectOption

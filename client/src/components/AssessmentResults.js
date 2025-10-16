@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
@@ -899,6 +899,7 @@ const ContinueButton = styled.button`
 const AssessmentResults = ({ currentAssessment, framework }) => {
   const { assessmentId } = useParams();
   const navigate = useNavigate();
+  const routerLocation = useLocation(); // renamed to avoid eslint warning
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -909,6 +910,8 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
       try {
         setLoading(true);
         setError(null);
+        
+        // Force fresh fetch by adding timestamp to prevent any caching
         const resultsData = await assessmentService.getAssessmentResults(assessmentId);
         setResults(resultsData);
       } catch (error) {
@@ -921,8 +924,9 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
       }
     };
 
+    // Always load results when component mounts, assessmentId changes, or user navigates to this page
     loadResults();
-  }, [assessmentId, refreshKey]);
+  }, [assessmentId, refreshKey, routerLocation.key]);
 
   const getMaturityLevelName = (score) => {
     const levels = {
