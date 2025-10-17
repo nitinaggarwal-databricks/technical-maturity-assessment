@@ -16,10 +16,12 @@ import {
   FiClock,
   FiEdit3,
   FiSearch,
-  FiFilter
+  FiFilter,
+  FiDownload
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import { exportAssessmentToExcel } from '../services/excelExportService';
 import LoadingSpinner from './LoadingSpinner';
 
 const ManagementContainer = styled.div`
@@ -266,6 +268,15 @@ const CardButton = styled(motion.button)`
       background: #fed7aa;
     }
   `}
+
+  ${props => props.variant === 'export' && `
+    background: #ecfdf5;
+    color: #059669;
+    
+    &:hover {
+      background: #d1fae5;
+    }
+  `}
 `;
 
 const EmptyState = styled.div`
@@ -437,6 +448,27 @@ const AssessmentManagement = () => {
     }
   };
 
+  const handleExport = async (assessment) => {
+    const loadingToast = toast.loading('Exporting to Excel...');
+    
+    try {
+      const result = await exportAssessmentToExcel(
+        assessment.id, 
+        assessment.assessmentName
+      );
+      
+      toast.success(`Successfully exported: ${result.fileName}`, {
+        id: loadingToast,
+        duration: 4000
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export to Excel. Please try again.', {
+        id: loadingToast
+      });
+    }
+  };
+
   const filteredAssessments = (assessments || []).filter(assessment =>
     assessment.organizationName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     assessment.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -587,6 +619,16 @@ const AssessmentManagement = () => {
                   >
                     <FiBarChart2 size={12} />
                     View Results
+                  </CardButton>
+
+                  <CardButton
+                    variant="export"
+                    onClick={() => handleExport(assessment)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FiDownload size={12} />
+                    Export
                   </CardButton>
 
                   <CardButton
