@@ -250,6 +250,24 @@ export const getPillarResults = async (assessmentId, pillarId) => {
 };
 
 /**
+ * Generate a sample assessment with random data
+ */
+export const generateSampleAssessment = async (completionLevel = 'full', specificPillars = null) => {
+  try {
+    log('[generateSampleAssessment] Generating with level:', completionLevel);
+    const response = await api.post('/assessment/generate-sample', {
+      completionLevel,
+      specificPillars
+    });
+    log('[generateSampleAssessment] Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Failed to generate sample assessment:', error);
+    throw error;
+  }
+};
+
+/**
  * Health check
  */
 export const healthCheck = async () => {

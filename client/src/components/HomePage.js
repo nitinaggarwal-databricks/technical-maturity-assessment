@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { 
   FiTarget, 
   FiTrendingUp, 
@@ -13,8 +14,10 @@ import {
   FiAward,
   FiLayers,
   FiZap,
-  FiFolder
+  FiFolder,
+  FiShuffle
 } from 'react-icons/fi';
+import * as assessmentService from '../services/assessmentService';
 
 const HomeContainer = styled.div`
   min-height: calc(100vh - 80px);
@@ -124,6 +127,7 @@ const SecondaryButton = styled(motion.button)`
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  position: relative;
   gap: 8px;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
@@ -132,6 +136,60 @@ const SecondaryButton = styled(motion.button)`
     background: rgba(255, 255, 255, 0.25);
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+const SampleButtonWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const SampleDropdown = styled(motion.div)`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  min-width: 200px;
+`;
+
+const SampleMenuItem = styled.button`
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #1e3a8a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  span:first-child {
+    font-weight: 700;
+  }
+
+  span:last-child {
+    font-size: 0.85rem;
+    opacity: 0.7;
   }
 `;
 
@@ -396,6 +454,56 @@ const MaturityMattersGrid = styled.div`
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [generatingSample, setGeneratingSample] = useState(false);
+  const [showSampleMenu, setShowSampleMenu] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowSampleMenu(false);
+      }
+    };
+
+    if (showSampleMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSampleMenu]);
+
+  const handleGenerateSample = async (completionLevel) => {
+    try {
+      setGeneratingSample(true);
+      setShowSampleMenu(false);
+      
+      toast.loading('Generating sample assessment...', { id: 'sample-gen' });
+      
+      const response = await assessmentService.generateSampleAssessment(completionLevel);
+      
+      if (response.success) {
+        toast.success(`Sample assessment "${response.assessment.name}" created!`, {
+          id: 'sample-gen',
+          duration: 4000
+        });
+        
+        // Navigate to the results page after a brief delay
+        setTimeout(() => {
+          navigate(`/results/${response.assessment.id}`);
+        }, 1000);
+      } else {
+        toast.error('Failed to generate sample assessment', { id: 'sample-gen' });
+      }
+    } catch (error) {
+      console.error('Error generating sample:', error);
+      toast.error('Error generating sample assessment', { id: 'sample-gen' });
+    } finally {
+      setGeneratingSample(false);
+    }
+  };
 
   return (
     <HomeContainer>
@@ -452,6 +560,39 @@ const HomePage = () => {
             <FiTarget size={18} />
             Explore Framework
           </SecondaryButton>
+
+          <SampleButtonWrapper ref={dropdownRef}>
+            <SecondaryButton
+              onClick={() => setShowSampleMenu(!showSampleMenu)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={generatingSample}
+            >
+              <FiShuffle size={18} />
+              {generatingSample ? 'Generating...' : 'Try Sample Assessment'}
+            </SecondaryButton>
+
+            {showSampleMenu && (
+              <SampleDropdown
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <SampleMenuItem onClick={() => handleGenerateSample('full')}>
+                  <span>🎯 Full Assessment</span>
+                  <span>All 6 pillars completed</span>
+                </SampleMenuItem>
+                <SampleMenuItem onClick={() => handleGenerateSample('partial')}>
+                  <span>⚡ Partial Assessment</span>
+                  <span>3-4 pillars completed</span>
+                </SampleMenuItem>
+                <SampleMenuItem onClick={() => handleGenerateSample('minimal')}>
+                  <span>🔍 Minimal Assessment</span>
+                  <span>1-2 pillars completed</span>
+                </SampleMenuItem>
+              </SampleDropdown>
+            )}
+          </SampleButtonWrapper>
         </ButtonGroup>
 
         <StatsBar

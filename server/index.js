@@ -10,6 +10,7 @@ const AdaptiveRecommendationEngine = require('./services/adaptiveRecommendationE
 const LiveDataEnhancer = require('./services/liveDataEnhancer');
 const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const StorageAdapter = require('./utils/storageAdapter');
+const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1221,6 +1222,48 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error completing assessment',
+      error: error.message
+    });
+  }
+});
+
+// Generate sample assessment with random realistic data
+app.post('/api/assessment/generate-sample', async (req, res) => {
+  try {
+    const { completionLevel = 'full', specificPillars = null } = req.body;
+    
+    console.log(`🎲 Generating sample assessment with completion level: ${completionLevel}`);
+    
+    // Generate sample assessment
+    const sampleAssessment = sampleAssessmentGenerator.generateSampleAssessment({
+      completionLevel,
+      specificPillars
+    });
+    
+    // Save to storage
+    await assessments.save(sampleAssessment);
+    
+    console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.name})`);
+    console.log(`   Completed pillars: ${sampleAssessment.completedAreas.length}/6`);
+    console.log(`   Total responses: ${Object.keys(sampleAssessment.responses).length}`);
+    
+    res.json({
+      success: true,
+      message: 'Sample assessment generated successfully',
+      assessment: {
+        id: sampleAssessment.id,
+        name: sampleAssessment.name,
+        organizationName: sampleAssessment.organizationName,
+        status: sampleAssessment.status,
+        completedAreas: sampleAssessment.completedAreas,
+        totalResponses: Object.keys(sampleAssessment.responses).length
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error generating sample assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating sample assessment',
       error: error.message
     });
   }
