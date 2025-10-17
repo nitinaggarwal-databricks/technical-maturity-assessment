@@ -25,6 +25,7 @@ import {
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import LoadingSpinner from './LoadingSpinner';
+import AssessmentHeader from './AssessmentHeader';
 
 // Register Chart.js components
 ChartJS.register(
@@ -377,12 +378,27 @@ const PillarResults = () => {
   }
 
   return (
-    <ResultsContainer>
-      <BackButton
-        onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
+    <>
+      <AssessmentHeader
+        assessmentId={assessmentId}
+        assessmentName={results?.assessmentInfo?.assessmentName || assessment?.assessmentName || 'Pillar Results'}
+        organizationName={results?.assessmentInfo?.organizationName || assessment?.organizationName}
+        currentView="results"
+        onAssessmentUpdate={(updatedData) => {
+          if (updatedData.assessmentName) {
+            // Reload pillar results after edit
+            window.location.reload();
+          }
+        }}
+        isSample={assessment?.name?.includes('Sample') || assessment?.organizationName?.includes('Sample')}
+      />
+      
+      <ResultsContainer>
+        <BackButton
+          onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
         <FiArrowLeft size={16} />
         Back to Assessment
       </BackButton>
@@ -743,6 +759,7 @@ const PillarResults = () => {
         </NavigationSection>
       </ContentWrapper>
     </ResultsContainer>
+    </>
   );
 };
 

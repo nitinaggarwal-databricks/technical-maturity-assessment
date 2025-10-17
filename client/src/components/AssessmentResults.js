@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { generateProfessionalReport } from '../services/pdfExportService';
 import LoadingSpinner from './LoadingSpinner';
+import AssessmentHeader from './AssessmentHeader';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
 
@@ -1163,10 +1164,25 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
   };
 
   return (
-    <ResultsContainer>
-      <style>{`
-        /* Force background colors and graphics to print */
-        * {
+    <>
+      <AssessmentHeader
+        assessmentId={assessmentId}
+        assessmentName={results?.assessmentInfo?.assessmentName || currentAssessment?.assessmentName || 'Assessment Results'}
+        organizationName={results?.assessmentInfo?.organizationName || currentAssessment?.organizationName}
+        currentView="results"
+        onAssessmentUpdate={(updatedData) => {
+          // Refresh results if name changed
+          if (updatedData.assessmentName) {
+            fetchResults();
+          }
+        }}
+        isSample={currentAssessment?.name?.includes('Sample') || currentAssessment?.organizationName?.includes('Sample')}
+      />
+      
+      <ResultsContainer>
+        <style>{`
+          /* Force background colors and graphics to print */
+          * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           color-adjust: exact !important;
@@ -2226,6 +2242,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
 
       </ContentWrapper>
     </ResultsContainer>
+    </>
   );
 };
 

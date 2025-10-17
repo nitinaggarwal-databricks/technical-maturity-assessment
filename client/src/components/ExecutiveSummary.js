@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiArrowLeft, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import AssessmentHeader from './AssessmentHeader';
 
 const SummaryContainer = styled.div`
   min-height: calc(100vh - 80px);
@@ -106,12 +107,26 @@ const ExecutiveSummary = () => {
   }
 
   return (
-    <SummaryContainer>
-      <BackButton
-        onClick={() => navigate(`/results/${assessmentId}`)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
+    <>
+      <AssessmentHeader
+        assessmentId={assessmentId}
+        assessmentName={results?.assessmentInfo?.assessmentName || 'Executive Summary'}
+        organizationName={results?.assessmentInfo?.organizationName}
+        currentView="executive"
+        onAssessmentUpdate={(updatedData) => {
+          if (updatedData.assessmentName) {
+            fetchResults();
+          }
+        }}
+        isSample={results?.assessmentInfo?.organizationName?.includes('Sample')}
+      />
+      
+      <SummaryContainer>
+        <BackButton
+          onClick={() => navigate(`/results/${assessmentId}`)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
         <FiArrowLeft /> Back to Results
       </BackButton>
 
@@ -334,6 +349,7 @@ const ExecutiveSummary = () => {
         </div>
       </Section>
     </SummaryContainer>
+    </>
   );
 };
 
