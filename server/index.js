@@ -1240,8 +1240,8 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       specificPillars
     });
     
-    // Save to storage
-    await assessments.save(sampleAssessment);
+    // Save to storage (use set method, not save)
+    await assessments.set(sampleAssessment.id, sampleAssessment);
     
     console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.name})`);
     console.log(`   Completed pillars: ${sampleAssessment.completedAreas.length}/6`);
