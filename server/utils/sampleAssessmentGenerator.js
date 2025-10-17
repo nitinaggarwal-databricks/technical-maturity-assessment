@@ -13,6 +13,19 @@ class SampleAssessmentGenerator {
       'AI Innovations Inc'
     ];
     
+    this.industries = [
+      'Technology', 'Financial Services', 'Healthcare', 'Retail', 
+      'Manufacturing', 'Telecommunications', 'Energy', 'Media & Entertainment'
+    ];
+    
+    this.assessmentDescriptions = [
+      'Annual technical maturity assessment for strategic planning',
+      'Quarterly evaluation of data and AI capabilities',
+      'Databricks platform readiness assessment',
+      'Digital transformation maturity evaluation',
+      'Cloud migration readiness assessment'
+    ];
+    
     this.painPointProbabilities = {
       technical_pain: 0.6, // 60% chance of selecting each technical pain point
       business_pain: 0.5   // 50% chance of selecting each business pain point
@@ -148,18 +161,31 @@ class SampleAssessmentGenerator {
 
     const assessmentId = uuidv4();
     const companyName = this.randomChoice(this.companyNames);
-    const editorEmail = 'demo@databricks.com';
+    const industry = this.randomChoice(this.industries);
+    const description = this.randomChoice(this.assessmentDescriptions);
+    const contactEmail = `contact@${companyName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
     
     const assessment = {
       id: assessmentId,
-      name: `${companyName} - Maturity Assessment`,
+      assessmentName: `${companyName} - ${completionLevel === 'full' ? 'Complete' : completionLevel === 'partial' ? 'Partial' : 'Initial'} Assessment`,
       organizationName: companyName,
-      editorEmail: editorEmail,
+      contactEmail: contactEmail,
+      industry: industry,
+      assessmentDescription: description,
+      editorEmail: 'sample-generator@databricks.com',
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       status: 'in_progress',
       responses: {},
-      completedCategories: [] // Changed from completedAreas to match frontend expectation
+      completedCategories: [], // Changed from completedAreas to match frontend expectation
+      editHistory: [
+        {
+          timestamp: new Date().toISOString(),
+          editorEmail: 'sample-generator@databricks.com',
+          changes: 'Sample assessment created'
+        }
+      ]
     };
 
     // Determine which pillars to complete
