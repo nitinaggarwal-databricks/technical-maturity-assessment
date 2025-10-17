@@ -254,12 +254,12 @@ export const getPillarResults = async (assessmentId, pillarId) => {
  */
 export const generateSampleAssessment = async (completionLevel = 'full', specificPillars = null) => {
   try {
-    log('[generateSampleAssessment] Generating with level:', completionLevel);
+    console.log('[generateSampleAssessment] Generating with level:', completionLevel);
     const response = await api.post('/assessment/generate-sample', {
       completionLevel,
       specificPillars
     });
-    log('[generateSampleAssessment] Response:', response.data);
+    console.log('[generateSampleAssessment] Response:', response.data);
     return response.data;
   } catch (error) {
     console.error('❌ Failed to generate sample assessment:', error);
