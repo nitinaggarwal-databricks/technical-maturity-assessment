@@ -1947,12 +1947,12 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                           color: '#1e40af',
                           lineHeight: '1.7'
                         }}>
-                          {pillarRec.features.slice(0, 3).map((feature, idx) => (
+                          {(pillarRec.actions || []).slice(0, 3).map((action, idx) => (
                             <li key={idx} style={{ 
                               marginBottom: '12px',
                               color: '#1e3a8a'
                             }}>
-                              {feature.action || `${feature.name} (${feature.status})`}
+                              {typeof action === 'string' ? action : action.action || action.name || 'Action'}
                             </li>
                           ))}
                         </ol>
@@ -2027,7 +2027,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                       </RationaleText>
                     )}
                     
-                    {pillarRec.features && pillarRec.features.length > 0 && (
+                    {pillarRec.features && Array.isArray(pillarRec.features) && pillarRec.features.length > 0 && (
                       <FeaturesGrid>
                         {pillarRec.features.map((feature, fIndex) => (
                           <FeatureCard 
