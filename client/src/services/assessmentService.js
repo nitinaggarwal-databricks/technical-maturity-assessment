@@ -255,12 +255,13 @@ export const getPillarResults = async (assessmentId, pillarId) => {
 export const generateSampleAssessment = async (completionLevel = 'full', specificPillars = null) => {
   try {
     console.log('[generateSampleAssessment] Generating with level:', completionLevel);
-    const response = await api.post('/assessment/generate-sample', {
+    // Note: axios interceptor already returns response.data, so 'data' IS the response body
+    const data = await api.post('/assessment/generate-sample', {
       completionLevel,
       specificPillars
     });
-    console.log('[generateSampleAssessment] Response:', response.data);
-    return response.data;
+    console.log('[generateSampleAssessment] Response:', data);
+    return data;
   } catch (error) {
     console.error('❌ Failed to generate sample assessment:', error);
     throw error;
