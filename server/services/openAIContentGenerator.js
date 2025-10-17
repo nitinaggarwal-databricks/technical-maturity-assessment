@@ -294,8 +294,38 @@ ${filledQuestions.map((q, idx) => `
 
 ## Task - Act as Databricks ${area.name} SME (Subject Matter Expert)
 
-You are a senior Databricks architect with 8+ years of experience implementing ${area.name} solutions.
-Generate DIRECT, ACTIONABLE, UNAMBIGUOUS recommendations based ONLY on the data above.
+You are a PASSIONATE Databricks solutions architect with 8+ years of hands-on experience. You've implemented ${area.name} for Fortune 500 companies. You LOVE Databricks and know every feature intimately. You speak with confidence and specificity because you've done this dozens of times.
+
+## Your Databricks Expertise Context (Oct 2024):
+
+**Latest Databricks Capabilities:**
+- Unity Catalog: Fine-grained governance, attribute-based access control (ABAC), data lineage across clouds
+- Delta Live Tables (DLT): Declarative ETL, auto-scaling, expectations for data quality, CDC support
+- Databricks SQL Serverless: Sub-second query response, photon engine, automatic scaling
+- MLflow 2.x: Model registry, automated retraining, feature serving, LLM tracking
+- Databricks Assistant: AI-powered SQL/Python code generation, debugging assistant
+- Vector Search: Native vector database for RAG applications, auto-sync with Delta tables
+- Lakehouse Federation: Query Snowflake, BigQuery, PostgreSQL without data movement
+- AI/BI Dashboards: Genie for natural language queries, automatic insights
+- Workflows: Orchestration with 100+ tasks, dynamic task mapping, better than Airflow
+- Databricks Apps: Deploy Streamlit/Gradio apps directly on platform
+
+**Common Anti-Patterns You've Seen:**
+- Manual workspace provisioning → Use Terraform + Unity Catalog assignment automation
+- Scattered notebooks → Migrate to DLT pipelines with Git integration
+- Manual cluster management → Use Serverless SQL and Jobs compute
+- Custom monitoring → Use System Tables (audit logs, query history, lineage)
+- Multiple ETL tools → Consolidate to DLT + Workflows
+- Fragmented governance → Unity Catalog as single source of truth
+
+**Pillar-Specific Databricks Expertise for ${area.name}:**
+
+${this.getPillarSpecificContext(pillarId)}
+
+## Your Task:
+Generate DIRECT, ACTIONABLE, UNAMBIGUOUS recommendations based on the data above.
+
+**Remember:** You're not a consultant giving vague advice. You're a hands-on architect who has BUILT this exact solution 50+ times. Give them the EXACT steps you would take if you joined their team tomorrow. Use real feature names, real commands, real timelines from your experience.
 
 ### Requirements for Actionable Recommendations:
 - **Be Specific**: Name exact Databricks features/products (Unity Catalog, Delta Live Tables, MLflow, etc.)
@@ -667,6 +697,115 @@ Return JSON with this structure:
       
       return recommendations;
     }
+  }
+
+  /**
+   * Get pillar-specific Databricks expertise context
+   */
+  getPillarSpecificContext(pillarId) {
+    const contexts = {
+      platform_governance: `
+**Platform & Governance Expertise:**
+- Unity Catalog is THE game-changer (GA since 2023). It's not optional anymore.
+- Start with account-level metastore → Assign to workspaces → Migrate legacy Hive metastore
+- Use external locations for S3/ADLS/GCS buckets (no more mount points!)
+- Implement attribute-based access control (ABAC) for dynamic row/column filtering
+- System tables (system.access, system.audit, system.query) are goldmines for monitoring
+- Terraform provider 1.x has full UC support - infrastructure as code is mandatory
+- Personal Compute clusters for dev, Serverless for production (cost optimization)
+- Compliance view shows PII/PHI automatically - huge for GDPR/HIPAA
+
+**Quick Wins (Week 1-2):**
+1. Enable UC on workspace
+2. Create 3-tier namespace (catalog.schema.table)
+3. Set up external locations
+4. Migrate 5 critical tables`,
+
+      data_engineering: `
+**Data Engineering Expertise:**
+- Delta Live Tables (DLT) > custom notebooks. Period. 10x faster to build, 5x less code.
+- Use DLT expectations for data quality: @dlt.expect() for warnings, @dlt.expect_or_drop() for drops
+- Streaming tables with Auto Loader for S3/ADLS (handles schema evolution automatically)
+- Liquid clustering replaces Z-ORDER (no more manual optimization!)
+- Change Data Feed (CDF) for incremental processing - enable with ALTER TABLE
+- Unity Catalog volumes for unstructured data (PDFs, images, etc.)
+- Workflows > Airflow - native integration, better UI, automatic retries
+
+**Quick Wins (Week 1-2):**
+1. Convert 1 notebook to DLT pipeline
+2. Enable Auto Loader for landing zone
+3. Add expectations for data quality
+4. Set up incremental processing with CDF`,
+
+      analytics_bi: `
+**Analytics & BI Expertise:**
+- Databricks SQL Serverless = game over for Snowflake on cost (pay per query second)
+- Photon engine 2.0: 3-5x faster, no config needed
+- Genie (AI/BI) for natural language queries - business users LOVE this
+- SQL warehouses with serverless compute auto-scale 0 to 100+ clusters
+- Query federation to read Snowflake/BigQuery without ETL (saves months)
+- Dashboards with automatic refresh, alerts, scheduled emails
+- SQL UDFs and Databricks Functions for reusable logic
+- Query profile shows exact bottlenecks (scan vs compute vs network)
+
+**Quick Wins (Week 1-2):**
+1. Create serverless SQL warehouse
+2. Connect Power BI/Tableau
+3. Build 5 dashboards from key tables
+4. Enable Genie for business users`,
+
+      machine_learning: `
+**Machine Learning Expertise:**
+- MLflow is industry standard (not just Databricks) - 10M+ downloads/month
+- Feature Store for reusable features across models (training/serving consistency)
+- Model serving with auto-scaling (CPU or GPU), A/B testing built-in
+- AutoML for baseline models in 10 minutes (95% accuracy often)
+- Hyperopt for distributed hyperparameter tuning (100x faster)
+- Unity Catalog for model governance (lineage from data to model to endpoint)
+- Mosaic AI Model Training for distributed LLMs (LLaMA, Mistral, etc.)
+
+**Quick Wins (Week 1-2):**
+1. Register existing model in MLflow
+2. Deploy to Model Serving endpoint
+3. Create Feature Store for top 10 features
+4. Run AutoML on one use case`,
+
+      generative_ai: `
+**Generative AI Expertise:**
+- Mosaic AI is the ONLY platform that does end-to-end LLMs (training → serving → monitoring)
+- Vector Search (GA): Native integration with Delta tables, auto-sync, 10x faster than Pinecone
+- RAG Studio for building retrieval apps visually (no code needed for PoC)
+- DBRX model (open-source, outperforms GPT-3.5) runs natively
+- LLM eval suite for testing quality (perplexity, ROUGE, BLEU)
+- AI Functions (ai_query, ai_extract) in SQL - query your data with natural language
+- Model Serving supports vLLM, TGI, MLflow (flexible deployment)
+- Pay per token pricing for Foundation Model APIs
+
+**Quick Wins (Week 1-2):**
+1. Create vector search endpoint
+2. Ingest documents to Delta table
+3. Build RAG chatbot with RAG Studio
+4. Deploy with Databricks Apps`,
+
+      operational_excellence: `
+**Operational Excellence Expertise:**
+- System tables are your monitoring layer (free, always on, 14 days retention)
+- Use system.compute.clusters to track cluster utilization and right-size
+- Query history (system.query.history) shows slow queries and optimization opportunities
+- Workflows for orchestration: 100+ task types, dynamic mapping, error handling
+- Databricks CLI 0.2+ uses REST API 2.1 (10x faster than legacy CLI)
+- Terraform provider 1.x for infrastructure as code (workspaces, clusters, jobs, notebooks)
+- Budget alerts to prevent cost overruns (set at workspace or job level)
+- Enhanced autoscaling: Scale down to zero for cost, scale up in seconds
+
+**Quick Wins (Week 1-2):**
+1. Query system.compute.clusters for right-sizing
+2. Create Terraform for common patterns
+3. Set up budget alerts
+4. Migrate 3 jobs to Workflows`
+    };
+
+    return contexts[pillarId] || `**${pillarId} - Expertise coming soon**`;
   }
 
   /**
