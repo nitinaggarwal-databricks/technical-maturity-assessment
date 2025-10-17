@@ -1,7 +1,7 @@
 # Comprehensive Functional Test Cases
 ## Databricks Technical Maturity Assessment Framework
 
-Based on all bugs encountered and fixed during development, these 108 test cases ensure the application works correctly.
+Based on all bugs encountered and fixed during development, these 114 test cases ensure the application works correctly.
 
 ---
 
@@ -1012,16 +1012,109 @@ Based on all bugs encountered and fixed during development, these 108 test cases
 
 ---
 
+## 12. Overall Results Display (6 tests)
+
+### TC-109: Overall Results Show Pillar Assessment Cards
+**Steps:**
+1. Complete 1 or more pillars
+2. Navigate to "View Overall Results"
+3. Check "Pillar Assessment" section
+
+**Expected:** 
+- Shows pillar cards for each completed pillar
+- Each card displays pillarName, currentScore, targetScore, gap
+- Cards sorted by gap (largest first)
+- Not showing skeleton/empty content
+
+**Bug Fixed:** Overall results page was showing empty skeleton with no consolidated results
+
+---
+
+### TC-110: Pillar Cards Show The Good/Bad/Recommendations
+**Steps:**
+1. Complete Platform pillar with gaps and pain points
+2. View overall results
+3. Check pillar card content
+
+**Expected:** 
+- "The Good" section lists positive achievements
+- "The Bad" section lists pain points and gaps
+- "Recommendations" section provides actionable steps
+- All three sections populated with relevant content
+
+**Bug Fixed:** Pillar cards weren't displaying because backend returned wrong data structure
+
+---
+
+### TC-111: Partial Assessment Shows Available Results
+**Steps:**
+1. Complete only 1 of 6 pillars (17%)
+2. View overall results
+
+**Expected:** 
+- Shows results for the 1 completed pillar
+- "Continue Assessment" banner displays
+- Shows completion percentage (17%)
+- Pillar status grid shows 1 completed, 5 pending
+- NOT showing "no data" or blank page
+
+**Bug Fixed:** Partial assessments weren't displaying any consolidated results
+
+---
+
+### TC-112: Overall Scores Reflect Completed Pillars Only
+**Steps:**
+1. Complete 2 of 6 pillars
+2. View overall results header
+3. Check "Overall Current Score" and "Overall Future Score"
+
+**Expected:** 
+- Scores calculated from completed pillars only
+- Maturity level displays correctly
+- Gap calculation accurate
+
+---
+
+### TC-113: Roadmap to Success Displays for Partial Assessments
+**Steps:**
+1. Complete 1-3 pillars
+2. View overall results
+3. Scroll to "Roadmap to Success" section
+
+**Expected:** 
+- Shows pillar-specific recommendations for completed pillars
+- Recommendations prioritized by gap and priority
+- NOT empty or hidden
+
+**Bug Fixed:** Roadmap section was empty due to data structure mismatch
+
+---
+
+### TC-114: Multiple Pillars Display in Priority Order
+**Steps:**
+1. Complete 3 pillars with different gaps:
+   - Pillar A: Gap 3 (critical)
+   - Pillar B: Gap 1 (medium)
+   - Pillar C: Gap 2 (high)
+2. View overall results
+
+**Expected:** 
+- Pillars displayed in order: A (gap 3), C (gap 2), B (gap 1)
+- Priority badges show: Critical, High, Medium
+- Largest gaps listed first
+
+---
+
 ## Test Execution Priority
 
 ### Critical (Must Pass Before Release):
-TC-001-015, TC-036-060, TC-061-069, TC-101-103
+TC-001-015, TC-036-060, TC-061-069, TC-101-103, TC-109-111
 
 ### High (Should Pass):
-TC-016-035, TC-076-090, TC-104-106
+TC-016-035, TC-076-090, TC-104-106, TC-112-113
 
 ### Medium (Nice to Have):
-TC-091-100, TC-107-108
+TC-091-100, TC-107-108, TC-114
 
 ---
 
@@ -1056,12 +1149,13 @@ TC-091-100, TC-107-108
 8. **Gap-based actions empty or undefined**: Fixed by generating dimension-level gaps for all pillars
 9. **Floating point errors in gap values**: Fixed with parseFloat(gap.toFixed(1))
 10. **Standardized maturity levels**: All 60 questions now use Explore→Experiment→Formalize→Optimize→Transform
+11. **Overall results page showing skeleton/empty**: Fixed by generating pillar-structured prioritizedActions with proper data model
 
 ---
 
-**Version:** 1.1
+**Version:** 1.2
 **Last Updated:** October 17, 2025
-**Coverage:** Based on all bugs encountered during development (108 test cases)
+**Coverage:** Based on all bugs encountered during development (114 test cases)
 
 
 
