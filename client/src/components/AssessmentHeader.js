@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiEdit3, FiHome, FiFileText, FiTarget, FiBarChart2 } from 'react-icons/fi';
+import { FiEdit3, FiHome, FiFileText, FiTarget, FiBarChart2, FiDownload } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import EditAssessmentModal from './EditAssessmentModal';
+import { exportAssessmentToExcel } from '../services/excelExportService';
 
 const HeaderContainer = styled.div`
   background: white;
@@ -84,6 +86,39 @@ const EditButton = styled.button`
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+const ExportButton = styled.button`
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
 `;
 
 const HomeButton = styled.button`
@@ -163,6 +198,7 @@ const AssessmentHeader = ({
 }) => {
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [assessment, setAssessment] = useState({
     id: assessmentId,
     assessmentName,
@@ -192,6 +228,35 @@ const AssessmentHeader = ({
     }
   };
 
+  const handleExportToExcel = async () => {
+    if (!assessmentId) {
+      toast.error('Assessment ID not found');
+      return;
+    }
+
+    setIsExporting(true);
+    const loadingToast = toast.loading('Exporting to Excel...');
+
+    try {
+      const result = await exportAssessmentToExcel(
+        assessmentId, 
+        assessment.assessmentName || assessmentName
+      );
+      
+      toast.success(`Successfully exported: ${result.fileName}`, {
+        id: loadingToast,
+        duration: 4000
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export to Excel. Please try again.', {
+        id: loadingToast
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <>
       <HeaderContainer>
@@ -207,6 +272,13 @@ const AssessmentHeader = ({
             </TitleSection>
             
             <ActionButtons>
+              <ExportButton 
+                onClick={handleExportToExcel}
+                disabled={isExporting}
+              >
+                <FiDownload size={16} />
+                {isExporting ? 'Exporting...' : 'Export to Excel'}
+              </ExportButton>
               <EditButton onClick={() => setShowEditModal(true)}>
                 <FiEdit3 size={16} />
                 Edit
