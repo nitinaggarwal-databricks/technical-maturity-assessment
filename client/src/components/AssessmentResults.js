@@ -1958,6 +1958,44 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                         </ol>
                       </div>
                     </div>
+                    
+                    {/* View Detailed Results Button */}
+                    <div style={{ 
+                      marginTop: '24px', 
+                      textAlign: 'center',
+                      paddingTop: '20px',
+                      borderTop: '1px solid #e5e7eb'
+                    }}>
+                      <button
+                        onClick={() => navigate(`/pillar-results/${assessmentId}/${pillarRec.pillarId}`)}
+                        style={{
+                          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                          color: 'white',
+                          border: 'none',
+                          padding: '14px 32px',
+                          borderRadius: '8px',
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                          e.target.style.transform = 'translateY(-2px)';
+                          e.target.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                        }}
+                      >
+                        <FiArrowRight size={18} />
+                        View Detailed {pillarRec.pillarName} Results
+                      </button>
+                    </div>
                   </motion.div>
                 );
               })}
