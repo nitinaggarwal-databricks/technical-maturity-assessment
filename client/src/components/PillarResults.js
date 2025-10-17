@@ -524,22 +524,58 @@ const PillarResults = () => {
                     {rec.title || rec.solution}
                   </RecommendationTitle>
                   <RecommendationDescription>
-                    {rec.impact && <div><strong>Impact:</strong> {rec.impact}</div>}
+                    {/* Why Now - Pain Points Addressed */}
+                    {(rec.whyNow || (rec.painPointNames && rec.painPointNames.length > 0)) && (
+                      <div style={{ marginBottom: '12px', padding: '10px', background: '#fef3c7', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
+                        <strong style={{ color: '#b45309' }}>🎯 Why This Matters:</strong>
+                        <div style={{ marginTop: '4px', color: '#78350f' }}>
+                          {rec.whyNow || `Addresses: ${rec.painPointNames.join(', ')}`}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Specific Actions */}
                     {rec.actions && rec.actions.length > 0 && (
-                      <div style={{ marginTop: '8px' }}>
-                        <strong>Actions:</strong>
-                        <ul style={{ marginTop: '4px', marginLeft: '20px' }}>
+                      <div style={{ marginTop: '12px' }}>
+                        <strong style={{ color: '#1e40af', display: 'block', marginBottom: '8px' }}>📋 Implementation Steps:</strong>
+                        <ol style={{ marginTop: '4px', marginLeft: '24px', lineHeight: '1.8' }}>
                           {rec.actions.map((action, actionIdx) => (
-                            <li key={actionIdx}>{action}</li>
+                            <li key={actionIdx} style={{ marginBottom: '6px', color: '#1e3a8a' }}>{action}</li>
                           ))}
-                        </ul>
+                        </ol>
                       </div>
                     )}
-                    {rec.painPointNames && rec.painPointNames.length > 0 && (
-                      <div style={{ marginTop: '8px' }}>
-                        <strong>Addresses:</strong> {rec.painPointNames.join(', ')}
-                      </div>
-                    )}
+
+                    {/* Prerequisites, Timeline, Team */}
+                    <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.9rem' }}>
+                      {rec.prerequisites && (
+                        <div style={{ padding: '8px', background: '#eff6ff', borderRadius: '6px' }}>
+                          <strong style={{ color: '#1e40af' }}>Prerequisites:</strong>
+                          <div style={{ marginTop: '4px', color: '#1e3a8a' }}>{rec.prerequisites}</div>
+                        </div>
+                      )}
+                      {rec.timeline && (
+                        <div style={{ padding: '8px', background: '#f0fdf4', borderRadius: '6px' }}>
+                          <strong style={{ color: '#047857' }}>Timeline:</strong>
+                          <div style={{ marginTop: '4px', color: '#065f46' }}>{rec.timeline}</div>
+                        </div>
+                      )}
+                      {rec.teamRequired && (
+                        <div style={{ padding: '8px', background: '#fef3c7', borderRadius: '6px' }}>
+                          <strong style={{ color: '#b45309' }}>Team:</strong>
+                          <div style={{ marginTop: '4px', color: '#78350f' }}>{rec.teamRequired}</div>
+                        </div>
+                      )}
+                      {rec.successMetrics && (
+                        <div style={{ padding: '8px', background: '#f5f3ff', borderRadius: '6px' }}>
+                          <strong style={{ color: '#6b21a8' }}>Success Metrics:</strong>
+                          <div style={{ marginTop: '4px', color: '#581c87' }}>{rec.successMetrics}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Legacy Impact field */}
+                    {rec.impact && !rec.whyNow && <div style={{ marginTop: '12px' }}><strong>Impact:</strong> {rec.impact}</div>}
                   </RecommendationDescription>
                   {rec.latestSolutions && rec.latestSolutions.length > 0 && (
                     <div style={{ marginTop: '12px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>

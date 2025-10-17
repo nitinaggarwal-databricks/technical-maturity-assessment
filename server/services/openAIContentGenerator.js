@@ -292,31 +292,57 @@ ${filledQuestions.map((q, idx) => `
 - Additional Comments: ${q.comment || 'None'}
 `).join('\n')}
 
-## Task
-Based ONLY on the data provided above for the ${area.name} pillar, generate:
+## Task - Act as Databricks ${area.name} SME (Subject Matter Expert)
+
+You are a senior Databricks architect with 8+ years of experience implementing ${area.name} solutions.
+Generate DIRECT, ACTIONABLE, UNAMBIGUOUS recommendations based ONLY on the data above.
+
+### Requirements for Actionable Recommendations:
+- **Be Specific**: Name exact Databricks features/products (Unity Catalog, Delta Live Tables, MLflow, etc.)
+- **Be Prescriptive**: Tell them WHAT to do, HOW to do it, and WHEN to do it
+- **Be Technical**: Include actual implementation steps, not high-level platitudes
+- **Address Pain Points**: Explicitly map each recommendation to the pain points they selected
+- **Provide Timelines**: Specify sprint/week/month estimates for each phase
+- **Include Prerequisites**: State what needs to be in place first
+
+### Bad Example (Too Generic):
+❌ "Implement proper governance" 
+❌ "Enhance monitoring and observability"
+❌ "Improve security posture"
+
+### Good Example (Specific & Actionable):
+✅ "Enable Unity Catalog on your workspace within 2 weeks: 1) Create metastore in your region, 2) Assign to workspace, 3) Migrate 5 critical schemas using UC migration tool, 4) Configure external locations for your S3 buckets. This addresses your 'Inconsistent access control' pain point."
+
+✅ "Implement Delta Live Tables for your ETL pipelines: Week 1-2: Identify 3 critical batch jobs, Week 3-4: Rewrite using DLT declarative syntax, Week 5: Set up expectations for data quality, Week 6: Enable CDC for incremental loads. This solves your 'Manual pipeline monitoring' pain."
+
+Generate:
 
 1. **Pillar Maturity Scores:**
    - Current maturity score (average across answered questions)
    - Target maturity score
    - Maturity gap
 
-2. **Pillar Summary:**
-   A strategic 150-200 word summary covering:
-   - Current state strengths and weaknesses
-   - Key constraints identified
-   - Recommended path forward
+2. **Executive Summary (100-150 words):**
+   - What's working: 2-3 specific strengths from their responses
+   - Critical gaps: 2-3 specific weaknesses with business impact
+   - Transformation approach: The exact path forward with timeline
 
-3. **Top 5 Recommendations for This Pillar:**
-   For each recommendation:
-   - Title
-   - Description (specific to their responses and pain points)
-   - Actions using latest Databricks features relevant to this pillar
-   - Business impact (based on identified pain points)
-   - Timeline
-   - Priority
+3. **Top 3-5 Actionable Recommendations:**
+   Each must include:
+   - **Title**: Action-oriented (starts with verb: "Enable...", "Migrate...", "Implement...")
+   - **Why Now**: Which specific pain point(s) this addresses from their responses
+   - **Specific Actions**: Numbered steps (1, 2, 3...) with exact Databricks features
+   - **Prerequisites**: What must be in place first
+   - **Timeline**: Weeks or sprints (be realistic: 1-4 weeks typical)
+   - **Team Required**: Who needs to execute (Data Engineers, Platform Admin, etc.)
+   - **Success Metrics**: How to measure completion
+   - **Priority**: Critical/High/Medium based on pain severity
 
-4. **Key Databricks Features for This Pillar:**
-   List 3-5 specific Databricks capabilities (2024-2025) that would address their pain points in this pillar, with brief explanations of why each matters to them.
+4. **Databricks Features/Products** (3-5 specific items):
+   - Feature name (e.g., "Unity Catalog", "Delta Live Tables", "Databricks SQL Serverless")
+   - Status (GA/Public Preview/Private Preview as of Oct 2024)
+   - Why relevant: Map directly to their pain points
+   - Quick win or foundational: Flag if this unlocks other capabilities
 
 Return JSON with this structure:
 {
@@ -325,22 +351,30 @@ Return JSON with this structure:
     "future": <number 1-5>,
     "gap": <number>
   },
-  "summary": "<markdown text>",
+  "summary": "<markdown text 100-150 words>",
   "recommendations": [
     {
-      "title": "<string>",
-      "description": "<string>",
-      "actions": ["<action1>", "<action2>"],
-      "businessImpact": "<string>",
-      "timeline": "<string>",
-      "priority": "<critical|high|medium|low>"
+      "title": "<Action-oriented title starting with verb>",
+      "whyNow": "<Which pain points this addresses>",
+      "actions": [
+        "Step 1: <Specific action with Databricks feature>",
+        "Step 2: <Next specific action>",
+        "Step 3: <Continue...>"
+      ],
+      "prerequisites": "<What must be in place first>",
+      "timeline": "<Specific weeks/sprints: e.g., '3-4 weeks' or 'Sprint 1-2'>",
+      "teamRequired": "<Who executes: Data Engineers, Platform Admin, etc.>",
+      "successMetrics": "<How to measure completion>",
+      "priority": "<critical|high|medium based on pain severity>"
     }
   ],
   "databricksFeatures": [
     {
-      "name": "<feature name>",
-      "description": "<why it matters to them>",
-      "impact": "<high|medium|low>"
+      "name": "<Exact Databricks feature name>",
+      "status": "<GA|Public Preview|Private Preview>",
+      "relevance": "<Why relevant to their pain points>",
+      "type": "<quick-win|foundational>",
+      "action": "<How to get started with this feature>"
     }
   ]
 }`;
