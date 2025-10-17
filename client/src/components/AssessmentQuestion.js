@@ -712,6 +712,46 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const handlePerspectiveResponse = (questionId, perspectiveId, value, isMultiple = false) => {
     const responseKey = `${questionId}_${perspectiveId}`;
     
+    // VALIDATION: Future state cannot be less than current state
+    if (perspectiveId === 'future_state') {
+      const currentStateKey = `${questionId}_current_state`;
+      const currentStateValue = responses[currentStateKey];
+      
+      if (currentStateValue !== undefined && currentStateValue !== null) {
+        const currentNum = typeof currentStateValue === 'string' ? parseInt(currentStateValue, 10) : currentStateValue;
+        const futureNum = typeof value === 'string' ? parseInt(value, 10) : value;
+        
+        if (futureNum < currentNum) {
+          toast.error('Future state cannot be lower than current state', {
+            icon: '⚠️',
+            duration: 3000,
+            position: 'top-center'
+          });
+          return; // Don't update if validation fails
+        }
+      }
+    }
+    
+    // VALIDATION: Current state cannot be greater than future state
+    if (perspectiveId === 'current_state') {
+      const futureStateKey = `${questionId}_future_state`;
+      const futureStateValue = responses[futureStateKey];
+      
+      if (futureStateValue !== undefined && futureStateValue !== null) {
+        const futureNum = typeof futureStateValue === 'string' ? parseInt(futureStateValue, 10) : futureStateValue;
+        const currentNum = typeof value === 'string' ? parseInt(value, 10) : value;
+        
+        if (currentNum > futureNum) {
+          toast.error('Current state cannot be higher than future state', {
+            icon: '⚠️',
+            duration: 3000,
+            position: 'top-center'
+          });
+          return; // Don't update if validation fails
+        }
+      }
+    }
+    
     setResponses(prev => {
       const newResponses = { ...prev };
       if (isMultiple) {

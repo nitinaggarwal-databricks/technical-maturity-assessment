@@ -25577,11 +25577,26 @@
       ],
       "ingestion_resilience_business_pain": [
         "business_disruption"
-      ]
+      ],
+      "ingestion_resilience_comment": "qww"
     },
     "completedCategories": [],
     "currentCategory": "platform_governance",
     "editHistory": [],
-    "lastSaved": "2025-10-16T16:00:32.942Z"
+    "lastSaved": "2025-10-16T16:00:35.081Z"
+  },
+  "5f8424bc-81fc-4f17-8a35-dbeefaa7cc95": {
+    "id": "5f8424bc-81fc-4f17-8a35-dbeefaa7cc95",
+    "organizationName": "Test Org",
+    "contactEmail": "test@test.com",
+    "industry": "Technology",
+    "assessmentName": "Test Maturity Levels",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-16T22:14:19.587Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
   }
 }

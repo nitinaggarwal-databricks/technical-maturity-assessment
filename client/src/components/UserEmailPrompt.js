@@ -247,3 +247,5 @@ const UserEmailPrompt = ({ onSubmit, assessmentName }) => {
 
 export default UserEmailPrompt;
 
+
+

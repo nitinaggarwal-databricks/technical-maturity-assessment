@@ -1,7 +1,7 @@
 # Comprehensive Functional Test Cases
 ## Databricks Technical Maturity Assessment Framework
 
-Based on all bugs encountered and fixed during development, these 114 test cases ensure the application works correctly.
+Based on all bugs encountered and fixed during development, these 116 test cases ensure the application works correctly.
 
 ---
 
@@ -1105,10 +1105,44 @@ Based on all bugs encountered and fixed during development, these 114 test cases
 
 ---
 
+### TC-115: Pillars with Zero Gap Display Correctly
+**Steps:**
+1. Complete pillar with Current=3, Future=3 (gap=0)
+2. View overall results
+
+**Expected:** 
+- Pillar displays on overall results page
+- Shows "Achieved target maturity level" messaging
+- Priority badge shows "Low"
+- Different recommendations than gap>0 (maintain vs. progress)
+- Actions focus on "Maintain capabilities" not "Progress to next level"
+
+**Bug Fixed:** Pillars with gap=0 were filtered out, causing empty results page
+
+---
+
+### TC-116: All Completed Pillars Display Regardless of Gap
+**Steps:**
+1. Complete 3 pillars:
+   - Pillar A: Current=2, Future=4 (gap=2)
+   - Pillar B: Current=3, Future=3 (gap=0)
+   - Pillar C: Current=1, Future=3 (gap=2)
+2. View overall results
+
+**Expected:** 
+- ALL 3 pillars display
+- Pillar B (gap=0) shows with different messaging
+- Sorted: Pillar A/C (gap 2), then Pillar B (gap 0)
+- Page not empty or blank
+
+**Bug Fixed:** Only pillars with gap>0 were showing, causing missing content
+
+---
+
 ## Test Execution Priority
 
 ### Critical (Must Pass Before Release):
-TC-001-015, TC-036-060, TC-061-069, TC-101-103, TC-109-111
+TC-001-015, TC-036-060, TC-061-069, TC-101-103, TC-109-111, TC-115-116
 
 ### High (Should Pass):
 TC-016-035, TC-076-090, TC-104-106, TC-112-113
@@ -1150,12 +1184,13 @@ TC-091-100, TC-107-108, TC-114
 9. **Floating point errors in gap values**: Fixed with parseFloat(gap.toFixed(1))
 10. **Standardized maturity levels**: All 60 questions now use Explore→Experiment→Formalize→Optimize→Transform
 11. **Overall results page showing skeleton/empty**: Fixed by generating pillar-structured prioritizedActions with proper data model
+12. **Pillars with zero gap not displaying**: Fixed by removing gap>0 filter - all completed pillars now show with appropriate messaging
 
 ---
 
-**Version:** 1.2
+**Version:** 1.3
 **Last Updated:** October 17, 2025
-**Coverage:** Based on all bugs encountered during development (114 test cases)
+**Coverage:** Based on all bugs encountered during development (116 test cases)
 
 
 

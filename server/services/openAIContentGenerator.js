@@ -357,6 +357,20 @@ Return JSON with this structure:
       const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
       if (!pillar) return;
       
+      // CRITICAL FIX: Only generate actions for pillars with actual responses
+      const pillarHasResponses = pillar.dimensions.some(dimension =>
+        dimension.questions.some(question => {
+          const currentKey = `${question.id}_current_state`;
+          const futureKey = `${question.id}_future_state`;
+          return responses[currentKey] !== undefined || responses[futureKey] !== undefined;
+        })
+      );
+      
+      if (!pillarHasResponses) {
+        console.log(`⏭️ Skipping pillar ${pillarId} - no responses found`);
+        return; // Skip this pillar - no data to generate actions from
+      }
+      
       const scores = pillarScores[pillarId];
       const currentScore = Math.round(scores.current);
       const futureScore = Math.round(scores.future);

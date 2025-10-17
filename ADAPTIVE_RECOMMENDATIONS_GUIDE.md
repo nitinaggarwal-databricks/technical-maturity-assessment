@@ -363,3 +363,5 @@ To verify the system is truly adaptive, check:
 **The key is:** Every recommendation must answer "Why are you telling me this?" 
 And the answer must reference the user's specific inputs.
 
+
+

@@ -74,3 +74,5 @@ COMMENT ON COLUMN assessments.responses IS 'JSONB object containing all question
 COMMENT ON COLUMN assessments.completed_categories IS 'JSONB array of completed pillar IDs';
 COMMENT ON COLUMN assessments.edit_history IS 'JSONB array tracking who edited and when';
 
+
+
