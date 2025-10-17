@@ -1,7 +1,7 @@
 # Comprehensive Functional Test Cases
 ## Databricks Technical Maturity Assessment Framework
 
-Based on all bugs encountered and fixed during development, these 100 test cases ensure the application works correctly.
+Based on all bugs encountered and fixed during development, these 108 test cases ensure the application works correctly.
 
 ---
 
@@ -905,16 +905,123 @@ Based on all bugs encountered and fixed during development, these 100 test cases
 
 ---
 
+## 11. Gap-Based Actions Display (8 tests)
+
+### TC-101: Gap-Based Actions Display for All Pillars
+**Steps:**
+1. Complete assessment with different Current/Future states
+2. View each pillar's individual results
+3. Check "Bridge the Gap: Current → Future" section
+
+**Expected:** 
+- All 6 pillars show gap-based actions (not empty [])
+- Each action has dimension name, current/future levels, gap value
+
+**Bug Fixed:** Gap-based actions were showing as empty array []
+
+---
+
+### TC-102: Current and Future Values Not Undefined
+**Steps:**
+1. Complete a pillar with gaps (e.g., Current=2, Future=4)
+2. View pillar results
+3. Check gap-based action cards
+
+**Expected:** 
+- Shows "Current: Level 2/5" (not "Level /5")
+- Shows "Future: Level 4/5" (not "Level /5")
+- Shows "Gap: 2 levels" (not undefined)
+
+**Bug Fixed:** Current/Future values were undefined causing "Level /5" display
+
+---
+
+### TC-103: No Floating Point Precision Errors in Gap
+**Steps:**
+1. Complete pillar with Current=3, Future=4
+2. View gap-based actions
+3. Check gap value
+
+**Expected:** 
+- Gap shows as "1" or "1.0"
+- NOT "1.1999999999999997" or similar floating point errors
+
+**Bug Fixed:** Gap calculation had floating point precision errors
+
+---
+
+### TC-104: Gap Actions Sorted by Gap Size
+**Steps:**
+1. Complete pillar with varying gaps (1, 2, 3 levels)
+2. View gap-based actions list
+
+**Expected:** 
+- Actions sorted with largest gap first
+- Example order: Gap 3 → Gap 2 → Gap 1
+
+---
+
+### TC-105: Dimension Names Display Correctly
+**Steps:**
+1. Complete Platform pillar
+2. View pillar results
+3. Check gap-based actions
+
+**Expected:** 
+- Each action shows dimension name (e.g., "Environment Architecture & Scalability")
+- Dimension name is not empty or undefined
+
+---
+
+### TC-106: Maturity Level Labels in Gap Actions
+**Steps:**
+1. Complete pillar with Current=1, Future=3
+2. View gap-based actions
+
+**Expected:** 
+- Shows level names: "Explore" → "Formalize"
+- Not just numbers, but descriptive labels
+
+---
+
+### TC-107: Gap Actions for Standardized Maturity Levels
+**Steps:**
+1. Complete assessment using new standardized levels (Explore, Experiment, Formalize, Optimize, Transform)
+2. View pillar results
+3. Verify gap actions reference correct level names
+
+**Expected:** 
+- Level 1 = Explore
+- Level 2 = Experiment  
+- Level 3 = Formalize
+- Level 4 = Optimize
+- Level 5 = Transform
+
+**Related:** Standardized maturity levels across all 60 questions
+
+---
+
+### TC-108: Gap Actions with No Gaps
+**Steps:**
+1. Complete pillar with Current=Future (no gaps)
+2. View pillar results
+
+**Expected:** 
+- Gap-based actions section either hidden or shows message
+- No actions with Gap=0 displayed
+
+---
+
 ## Test Execution Priority
 
 ### Critical (Must Pass Before Release):
-TC-001-015, TC-036-060, TC-061-069
+TC-001-015, TC-036-060, TC-061-069, TC-101-103
 
 ### High (Should Pass):
-TC-016-035, TC-076-090
+TC-016-035, TC-076-090, TC-104-106
 
 ### Medium (Nice to Have):
-TC-091-100
+TC-091-100, TC-107-108
 
 ---
 
@@ -946,10 +1053,15 @@ TC-091-100
 5. **Progress not saving**: Fixed with auto-save debouncing and error handling
 6. **PostgreSQL connection**: Fixed with fallback to file storage
 7. **Executive summary "nonsense"**: Fixed with CTO-friendly strategic narrative
+8. **Gap-based actions empty or undefined**: Fixed by generating dimension-level gaps for all pillars
+9. **Floating point errors in gap values**: Fixed with parseFloat(gap.toFixed(1))
+10. **Standardized maturity levels**: All 60 questions now use Explore→Experiment→Formalize→Optimize→Transform
 
 ---
 
-**Version:** 1.0
-**Last Updated:** October 15, 2025
-**Coverage:** Based on all bugs encountered during development
+**Version:** 1.1
+**Last Updated:** October 17, 2025
+**Coverage:** Based on all bugs encountered during development (108 test cases)
+
+
 
