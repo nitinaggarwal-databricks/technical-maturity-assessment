@@ -347,10 +347,83 @@ Return JSON with this structure:
   }
 
   /**
+   * Generate pillar-specific prioritized actions from pillar scores
+   */
+  generatePillarPrioritizedActions(pillarScores, assessment) {
+    const actions = [];
+    const responses = assessment.responses || {};
+    
+    Object.keys(pillarScores).forEach(pillarId => {
+      const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+      if (!pillar) return;
+      
+      const scores = pillarScores[pillarId];
+      const currentScore = Math.round(scores.current);
+      const futureScore = Math.round(scores.future);
+      const gap = Math.round(scores.gap);
+      
+      if (gap > 0) {
+        // Get pain points for this pillar
+        const pillarPainPoints = [];
+        pillar.dimensions.forEach(dimension => {
+          dimension.questions.forEach(question => {
+            const techPainKey = `${question.id}_technical_pain`;
+            const bizPainKey = `${question.id}_business_pain`;
+            
+            if (responses[techPainKey]) {
+              const painArray = Array.isArray(responses[techPainKey]) ? responses[techPainKey] : [responses[techPainKey]];
+              pillarPainPoints.push(...painArray.map(p => `Technical: ${p}`));
+            }
+            if (responses[bizPainKey]) {
+              const painArray = Array.isArray(responses[bizPainKey]) ? responses[bizPainKey] : [responses[bizPainKey]];
+              pillarPainPoints.push(...painArray.map(p => `Business: ${p}`));
+            }
+          });
+        });
+        
+        actions.push({
+          pillarId: pillarId,
+          pillarName: pillar.name,
+          currentScore: currentScore,
+          targetScore: futureScore,
+          gap: gap,
+          priority: gap >= 2 ? 'critical' : gap === 1 ? 'high' : 'medium',
+          rationale: `This pillar shows a ${gap}-level maturity gap between your current state (Level ${currentScore}) and desired future state (Level ${futureScore}). ${pillarPainPoints.length > 0 ? `You've identified ${pillarPainPoints.length} pain points that need attention.` : 'Focused improvement is needed.'}`,
+          theGood: [
+            `Clear assessment of current capabilities at Level ${currentScore}`,
+            `Defined target state at Level ${futureScore}`,
+            `Identified improvement path with structured maturity framework`
+          ],
+          theBad: pillarPainPoints.length > 0 ? pillarPainPoints.slice(0, 5) : [
+            `${gap}-level maturity gap requiring focused effort`,
+            `Need to progress through ${gap} maturity level${gap > 1 ? 's' : ''}`
+          ],
+          actions: [
+            `Progress from Level ${currentScore} (${this.getMaturityLevel(currentScore)?.level || 'Current'}) to Level ${futureScore} (${this.getMaturityLevel(futureScore)?.level || 'Target'})`,
+            `Address identified pain points in ${pillar.name}`,
+            `Implement structured improvements across all dimensions`,
+            `Measure progress against maturity framework`
+          ]
+        });
+      }
+    });
+    
+    // Sort by gap (largest first) then by priority
+    return actions.sort((a, b) => {
+      if (b.gap !== a.gap) return b.gap - a.gap;
+      const priorityOrder = { 'critical': 3, 'high': 2, 'medium': 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  }
+
+  /**
    * Format overall results from OpenAI response
    */
   formatOverallResults(content, assessment) {
     const { overallScores, pillarScores, executiveSummary, recommendations } = content;
+    
+    // Generate pillar-specific prioritized actions
+    const pillarActions = this.generatePillarPrioritizedActions(pillarScores, assessment);
     
     return {
       overall: {
@@ -370,7 +443,7 @@ Return JSON with this structure:
         return acc;
       }, {}),
       categories: this.formatPillarCategories(pillarScores),
-      prioritizedActions: recommendations || [],
+      prioritizedActions: pillarActions, // Use pillar-structured actions
       painPointRecommendations: recommendations || [],
       gapBasedActions: [],
       commentBasedInsights: [],
@@ -526,6 +599,10 @@ Return JSON with this structure:
       const recommendations = engine.generateAdaptiveRecommendations(
         validResponses
       );
+      
+      // Transform to use pillar-structured actions
+      const pillarActions = this.generatePillarPrioritizedActions(recommendations.areaScores, assessment);
+      recommendations.prioritizedActions = pillarActions;
       
       return recommendations;
     }
