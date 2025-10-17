@@ -381,11 +381,56 @@ Return JSON with this structure:
   }
 
   /**
+   * Generate dimension-level gap-based actions for a pillar
+   */
+  generatePillarGapActions(assessment, pillarId) {
+    const area = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+    if (!area) return [];
+
+    const responses = assessment.responses || {};
+    const actions = [];
+
+    area.dimensions.forEach(dimension => {
+      dimension.questions.forEach(question => {
+        const currentKey = `${question.id}_current_state`;
+        const futureKey = `${question.id}_future_state`;
+        
+        const currentValue = parseInt(responses[currentKey]) || 0;
+        const futureValue = parseInt(responses[futureKey]) || 0;
+        const gap = futureValue - currentValue;
+
+        if (gap > 0) {
+          // Get the maturity level labels
+          const currentLevel = this.getMaturityLevel(currentValue);
+          const futureLevel = this.getMaturityLevel(futureValue);
+          
+          actions.push({
+            dimension: dimension.name,
+            question: question.question,
+            current: currentValue,
+            future: futureValue,
+            gap: parseFloat(gap.toFixed(1)), // Fix floating point precision
+            currentLevel: currentLevel ? currentLevel.level : 'Unknown',
+            futureLevel: futureLevel ? futureLevel.level : 'Unknown',
+            recommendation: `Progress from Level ${currentValue} (${currentLevel?.level || 'Unknown'}) to Level ${futureValue} (${futureLevel?.level || 'Unknown'}) by implementing structured improvements in ${dimension.name.toLowerCase()}.`
+          });
+        }
+      });
+    });
+
+    // Sort by gap (largest first)
+    return actions.sort((a, b) => b.gap - a.gap);
+  }
+
+  /**
    * Format pillar results from OpenAI response
    */
   formatPillarResults(content, assessment, pillarId) {
     const { scores, summary, recommendations, databricksFeatures } = content;
     const area = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+    
+    // Generate dimension-level gap actions
+    const gapActions = this.generatePillarGapActions(assessment, pillarId);
     
     return {
       pillar: {
@@ -393,7 +438,7 @@ Return JSON with this structure:
         name: area.name,
         currentScore: Math.round(scores.current),
         futureScore: Math.round(scores.future),
-        gap: Math.round(scores.gap),
+        gap: parseFloat(scores.gap.toFixed(1)), // Fix floating point precision
         level: this.getMaturityLevel(scores.current),
         targetLevel: this.getMaturityLevel(scores.future)
       },
@@ -401,7 +446,7 @@ Return JSON with this structure:
       recommendations: recommendations || [],
       databricksFeatures: databricksFeatures || [],
       painPointRecommendations: recommendations || [],
-      gapBasedActions: [],
+      gapBasedActions: gapActions,
       commentBasedInsights: []
     };
   }
@@ -456,13 +501,16 @@ Return JSON with this structure:
       const area = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
       const scores = recommendations.areaScores[pillarId] || { current: 0, future: 0, gap: 0 };
       
+      // Generate dimension-level gap actions using the same method as OpenAI path
+      const gapActions = this.generatePillarGapActions(assessment, pillarId);
+      
       return {
         pillar: {
           id: pillarId,
           name: area.name,
           currentScore: scores.current,
           futureScore: scores.future,
-          gap: scores.gap,
+          gap: parseFloat(scores.gap.toFixed(1)), // Fix floating point precision
           level: this.getMaturityLevel(scores.current),
           targetLevel: this.getMaturityLevel(scores.future)
         },
@@ -470,7 +518,7 @@ Return JSON with this structure:
         recommendations: recommendations.prioritizedActions || [],
         databricksFeatures: [],
         painPointRecommendations: recommendations.painPointRecommendations || [],
-        gapBasedActions: recommendations.gapBasedActions || [],
+        gapBasedActions: gapActions, // Use dimension-level gaps
         commentBasedInsights: recommendations.commentBasedInsights || []
       };
     } else {
