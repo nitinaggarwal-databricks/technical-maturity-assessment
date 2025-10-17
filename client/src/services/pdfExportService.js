@@ -167,7 +167,7 @@ class ProfessionalPDFExporter {
     // Footer
     this.doc.setTextColor(COLORS.mediumGray);
     this.doc.setFontSize(9);
-    this.doc.text('Prepared by Databricks Technical Maturity Assessment Platform', this.pageWidth / 2, this.pageHeight - 30, { align: 'center' });
+    this.doc.text('Prepared by Data & AI Technical Maturity Assessment Platform', this.pageWidth / 2, this.pageHeight - 30, { align: 'center' });
   }
 
   // Executive Summary

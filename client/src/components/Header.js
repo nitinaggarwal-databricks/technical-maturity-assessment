@@ -159,7 +159,7 @@ const Header = ({ currentAssessment }) => {
         <CenterSection>
           <CenterLink href="/" onClick={(e) => { e.preventDefault(); window.location.href = '/'; }}>
             <FiLayers size={18} />
-            Databricks Technical Maturity Assessment Framework
+            Data & AI Technical Maturity Assessment Framework
           </CenterLink>
         </CenterSection>
         

@@ -513,7 +513,7 @@ const HomePage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Databricks Technical Maturity Assessment
+          Data & AI Technical Maturity Assessment
         </HeroTitle>
         <HeroSubtitle
           initial={{ opacity: 0, y: 30 }}

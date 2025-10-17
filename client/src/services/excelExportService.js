@@ -53,7 +53,7 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
  */
 function addMetadataSheet(workbook, assessment) {
   const metadata = [
-    ['Databricks Technical Maturity Assessment'],
+    ['Data & AI Technical Maturity Assessment'],
     [''],
     ['Assessment Details', ''],
     ['Assessment Name', assessment.assessmentName || 'N/A'],

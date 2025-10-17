@@ -159,7 +159,7 @@ class SampleAssessmentGenerator {
       lastModified: new Date().toISOString(),
       status: 'in_progress',
       responses: {},
-      completedAreas: []
+      completedCategories: [] // Changed from completedAreas to match frontend expectation
     };
 
     // Determine which pillars to complete
@@ -191,11 +191,11 @@ class SampleAssessmentGenerator {
         });
       });
       
-      assessment.completedAreas.push(area.id);
+      assessment.completedCategories.push(area.id);
     });
 
     // Update status
-    if (assessment.completedAreas.length === assessmentFramework.assessmentAreas.length) {
+    if (assessment.completedCategories.length === assessmentFramework.assessmentAreas.length) {
       assessment.status = 'completed';
     }
 
