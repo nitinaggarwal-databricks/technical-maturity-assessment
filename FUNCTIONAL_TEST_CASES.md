@@ -1,7 +1,7 @@
 # Comprehensive Functional Test Cases
 ## Databricks Technical Maturity Assessment Framework
 
-Based on all bugs encountered and fixed during development, these 116 test cases ensure the application works correctly.
+Based on all bugs encountered and fixed during development, these 119 test cases ensure the application works correctly.
 
 ---
 
@@ -1139,10 +1139,56 @@ Based on all bugs encountered and fixed during development, these 116 test cases
 
 ---
 
+### TC-117: Partial Assessments Show Only Completed Pillars
+**Steps:**
+1. Create new assessment
+2. Complete only 1 pillar (Platform & Governance)
+3. View overall results
+
+**Expected:**
+- Results page shows content (not blank)
+- Only 1 pillar card displays in "Pillar Assessment Cards"
+- Only 1 item in "Roadmap to Success"
+- No actions for incomplete pillars
+
+**Bug Fixed:** Backend generated actions for all 6 pillars, but frontend only showed pillars with responses, causing mismatch and blank page
+
+---
+
+### TC-118: Future State Cannot Be Lower Than Current State
+**Steps:**
+1. Select Current State = Level 3 (Formalize)
+2. Try to select Future State = Level 2 (Experiment)
+
+**Expected:**
+- Error toast appears: "Future state cannot be lower than current state"
+- Future state selection is blocked
+- Current state remains at Level 3
+- Future state remains unchanged
+
+**Bug Fixed:** No validation existed, allowing illogical future < current
+
+---
+
+### TC-119: Current State Cannot Be Higher Than Future State
+**Steps:**
+1. Select Future State = Level 3 (Formalize)
+2. Try to select Current State = Level 4 (Optimize)
+
+**Expected:**
+- Error toast appears: "Current state cannot be higher than future state"
+- Current state selection is blocked
+- Future state remains at Level 3
+- Current state remains unchanged
+
+**Bug Fixed:** No validation existed, allowing illogical current > future
+
+---
+
 ## Test Execution Priority
 
 ### Critical (Must Pass Before Release):
-TC-001-015, TC-036-060, TC-061-069, TC-101-103, TC-109-111, TC-115-116
+TC-001-015, TC-036-060, TC-061-069, TC-101-103, TC-109-111, TC-115-119
 
 ### High (Should Pass):
 TC-016-035, TC-076-090, TC-104-106, TC-112-113
@@ -1185,12 +1231,14 @@ TC-091-100, TC-107-108, TC-114
 10. **Standardized maturity levels**: All 60 questions now use Explore→Experiment→Formalize→Optimize→Transform
 11. **Overall results page showing skeleton/empty**: Fixed by generating pillar-structured prioritizedActions with proper data model
 12. **Pillars with zero gap not displaying**: Fixed by removing gap>0 filter - all completed pillars now show with appropriate messaging
+13. **Partial assessments showing blank overall results**: Fixed by only generating actions for pillars with actual responses (categoryDetails match)
+14. **Future state could be lower than current state**: Fixed with validation in handlePerspectiveResponse - blocks invalid selections with error toast
 
 ---
 
-**Version:** 1.3
+**Version:** 1.4
 **Last Updated:** October 17, 2025
-**Coverage:** Based on all bugs encountered during development (116 test cases)
+**Coverage:** Based on all bugs encountered during development (119 test cases)
 
 
 
