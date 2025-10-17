@@ -362,50 +362,63 @@ Return JSON with this structure:
       const futureScore = Math.round(scores.future);
       const gap = Math.round(scores.gap);
       
-      if (gap > 0) {
-        // Get pain points for this pillar
-        const pillarPainPoints = [];
-        pillar.dimensions.forEach(dimension => {
-          dimension.questions.forEach(question => {
-            const techPainKey = `${question.id}_technical_pain`;
-            const bizPainKey = `${question.id}_business_pain`;
-            
-            if (responses[techPainKey]) {
-              const painArray = Array.isArray(responses[techPainKey]) ? responses[techPainKey] : [responses[techPainKey]];
-              pillarPainPoints.push(...painArray.map(p => `Technical: ${p}`));
-            }
-            if (responses[bizPainKey]) {
-              const painArray = Array.isArray(responses[bizPainKey]) ? responses[bizPainKey] : [responses[bizPainKey]];
-              pillarPainPoints.push(...painArray.map(p => `Business: ${p}`));
-            }
-          });
+      // Get pain points for this pillar
+      const pillarPainPoints = [];
+      pillar.dimensions.forEach(dimension => {
+        dimension.questions.forEach(question => {
+          const techPainKey = `${question.id}_technical_pain`;
+          const bizPainKey = `${question.id}_business_pain`;
+          
+          if (responses[techPainKey]) {
+            const painArray = Array.isArray(responses[techPainKey]) ? responses[techPainKey] : [responses[techPainKey]];
+            pillarPainPoints.push(...painArray.map(p => `Technical: ${p}`));
+          }
+          if (responses[bizPainKey]) {
+            const painArray = Array.isArray(responses[bizPainKey]) ? responses[bizPainKey] : [responses[bizPainKey]];
+            pillarPainPoints.push(...painArray.map(p => `Business: ${p}`));
+          }
         });
-        
-        actions.push({
-          pillarId: pillarId,
-          pillarName: pillar.name,
-          currentScore: currentScore,
-          targetScore: futureScore,
-          gap: gap,
-          priority: gap >= 2 ? 'critical' : gap === 1 ? 'high' : 'medium',
-          rationale: `This pillar shows a ${gap}-level maturity gap between your current state (Level ${currentScore}) and desired future state (Level ${futureScore}). ${pillarPainPoints.length > 0 ? `You've identified ${pillarPainPoints.length} pain points that need attention.` : 'Focused improvement is needed.'}`,
-          theGood: [
-            `Clear assessment of current capabilities at Level ${currentScore}`,
-            `Defined target state at Level ${futureScore}`,
-            `Identified improvement path with structured maturity framework`
-          ],
-          theBad: pillarPainPoints.length > 0 ? pillarPainPoints.slice(0, 5) : [
-            `${gap}-level maturity gap requiring focused effort`,
-            `Need to progress through ${gap} maturity level${gap > 1 ? 's' : ''}`
-          ],
-          actions: [
-            `Progress from Level ${currentScore} (${this.getMaturityLevel(currentScore)?.level || 'Current'}) to Level ${futureScore} (${this.getMaturityLevel(futureScore)?.level || 'Target'})`,
-            `Address identified pain points in ${pillar.name}`,
-            `Implement structured improvements across all dimensions`,
-            `Measure progress against maturity framework`
-          ]
-        });
-      }
+      });
+      
+      // Generate action for ALL completed pillars (even if gap is 0)
+      actions.push({
+        pillarId: pillarId,
+        pillarName: pillar.name,
+        currentScore: currentScore,
+        targetScore: futureScore,
+        gap: gap,
+        priority: gap >= 2 ? 'critical' : gap >= 1 ? 'high' : 'low',
+        rationale: gap > 0 
+          ? `This pillar shows a ${gap}-level maturity gap between your current state (Level ${currentScore}) and desired future state (Level ${futureScore}). ${pillarPainPoints.length > 0 ? `You've identified ${pillarPainPoints.length} pain points that need attention.` : 'Focused improvement is needed.'}`
+          : `You're satisfied with the current maturity level (Level ${currentScore}) for this pillar. ${pillarPainPoints.length > 0 ? `However, you've identified ${pillarPainPoints.length} pain points that could be addressed to optimize operations.` : 'Continue maintaining best practices.'}`,
+        theGood: gap > 0 ? [
+          `Clear assessment of current capabilities at Level ${currentScore}`,
+          `Defined target state at Level ${futureScore}`,
+          `Identified improvement path with structured maturity framework`
+        ] : [
+          `Achieved target maturity level (Level ${currentScore})`,
+          `Current state meets business requirements`,
+          `Established foundation for maintaining best practices`
+        ],
+        theBad: pillarPainPoints.length > 0 ? pillarPainPoints.slice(0, 5) : (gap > 0 ? [
+          `${gap}-level maturity gap requiring focused effort`,
+          `Need to progress through ${gap} maturity level${gap > 1 ? 's' : ''}`
+        ] : [
+          'Continue monitoring for new challenges',
+          'Stay updated with latest Databricks capabilities'
+        ]),
+        actions: gap > 0 ? [
+          `Progress from Level ${currentScore} (${this.getMaturityLevel(currentScore)?.level || 'Current'}) to Level ${futureScore} (${this.getMaturityLevel(futureScore)?.level || 'Target'})`,
+          `Address identified pain points in ${pillar.name}`,
+          `Implement structured improvements across all dimensions`,
+          `Measure progress against maturity framework`
+        ] : [
+          `Maintain current Level ${currentScore} (${this.getMaturityLevel(currentScore)?.level || 'Current'}) capabilities`,
+          pillarPainPoints.length > 0 ? `Address identified pain points to optimize operations` : 'Continue monitoring and applying best practices',
+          `Stay current with latest Databricks features and updates`,
+          `Share learnings with other teams`
+        ]
+      });
     });
     
     // Sort by gap (largest first) then by priority
