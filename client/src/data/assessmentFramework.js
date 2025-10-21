@@ -1,51 +1,45 @@
-// Databricks Maturity Assessment Framework
-// Updated to match user's 6-pillar, 5-dimension, 2-question structure
-
-// Import all pillar definitions
-const platformGovernancePillar = require('./pillars/pillar1-platform-governance');
-const dataEngineeringPillar = require('./pillars/pillar2-data-engineering');
-const analyticsBIPillar = require('./pillars/pillar3-analytics-bi');
-const machineLearningPillar = require('./pillars/pillar4-machine-learning');
-const generativeAIPillar = require('./pillars/pillar5-generative-ai');
-const operationalExcellencePillar = require('./pillars/pillar6-operational-excellence');
+// Simplified assessment framework for client-side use
+// Contains only pillar structure (no detailed questions)
 
 const assessmentFramework = {
   assessmentAreas: [
-    platformGovernancePillar,
-    dataEngineeringPillar,
-    analyticsBIPillar,
-    machineLearningPillar,
-    generativeAIPillar,
-    operationalExcellencePillar
-  ],
-
-  maturityLevels: {
-    1: {
-      level: 'Initial',
-      description: 'Ad-hoc processes, limited capabilities',
-      color: '#ff4444'
+    {
+      id: 'platform_governance',
+      name: 'Platform & Governance',
+      description: 'Establish trust in data to accelerate & improve decisions',
+      order: 1
     },
-    2: {
-      level: 'Developing',
-      description: 'Basic implementation with some structure',
-      color: '#ff8800'
+    {
+      id: 'data_engineering',
+      name: 'Data Engineering & Integration',
+      description: 'Ingest, transform, and deliver high-quality data',
+      order: 2
     },
-    3: {
-      level: 'Defined',
-      description: 'Structured approach with established processes',
-      color: '#ffaa00'
+    {
+      id: 'analytics_bi',
+      name: 'Analytics & BI',
+      description: 'Enable fast, data-driven decision making at scale',
+      order: 3
     },
-    4: {
-      level: 'Managed',
-      description: 'Advanced capabilities with strong governance',
-      color: '#88cc00'
+    {
+      id: 'machine_learning',
+      name: 'Machine Learning',
+      description: 'Accelerate ML model development & deployment to production',
+      order: 4
     },
-    5: {
-      level: 'Optimized',
-      description: 'Industry-leading, AI-driven optimization',
-      color: '#00cc44'
+    {
+      id: 'generative_ai',
+      name: 'Generative AI',
+      description: 'Build, govern and deploy generative AI applications',
+      order: 5
+    },
+    {
+      id: 'operational_excellence',
+      name: 'Operational Excellence',
+      description: 'Optimize performance, cost, and reliability',
+      order: 6
     }
-  }
+  ]
 };
 
 module.exports = assessmentFramework;
