@@ -115,7 +115,7 @@ const ExecutiveSummary = () => {
         currentView="executive"
         onAssessmentUpdate={(updatedData) => {
           if (updatedData.assessmentName) {
-            fetchResults();
+            setRefreshKey(prev => prev + 1);
           }
         }}
         isSample={results?.assessmentInfo?.organizationName?.includes('Sample')}

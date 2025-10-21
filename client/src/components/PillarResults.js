@@ -382,8 +382,8 @@ const PillarResults = () => {
     <>
       <AssessmentHeader
         assessmentId={assessmentId}
-        assessmentName={results?.assessmentInfo?.assessmentName || assessment?.assessmentName || 'Pillar Results'}
-        organizationName={results?.assessmentInfo?.organizationName || assessment?.organizationName}
+        assessmentName={results?.assessmentInfo?.assessmentName || results?.pillarDetails?.name || 'Pillar Results'}
+        organizationName={results?.assessmentInfo?.organizationName}
         currentView="results"
         onAssessmentUpdate={(updatedData) => {
           if (updatedData.assessmentName) {
@@ -391,7 +391,7 @@ const PillarResults = () => {
             window.location.reload();
           }
         }}
-        isSample={assessment?.name?.includes('Sample') || assessment?.organizationName?.includes('Sample')}
+        isSample={results?.assessmentInfo?.assessmentName?.includes('Sample')}
       />
       
       <ResultsContainer>

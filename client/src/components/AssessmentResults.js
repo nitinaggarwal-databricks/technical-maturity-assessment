@@ -1173,7 +1173,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
         onAssessmentUpdate={(updatedData) => {
           // Refresh results if name changed
           if (updatedData.assessmentName) {
-            fetchResults();
+            setRefreshKey(prev => prev + 1);
           }
         }}
         isSample={currentAssessment?.name?.includes('Sample') || currentAssessment?.organizationName?.includes('Sample')}
