@@ -26,6 +26,7 @@ import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import LoadingSpinner from './LoadingSpinner';
 import AssessmentHeader from './AssessmentHeader';
+import assessmentFramework from '../data/assessmentFramework';
 
 // Register Chart.js components
 ChartJS.register(
@@ -737,25 +738,49 @@ const PillarResults = () => {
         </RecommendationsSection>
 
         <NavigationSection>
-          <NavButton
-            variant="secondary"
-            onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FiArrowLeft size={16} />
-            Continue Assessment
-          </NavButton>
-          
-          <NavButton
-            variant="primary"
-            onClick={() => navigate(`/results/${assessmentId}`)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            View Overall Results
-            <FiArrowRight size={16} />
-          </NavButton>
+          {(() => {
+            // Find current pillar index and next pillar
+            const currentIndex = assessmentFramework.assessmentAreas.findIndex(area => area.id === pillarId);
+            const nextPillar = currentIndex >= 0 && currentIndex < assessmentFramework.assessmentAreas.length - 1
+              ? assessmentFramework.assessmentAreas[currentIndex + 1]
+              : null;
+            
+            return (
+              <>
+                <NavButton
+                  variant="secondary"
+                  onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <FiArrowLeft size={16} />
+                  Edit This Pillar
+                </NavButton>
+                
+                {nextPillar && (
+                  <NavButton
+                    variant="primary"
+                    onClick={() => navigate(`/assessment/${assessmentId}/${nextPillar.id}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Continue to {nextPillar.name}
+                    <FiArrowRight size={16} />
+                  </NavButton>
+                )}
+                
+                <NavButton
+                  variant={nextPillar ? "secondary" : "primary"}
+                  onClick={() => navigate(`/results/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  View Overall Results
+                  <FiArrowRight size={16} />
+                </NavButton>
+              </>
+            );
+          })()}
         </NavigationSection>
       </ContentWrapper>
     </ResultsContainer>

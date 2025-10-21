@@ -25598,5 +25598,19 @@
     "completedCategories": [],
     "currentCategory": "platform_governance",
     "editHistory": []
+  },
+  "65236cd6-6958-4633-b0d9-b9b2ab7d3bdf": {
+    "id": "65236cd6-6958-4633-b0d9-b9b2ab7d3bdf",
+    "organizationName": "Test Org",
+    "contactEmail": "test@test.com",
+    "industry": "Technology",
+    "assessmentName": "Test Maturity Levels",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-16T22:14:24.350Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
   }
 }

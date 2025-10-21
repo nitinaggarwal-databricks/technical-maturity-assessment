@@ -867,21 +867,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      toast.success('Area completed successfully!');
+      toast.success('Pillar completed successfully! View your results.');
       
-      // Backend returns { success, data: { isCompleted, nextCategory } }
-      const resultData = result.data || result; // Support both formats
-      
-      if (resultData.isCompleted) {
-        // Assessment is complete, go to results
-        navigate(`/results/${assessmentId}`);
-      } else if (resultData.nextCategory) {
-        // Move to next area
-        navigate(`/assessment/${assessmentId}/${resultData.nextCategory}`);
-      } else {
-        // Go to results even if not all areas are complete
-        navigate(`/results/${assessmentId}`);
-      }
+      // NEW FLOW: After completing a pillar, show THAT pillar's results
+      // User can then continue to next pillar from the results page
+      navigate(`/pillar-results/${assessmentId}/${categoryId}`);
       
       // Update assessment status (non-blocking - don't let this fail the whole operation)
       if (onUpdateStatus) {
