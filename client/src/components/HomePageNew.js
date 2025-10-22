@@ -13,7 +13,13 @@ import {
   FiFolder,
   FiShield,
   FiBarChart2,
-  FiZap
+  FiZap,
+  FiPlayCircle,
+  FiClock,
+  FiAlertCircle,
+  FiDollarSign,
+  FiUsers,
+  FiAward
 } from 'react-icons/fi';
 import * as assessmentService from '../services/assessmentService';
 
@@ -86,659 +92,620 @@ const LogoText = styled.span`
 `;
 
 const TopNav = styled.div`
-  display: none;
+  display: flex;
   align-items: center;
   gap: 32px;
-  
-  @media (min-width: 768px) {
-    display: flex;
-  }
 
-  a {
+  a, button {
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.875rem;
     text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
     transition: color 0.2s;
+    padding: 0;
 
     &:hover {
       color: white;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    
+    a, button {
+      font-size: 0.813rem;
     }
   }
 `;
 
 const HeroContent = styled.div`
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
   align-items: center;
-  gap: 40px;
-  
-  @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    text-align: center;
   }
 `;
 
-const HeroLeft = styled.div``;
-
-const HeroTitle = styled(motion.h1)`
-  font-size: 3rem;
-  line-height: 1.1;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 16px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-  @media (min-width: 768px) {
+const HeroText = styled.div`
+  h1 {
     font-size: 3.75rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.03em;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
   }
 
-  span {
-    display: block;
+  p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.7;
+    margin-bottom: 40px;
+
+    @media (max-width: 768px) {
+      font-size: 1.125rem;
+    }
   }
 `;
 
-const HeroSubtitle = styled(motion.p)`
-  margin-top: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.125rem;
-  max-width: 640px;
-  line-height: 1.6;
-`;
-
-const HeroButtons = styled(motion.div)`
-  margin-top: 32px;
+const ButtonGroup = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+
+  @media (max-width: 1024px) {
+    justify-content: center;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
 `;
 
-const PrimaryButton = styled(motion.button)`
-  height: 44px;
-  padding: 0 24px;
+const Button = styled(motion.button)`
+  padding: 16px 32px;
+  border-radius: 12px;
   font-size: 1rem;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  border: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
-  transition: all 0.3s ease;
-
-  &:hover {
-    opacity: 0.95;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(255, 107, 53, 0.5);
-  }
+  transition: all 0.3s;
+  position: relative;
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    justify-content: center;
   }
 `;
 
-const SecondaryButton = styled(motion.button)`
-  height: 44px;
-  padding: 0 20px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.1);
+const PrimaryButton = styled(Button)`
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px rgba(255, 107, 53, 0.5);
+  }
+`;
+
+const SecondaryButton = styled(Button)`
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
   position: relative;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
   }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-`;
-
-const SampleDropdownWrapper = styled.div`
-  position: relative;
-  display: inline-block;
 `;
 
 const SampleDropdown = styled(motion.div)`
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  z-index: 100;
-  min-width: 240px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 10;
+  overflow: hidden;
 `;
 
 const SampleMenuItem = styled.button`
   width: 100%;
-  text-align: left;
   padding: 12px 16px;
+  text-align: left;
+  background: white;
   border: none;
-  background: transparent;
-  color: #0a2a6a;
-  font-size: 0.95rem;
-  font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
-  }
-
-  .title {
-    font-weight: 700;
-    font-size: 1rem;
-  }
-
-  .subtitle {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    font-weight: 400;
-  }
-`;
-
-const MetricPills = styled(motion.div)`
-  margin-top: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-`;
-
-const MetricPill = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px 16px;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  .value {
-    font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    background: #f9fafb;
   }
 
   .label {
-    font-size: 0.875rem;
-    opacity: 0.9;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .desc {
+    font-size: 0.75rem;
+    color: #6b7280;
   }
 `;
 
-const BenefitsCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.95);
+const HeroSidebar = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 40px;
   backdrop-filter: blur(10px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  padding: 32px 28px;
-  
-  @media (min-width: 1024px) {
-    justify-self: end;
+
+  @media (max-width: 1024px) {
+    margin: 0 auto;
+    max-width: 600px;
+  }
+
+  @media (max-width: 640px) {
+    padding: 28px;
   }
 `;
 
-const BenefitsTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 20px;
-
-  svg {
-    color: #10b981;
-  }
-`;
-
-const BenefitItem = styled.div`
-  display: flex;
-  align-items: start;
+const MetricPills = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 12px;
-  font-size: 0.875rem;
-  color: #475569;
-  line-height: 1.5;
+  margin-bottom: 32px;
+`;
 
-  &:last-child {
-    margin-bottom: 0;
+const MetricPill = styled.div`
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+
+  .number {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 4px;
   }
 
-  svg {
-    margin-top: 2px;
-    color: #10b981;
-    flex-shrink: 0;
+  .label {
+    font-size: 0.813rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+`;
+
+const BenefitsCard = styled.div`
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.938rem;
+    margin-bottom: 12px;
+    line-height: 1.5;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    svg {
+      margin-top: 2px;
+      color: #86efac;
+      flex-shrink: 0;
+    }
   }
 `;
 
 // Content Sections
 const Section = styled.section`
-  padding: 64px 24px;
-  background: ${props => props.bg || 'white'};
-`;
-
-const SectionContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 96px 24px;
+
+  @media (max-width: 768px) {
+    padding: 64px 20px;
+  }
+
+  &.alt-bg {
+    background: #f9fafb;
+  }
 `;
 
 const SectionHeader = styled.div`
-  max-width: 768px;
-  margin: 0 auto;
   text-align: center;
-  margin-bottom: 64px;
-`;
+  max-width: 800px;
+  margin: 0 auto 64px;
 
-const SectionTitle = styled.h2`
-  font-size: 2.25rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #1e293b;
-  margin-bottom: 12px;
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
 
-  @media (max-width: 768px) {
-    font-size: 1.875rem;
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    font-size: 1.125rem;
+    color: #64748b;
+    line-height: 1.7;
   }
 `;
 
-const SectionSubtitle = styled.p`
-  margin-top: 12px;
-  color: #64748b;
-  font-size: 1rem;
-  line-height: 1.6;
-`;
-
-// How It Works Cards
-const StepsGrid = styled.div`
+const Grid = styled.div`
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
-  
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-const StepCard = styled(motion.div)`
+const Card = styled(motion.div)`
   background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 32px 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 0.3s;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #d1d5db;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     transform: translateY(-4px);
-    border-color: #cbd5e1;
+  }
+
+  @media (max-width: 640px) {
+    padding: 24px;
   }
 `;
 
-const StepBadge = styled.div`
-  display: inline-block;
-  background: #f1f5f9;
-  color: #475569;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-`;
-
-const StepHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  
-  svg {
-    color: #64748b;
-  }
-`;
-
-const StepTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
-`;
-
-const StepText = styled.p`
-  color: #64748b;
-  font-size: 0.875rem;
-  line-height: 1.6;
-`;
-
-// Why It Matters Section
-const MaturityGrid = styled.div`
-  display: grid;
-  gap: 24px;
-  
-  @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-  }
-`;
-
-const PyramidCard = styled(motion.div)`
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 32px 28px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-`;
-
-const PyramidTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 24px;
-  
-  svg {
-    color: #64748b;
-  }
-`;
-
-const PyramidLevels = styled.div`
-  display: grid;
-  grid-template-rows: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 20px;
-`;
-
-const PyramidLevel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const PyramidBar = styled.div`
-  height: 12px;
-  border-radius: 9999px;
-  flex: 1;
-  background: linear-gradient(90deg, #e2e8f0, ${props => props.color});
-`;
-
-const PyramidLabel = styled.span`
-  font-size: 0.75rem;
-  color: #64748b;
-  width: 112px;
-`;
-
-const PyramidText = styled.p`
-  font-size: 0.875rem;
-  color: #64748b;
-  line-height: 1.6;
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  gap: 24px;
-  
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const StatCard = styled(motion.div)`
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-`;
-
-const StatValue = styled.div`
-  font-size: 3rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #1e293b;
-  margin-bottom: 8px;
-`;
-
-const StatCaption = styled.p`
-  font-size: 0.875rem;
-  color: #64748b;
-  line-height: 1.5;
-  margin-bottom: 12px;
-`;
-
-const StatSource = styled.div`
-  font-size: 0.75rem;
-  color: #94a3b8;
-`;
-
-const CurveCard = styled(motion.div)`
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 32px 28px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  
-  @media (min-width: 640px) {
-    grid-column: span 2;
-  }
-`;
-
-const CurveTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 24px;
-  
-  svg {
-    color: #64748b;
-  }
-`;
-
-const CurveSVG = styled.svg`
-  width: 100%;
-  height: 280px;
-`;
-
-const CurveCaption = styled.p`
-  text-align: center;
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-top: 16px;
-`;
-
-// CTA Band
-const CTABand = styled.section`
-  padding: 56px 24px;
-`;
-
-const CTACard = styled.div`
-  max-width: 1000px;
-  margin: 0 auto;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 48px 32px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
-  }
-`;
-
-const CTAText = styled.div`
-  flex: 1;
-`;
-
-const CTATitle = styled.h3`
-  font-size: 1.875rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #1e293b;
-  margin-bottom: 8px;
-`;
-
-const CTASubtitle = styled.p`
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 1rem;
-`;
-
-// Footer
-const Footer = styled.footer`
-  background: #020617;
-  color: #cbd5e1;
-  padding: 48px 24px;
-`;
-
-const FooterContainer = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-`;
-
-const FooterGrid = styled.div`
-  display: grid;
-  gap: 32px;
-  margin-bottom: 40px;
-  
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const FooterBrand = styled.div``;
-
-const FooterLogo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-`;
-
-const FooterLogoIcon = styled.div`
-  height: 36px;
-  width: 36px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+const CardIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: ${props => props.$bgColor || 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'};
   display: grid;
   place-items: center;
+  margin-bottom: 20px;
   color: white;
+  font-size: 24px;
 `;
 
-const FooterLogoText = styled.span`
-  font-weight: 500;
-  color: white;
+const CardTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
 `;
 
-const FooterTagline = styled.p`
-  font-size: 0.875rem;
-  color: #94a3b8;
-  max-width: 384px;
+const CardDescription = styled.p`
+  font-size: 0.938rem;
+  color: #64748b;
   line-height: 1.6;
+  margin: 0;
+`;
+
+const PillarCard = styled(Card)`
+  .pillar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .icon {
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0;
+    }
+  }
+
+  .pillar-desc {
+    font-size: 0.938rem;
+    color: #64748b;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .dimensions-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .dimensions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dimension-tag {
+    font-size: 0.813rem;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .explore-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: white;
+      border-color: #cbd5e1;
+    }
+  }
+`;
+
+const CTABand = styled.div`
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  padding: 80px 24px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 60px 20px;
+  }
+`;
+
+const CTAContent = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+`;
+
+const CTAButton = styled(motion.button)`
+  padding: 18px 40px;
+  background: white;
+  color: #ff6b35;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+`;
+
+const Footer = styled.footer`
+  background: #0f172a;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 64px 24px 32px;
+
+  @media (max-width: 768px) {
+    padding: 48px 20px 24px;
+  }
+`;
+
+const FooterContent = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+`;
+
+const FooterBrand = styled.div`
+  h3 {
+    font-size: 1.25rem;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 0.938rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .security {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #86efac;
+
+    svg {
+      color: #86efac;
+    }
+  }
 `;
 
 const FooterLinks = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  font-size: 0.875rem;
-`;
-
-const FooterLinkGroup = styled.div`
-  .title {
-    color: #94a3b8;
-    margin-bottom: 8px;
+  h4 {
+    font-size: 0.875rem;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
   }
 
-  a {
-    display: block;
-    color: #cbd5e1;
-    text-decoration: none;
-    margin-bottom: 8px;
-    transition: color 0.2s;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-    &:hover {
-      color: white;
+  li {
+    margin-bottom: 12px;
+
+    a, button {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.938rem;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+
+      &:hover {
+        color: white;
+      }
     }
   }
 `;
 
 const FooterCTA = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  
-  @media (min-width: 768px) {
-    align-items: flex-end;
-  }
-`;
-
-const FooterContact = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  font-size: 0.875rem;
-  color: #94a3b8;
-
-  span, a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  a:hover {
+  h4 {
+    font-size: 0.875rem;
     color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
   }
 
-  svg {
-    width: 16px;
-    height: 16px;
+  p {
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 `;
 
-const FooterCopyright = styled.div`
-  margin-top: 40px;
-  padding-top: 24px;
+const FooterBottom = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.75rem;
-  color: #64748b;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
 `;
 
 // =======================
@@ -747,14 +714,13 @@ const FooterCopyright = styled.div`
 
 const HomePageNew = () => {
   const navigate = useNavigate();
-  const [generatingSample, setGeneratingSample] = useState(false);
   const [showSampleMenu, setShowSampleMenu] = useState(false);
-  const dropdownRef = useRef(null);
+  const [generatingSample, setGeneratingSample] = useState(false);
+  const sampleMenuRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (sampleMenuRef.current && !sampleMenuRef.current.contains(event.target)) {
         setShowSampleMenu(false);
       }
     };
@@ -768,421 +734,557 @@ const HomePageNew = () => {
     };
   }, [showSampleMenu]);
 
-  const handleGenerateSample = async (completionLevel) => {
+  const handleGenerateSample = async (level) => {
     try {
       setGeneratingSample(true);
       setShowSampleMenu(false);
+      toast.loading(`Generating ${level} sample assessment...`, { id: 'sample-gen' });
       
-      toast.loading('Generating sample assessment...', { id: 'sample-gen' });
+      const result = await assessmentService.generateSampleAssessment(level);
       
-      const response = await assessmentService.generateSampleAssessment(completionLevel);
-      
-      if (response.success) {
-        toast.success(`Sample assessment created!`, {
-          id: 'sample-gen',
-          duration: 4000
-        });
-        
+      if (result && result.id) {
+        toast.success('Sample assessment ready!', { id: 'sample-gen' });
         setTimeout(() => {
-          navigate(`/results/${response.assessment.id}`);
-        }, 1000);
+          navigate(`/results/${result.id}`);
+        }, 500);
       } else {
-        toast.error('Failed to generate sample assessment', { id: 'sample-gen' });
+        throw new Error('Invalid response from server');
       }
     } catch (error) {
       console.error('Error generating sample:', error);
-      toast.error('Error generating sample assessment', { id: 'sample-gen' });
+      toast.error(error.message || 'Failed to generate sample', { id: 'sample-gen' });
     } finally {
       setGeneratingSample(false);
     }
   };
 
-  const metrics = [
-    { label: 'Pillars', value: 6 },
-    { label: 'Dimensions', value: 30 },
-    { label: 'Questions', value: 60 },
-    { label: 'Maturity Levels', value: 5 },
-  ];
-
-  const steps = [
-    {
-      icon: <FiTarget size={24} />,
-      title: 'Choose your focus',
-      text: 'Start with any of the six focus areas or take the full assessment. Go at your own pace—each area is independent.',
-    },
-    {
-      icon: <FiList size={24} />,
-      title: 'Answer a few questions',
-      text: 'Tell us where you are today, your goals, and the business challenges that matter most.',
-    },
-    {
-      icon: <FiTrendingUp size={24} />,
-      title: 'Get your insights report',
-      text: 'Receive a clear maturity score, prioritized actions, and a roadmap for quick wins and long-term growth.',
-    },
-  ];
-
-  const proof = [
-    {
-      stat: '63%',
-      caption: 'of executives say analytics improves competitive positioning',
-      source: 'Deloitte',
-    },
-    {
-      stat: '2.8×',
-      caption: 'higher likelihood of achieving double‑digit growth with advanced analytics',
-      source: 'Forrester',
-    },
-    {
-      stat: '6%',
-      caption: 'average annual profit uplift across big‑data leaders (5‑year horizon)',
-      source: 'McKinsey',
-    },
-  ];
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <PageContainer>
-      {/* HERO SECTION */}
+      {/* Hero Section */}
       <HeroGradientBG>
         <HeroHeader>
           <HeaderNav>
             <Logo>
               <LogoIcon>
-                <FiZap size={20} />
+                <FiBarChart2 size={24} />
               </LogoIcon>
-              <LogoText>Data & AI Technical Maturity</LogoText>
+              <LogoText>Data & AI Technical Maturity Assessment Framework</LogoText>
             </Logo>
             <TopNav>
-              <a href="#how">How it works</a>
-              <a href="#value">Why it matters</a>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/assessments'); }}>Past Assessments</a>
+              <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
+              <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
+              <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>
+              <button onClick={() => navigate('/assessments')}>Past Assessments</button>
             </TopNav>
           </HeaderNav>
 
           <HeroContent>
-            <HeroLeft>
-              <HeroTitle
-                initial={{ opacity: 0, y: 30 }}
+            <HeroText>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.6 }}
               >
-                Discover your Databricks maturity —
-                <span>clear actions in minutes.</span>
-              </HeroTitle>
-              <HeroSubtitle
-                initial={{ opacity: 0, y: 30 }}
+                Accelerate Your Data & AI Journey
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
               >
-                A guided, non‑technical assessment that turns where you are today into a
-                prioritized roadmap for platform, analytics, ML, and GenAI.
-              </HeroSubtitle>
-
-              <HeroButtons
-                initial={{ opacity: 0, y: 30 }}
+                Get a comprehensive assessment of your organization's technical maturity across 6 critical pillars. 
+                Receive personalized recommendations and a clear roadmap for success.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <PrimaryButton
-                  onClick={() => navigate('/start')}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Start My Free Assessment
-                  <FiArrowRight size={16} />
-                </PrimaryButton>
-                
-                <SampleDropdownWrapper ref={dropdownRef}>
-                  <SecondaryButton
-                    onClick={() => setShowSampleMenu(!showSampleMenu)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    disabled={generatingSample}
+                <ButtonGroup>
+                  <PrimaryButton
+                    onClick={() => navigate('/start')}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <FiPlay size={16} />
-                    {generatingSample ? 'Generating...' : 'Try Sample'}
-                  </SecondaryButton>
+                    Start My Free Assessment
+                    <FiArrowRight />
+                  </PrimaryButton>
+                  <div style={{ position: 'relative' }} ref={sampleMenuRef}>
+                    <SecondaryButton
+                      onClick={() => setShowSampleMenu(!showSampleMenu)}
+                      disabled={generatingSample}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FiPlayCircle />
+                      Try Sample Assessment
+                    </SecondaryButton>
+                    <AnimatePresence>
+                      {showSampleMenu && (
+                        <SampleDropdown
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <SampleMenuItem onClick={() => handleGenerateSample('full')}>
+                            <div className="label">Full Assessment</div>
+                            <div className="desc">All 6 pillars completed (~5 min)</div>
+                          </SampleMenuItem>
+                          <SampleMenuItem onClick={() => handleGenerateSample('partial')}>
+                            <div className="label">Partial Assessment</div>
+                            <div className="desc">3 pillars completed (~3 min)</div>
+                          </SampleMenuItem>
+                          <SampleMenuItem onClick={() => handleGenerateSample('minimal')}>
+                            <div className="label">Quick Preview</div>
+                            <div className="desc">1 pillar completed (~1 min)</div>
+                          </SampleMenuItem>
+                        </SampleDropdown>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </ButtonGroup>
+              </motion.div>
+            </HeroText>
 
-                  <AnimatePresence>
-                    {showSampleMenu && (
-                      <SampleDropdown
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                      >
-                        <SampleMenuItem onClick={() => handleGenerateSample('full')}>
-                          <div className="title">🎯 Full Sample</div>
-                          <div className="subtitle">All 6 pillars completed</div>
-                        </SampleMenuItem>
-                        <SampleMenuItem onClick={() => handleGenerateSample('partial')}>
-                          <div className="title">⚡ Partial Sample</div>
-                          <div className="subtitle">3-4 pillars completed</div>
-                        </SampleMenuItem>
-                        <SampleMenuItem onClick={() => handleGenerateSample('minimal')}>
-                          <div className="title">🔍 Minimal Sample</div>
-                          <div className="subtitle">1-2 pillars completed</div>
-                        </SampleMenuItem>
-                      </SampleDropdown>
-                    )}
-                  </AnimatePresence>
-                </SampleDropdownWrapper>
-              </HeroButtons>
-
-              <MetricPills
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
+            <HeroSidebar>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
               >
-                {metrics.map((m) => (
-                  <MetricPill key={m.label}>
-                    <span className="value">{m.value}</span>
-                    <span className="label">{m.label}</span>
+                <MetricPills>
+                  <MetricPill>
+                    <div className="number">6</div>
+                    <div className="label">Pillars</div>
                   </MetricPill>
-                ))}
-              </MetricPills>
-            </HeroLeft>
+                  <MetricPill>
+                    <div className="number">30</div>
+                    <div className="label">Dimensions</div>
+                  </MetricPill>
+                  <MetricPill>
+                    <div className="number">60</div>
+                    <div className="label">Questions</div>
+                  </MetricPill>
+                  <MetricPill>
+                    <div className="number">5</div>
+                    <div className="label">Maturity Levels</div>
+                  </MetricPill>
+                </MetricPills>
 
-            <BenefitsCard
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            >
-              <BenefitsTitle>
-                <FiShield size={20} />
-                What you'll receive
-              </BenefitsTitle>
-              <BenefitItem>
-                <FiCheckCircle size={16} />
-                Clear maturity score across 6 pillars
-              </BenefitItem>
-              <BenefitItem>
-                <FiCheckCircle size={16} />
-                Prioritized actions and quick wins
-              </BenefitItem>
-              <BenefitItem>
-                <FiCheckCircle size={16} />
-                Executive‑ready PDF with roadmap
-              </BenefitItem>
-              <BenefitItem>
-                <FiCheckCircle size={16} />
-                Optional deep‑dive by pillar
-              </BenefitItem>
-            </BenefitsCard>
+                <BenefitsCard>
+                  <h3>What You'll Get</h3>
+                  <ul>
+                    <li>
+                      <FiCheckCircle size={18} />
+                      <span>Comprehensive maturity assessment across 6 pillars</span>
+                    </li>
+                    <li>
+                      <FiCheckCircle size={18} />
+                      <span>Personalized recommendations based on your responses</span>
+                    </li>
+                    <li>
+                      <FiCheckCircle size={18} />
+                      <span>Prioritized action plan with timelines & impact</span>
+                    </li>
+                    <li>
+                      <FiCheckCircle size={18} />
+                      <span>Executive-ready reports (PDF & Excel)</span>
+                    </li>
+                    <li>
+                      <FiCheckCircle size={18} />
+                      <span>Identify gaps and opportunities for improvement</span>
+                    </li>
+                  </ul>
+                </BenefitsCard>
+              </motion.div>
+            </HeroSidebar>
           </HeroContent>
         </HeroHeader>
       </HeroGradientBG>
 
-      {/* HOW IT WORKS SECTION */}
-      <Section id="how">
-        <SectionContainer>
-          <SectionHeader>
-            <SectionTitle>How it works</SectionTitle>
-            <SectionSubtitle>
-              Three simple steps. No jargon. Start anywhere.
-            </SectionSubtitle>
-          </SectionHeader>
+      {/* Why Take This Assessment Section */}
+      <Section id="why-assessment">
+        <SectionHeader>
+          <h2>Why take this assessment?</h2>
+          <p>Gain clarity on your Databricks journey and unlock the full potential of your data and AI initiatives.</p>
+        </SectionHeader>
 
-          <StepsGrid>
-            {steps.map((step, i) => (
-              <StepCard
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <StepBadge>Step {i + 1}</StepBadge>
-                <StepHeader>
-                  {step.icon}
-                  <StepTitle>{step.title}</StepTitle>
-                </StepHeader>
-                <StepText>{step.text}</StepText>
-              </StepCard>
-            ))}
-          </StepsGrid>
-        </SectionContainer>
+        <Grid>
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
+              <FiTrendingUp />
+            </CardIcon>
+            <CardTitle>Accelerate Growth</CardTitle>
+            <CardDescription>
+              Identify opportunities to maximize your Databricks investment and accelerate your data maturity journey.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #10b981 0%, #059669 100%)">
+              <FiDollarSign />
+            </CardIcon>
+            <CardTitle>Maximize ROI</CardTitle>
+            <CardDescription>
+              Optimize costs, improve utilization, and demonstrate measurable business value from your platform.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)">
+              <FiUsers />
+            </CardIcon>
+            <CardTitle>Align Teams</CardTitle>
+            <CardDescription>
+              Create a shared understanding of priorities and build consensus around your data strategy and roadmap.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)">
+              <FiClock />
+            </CardIcon>
+            <CardTitle>Save Time</CardTitle>
+            <CardDescription>
+              Focus your efforts on the highest-impact improvements with prioritized recommendations and clear next steps.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
+              <FiShield />
+            </CardIcon>
+            <CardTitle>Reduce Risk</CardTitle>
+            <CardDescription>
+              Identify security gaps, governance weaknesses, and operational risks before they impact your business.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)">
+              <FiAward />
+            </CardIcon>
+            <CardTitle>Best Practices</CardTitle>
+            <CardDescription>
+              Learn from industry best practices and proven patterns for successful Databricks implementations.
+            </CardDescription>
+          </Card>
+        </Grid>
       </Section>
 
-      {/* WHY IT MATTERS SECTION */}
-      <Section id="value" bg="#f8fafc">
-        <SectionContainer>
-          <SectionHeader>
-            <SectionTitle>Why maturity matters — the direct link to value</SectionTitle>
-            <SectionSubtitle>
-              As your data maturity grows, so does your business advantage.
-            </SectionSubtitle>
-          </SectionHeader>
+      {/* Assessment Pillars Section */}
+      <Section id="pillars" className="alt-bg">
+        <SectionHeader>
+          <h2>Assessment Pillars</h2>
+          <p>Evaluate your Databricks maturity across these six comprehensive pillars. Each contains five dimensions with targeted questions.</p>
+        </SectionHeader>
 
-          <MaturityGrid>
-            <PyramidCard
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <PyramidTitle>
-                <FiBarChart2 size={20} />
-                The Insights‑Driven Organization Pyramid
-              </PyramidTitle>
-              <PyramidLevels>
-                {['Awareness', 'Adoption', 'Scale', 'AI Advantage'].map((level, i) => (
-                  <PyramidLevel key={i}>
-                    <PyramidBar color={['#cbd5e1', '#94a3b8', '#64748b', '#475569'][i]} />
-                    <PyramidLabel>{level}</PyramidLabel>
-                  </PyramidLevel>
-                ))}
-              </PyramidLevels>
-              <PyramidText>
-                Moving up the pyramid aligns people, process, and platform to turn data into decisions.
-              </PyramidText>
-            </PyramidCard>
-
-            <div>
-              <StatsGrid>
-                {proof.map((p, i) => (
-                  <StatCard
-                    key={i}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                  >
-                    <StatValue>{p.stat}</StatValue>
-                    <StatCaption>{p.caption}</StatCaption>
-                    <StatSource>— {p.source}</StatSource>
-                  </StatCard>
-                ))}
-                
-                <CurveCard
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <CurveTitle>
-                    <FiTrendingUp size={20} />
-                    Data Maturity Curve
-                  </CurveTitle>
-                  <CurveSVG viewBox="0 0 900 360">
-                    <defs>
-                      <linearGradient id="curve" x1="0" x2="1" y1="0" y2="0">
-                        <stop offset="0%" stopColor="#e2e8f0" />
-                        <stop offset="100%" stopColor="#94a3b8" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M40 300 C 210 270, 340 230, 460 180 S 700 80, 860 60"
-                      fill="none"
-                      stroke="url(#curve)"
-                      strokeWidth="6"
-                    />
-                    {[
-                      { x: 60, y: 292, label: 'Clean Data' },
-                      { x: 200, y: 270, label: 'Reports' },
-                      { x: 310, y: 240, label: 'Ad‑hoc Queries' },
-                      { x: 420, y: 205, label: 'Exploration' },
-                      { x: 540, y: 160, label: 'Predictive' },
-                      { x: 680, y: 110, label: 'Prescriptive' },
-                      { x: 840, y: 70, label: 'Automated Decisions' },
-                    ].map((d, i) => (
-                      <g key={i}>
-                        <circle cx={d.x} cy={d.y} r="8" fill="white" stroke="#94a3b8" />
-                        <text
-                          x={d.x}
-                          y={d.y - 16}
-                          textAnchor="middle"
-                          fill="#64748b"
-                          fontSize="12"
-                        >
-                          {d.label}
-                        </text>
-                      </g>
-                    ))}
-                  </CurveSVG>
-                  <CurveCaption>
-                    From hindsight to foresight — moving up the curve grows competitive advantage.
-                  </CurveCaption>
-                </CurveCard>
-              </StatsGrid>
+        <Grid>
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">🧱</span>
+              <h3>Platform & Governance</h3>
             </div>
-          </MaturityGrid>
-        </SectionContainer>
+            <div className="pillar-desc">
+              Assess how well your Databricks foundation is secured, scalable, and governed.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">Environment Architecture</span>
+              <span className="dimension-tag">Security & Access</span>
+              <span className="dimension-tag">Governance & Compliance</span>
+              <span className="dimension-tag">Observability & Monitoring</span>
+              <span className="dimension-tag">Cost Management</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">📊</span>
+              <h3>Data Engineering & Integration</h3>
+            </div>
+            <div className="pillar-desc">
+              Evaluate how efficiently data is ingested, transformed, and managed within Databricks.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">Ingestion Strategy</span>
+              <span className="dimension-tag">Lakehouse Architecture</span>
+              <span className="dimension-tag">Orchestration</span>
+              <span className="dimension-tag">Data Quality</span>
+              <span className="dimension-tag">Performance & Scalability</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">📈</span>
+              <h3>Analytics & BI Modernization</h3>
+            </div>
+            <div className="pillar-desc">
+              Assess how Databricks supports governed analytics, performance, and self-service access.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">Query Performance</span>
+              <span className="dimension-tag">Data Modeling</span>
+              <span className="dimension-tag">Visualization & Reporting</span>
+              <span className="dimension-tag">Self-Service Enablement</span>
+              <span className="dimension-tag">Collaboration & Sharing</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">🤖</span>
+              <h3>Machine Learning & MLOps</h3>
+            </div>
+            <div className="pillar-desc">
+              Understand how Databricks is leveraged for classical and predictive ML use cases with reliable operations.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">Experimentation & Tracking</span>
+              <span className="dimension-tag">Model Deployment</span>
+              <span className="dimension-tag">Feature Management</span>
+              <span className="dimension-tag">ML Lifecycle Governance</span>
+              <span className="dimension-tag">Business Impact</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">💡</span>
+              <h3>Generative AI & Agentic Capabilities</h3>
+            </div>
+            <div className="pillar-desc">
+              Evaluate readiness to operationalize GenAI and agent-based intelligence within your organization.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">GenAI Strategy</span>
+              <span className="dimension-tag">Data & Knowledge Readiness</span>
+              <span className="dimension-tag">Application Development</span>
+              <span className="dimension-tag">Evaluation & Quality Control</span>
+              <span className="dimension-tag">Responsible AI</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+
+          <PillarCard
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <div className="pillar-header">
+              <span className="icon">⚙️</span>
+              <h3>Operational Excellence & Adoption</h3>
+            </div>
+            <div className="pillar-desc">
+              Measure organizational readiness, adoption velocity, and realized value from Databricks.
+            </div>
+            <div className="dimensions-label">Dimensions:</div>
+            <div className="dimensions">
+              <span className="dimension-tag">Center of Excellence</span>
+              <span className="dimension-tag">Community of Practice</span>
+              <span className="dimension-tag">Training & Enablement</span>
+              <span className="dimension-tag">Financial Management</span>
+              <span className="dimension-tag">Innovation & Improvement</span>
+            </div>
+            <button className="explore-btn" onClick={() => navigate('/start')}>
+              Explore questions →
+            </button>
+          </PillarCard>
+        </Grid>
       </Section>
 
-      {/* CTA BAND */}
+      {/* How It Works Section */}
+      <Section id="how-it-works">
+        <SectionHeader>
+          <h2>How it works</h2>
+          <p>Get actionable insights in three simple steps</p>
+        </SectionHeader>
+
+        <Grid>
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>1</span>
+            </CardIcon>
+            <CardTitle>Answer Questions</CardTitle>
+            <CardDescription>
+              Complete 60 targeted questions across 6 pillars. Takes 15-20 minutes. Save and resume anytime.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>2</span>
+            </CardIcon>
+            <CardTitle>Get Insights</CardTitle>
+            <CardDescription>
+              Receive instant analysis of your maturity level, gaps, and opportunities across all dimensions.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>3</span>
+            </CardIcon>
+            <CardTitle>Take Action</CardTitle>
+            <CardDescription>
+              Download executive reports and implement prioritized recommendations with clear timelines and impact.
+            </CardDescription>
+          </Card>
+        </Grid>
+      </Section>
+
+      {/* CTA Band */}
       <CTABand>
-        <CTACard>
-          <CTAText>
-            <CTATitle>Ready to see where you stand?</CTATitle>
-            <CTASubtitle>
-              Get a shareable report with prioritized actions in under 20 minutes.
-            </CTASubtitle>
-          </CTAText>
-          <PrimaryButton
+        <CTAContent>
+          <h2>Ready to begin?</h2>
+          <p>Answer a few guided questions and get a shareable report with prioritized actions.</p>
+          <CTAButton
             onClick={() => navigate('/start')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Take the Assessment
-            <FiArrowRight size={16} />
-          </PrimaryButton>
-        </CTACard>
+            Start My Free Assessment
+            <FiArrowRight size={20} />
+          </CTAButton>
+        </CTAContent>
       </CTABand>
 
-      {/* FOOTER */}
+      {/* Footer */}
       <Footer>
-        <FooterContainer>
-          <FooterGrid>
-            <FooterBrand>
-              <FooterLogo>
-                <FooterLogoIcon>
-                  <FiZap size={16} />
-                </FooterLogoIcon>
-                <FooterLogoText>Data & AI Maturity</FooterLogoText>
-              </FooterLogo>
-              <FooterTagline>
-                Empowering organizations to turn data into confident, automated decisions.
-              </FooterTagline>
-            </FooterBrand>
+        <FooterContent>
+          <FooterBrand>
+            <h3>Data & AI Maturity Assessment</h3>
+            <p>
+              A comprehensive framework to evaluate, benchmark, and accelerate your Databricks journey. 
+              Built by practitioners, for practitioners.
+            </p>
+            <div className="security">
+              <FiShield />
+              <span>Enterprise-grade security & privacy</span>
+            </div>
+          </FooterBrand>
 
-            <FooterLinks>
-              <FooterLinkGroup>
-                <div className="title">Explore</div>
-                <a href="#how">How it works</a>
-                <a href="#value">Why it matters</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); navigate('/explore'); }}>Framework</a>
-              </FooterLinkGroup>
-              <FooterLinkGroup>
-                <div className="title">Company</div>
-                <a href="#" onClick={(e) => { e.preventDefault(); navigate('/assessments'); }}>Past Assessments</a>
-                <a href="#">Privacy & Security</a>
-                <a href="#">Contact</a>
-              </FooterLinkGroup>
-            </FooterLinks>
+          <FooterLinks>
+            <h4>Resources</h4>
+            <ul>
+              <li><button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button></li>
+              <li><button onClick={() => scrollToSection('pillars')}>Assessment Pillars</button></li>
+              <li><button onClick={() => scrollToSection('how-it-works')}>How It Works</button></li>
+              <li><button onClick={() => navigate('/assessments')}>Past Assessments</button></li>
+            </ul>
+          </FooterLinks>
 
-            <FooterCTA>
-              <PrimaryButton
-                onClick={() => navigate('/start')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Start My Free Assessment
-                <FiArrowRight size={16} />
-              </PrimaryButton>
-              <FooterContact>
-                <span>🔒 Secure & Confidential</span>
-              </FooterContact>
-            </FooterCTA>
-          </FooterGrid>
+          <FooterCTA>
+            <h4>Get Started</h4>
+            <p>Start your free assessment today and unlock insights.</p>
+            <button onClick={() => navigate('/start')}>Start Assessment</button>
+          </FooterCTA>
+        </FooterContent>
 
-          <FooterCopyright>
-            © {new Date().getFullYear()} Data & AI Technical Maturity Assessment Platform
-          </FooterCopyright>
-        </FooterContainer>
+        <FooterBottom>
+          <p>&copy; 2025 Data & AI Technical Maturity Assessment Platform. All rights reserved.</p>
+        </FooterBottom>
       </Footer>
     </PageContainer>
   );
 };
 
 export default HomePageNew;
-
