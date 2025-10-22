@@ -99,7 +99,11 @@ export const getAssessmentStatus = async (assessmentId) => {
 export const getCategoryQuestions = async (assessmentId, categoryId) => {
   try {
     const response = await api.get(`/assessment/${assessmentId}/category/${categoryId}`);
-    return response.data;
+    // Axios interceptor already returns response.data, so 'response' is { success, data: { area, existingResponses } }
+    if (response && response.data) {
+      return response.data; // Return the inner 'data' object with area and existingResponses
+    }
+    return response;
   } catch (error) {
     console.error('Error fetching category questions:', error);
     throw error;
