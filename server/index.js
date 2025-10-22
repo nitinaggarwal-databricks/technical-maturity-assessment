@@ -193,6 +193,31 @@ app.post('/api/assessment/start', async (req, res) => {
   }
 });
 
+// Get raw assessment data (for Excel export, etc.)
+app.get('/api/assessment/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessment = await assessments.get(id);
+
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    // Return the raw assessment data
+    res.json(assessment);
+  } catch (error) {
+    console.error('Error fetching assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching assessment',
+      error: error.message
+    });
+  }
+});
+
 // Get assessment status
 app.get('/api/assessment/:id/status', async (req, res) => {
   try {
