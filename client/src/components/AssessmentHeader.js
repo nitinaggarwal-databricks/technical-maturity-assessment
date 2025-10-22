@@ -65,6 +65,8 @@ const ActionButtons = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 `;
 
 const EditButton = styled.button`
@@ -208,7 +210,8 @@ const AssessmentHeader = ({
   const handleTabClick = (view) => {
     switch(view) {
       case 'questions':
-        navigate(`/assessment/${assessmentId}`);
+        // Navigate to first pillar (Platform & Governance)
+        navigate(`/assessment/${assessmentId}/platform_governance`);
         break;
       case 'results':
         navigate(`/results/${assessmentId}`);

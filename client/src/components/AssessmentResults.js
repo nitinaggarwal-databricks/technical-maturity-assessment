@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
+import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Radar } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
@@ -1504,19 +1504,6 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                 >
                   <FiEdit2 size={14} />
                   Edit Assessment
-                </SecondaryButton>
-                <SecondaryButton
-                  onClick={() => {
-                    setRefreshKey(prev => prev + 1);
-                    toast.success('Refreshing results with latest data...');
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  title="Reload results and recommendations"
-                >
-                  <FiRefreshCw size={14} />
-                  Refresh
                 </SecondaryButton>
                 <SecondaryButton
                   onClick={() => navigate(`/executive-summary/${assessmentId}`)}
