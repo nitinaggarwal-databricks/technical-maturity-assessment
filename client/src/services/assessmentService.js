@@ -181,6 +181,11 @@ export const getAllAssessments = async () => {
 };
 
 /**
+ * Alias for getAllAssessments (for backward compatibility)
+ */
+export const getAssessments = getAllAssessments;
+
+/**
  * Clone an existing assessment
  */
 export const cloneAssessment = async (assessmentId, organizationData = {}) => {
