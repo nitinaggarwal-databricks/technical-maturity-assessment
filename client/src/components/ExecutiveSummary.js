@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiAlertCircle, FiEdit2, FiRefreshCw } from 'react-icons/fi';
+import { FiArrowLeft, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import AssessmentHeader from './AssessmentHeader';
@@ -59,7 +59,6 @@ const ExecutiveSummary = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -78,7 +77,7 @@ const ExecutiveSummary = () => {
     if (assessmentId) {
       fetchResults();
     }
-  }, [assessmentId, refreshKey, routerLocation.key]);
+  }, [assessmentId, routerLocation.key]);
 
   if (loading) {
     return (
@@ -114,8 +113,9 @@ const ExecutiveSummary = () => {
         organizationName={results?.assessmentInfo?.organizationName}
         currentView="executive"
         onAssessmentUpdate={(updatedData) => {
-          if (updatedData.assessmentName) {
-            setRefreshKey(prev => prev + 1);
+          // Auto-refresh handled by useEffect with routerLocation.key dependency
+          if (updatedData) {
+            // Page will refresh automatically when navigating back
           }
         }}
         isSample={results?.assessmentInfo?.organizationName?.includes('Sample')}
@@ -166,32 +166,6 @@ const ExecutiveSummary = () => {
             >
               <FiEdit2 size={16} />
               Edit Assessment
-            </button>
-            <button
-              onClick={() => {
-                setRefreshKey(prev => prev + 1);
-                toast.success('Regenerating executive summary with latest data...');
-              }}
-              style={{
-                padding: '10px 20px',
-                background: 'white',
-                color: '#6b7280',
-                border: '2px solid #e5e7eb',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '0.9rem',
-                fontWeight: 600,
-                transition: 'all 0.2s'
-              }}
-              onMouseOver={(e) => e.target.style.borderColor = '#3b82f6'}
-              onMouseOut={(e) => e.target.style.borderColor = '#e5e7eb'}
-              title="Refresh summary with latest recommendations"
-            >
-              <FiRefreshCw size={16} />
-              Refresh
             </button>
           </div>
         </div>

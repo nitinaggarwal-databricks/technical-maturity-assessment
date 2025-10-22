@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { 
@@ -274,6 +274,7 @@ const NavButton = styled(motion.button)`
 const PillarResults = () => {
   const { assessmentId, pillarId } = useParams();
   const navigate = useNavigate();
+  const routerLocation = useLocation();
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -301,7 +302,7 @@ const PillarResults = () => {
       console.error('Missing assessmentId or pillarId');
       setLoading(false);
     }
-  }, [assessmentId, pillarId]);
+  }, [assessmentId, pillarId, routerLocation.key]);
 
   const getPriorityColor = (priority) => {
     switch (priority) {

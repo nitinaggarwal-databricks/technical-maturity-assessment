@@ -904,7 +904,6 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const loadResults = async () => {
@@ -927,7 +926,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
 
     // Always load results when component mounts, assessmentId changes, or user navigates to this page
     loadResults();
-  }, [assessmentId, refreshKey, routerLocation.key]);
+  }, [assessmentId, routerLocation.key]);
 
   const getMaturityLevelName = (score) => {
     const levels = {
@@ -1171,9 +1170,9 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
         organizationName={results?.assessmentInfo?.organizationName || currentAssessment?.organizationName}
         currentView="results"
         onAssessmentUpdate={(updatedData) => {
-          // Refresh results if name changed
-          if (updatedData.assessmentName) {
-            setRefreshKey(prev => prev + 1);
+          // Auto-refresh handled by useEffect with routerLocation.key dependency
+          if (updatedData) {
+            // Page will refresh automatically when navigating back
           }
         }}
         isSample={currentAssessment?.name?.includes('Sample') || currentAssessment?.organizationName?.includes('Sample')}
