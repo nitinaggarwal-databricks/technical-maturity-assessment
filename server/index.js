@@ -1268,8 +1268,8 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
     // Save to storage (use set method, not save)
     await assessments.set(sampleAssessment.id, sampleAssessment);
     
-    console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.name})`);
-    console.log(`   Completed pillars: ${sampleAssessment.completedAreas.length}/6`);
+    console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
+    console.log(`   Completed pillars: ${sampleAssessment.completedCategories.length}/6`);
     console.log(`   Total responses: ${Object.keys(sampleAssessment.responses).length}`);
     
     res.json({
@@ -1277,10 +1277,10 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       message: 'Sample assessment generated successfully',
       assessment: {
         id: sampleAssessment.id,
-        name: sampleAssessment.name,
+        assessmentName: sampleAssessment.assessmentName,
         organizationName: sampleAssessment.organizationName,
         status: sampleAssessment.status,
-        completedAreas: sampleAssessment.completedAreas,
+        completedCategories: sampleAssessment.completedCategories,
         totalResponses: Object.keys(sampleAssessment.responses).length
       }
     });

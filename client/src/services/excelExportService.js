@@ -83,42 +83,21 @@ function addMetadataSheet(workbook, assessment) {
  */
 function addSummarySheet(workbook, assessment) {
   const responses = assessment.responses || {};
+  const completedCategories = assessment.completedCategories || [];
   
   const summaryData = [
     ['Pillar Summary'],
     [''],
-    ['Pillar', 'Questions Answered', 'Avg Current State', 'Avg Future State', 'Gap']
+    ['Pillar', 'Status', 'Completion']
   ];
   
+  // Simple summary based on completed pillars
   assessmentFramework.assessmentAreas.forEach(pillar => {
-    const pillarQuestions = [];
-    let currentTotal = 0;
-    let futureTotal = 0;
-    let answeredCount = 0;
-    
-    pillar.dimensions.forEach(dimension => {
-      dimension.questions.forEach(question => {
-        const currentKey = `${question.id}_current_state`;
-        const futureKey = `${question.id}_future_state`;
-        
-        if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
-          answeredCount++;
-          currentTotal += parseInt(responses[currentKey]) || 0;
-          futureTotal += parseInt(responses[futureKey]) || 0;
-        }
-      });
-    });
-    
-    const avgCurrent = answeredCount > 0 ? (currentTotal / answeredCount).toFixed(1) : 'N/A';
-    const avgFuture = answeredCount > 0 ? (futureTotal / answeredCount).toFixed(1) : 'N/A';
-    const gap = answeredCount > 0 ? ((futureTotal - currentTotal) / answeredCount).toFixed(1) : 'N/A';
-    
+    const isCompleted = completedCategories.includes(pillar.id);
     summaryData.push([
       pillar.name,
-      answeredCount,
-      avgCurrent,
-      avgFuture,
-      gap
+      isCompleted ? 'Completed' : 'In Progress',
+      isCompleted ? '100%' : '0%'
     ]);
   });
   
@@ -128,9 +107,7 @@ function addSummarySheet(workbook, assessment) {
   ws['!cols'] = [
     { wch: 30 },
     { wch: 20 },
-    { wch: 18 },
-    { wch: 18 },
-    { wch: 10 }
+    { wch: 15 }
   ];
   
   XLSX.utils.book_append_sheet(workbook, ws, 'Summary');
@@ -159,14 +136,24 @@ function addPillarSheet(workbook, assessment, pillar) {
     ]
   ];
   
-  pillar.dimensions.forEach(dimension => {
-    dimension.questions.forEach(question => {
-      const currentKey = `${question.id}_current_state`;
-      const futureKey = `${question.id}_future_state`;
-      const techPainKey = `${question.id}_technical_pain`;
-      const bizPainKey = `${question.id}_business_pain`;
-      const commentKey = `${question.id}_comment`;
-      
+  // Find all response keys for this pillar and extract unique question IDs
+  const questionIds = new Set();
+  Object.keys(responses).forEach(key => {
+    // Extract base question ID (remove _current_state, _future_state, etc.)
+    const questionId = key.replace(/_current_state|_future_state|_technical_pain|_business_pain|_comment$/g, '');
+    questionIds.add(questionId);
+  });
+  
+  // Add each question's data
+  questionIds.forEach(questionId => {
+    const currentKey = `${questionId}_current_state`;
+    const futureKey = `${questionId}_future_state`;
+    const techPainKey = `${questionId}_technical_pain`;
+    const bizPainKey = `${questionId}_business_pain`;
+    const commentKey = `${questionId}_comment`;
+    
+    // Only add if this pillar has data
+    if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
       const currentValue = parseInt(responses[currentKey]) || '';
       const futureValue = parseInt(responses[futureKey]) || '';
       const gap = (currentValue && futureValue) ? futureValue - currentValue : '';
@@ -185,8 +172,8 @@ function addPillarSheet(workbook, assessment, pillar) {
       const comment = responses[commentKey] || '';
       
       pillarData.push([
-        dimension.name,
-        question.question,
+        questionId,
+        'Question',  // Placeholder since we don't have the full question text
         currentValue,
         currentLevel,
         futureValue,
@@ -196,7 +183,7 @@ function addPillarSheet(workbook, assessment, pillar) {
         bizPainText,
         comment
       ]);
-    });
+    }
   });
   
   const ws = XLSX.utils.aoa_to_sheet(pillarData);
