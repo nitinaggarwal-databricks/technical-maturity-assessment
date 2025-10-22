@@ -4,7 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 // Components
 import Header from './components/Header';
-import HomePage from './components/HomePage';
+import HomePage from './components/HomePageNew';
 import LandingPage from './components/LandingPage';
 import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
