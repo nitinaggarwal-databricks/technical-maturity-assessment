@@ -9,9 +9,9 @@ import LandingPage from './components/LandingPage';
 import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
 import AssessmentResults from './components/AssessmentResults';
-import ExecutiveSummary from './components/ExecutiveSummary';
+import ExecutiveSummary from './components/ExecutiveSummaryNew';
 import PillarResults from './components/PillarResults';
-import AssessmentManagement from './components/AssessmentManagement';
+import AssessmentManagement from './components/AssessmentsListNew';
 import AssessmentDashboard from './components/AssessmentDashboard';
 import LoadingSpinner from './components/LoadingSpinner';
 
