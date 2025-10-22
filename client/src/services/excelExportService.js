@@ -1,5 +1,9 @@
 import * as XLSX from 'xlsx';
+import axios from 'axios';
 import assessmentFramework from '../data/assessmentFramework';
+
+// Use same API configuration as assessmentService
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Export assessment data to Excel file
@@ -9,12 +13,9 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
   try {
     console.log('[Excel Export] Starting export for assessment:', assessmentId);
 
-    // Fetch assessment data
-    const response = await fetch(`/api/assessment/${assessmentId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch assessment data');
-    }
-    const assessment = await response.json();
+    // Fetch assessment data using axios
+    const response = await axios.get(`${API_BASE_URL}/assessment/${assessmentId}`);
+    const assessment = response.data;
     
     console.log('[Excel Export] Assessment data loaded:', assessment);
 
@@ -245,12 +246,9 @@ export const exportCompletedPillarsToExcel = async (assessmentId, assessmentName
   try {
     console.log('[Excel Export] Starting export for completed pillars:', assessmentId);
 
-    // Fetch assessment data
-    const response = await fetch(`/api/assessment/${assessmentId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch assessment data');
-    }
-    const assessment = await response.json();
+    // Fetch assessment data using axios
+    const response = await axios.get(`${API_BASE_URL}/assessment/${assessmentId}`);
+    const assessment = response.data;
     
     const completedPillars = assessmentFramework.assessmentAreas.filter(pillar => 
       assessment.completedCategories?.includes(pillar.id)
