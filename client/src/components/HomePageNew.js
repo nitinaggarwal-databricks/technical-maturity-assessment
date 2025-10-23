@@ -31,6 +31,7 @@ const PageContainer = styled.div`
   min-height: 100vh;
   background: white;
   color: #1e293b;
+  padding-top: 68px; /* Height of fixed nav */
 `;
 
 // Hero Section with Gradient Background
@@ -53,42 +54,64 @@ const HeroGradientBG = styled.div`
 const HeroHeader = styled.header`
   max-width: 1400px;
   margin: 0 auto;
-  padding: 56px 24px 96px;
+  padding: 96px 24px;
 
   @media (max-width: 768px) {
-    padding: 40px 20px 60px;
+    padding: 64px 20px;
   }
 `;
 
-const HeaderNav = styled.div`
+const GlobalNav = styled.nav`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+  }
+`;
+
+const NavContainer = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 56px;
 `;
 
 const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const LogoIcon = styled.div`
-  height: 40px;
-  width: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.15);
+  height: 36px;
+  width: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
 `;
 
 const LogoText = styled.span`
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  font-size: 1.125rem;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.25rem;
 `;
 
 const TopNav = styled.div`
@@ -97,28 +120,55 @@ const TopNav = styled.div`
   gap: 32px;
 
   a, button {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.875rem;
+    color: #475569;
+    font-size: 0.938rem;
+    font-weight: 500;
     text-decoration: none;
     background: none;
     border: none;
     cursor: pointer;
     font-family: inherit;
     transition: color 0.2s;
-    padding: 0;
+    padding: 8px 0;
+    position: relative;
 
     &:hover {
-      color: white;
+      color: #1e293b;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #ff6b35;
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    &:hover::after {
+      transform: scaleX(1);
     }
   }
 
   @media (max-width: 768px) {
-    gap: 16px;
+    gap: 20px;
     
     a, button {
-      font-size: 0.813rem;
+      font-size: 0.875rem;
     }
   }
+`;
+
+const HeaderNav = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 56px;
+  opacity: 0;
+  visibility: hidden;
 `;
 
 const HeroContent = styled.div`
@@ -779,22 +829,29 @@ const HomePageNew = () => {
 
   return (
     <PageContainer>
+      {/* Global Navigation */}
+      <GlobalNav>
+        <NavContainer>
+          <Logo onClick={() => navigate('/')}>
+            <LogoIcon>
+              <FiBarChart2 size={20} />
+            </LogoIcon>
+            <LogoText>Databricks</LogoText>
+          </Logo>
+          <TopNav>
+            <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
+            <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
+            <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>
+            <button onClick={() => navigate('/assessments')}>Past Assessments</button>
+          </TopNav>
+        </NavContainer>
+      </GlobalNav>
+
       {/* Hero Section */}
       <HeroGradientBG>
         <HeroHeader>
-          <HeaderNav>
-            <Logo>
-              <LogoIcon>
-                <FiBarChart2 size={24} />
-              </LogoIcon>
-              <LogoText>Databricks</LogoText>
-            </Logo>
-            <TopNav>
-              <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
-              <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
-              <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>
-              <button onClick={() => navigate('/assessments')}>Past Assessments</button>
-            </TopNav>
+          <HeaderNav style={{ display: 'none' }}>
+            {/* Hidden - navigation moved to top */}
           </HeaderNav>
 
           <HeroContent>
