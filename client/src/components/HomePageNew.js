@@ -400,6 +400,18 @@ const Grid = styled.div`
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
+
+  &.three-columns {
+    grid-template-columns: repeat(3, 1fr);
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
 `;
 
 const Card = styled(motion.div)`
@@ -917,7 +929,7 @@ const HomePageNew = () => {
           <p>Gain clarity on your Databricks journey and unlock the full potential of your data and AI initiatives.</p>
         </SectionHeader>
 
-        <Grid>
+        <Grid className="three-columns">
           <Card
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1017,7 +1029,7 @@ const HomePageNew = () => {
           <p>Evaluate your Databricks maturity across these six comprehensive pillars. Each contains five dimensions with targeted questions.</p>
         </SectionHeader>
 
-        <Grid>
+        <Grid className="three-columns">
           <PillarCard
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1183,7 +1195,7 @@ const HomePageNew = () => {
           <p>Get actionable insights in three simple steps</p>
         </SectionHeader>
 
-        <Grid>
+        <Grid className="three-columns">
           <Card
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
