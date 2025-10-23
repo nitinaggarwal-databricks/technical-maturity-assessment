@@ -162,14 +162,7 @@ const TopNav = styled.div`
   }
 `;
 
-const HeaderNav = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 56px;
-  opacity: 0;
-  visibility: hidden;
-`;
+// Old HeaderNav removed - using GlobalNav instead
 
 const HeroContent = styled.div`
   display: grid;
@@ -850,10 +843,6 @@ const HomePageNew = () => {
       {/* Hero Section */}
       <HeroGradientBG>
         <HeroHeader>
-          <HeaderNav style={{ display: 'none' }}>
-            {/* Hidden - navigation moved to top */}
-          </HeaderNav>
-
           <HeroContent>
             <HeroText>
               <motion.h1
