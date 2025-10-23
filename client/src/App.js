@@ -8,7 +8,7 @@ import HomePage from './components/HomePageNew';
 import LandingPage from './components/LandingPage';
 import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
-import AssessmentResults from './components/AssessmentResults';
+import AssessmentResults from './components/AssessmentResultsNew';
 import ExecutiveSummary from './components/ExecutiveSummaryNew';
 import PillarResults from './components/PillarResults';
 import AssessmentManagement from './components/AssessmentsListNew';
