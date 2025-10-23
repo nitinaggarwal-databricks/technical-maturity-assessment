@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
   FiCheckCircle,
   FiAlertTriangle,
-  FiLightbulb,
+  FiInfo,
   FiTrendingUp,
   FiTarget,
   FiZap,
@@ -768,7 +768,7 @@ const AssessmentResultsNew = () => {
 
                   <PillarColumn $color="#3b82f6">
                     <div className="column-title">
-                      <FiLightbulb />
+                      <FiInfo />
                       Recommendations
                     </div>
                     <ul>
