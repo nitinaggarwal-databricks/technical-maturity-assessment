@@ -86,9 +86,9 @@ const LogoIcon = styled.div`
 
 const LogoText = styled.span`
   color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
-  font-size: 1rem;
+  font-size: 1.125rem;
 `;
 
 const TopNav = styled.div`
@@ -787,7 +787,7 @@ const HomePageNew = () => {
               <LogoIcon>
                 <FiBarChart2 size={24} />
               </LogoIcon>
-              <LogoText>Data & AI Technical Maturity Assessment Framework</LogoText>
+              <LogoText>Databricks</LogoText>
             </Logo>
             <TopNav>
               <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
