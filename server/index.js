@@ -429,8 +429,8 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
       assessment.completedAt = new Date().toISOString();
     }
 
-    // CRITICAL: Clear cached results when category is submitted
-    delete assessment.results;
+    // Update assessment metadata for tracking
+    assessment.lastModified = new Date().toISOString();
 
     await assessments.set(id, assessment);
 
@@ -920,12 +920,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         };
       }),
       _engineType: 'openai',
-      _contentSource: 'openai-generated'
+      _contentSource: 'openai-generated',
+      _generatedAt: new Date().toISOString(), // Track when this was generated
+      _isDynamic: true // Flag indicating this is ALWAYS dynamically generated, NEVER cached
     };
 
-    // Cache results
-    assessment.results = results;
-    await assessments.set(id, assessment);
+    // ⚠️ NO CACHING - Results are ALWAYS generated fresh from current assessment data
+    // Every API call regenerates results using OpenAI based on latest responses
+    console.log('✅ Results generated dynamically - NO CACHING');
 
     res.json({
       success: true,
