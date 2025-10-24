@@ -137,7 +137,7 @@ class ProfessionalPDFExporter {
       ['Organization:', this.assessmentInfo.organizationName || 'Not Specified'],
       ['Assessment Date:', new Date(this.assessmentInfo.startedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })],
       ['Completion:', `${this.assessmentInfo.completionPercentage}% (${this.assessmentInfo.questionsAnswered}/${this.assessmentInfo.totalQuestions} questions)`],
-      ['Overall Maturity:', `Level ${this.results.overallScore}/5 - ${this.results.overallLevel.level}`]
+      ['Overall Maturity:', `Level ${this.results.overall?.currentScore || 0}/5 - ${this.results.overall?.level?.level || 'Not Assessed'}`]
     ];
     
     details.forEach(([label, value]) => {
@@ -193,10 +193,10 @@ class ProfessionalPDFExporter {
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
     const keyPoints = [
-      `• Overall maturity level: ${this.results.overallLevel.level} (${this.results.overallScore}/5)`,
+      `• Overall maturity level: ${this.results.overall?.level?.level || 'Not Assessed'} (${this.results.overall?.currentScore || 0}/5)`,
       `• ${this.assessmentInfo.completedPillars}/${this.assessmentInfo.totalPillars} pillars completed`,
       `• ${this.assessmentInfo.questionsAnswered} questions answered across ${this.assessmentInfo.pillarsWithResponses} pillar areas`,
-      `• ${this.results.prioritizedActions.length} priority actions identified`
+      `• ${this.results.prioritizedActions?.length || 0} priority actions identified`
     ];
     
     yPos += 45;
@@ -230,9 +230,9 @@ class ProfessionalPDFExporter {
       const pillar = this.results.categoryDetails[pillarId];
       pillarData.push([
         pillar.name,
-        `${pillar.currentScore}/5`,
-        `${pillar.futureScore}/5`,
-        pillar.level.level,
+        `${pillar.currentScore || 0}/5`,
+        `${pillar.futureScore || 0}/5`,
+        pillar.level?.level || 'Not Assessed',
         pillar.isPartial ? '🔄 In Progress' : '✓ Complete'
       ]);
     });
@@ -273,16 +273,17 @@ class ProfessionalPDFExporter {
     const scoreX = this.pageWidth / 2 - 100;
     const scoreY = yPos;
     const scoreRadius = 80;
+    const overallScore = this.results.overall?.currentScore || 0;
     
     // Draw circular score indicator
-    this.doc.setFillColor(MATURITY_COLORS[this.results.overallScore] || COLORS.mediumGray);
+    this.doc.setFillColor(MATURITY_COLORS[overallScore] || COLORS.mediumGray);
     this.doc.circle(scoreX + 100, scoreY + 80, scoreRadius, 'F');
     
     // Score text
     this.doc.setTextColor(COLORS.white);
     this.doc.setFontSize(48);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.results.overallScore.toString(), scoreX + 100, scoreY + 90, { align: 'center' });
+    this.doc.text(overallScore.toString(), scoreX + 100, scoreY + 90, { align: 'center' });
     
     this.doc.setFontSize(16);
     this.doc.text('out of 5', scoreX + 100, scoreY + 110, { align: 'center' });
@@ -292,11 +293,11 @@ class ProfessionalPDFExporter {
     this.doc.setTextColor(COLORS.text);
     this.doc.setFontSize(18);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.results.overallLevel.level, this.pageWidth / 2, yPos, { align: 'center' });
+    this.doc.text(this.results.overall?.level?.level || 'Not Assessed', this.pageWidth / 2, yPos, { align: 'center' });
     
     this.doc.setFontSize(11);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text(this.results.overallLevel.description, this.pageWidth / 2, yPos + 25, { align: 'center' });
+    this.doc.text(this.results.overall?.level?.description || 'Assessment in progress', this.pageWidth / 2, yPos + 25, { align: 'center' });
     
     yPos += 60;
     
@@ -474,7 +475,7 @@ class ProfessionalPDFExporter {
       this.doc.setFont('helvetica', 'bold');
       this.doc.text('Maturity Level:', this.margin + 15, yPos + 25);
       this.doc.setFont('helvetica', 'normal');
-      this.doc.text(`${pillar.level.level} - ${pillar.level.description}`, this.margin + 120, yPos + 25);
+      this.doc.text(`${pillar.level?.level || 'Not Assessed'} - ${pillar.level?.description || 'Assessment in progress'}`, this.margin + 120, yPos + 25);
       
       yPos += 60;
       
@@ -718,7 +719,7 @@ The overall maturity score is a weighted average across all completed pillars, w
       ['Completion Percentage', `${this.assessmentInfo.completionPercentage}%`],
       ['Pillars Assessed', `${this.assessmentInfo.pillarsWithResponses}/${this.assessmentInfo.totalPillars}`],
       ['Pillars Completed', `${this.assessmentInfo.completedPillars}/${this.assessmentInfo.totalPillars}`],
-      ['Overall Maturity Score', `${this.results.overallScore}/5`],
+      ['Overall Maturity Score', `${this.results.overall?.currentScore || 0}/5`],
       ['Assessment Date', new Date(this.assessmentInfo.startedAt).toLocaleDateString()]
     ];
     
