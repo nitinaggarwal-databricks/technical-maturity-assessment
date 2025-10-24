@@ -580,8 +580,10 @@ const ExecutiveSummaryNew = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        console.log('[ExecutiveSummaryNew] Fetching results for assessment:', assessmentId);
         setLoading(true);
         const data = await assessmentService.getAssessmentResults(assessmentId);
+        console.log('[ExecutiveSummaryNew] Results loaded:', data);
         setResults(data);
         
         // Initialize editable content from results or existing edited content
@@ -627,15 +629,22 @@ const ExecutiveSummaryNew = () => {
       setExporting(true);
       toast.loading('Generating PDF report...', { id: 'pdf-export' });
       
-      await generateProfessionalReport(
-        results,
-        results.assessmentInfo?.assessmentName || 'Assessment'
-      );
+      const resultsData = results?.data || results;
+      const assessmentInfo = resultsData?.assessmentInfo || {
+        assessmentName: 'Executive Summary',
+        organizationName: 'Organization'
+      };
       
-      toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
+      const result = generateProfessionalReport(resultsData, assessmentInfo);
+      
+      if (result.success) {
+        toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
+      } else {
+        throw new Error(result.error || 'Failed to generate PDF');
+      }
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast.error('Failed to export PDF', { id: 'pdf-export' });
+      toast.error(`Failed to export PDF: ${error.message}`, { id: 'pdf-export' });
     } finally {
       setExporting(false);
     }

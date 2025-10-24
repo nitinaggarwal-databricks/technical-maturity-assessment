@@ -10,7 +10,8 @@ import {
   FiTarget,
   FiZap,
   FiDownload,
-  FiShare2
+  FiShare2,
+  FiEdit3
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -571,15 +572,22 @@ const AssessmentResultsNew = () => {
       setExporting(true);
       toast.loading('Generating PDF report...', { id: 'pdf-export' });
       
-      await generateProfessionalReport(
-        results,
-        results.assessmentInfo?.assessmentName || 'Assessment'
-      );
+      const resultsData = results?.data || results;
+      const assessmentInfo = resultsData?.assessmentInfo || {
+        assessmentName: 'Assessment Report',
+        organizationName: 'Organization'
+      };
       
-      toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
+      const result = generateProfessionalReport(resultsData, assessmentInfo);
+      
+      if (result.success) {
+        toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
+      } else {
+        throw new Error(result.error || 'Failed to generate PDF');
+      }
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast.error('Failed to export PDF', { id: 'pdf-export' });
+      toast.error(`Failed to export PDF: ${error.message}`, { id: 'pdf-export' });
     } finally {
       setExporting(false);
     }
@@ -769,6 +777,15 @@ const AssessmentResultsNew = () => {
               </div>
             </TitleSection>
             <ActionButtons>
+              <ActionButton
+                onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+              >
+                <FiEdit3 size={16} />
+                Edit Assessment
+              </ActionButton>
               <ActionButton
                 onClick={handleExportPDF}
                 disabled={exporting}
