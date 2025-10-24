@@ -160,7 +160,7 @@ class ProfessionalPDFExporter {
     
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
-    const summaryText = this.results.summary.substring(0, 200) + '...';
+    const summaryText = (this.results.summary || this.results.executiveSummary?.summary || 'Assessment in progress').substring(0, 200) + '...';
     const summaryLines = this.doc.splitTextToSize(summaryText, this.contentWidth - 40);
     this.doc.text(summaryLines, this.pageWidth / 2, yPos + 55, { align: 'center', maxWidth: this.contentWidth - 40 });
     
@@ -360,14 +360,16 @@ class ProfessionalPDFExporter {
     const comparisonData = [];
     Object.keys(this.results.categoryDetails).forEach(pillarId => {
       const pillar = this.results.categoryDetails[pillarId];
-      const gap = pillar.futureScore - pillar.currentScore;
+      const currentScore = pillar.currentScore || 0;
+      const futureScore = pillar.futureScore || 0;
+      const gap = futureScore - currentScore;
       const gapText = gap > 0 ? `+${gap}` : gap.toString();
       const priority = gap >= 2 ? 'High' : gap >= 1 ? 'Medium' : 'Low';
       
       comparisonData.push([
-        pillar.name,
-        pillar.currentScore.toString(),
-        pillar.futureScore.toString(),
+        pillar.name || 'Unknown',
+        currentScore.toString(),
+        futureScore.toString(),
         gapText,
         priority
       ]);
@@ -440,7 +442,7 @@ class ProfessionalPDFExporter {
       this.doc.setTextColor(COLORS.white);
       this.doc.setFontSize(24);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text(pillar.currentScore.toString(), leftX, yPos + 37, { align: 'center' });
+      this.doc.text((pillar.currentScore || 0).toString(), leftX, yPos + 37, { align: 'center' });
       
       this.doc.setTextColor(COLORS.text);
       this.doc.setFontSize(11);
@@ -452,7 +454,7 @@ class ProfessionalPDFExporter {
       this.doc.setTextColor(COLORS.white);
       this.doc.setFontSize(24);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text(pillar.futureScore.toString(), rightX, yPos + 37, { align: 'center' });
+      this.doc.text((pillar.futureScore || 0).toString(), rightX, yPos + 37, { align: 'center' });
       
       this.doc.setTextColor(COLORS.text);
       this.doc.setFontSize(11);
@@ -463,7 +465,7 @@ class ProfessionalPDFExporter {
       // Pillar description
       this.doc.setFontSize(10);
       this.doc.setFont('helvetica', 'normal');
-      const descLines = this.doc.splitTextToSize(pillar.description, this.contentWidth);
+      const descLines = this.doc.splitTextToSize(pillar.description || 'No description available', this.contentWidth);
       this.doc.text(descLines, this.margin, yPos);
       yPos += descLines.length * 12 + 25;
       
@@ -480,7 +482,7 @@ class ProfessionalPDFExporter {
       yPos += 60;
       
       // Recommendations for this pillar
-      if (this.results.recommendations[pillarId]) {
+      if (this.results.recommendations && this.results.recommendations[pillarId]) {
         const rec = this.results.recommendations[pillarId];
         
         this.addSubsectionTitle('Recommendations', yPos);
@@ -611,9 +613,9 @@ class ProfessionalPDFExporter {
     yPos += 50;
     
     const roadmapPhases = [
-      { title: 'Immediate (0-3 months)', items: this.results.roadmap.immediate || [], color: COLORS.red },
-      { title: 'Short-term (3-6 months)', items: this.results.roadmap.shortTerm || [], color: COLORS.orange },
-      { title: 'Long-term (6-12 months)', items: this.results.roadmap.longTerm || [], color: COLORS.green }
+      { title: 'Immediate (0-3 months)', items: this.results.roadmap?.immediate || [], color: COLORS.red },
+      { title: 'Short-term (3-6 months)', items: this.results.roadmap?.shortTerm || [], color: COLORS.orange },
+      { title: 'Long-term (6-12 months)', items: this.results.roadmap?.longTerm || [], color: COLORS.green }
     ];
     
     roadmapPhases.forEach((phase, phaseIndex) => {
@@ -714,13 +716,13 @@ The overall maturity score is a weighted average across all completed pillars, w
     yPos += 30;
     
     const statsData = [
-      ['Total Questions', this.assessmentInfo.totalQuestions.toString()],
-      ['Questions Answered', this.assessmentInfo.questionsAnswered.toString()],
-      ['Completion Percentage', `${this.assessmentInfo.completionPercentage}%`],
-      ['Pillars Assessed', `${this.assessmentInfo.pillarsWithResponses}/${this.assessmentInfo.totalPillars}`],
-      ['Pillars Completed', `${this.assessmentInfo.completedPillars}/${this.assessmentInfo.totalPillars}`],
+      ['Total Questions', (this.assessmentInfo.totalQuestions || 0).toString()],
+      ['Questions Answered', (this.assessmentInfo.questionsAnswered || 0).toString()],
+      ['Completion Percentage', `${this.assessmentInfo.completionPercentage || 0}%`],
+      ['Pillars Assessed', `${this.assessmentInfo.pillarsWithResponses || 0}/${this.assessmentInfo.totalPillars || 6}`],
+      ['Pillars Completed', `${this.assessmentInfo.completedPillars || 0}/${this.assessmentInfo.totalPillars || 6}`],
       ['Overall Maturity Score', `${this.results.overall?.currentScore || 0}/5`],
-      ['Assessment Date', new Date(this.assessmentInfo.startedAt).toLocaleDateString()]
+      ['Assessment Date', new Date(this.assessmentInfo.startedAt || Date.now()).toLocaleDateString()]
     ];
     
     autoTable(this.doc, {
