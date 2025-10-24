@@ -595,8 +595,13 @@ const ExecutiveSummaryNew = () => {
           setEditedContent(data.editedExecutiveSummary);
         } else {
           // Initialize with AI-generated content
+          // Note: executiveSummary can be an object or string, so we extract the summary text
+          const strategicSummary = typeof data.executiveSummary === 'string' 
+            ? data.executiveSummary 
+            : (data.executiveSummary?.summary || data.executiveSummary?.strategicSituation || 'Structured approach with established processes. Advanced capabilities with strong governance. Achievable with targeted initiatives and focused effort.');
+          
           setEditedContent({
-            strategicSituation: data.executiveSummary || 'Structured approach with established processes. Advanced capabilities with strong governance. Achievable with targeted initiatives and focused effort.',
+            strategicSituation: strategicSummary,
             criticalConstraints: 'These constraints limit platform capabilities, team productivity, and business agility. The transformation roadmap below addresses them.',
             transformationRoadmap: [
               { title: 'Platform (Level 2 → 3)', timeline: '3–6 months', impact: 'Medium', actions: ['Implement Unity Catalog for centralized governance', 'Enable audit logging', 'Deploy RBAC with attribute-based access control'] },
