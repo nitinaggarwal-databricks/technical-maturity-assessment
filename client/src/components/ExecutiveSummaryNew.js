@@ -313,6 +313,31 @@ const DescriptionText = styled.p`
   margin: 0 0 16px 0;
 `;
 
+const EditableTextarea = styled.textarea`
+  width: 100%;
+  min-height: ${props => props.$minHeight || '100px'};
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  line-height: 1.6;
+  color: #111827;
+  resize: vertical;
+  transition: border-color 0.2s;
+  background: #fef9ed;
+
+  &:focus {
+    outline: none;
+    border-color: #f59e0b;
+    background: white;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+`;
+
 const PillarConstraintSection = styled.div`
   margin-bottom: 24px;
 
@@ -538,6 +563,19 @@ const ExecutiveSummaryNew = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
+  
+  // Edit mode state
+  const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editedContent, setEditedContent] = useState({
+    strategicSituation: '',
+    criticalConstraints: '',
+    transformationRoadmap: [],
+    expectedOutcomes: [],
+    currentMaturityDescription: '',
+    targetMaturityDescription: '',
+    improvementScopeDescription: ''
+  });
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -545,6 +583,32 @@ const ExecutiveSummaryNew = () => {
         setLoading(true);
         const data = await assessmentService.getAssessmentResults(assessmentId);
         setResults(data);
+        
+        // Initialize editable content from results or existing edited content
+        if (data.editedExecutiveSummary) {
+          setEditedContent(data.editedExecutiveSummary);
+        } else {
+          // Initialize with AI-generated content
+          setEditedContent({
+            strategicSituation: data.executiveSummary || 'Structured approach with established processes. Advanced capabilities with strong governance. Achievable with targeted initiatives and focused effort.',
+            criticalConstraints: 'These constraints limit platform capabilities, team productivity, and business agility. The transformation roadmap below addresses them.',
+            transformationRoadmap: [
+              { title: 'Platform (Level 2 → 3)', timeline: '3–6 months', impact: 'Medium', actions: ['Implement Unity Catalog for centralized governance', 'Enable audit logging', 'Deploy RBAC with attribute-based access control'] },
+              { title: 'Data (Level 3 → 4)', timeline: '3–6 months', impact: 'Medium', actions: ['Adopt Delta Live Tables for automated pipelines', 'Enable Lakehouse Monitoring for data quality', 'Use Auto Loader for streaming ingestion'] },
+              { title: 'Analytics (Level 3 → 4)', timeline: '3–6 months', impact: 'Medium', actions: ['Deploy Databricks SQL with Serverless compute', 'Enable AI/BI dashboards', 'Pilot Genie for natural-language queries'] }
+            ],
+            expectedOutcomes: [
+              'Improved platform reliability and governance posture',
+              'Faster time-to-insight with modern Databricks capabilities',
+              'Reduced manual effort through automation and AI',
+              'Better cost efficiency via serverless and optimized compute',
+              'Enhanced compliance and audit capabilities'
+            ],
+            currentMaturityDescription: 'Defined — Structured approach with established processes',
+            targetMaturityDescription: 'Managed — Advanced capabilities with strong governance',
+            improvementScopeDescription: 'Achievable with targeted initiatives and focused effort'
+          });
+        }
       } catch (err) {
         console.error('Error fetching results:', err);
         setError(err.message);
@@ -575,6 +639,35 @@ const ExecutiveSummaryNew = () => {
     } finally {
       setExporting(false);
     }
+  };
+
+  const handleSaveEdits = async () => {
+    try {
+      setSaving(true);
+      toast.loading('Saving changes...', { id: 'save-edits' });
+      
+      await assessmentService.saveEditedExecutiveSummary(assessmentId, editedContent);
+      
+      toast.success('Changes saved successfully!', { id: 'save-edits' });
+      setEditMode(false);
+      
+      // Refresh results to get updated data
+      const data = await assessmentService.getAssessmentResults(assessmentId);
+      setResults(data);
+    } catch (error) {
+      console.error('Error saving edits:', error);
+      toast.error('Failed to save changes', { id: 'save-edits' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    // Reset to last saved state
+    if (results.editedExecutiveSummary) {
+      setEditedContent(results.editedExecutiveSummary);
+    }
+    setEditMode(false);
   };
 
   const handleExportExcel = async () => {
@@ -712,15 +805,20 @@ const ExecutiveSummaryNew = () => {
                   </MaturityBox>
                 </MaturityComparisonGrid>
 
-                <DescriptionText>
-                  Structured approach with established processes
-                </DescriptionText>
-                <DescriptionText style={{ marginBottom: 0 }}>
-                  Advanced capabilities with strong governance
-                </DescriptionText>
-                <DescriptionText style={{ marginBottom: 0 }}>
-                  Achievable with targeted initiatives and focused effort
-                </DescriptionText>
+                {editMode ? (
+                  <EditableTextarea
+                    $minHeight="120px"
+                    value={editedContent.strategicSituation}
+                    onChange={(e) => setEditedContent({...editedContent, strategicSituation: e.target.value})}
+                    placeholder="Describe the strategic situation and business value..."
+                  />
+                ) : (
+                  <>
+                    <DescriptionText>
+                      {editedContent.strategicSituation || 'Structured approach with established processes. Advanced capabilities with strong governance. Achievable with targeted initiatives and focused effort.'}
+                    </DescriptionText>
+                  </>
+                )}
               </div>
             </Card>
 
@@ -757,9 +855,19 @@ const ExecutiveSummaryNew = () => {
                 </PillarConstraintSection>
               ))}
 
-              <DescriptionText style={{ marginTop: '20px', marginBottom: 0 }}>
-                These constraints limit platform capabilities, team productivity, and business agility. The transformation roadmap below addresses them.
-              </DescriptionText>
+              {editMode ? (
+                <EditableTextarea
+                  $minHeight="80px"
+                  value={editedContent.criticalConstraints}
+                  onChange={(e) => setEditedContent({...editedContent, criticalConstraints: e.target.value})}
+                  placeholder="Describe the critical constraints..."
+                  style={{ marginTop: '20px' }}
+                />
+              ) : (
+                <DescriptionText style={{ marginTop: '20px', marginBottom: 0 }}>
+                  {editedContent.criticalConstraints || 'These constraints limit platform capabilities, team productivity, and business agility. The transformation roadmap below addresses them.'}
+                </DescriptionText>
+              )}
             </Card>
 
             {/* Transformation Roadmap */}
@@ -895,37 +1003,73 @@ const ExecutiveSummaryNew = () => {
               </ActionButton>
 
               <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
-                <SidebarTitle>Share & collaborate</SidebarTitle>
-                <SidebarSubtitle>Make this plan actionable</SidebarSubtitle>
+                <SidebarTitle>{editMode ? 'Editing Mode' : 'Share & collaborate'}</SidebarTitle>
+                <SidebarSubtitle>{editMode ? 'Review and refine the content' : 'Make this plan actionable'}</SidebarSubtitle>
 
-                <SecondaryActionButton
-                  onClick={handleExportPDF}
-                  disabled={exporting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FiDownload size={16} />
-                  {exporting ? 'Exporting...' : 'Download PDF'}
-                </SecondaryActionButton>
+                {editMode ? (
+                  <>
+                    <ActionButton
+                      onClick={handleSaveEdits}
+                      disabled={saving}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', marginBottom: '8px' }}
+                    >
+                      <FiCheckCircle size={16} />
+                      {saving ? 'Saving...' : 'Save Changes'}
+                    </ActionButton>
+                    
+                    <SecondaryActionButton
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Cancel
+                    </SecondaryActionButton>
+                  </>
+                ) : (
+                  <>
+                    <ActionButton
+                      onClick={() => setEditMode(true)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', marginBottom: '8px' }}
+                    >
+                      <FiEdit3 size={16} />
+                      Edit Summary
+                    </ActionButton>
 
-                <SecondaryActionButton
-                  onClick={handleExportExcel}
-                  disabled={exporting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FiDownload size={16} />
-                  Export to Excel
-                </SecondaryActionButton>
+                    <SecondaryActionButton
+                      onClick={handleExportPDF}
+                      disabled={exporting}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FiDownload size={16} />
+                      {exporting ? 'Exporting...' : 'Download PDF'}
+                    </SecondaryActionButton>
 
-                <SecondaryActionButton
-                  onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FiEdit3 size={16} />
-                  Edit Assessment
-                </SecondaryActionButton>
+                    <SecondaryActionButton
+                      onClick={handleExportExcel}
+                      disabled={exporting}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FiDownload size={16} />
+                      Export to Excel
+                    </SecondaryActionButton>
+
+                    <SecondaryActionButton
+                      onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FiEdit3 size={16} />
+                      Edit Assessment
+                    </SecondaryActionButton>
+                  </>
+                )}
               </div>
             </SidebarCard>
           </Sidebar>

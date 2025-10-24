@@ -530,6 +530,56 @@ app.patch('/api/assessment/:id/metadata', async (req, res) => {
   }
 });
 
+// Save edited Executive Summary content (SME reviews and refines AI-generated content)
+app.put('/api/assessment/:id/edited-executive-summary', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const editedContent = req.body;
+    
+    const assessment = await assessments.get(id);
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    // Store edited content
+    assessment.editedExecutiveSummary = editedContent;
+    assessment.lastModified = new Date().toISOString();
+    
+    // Track edit in history
+    if (!assessment.editHistory) {
+      assessment.editHistory = [];
+    }
+    assessment.editHistory.push({
+      timestamp: new Date().toISOString(),
+      action: 'Executive Summary Edited',
+      editor: req.body.editorEmail || assessment.contactEmail || 'SME'
+    });
+    
+    await assessments.set(id, assessment);
+
+    console.log(`✅ Executive Summary edited for assessment: ${id}`);
+
+    res.json({
+      success: true,
+      message: 'Executive Summary content saved',
+      data: {
+        id: assessment.id,
+        lastModified: assessment.lastModified
+      }
+    });
+  } catch (error) {
+    console.error('Error saving edited Executive Summary:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error saving edited content',
+      error: error.message
+    });
+  }
+});
+
 // Auto-save individual question responses (with editor tracking)
 app.post('/api/assessment/:id/save-progress', async (req, res) => {
   try {

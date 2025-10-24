@@ -189,6 +189,21 @@ export const getAllAssessments = async () => {
 export const getAssessments = getAllAssessments;
 
 /**
+ * Save edited Executive Summary content
+ */
+export const saveEditedExecutiveSummary = async (assessmentId, editedContent) => {
+  try {
+    console.log(`[saveEditedExecutiveSummary] Saving for assessment: ${assessmentId}`);
+    const data = await api.put(`/assessment/${assessmentId}/edited-executive-summary`, editedContent);
+    console.log(`[saveEditedExecutiveSummary] Saved successfully`);
+    return data;
+  } catch (error) {
+    console.error('Error saving edited executive summary:', error);
+    throw error;
+  }
+};
+
+/**
  * Clone an existing assessment
  */
 export const cloneAssessment = async (assessmentId, organizationData = {}) => {
