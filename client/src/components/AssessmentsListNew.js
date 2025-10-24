@@ -11,7 +11,9 @@ import {
   FiDownload,
   FiUpload,
   FiPlus,
-  FiChevronDown
+  FiChevronDown,
+  FiCopy,
+  FiTrash2
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -651,6 +653,52 @@ const AssessmentsListNew = () => {
     }
   };
 
+  const handleCloneAssessment = async (assessment, event) => {
+    event.stopPropagation();
+    try {
+      toast.loading('Cloning assessment...', { id: 'clone' });
+      
+      // Clone with new name
+      const clonedData = {
+        organizationName: assessment.organizationName,
+        contactEmail: assessment.contactEmail,
+        industry: assessment.industry,
+        assessmentName: `${assessment.assessmentName} (Copy)`,
+        assessmentDescription: assessment.assessmentDescription
+      };
+      
+      const result = await assessmentService.cloneAssessment(assessment.id || assessment.assessmentId, clonedData);
+      toast.success('Assessment cloned successfully!', { id: 'clone' });
+      
+      // Refresh the assessments list
+      await fetchAssessments();
+    } catch (error) {
+      console.error('Error cloning assessment:', error);
+      toast.error('Failed to clone assessment', { id: 'clone' });
+    }
+  };
+
+  const handleDeleteAssessment = async (assessmentId, assessmentName, event) => {
+    event.stopPropagation();
+    
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete "${assessmentName}"? This action cannot be undone.`)) {
+      return;
+    }
+    
+    try {
+      toast.loading('Deleting assessment...', { id: 'delete' });
+      await assessmentService.deleteAssessment(assessmentId);
+      toast.success('Assessment deleted successfully!', { id: 'delete' });
+      
+      // Refresh the assessments list
+      await fetchAssessments();
+    } catch (error) {
+      console.error('Error deleting assessment:', error);
+      toast.error('Failed to delete assessment', { id: 'delete' });
+    }
+  };
+
   // Filter and sort assessments
   const filteredAssessments = assessments.filter(assessment => {
     const matchesSearch = 
@@ -940,6 +988,21 @@ const AssessmentsListNew = () => {
                       >
                         <FiEdit2 />
                         Edit
+                      </ActionButton>
+                      <ActionButton
+                        onClick={(e) => handleCloneAssessment(assessment, e)}
+                        title="Clone this assessment"
+                      >
+                        <FiCopy />
+                        Clone
+                      </ActionButton>
+                      <ActionButton
+                        onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessmentName, e)}
+                        title="Delete this assessment"
+                        style={{ color: '#ef4444' }}
+                      >
+                        <FiTrash2 />
+                        Delete
                       </ActionButton>
                       <ActionButton
                         className="primary"
