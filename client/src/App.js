@@ -168,7 +168,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header currentAssessment={currentAssessment} />
+        {/* Old Header removed - using new GlobalNav in individual pages */}
         
         <Routes>
           <Route 
