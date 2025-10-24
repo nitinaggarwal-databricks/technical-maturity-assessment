@@ -225,13 +225,10 @@ function App() {
           <Route 
             path="/start" 
             element={
-              currentAssessment ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <AssessmentStart 
-                  onStart={startAssessment}
-                />
-              )
+              <AssessmentStart 
+                onStart={startAssessment}
+                currentAssessment={currentAssessment}
+              />
             } 
           />
           

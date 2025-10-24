@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiMail, FiArrowRight, FiFileText, FiEdit3 } from 'react-icons/fi';
+import { FiMail, FiArrowRight, FiFileText, FiEdit3, FiAlertTriangle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const StartContainer = styled.div`
@@ -131,7 +131,75 @@ const ErrorMessage = styled.div`
   margin-top: 8px;
 `;
 
-const AssessmentStart = ({ onStart }) => {
+const WarningBanner = styled.div`
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  .icon {
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .content {
+    flex: 1;
+
+    .title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .message {
+      color: #92400e;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+
+      button {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.continue {
+          background: #3b82f6;
+          color: white;
+          border: none;
+
+          &:hover {
+            background: #2563eb;
+          }
+        }
+
+        &.new {
+          background: white;
+          color: #92400e;
+          border: 1px solid #fbbf24;
+
+          &:hover {
+            background: #fef3c7;
+          }
+        }
+      }
+    }
+  }
+`;
+
+const AssessmentStart = ({ onStart, currentAssessment }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     contactEmail: '',
@@ -205,6 +273,44 @@ const AssessmentStart = ({ onStart }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
+        {currentAssessment && (
+          <WarningBanner>
+            <div className="icon">
+              <FiAlertTriangle size={20} />
+            </div>
+            <div className="content">
+              <div className="title">You have an assessment in progress</div>
+              <div className="message">
+                Assessment "{currentAssessment.assessmentName || 'Unnamed'}" is currently in progress 
+                ({currentAssessment.completedCategories?.length || 0}/6 pillars completed).
+              </div>
+              <div className="actions">
+                <button 
+                  className="continue" 
+                  onClick={() => {
+                    const firstPillar = currentAssessment.completedCategories?.length > 0
+                      ? 'data_engineering'
+                      : 'platform_governance';
+                    navigate(`/assessment/${currentAssessment.id || currentAssessment.assessmentId}/${firstPillar}`);
+                  }}
+                >
+                  Continue Existing Assessment
+                </button>
+                <button 
+                  className="new"
+                  onClick={() => {
+                    // Clear current assessment and continue with new one
+                    localStorage.removeItem('currentAssessment');
+                    window.location.reload();
+                  }}
+                >
+                  Start Fresh (Discard Current)
+                </button>
+              </div>
+            </div>
+          </WarningBanner>
+        )}
+        
         <FormTitle>Start Your Assessment</FormTitle>
         <FormSubtitle>
           Begin your Databricks maturity assessment journey. We'll guide you through 
