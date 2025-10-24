@@ -758,9 +758,10 @@ const AssessmentResultsNew = () => {
       : null;
     console.log(`[AssessmentResultsNew] prioritized for ${pillarId}:`, prioritized);
 
+    // FIX: Backend uses theGood/theBad, not strengths/gaps
     const data = {
-      theGood: pillarResults?.strengths || prioritized?.strengths || [],
-      theBad: pillarResults?.weaknesses || prioritized?.gaps || [],
+      theGood: pillarResults?.strengths || prioritized?.theGood || [],
+      theBad: pillarResults?.weaknesses || prioritized?.theBad || [],
       recommendations: prioritized?.actions || pillarResults?.recommendations || []
     };
     
