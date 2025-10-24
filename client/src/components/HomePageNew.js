@@ -797,12 +797,16 @@ const HomePageNew = () => {
       
       const result = await assessmentService.generateSampleAssessment(level);
       
-      if (result && result.id) {
+      // Server returns { success, message, assessment: { id, ... } }
+      const assessmentId = result?.assessment?.id || result?.id;
+      
+      if (assessmentId) {
         toast.success('Sample assessment ready!', { id: 'sample-gen' });
         setTimeout(() => {
-          navigate(`/results/${result.id}`);
+          navigate(`/results/${assessmentId}`);
         }, 500);
       } else {
+        console.error('Invalid response structure:', result);
         throw new Error('Invalid response from server');
       }
     } catch (error) {
