@@ -61,108 +61,7 @@ const HeroHeader = styled.header`
   }
 `;
 
-const GlobalNav = styled.nav`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 16px 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-  @media (max-width: 768px) {
-    padding: 12px 16px;
-  }
-`;
-
-const NavContainer = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const LogoIcon = styled.div`
-  height: 36px;
-  width: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-  display: grid;
-  place-items: center;
-  color: white;
-`;
-
-const LogoText = styled.span`
-  color: #1e293b;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  font-size: 1.25rem;
-`;
-
-const TopNav = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 32px;
-
-  a, button {
-    color: #475569;
-    font-size: 0.938rem;
-    font-weight: 500;
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    transition: color 0.2s;
-    padding: 8px 0;
-    position: relative;
-
-    &:hover {
-      color: #1e293b;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: #ff6b35;
-      transform: scaleX(0);
-      transition: transform 0.2s;
-    }
-
-    &:hover::after {
-      transform: scaleX(1);
-    }
-  }
-
-  @media (max-width: 768px) {
-    gap: 20px;
-    
-    a, button {
-      font-size: 0.875rem;
-    }
-  }
-`;
-
-// Old HeaderNav removed - using GlobalNav instead
+// GlobalNav is now a separate component imported in App.js
 
 const HeroContent = styled.div`
   display: grid;
@@ -826,24 +725,6 @@ const HomePageNew = () => {
 
   return (
     <PageContainer>
-      {/* Global Navigation */}
-      <GlobalNav>
-        <NavContainer>
-          <Logo onClick={() => navigate('/')}>
-            <LogoIcon>
-              <FiBarChart2 size={20} />
-            </LogoIcon>
-            <LogoText>Databricks</LogoText>
-          </Logo>
-          <TopNav>
-            <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
-            <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
-            <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>
-            <button onClick={() => navigate('/assessments')}>Past Assessments</button>
-          </TopNav>
-        </NavContainer>
-      </GlobalNav>
-
       {/* Hero Section */}
       <HeroGradientBG>
         <HeroHeader>

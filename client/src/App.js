@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import toast, { Toaster } from 'react-hot-toast';
 
 // Components
+import GlobalNav from './components/GlobalNav';
 import Header from './components/Header';
 import HomePage from './components/HomePageNew';
 import LandingPage from './components/LandingPage';
@@ -168,7 +169,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {/* Old Header removed - using new GlobalNav in individual pages */}
+        <GlobalNav />
         
         <Routes>
           <Route 
