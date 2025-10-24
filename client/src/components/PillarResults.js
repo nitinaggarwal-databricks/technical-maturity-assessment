@@ -628,7 +628,9 @@ const PillarResults = () => {
                         <strong style={{ color: '#1e40af', display: 'block', marginBottom: '8px' }}>📋 Implementation Steps:</strong>
                         <ol style={{ marginTop: '4px', marginLeft: '24px', lineHeight: '1.8' }}>
                           {rec.actions.map((action, actionIdx) => (
-                            <li key={actionIdx} style={{ marginBottom: '6px', color: '#1e3a8a' }}>{action}</li>
+                            <li key={actionIdx} style={{ marginBottom: '6px', color: '#1e3a8a' }}>
+                              {typeof action === 'string' ? action : action.action || action.title || action.description || JSON.stringify(action)}
+                            </li>
                           ))}
                         </ol>
                       </div>
