@@ -26,7 +26,7 @@ const AssessmentContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   display: flex;
   overflow: hidden;
-  padding-top: 0; /* GlobalNav is fixed at top, no extra padding needed */
+  padding-top: 68px; /* Height of fixed GlobalNav */
 `;
 
 const ContentWrapper = styled.div`

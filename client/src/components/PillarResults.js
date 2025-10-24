@@ -39,9 +39,10 @@ ChartJS.register(
 );
 
 const ResultsContainer = styled.div`
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 40px 20px;
+  padding-top: 108px; /* 68px GlobalNav + 40px top padding */
 `;
 
 const ContentWrapper = styled.div`

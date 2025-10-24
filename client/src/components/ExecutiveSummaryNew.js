@@ -24,6 +24,7 @@ import { exportAssessmentToExcel } from '../services/excelExportService';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
+  padding-top: 68px; /* Height of fixed GlobalNav */
 `;
 
 const Breadcrumb = styled.div`

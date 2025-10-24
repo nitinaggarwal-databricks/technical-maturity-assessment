@@ -25,9 +25,11 @@ const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
   padding: 40px 24px;
+  padding-top: 108px; /* 68px GlobalNav + 40px top padding */
 
   @media (max-width: 768px) {
     padding: 24px 16px;
+    padding-top: 92px; /* 68px GlobalNav + 24px top padding */
   }
 `;
 
