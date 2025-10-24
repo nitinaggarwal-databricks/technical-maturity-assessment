@@ -582,8 +582,12 @@ const ExecutiveSummaryNew = () => {
       try {
         console.log('[ExecutiveSummaryNew] Fetching results for assessment:', assessmentId);
         setLoading(true);
-        const data = await assessmentService.getAssessmentResults(assessmentId);
-        console.log('[ExecutiveSummaryNew] Results loaded:', data);
+        const response = await assessmentService.getAssessmentResults(assessmentId);
+        console.log('[ExecutiveSummaryNew] Raw response:', response);
+        
+        // Unwrap response if needed (backend returns {success, data} but interceptor already unwrapped once)
+        const data = response?.data || response;
+        console.log('[ExecutiveSummaryNew] Unwrapped data:', data);
         setResults(data);
         
         // Initialize editable content from results or existing edited content
@@ -673,8 +677,9 @@ const ExecutiveSummaryNew = () => {
 
   const handleCancelEdit = () => {
     // Reset to last saved state
-    if (results.editedExecutiveSummary) {
-      setEditedContent(results.editedExecutiveSummary);
+    const resultsData = results?.data || results;
+    if (resultsData?.editedExecutiveSummary) {
+      setEditedContent(resultsData.editedExecutiveSummary);
     }
     setEditMode(false);
   };
@@ -684,9 +689,10 @@ const ExecutiveSummaryNew = () => {
       setExporting(true);
       toast.loading('Generating Excel file...', { id: 'excel-export' });
       
+      const resultsData = results?.data || results;
       await exportAssessmentToExcel(
         assessmentId,
-        results.assessmentInfo?.assessmentName || 'Assessment'
+        resultsData?.assessmentInfo?.assessmentName || 'Assessment'
       );
       
       toast.success('Excel downloaded successfully!', { id: 'excel-export' });
@@ -729,9 +735,13 @@ const ExecutiveSummaryNew = () => {
     );
   }
 
+  // Unwrap results data (handle both direct and wrapped formats)
+  const resultsData = results?.data || results;
+  console.log('[ExecutiveSummaryNew] Rendering with resultsData:', resultsData);
+
   // Calculate maturity levels from results
-  const currentMaturity = 3; // This should come from actual data
-  const targetMaturity = 4; // This should come from actual data
+  const currentMaturity = resultsData?.overall?.currentScore || 3;
+  const targetMaturity = resultsData?.overall?.futureScore || 4;
   const improvementScope = targetMaturity - currentMaturity;
 
   // Get pillars data
@@ -761,7 +771,7 @@ const ExecutiveSummaryNew = () => {
         {/* Header */}
         <HeaderSection>
           <h1>Executive Summary</h1>
-          <p>Strategic insights and business value analysis for {results.assessmentInfo?.assessmentName || 'your assessment'}.</p>
+          <p>Strategic insights and business value analysis for {resultsData?.assessmentInfo?.assessmentName || 'your assessment'}.</p>
         </HeaderSection>
 
         {/* Main Grid Layout */}
