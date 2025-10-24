@@ -744,13 +744,19 @@ const AssessmentResultsNew = () => {
   const getPillarData = (pillarId) => {
     const resultsData = results?.data || results;
     
+    console.log(`[AssessmentResultsNew] Getting data for pillar: ${pillarId}`);
+    console.log(`[AssessmentResultsNew] categoryDetails:`, resultsData?.categoryDetails);
+    console.log(`[AssessmentResultsNew] prioritizedActions:`, resultsData?.prioritizedActions);
+    
     // categoryDetails is an object with pillar IDs as keys, not an array
     const pillarResults = resultsData?.categoryDetails?.[pillarId];
+    console.log(`[AssessmentResultsNew] pillarResults for ${pillarId}:`, pillarResults);
     
     // prioritizedActions is an array, so use find
     const prioritized = Array.isArray(resultsData?.prioritizedActions) 
       ? resultsData.prioritizedActions.find(pa => pa.pillarId === pillarId)
       : null;
+    console.log(`[AssessmentResultsNew] prioritized for ${pillarId}:`, prioritized);
 
     const data = {
       theGood: pillarResults?.strengths || prioritized?.strengths || [],
@@ -758,11 +764,15 @@ const AssessmentResultsNew = () => {
       recommendations: prioritized?.actions || pillarResults?.recommendations || []
     };
     
+    console.log(`[AssessmentResultsNew] Final data for ${pillarId}:`, data);
     return data;
   };
 
   const resultsData = results?.data || results;
   console.log('[AssessmentResultsNew] Rendering with resultsData:', resultsData);
+  console.log('[AssessmentResultsNew] resultsData keys:', resultsData ? Object.keys(resultsData) : 'null');
+  console.log('[AssessmentResultsNew] categoryDetails keys:', resultsData?.categoryDetails ? Object.keys(resultsData.categoryDetails) : 'null');
+  console.log('[AssessmentResultsNew] prioritizedActions length:', Array.isArray(resultsData?.prioritizedActions) ? resultsData.prioritizedActions.length : 'not an array');
 
   return (
     <PageContainer>
