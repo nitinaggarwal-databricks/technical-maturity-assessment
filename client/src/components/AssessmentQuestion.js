@@ -22,10 +22,11 @@ const debounce = (func, wait) => {
 };
 
 const AssessmentContainer = styled.div`
-  height: calc(100vh - 80px);
+  min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   display: flex;
   overflow: hidden;
+  padding-top: 0; /* GlobalNav is fixed at top, no extra padding needed */
 `;
 
 const ContentWrapper = styled.div`
