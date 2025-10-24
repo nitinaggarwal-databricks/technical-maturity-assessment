@@ -604,7 +604,6 @@ const AssessmentsListNew = () => {
   const [pillarFilter, setPillarFilter] = useState('all');
   const [ownerFilter, setOwnerFilter] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
-  const [selectedAll, setSelectedAll] = useState(false);
 
   useEffect(() => {
     fetchAssessments();
@@ -817,25 +816,15 @@ const AssessmentsListNew = () => {
           </div>
         </FilterBar>
 
-        {/* Bulk Actions */}
+        {/* Results Count */}
         <BulkActionBar>
           <div className="left">
-            <label>
-              <input 
-                type="checkbox" 
-                checked={selectedAll}
-                onChange={(e) => setSelectedAll(e.target.checked)}
-              />
-              Select all on page
-            </label>
-            <Dropdown style={{ fontSize: '0.813rem', padding: '6px 28px 6px 10px' }}>
-              <option>Bulk actions</option>
-              <option>Export selected</option>
-              <option>Delete selected</option>
-            </Dropdown>
+            <div style={{ fontSize: '0.938rem', color: '#6b7280', fontWeight: 500 }}>
+              {sortedAssessments.length} assessment{sortedAssessments.length !== 1 ? 's' : ''} found
+            </div>
           </div>
           <div className="right">
-            {sortedAssessments.length} results
+            {/* Bulk actions removed - use individual Export buttons on assessment cards */}
           </div>
         </BulkActionBar>
 
