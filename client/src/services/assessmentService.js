@@ -146,7 +146,8 @@ export const getAssessmentResults = async (assessmentId) => {
  */
 export const saveProgress = async (assessmentId, questionId, perspectiveId, value, comment, isSkipped, editorEmail) => {
   try {
-    const response = await api.post(`/assessment/${assessmentId}/save-progress`, {
+    // Note: axios interceptor already returns response.data, so 'data' IS the response body
+    const data = await api.post(`/assessment/${assessmentId}/save-progress`, {
       questionId,
       perspectiveId,
       value,
@@ -154,7 +155,9 @@ export const saveProgress = async (assessmentId, questionId, perspectiveId, valu
       isSkipped,
       editorEmail
     });
-    return response.data;
+    
+    // Backend returns { success: true, lastSaved: '...' }
+    return data || { success: true };
   } catch (error) {
     console.error('Error saving progress:', error);
     // Don't throw error for auto-save failures to avoid disrupting user experience
