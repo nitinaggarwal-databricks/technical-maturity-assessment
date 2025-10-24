@@ -12,7 +12,7 @@ const HeaderContainer = styled.div`
   border-bottom: 2px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   position: sticky;
-  top: 0;
+  top: 68px; /* Position below GlobalNav (68px height) */
   z-index: 100;
 `;
 
