@@ -50,6 +50,57 @@ const ContentWrapper = styled.div`
   margin: 0 auto;
 `;
 
+const PillarNavigation = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+`;
+
+const PillarNavTitle = styled.div`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const PillarNavGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+`;
+
+const PillarNavItem = styled(motion.button)`
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 2px solid ${props => props.$active ? '#3b82f6' : '#e5e7eb'};
+  background: ${props => props.$active ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' : 'white'};
+  color: ${props => props.$active ? 'white' : '#374151'};
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    border-color: #3b82f6;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
 const HeaderSection = styled(motion.div)`
   background: white;
   border-radius: 20px;
@@ -407,6 +458,24 @@ const PillarResults = () => {
       </BackButton>
 
       <ContentWrapper>
+        {/* Pillar Navigation */}
+        <PillarNavigation>
+          <PillarNavTitle>Jump to Pillar Results:</PillarNavTitle>
+          <PillarNavGrid>
+            {assessmentFramework.assessmentAreas.map((pillar) => (
+              <PillarNavItem
+                key={pillar.id}
+                $active={pillar.id === pillarId}
+                onClick={() => navigate(`/pillar-results/${assessmentId}/${pillar.id}`)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {pillar.icon} {pillar.name}
+              </PillarNavItem>
+            ))}
+          </PillarNavGrid>
+        </PillarNavigation>
+
         <HeaderSection
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
