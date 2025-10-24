@@ -745,22 +745,6 @@ const AssessmentsListNew = () => {
             <p>Browse, filter, and manage all maturity assessments in one place.</p>
           </div>
           <div className="right">
-            <SecondaryButton
-              onClick={() => toast('Import feature coming soon!')}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FiUpload size={16} />
-              Import
-            </SecondaryButton>
-            <SecondaryButton
-              onClick={() => toast('Bulk export feature coming soon!')}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FiDownload size={16} />
-              Export
-            </SecondaryButton>
             <PrimaryButton
               onClick={() => navigate('/start')}
               whileHover={{ scale: 1.02 }}
@@ -882,14 +866,27 @@ const AssessmentsListNew = () => {
               const status = getStatusFromAssessment(assessment);
               const progress = getProgressPercentage(assessment);
               const completedPillars = assessment.completedCategories || [];
+              
+              // Use assessmentId or id, whichever is available
+              const assessmentId = assessment.id || assessment.assessmentId;
+              
+              console.log('[AssessmentsListNew] Assessment:', {
+                id: assessment.id,
+                assessmentId: assessment.assessmentId,
+                name: assessment.assessmentName,
+                finalId: assessmentId
+              });
 
               return (
                 <AssessmentCard
-                  key={assessment.id}
+                  key={assessmentId}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  onClick={() => navigate(`/assessment/${assessment.id}/platform_governance`)}
+                  onClick={() => {
+                    console.log(`[AssessmentsListNew] Card clicked, navigating to: /assessment/${assessmentId}/platform_governance`);
+                    navigate(`/assessment/${assessmentId}/platform_governance`);
+                  }}
                 >
                   <div className="header">
                     <div>
@@ -948,7 +945,8 @@ const AssessmentsListNew = () => {
                       <ActionButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/assessment/${assessment.id}/platform_governance`);
+                          console.log(`[AssessmentsListNew] Edit clicked, navigating to: /assessment/${assessmentId}/platform_governance`);
+                          navigate(`/assessment/${assessmentId}/platform_governance`);
                         }}
                       >
                         <FiEdit2 />
@@ -958,7 +956,8 @@ const AssessmentsListNew = () => {
                         className="primary"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/results/${assessment.id}`);
+                          console.log(`[AssessmentsListNew] Open clicked, navigating to: /results/${assessmentId}`);
+                          navigate(`/results/${assessmentId}`);
                         }}
                       >
                         <FiStar />
