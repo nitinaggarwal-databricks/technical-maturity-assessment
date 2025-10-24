@@ -198,17 +198,7 @@ function App() {
         <Routes>
           <Route 
             path="/" 
-            element={
-              currentAssessment ? (
-                <AssessmentDashboard 
-                  currentAssessment={currentAssessment}
-                  framework={assessmentFramework}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <HomePage />
-              )
-            } 
+            element={<HomePage />} 
           />
           
           <Route 
