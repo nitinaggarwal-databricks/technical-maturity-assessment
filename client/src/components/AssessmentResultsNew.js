@@ -531,11 +531,19 @@ const AssessmentResultsNew = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
+        console.log('[AssessmentResultsNew] Fetching results for:', assessmentId);
         const data = await assessmentService.getAssessmentResults(assessmentId);
+        console.log('[AssessmentResultsNew] Results data:', data);
+        
+        if (!data) {
+          throw new Error('No data received from API');
+        }
+        
         setResults(data);
+        setError(null);
       } catch (err) {
-        console.error('Error fetching results:', err);
-        setError(err.message);
+        console.error('[AssessmentResultsNew] Error fetching results:', err);
+        setError(err.message || 'Failed to load assessment results');
       } finally {
         setLoading(false);
       }
@@ -628,14 +636,21 @@ const AssessmentResultsNew = () => {
 
   // Get pillar-specific results
   const getPillarData = (pillarId) => {
+    console.log('[getPillarData] Getting data for pillar:', pillarId);
+    console.log('[getPillarData] categoryDetails:', results.categoryDetails);
+    console.log('[getPillarData] prioritizedActions:', results.prioritizedActions);
+    
     const pillarResults = results.categoryDetails?.find(cat => cat.pillarId === pillarId);
     const prioritized = results.prioritizedActions?.find(pa => pa.pillarId === pillarId);
 
-    return {
+    const data = {
       theGood: pillarResults?.strengths || prioritized?.strengths || [],
       theBad: pillarResults?.weaknesses || prioritized?.gaps || [],
       recommendations: prioritized?.actions || pillarResults?.recommendations || []
     };
+    
+    console.log('[getPillarData] Returning data:', data);
+    return data;
   };
 
   return (
