@@ -734,16 +734,15 @@ const AssessmentResultsNew = () => {
 
   // Get pillar-specific results
   const getPillarData = (pillarId) => {
-    console.log('[getPillarData] Getting data for pillar:', pillarId);
-    console.log('[getPillarData] results:', results);
-    console.log('[getPillarData] results.data:', results?.data);
-    
     const resultsData = results?.data || results;
-    console.log('[getPillarData] categoryDetails:', resultsData?.categoryDetails);
-    console.log('[getPillarData] prioritizedActions:', resultsData?.prioritizedActions);
     
-    const pillarResults = resultsData?.categoryDetails?.find(cat => cat.pillarId === pillarId);
-    const prioritized = resultsData?.prioritizedActions?.find(pa => pa.pillarId === pillarId);
+    // categoryDetails is an object with pillar IDs as keys, not an array
+    const pillarResults = resultsData?.categoryDetails?.[pillarId];
+    
+    // prioritizedActions is an array, so use find
+    const prioritized = Array.isArray(resultsData?.prioritizedActions) 
+      ? resultsData.prioritizedActions.find(pa => pa.pillarId === pillarId)
+      : null;
 
     const data = {
       theGood: pillarResults?.strengths || prioritized?.strengths || [],
@@ -751,7 +750,6 @@ const AssessmentResultsNew = () => {
       recommendations: prioritized?.actions || pillarResults?.recommendations || []
     };
     
-    console.log('[getPillarData] Returning data for', pillarId, ':', data);
     return data;
   };
 
