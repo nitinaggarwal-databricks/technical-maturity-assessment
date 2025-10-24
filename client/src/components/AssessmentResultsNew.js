@@ -531,19 +531,27 @@ const AssessmentResultsNew = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
+        setError(null);
         console.log('[AssessmentResultsNew] Fetching results for:', assessmentId);
+        
         const data = await assessmentService.getAssessmentResults(assessmentId);
-        console.log('[AssessmentResultsNew] Results data:', data);
+        console.log('[AssessmentResultsNew] Results data received:', data);
+        console.log('[AssessmentResultsNew] Data keys:', data ? Object.keys(data) : 'null');
         
         if (!data) {
           throw new Error('No data received from API');
         }
         
-        setResults(data);
-        setError(null);
+        // Wrap in data object if needed
+        const resultsData = data.data ? data : { data };
+        console.log('[AssessmentResultsNew] Setting results:', resultsData);
+        
+        setResults(resultsData);
       } catch (err) {
         console.error('[AssessmentResultsNew] Error fetching results:', err);
+        console.error('[AssessmentResultsNew] Error stack:', err.stack);
         setError(err.message || 'Failed to load assessment results');
+        setResults(null);
       } finally {
         setLoading(false);
       }
@@ -551,6 +559,10 @@ const AssessmentResultsNew = () => {
 
     if (assessmentId) {
       fetchResults();
+    } else {
+      console.error('[AssessmentResultsNew] No assessment ID provided');
+      setError('No assessment ID provided');
+      setLoading(false);
     }
   }, [assessmentId, routerLocation.key]);
 
@@ -595,26 +607,112 @@ const AssessmentResultsNew = () => {
   if (loading) {
     return (
       <PageContainer>
-        <LoadingContainer>
-          <div className="spinner">
-            <div className="text">Generating your maturity report...</div>
+        <div style={{ 
+          minHeight: '60vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <div style={{ 
+            fontSize: '1.5rem', 
+            fontWeight: 600,
+            color: '#1e293b'
+          }}>
+            Generating your maturity report...
           </div>
-        </LoadingContainer>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #e5e7eb',
+            borderTop: '4px solid #3b82f6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+        </div>
       </PageContainer>
     );
   }
 
-  if (error || !results) {
+  if (error) {
+    console.error('[AssessmentResultsNew] Rendering error state:', error);
     return (
       <PageContainer>
-        <ErrorContainer>
-          <FiAlertTriangle size={64} className="icon" />
-          <div className="title">Unable to load results</div>
-          <div className="message">{error || 'No results available'}</div>
-          <button onClick={() => navigate('/assessments')}>
+        <div style={{ 
+          minHeight: '60vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px',
+          padding: '40px'
+        }}>
+          <FiAlertTriangle size={64} color="#ef4444" />
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1e293b' }}>
+            Unable to load results
+          </div>
+          <div style={{ color: '#64748b', textAlign: 'center', maxWidth: '500px' }}>
+            {error}
+          </div>
+          <button 
+            onClick={() => navigate('/assessments')}
+            style={{
+              marginTop: '16px',
+              padding: '10px 20px',
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
             Back to Assessments
           </button>
-        </ErrorContainer>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!results || !results.data) {
+    console.error('[AssessmentResultsNew] No results data available:', results);
+    return (
+      <PageContainer>
+        <div style={{ 
+          minHeight: '60vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px',
+          padding: '40px'
+        }}>
+          <FiAlertTriangle size={64} color="#f59e0b" />
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1e293b' }}>
+            No results available
+          </div>
+          <div style={{ color: '#64748b', textAlign: 'center', maxWidth: '500px' }}>
+            This assessment may not have been completed yet. Please complete the assessment questions first.
+          </div>
+          <button 
+            onClick={() => navigate('/assessments')}
+            style={{
+              marginTop: '16px',
+              padding: '10px 20px',
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            Back to Assessments
+          </button>
+        </div>
       </PageContainer>
     );
   }
@@ -637,11 +735,15 @@ const AssessmentResultsNew = () => {
   // Get pillar-specific results
   const getPillarData = (pillarId) => {
     console.log('[getPillarData] Getting data for pillar:', pillarId);
-    console.log('[getPillarData] categoryDetails:', results.categoryDetails);
-    console.log('[getPillarData] prioritizedActions:', results.prioritizedActions);
+    console.log('[getPillarData] results:', results);
+    console.log('[getPillarData] results.data:', results?.data);
     
-    const pillarResults = results.categoryDetails?.find(cat => cat.pillarId === pillarId);
-    const prioritized = results.prioritizedActions?.find(pa => pa.pillarId === pillarId);
+    const resultsData = results?.data || results;
+    console.log('[getPillarData] categoryDetails:', resultsData?.categoryDetails);
+    console.log('[getPillarData] prioritizedActions:', resultsData?.prioritizedActions);
+    
+    const pillarResults = resultsData?.categoryDetails?.find(cat => cat.pillarId === pillarId);
+    const prioritized = resultsData?.prioritizedActions?.find(pa => pa.pillarId === pillarId);
 
     const data = {
       theGood: pillarResults?.strengths || prioritized?.strengths || [],
@@ -649,9 +751,12 @@ const AssessmentResultsNew = () => {
       recommendations: prioritized?.actions || pillarResults?.recommendations || []
     };
     
-    console.log('[getPillarData] Returning data:', data);
+    console.log('[getPillarData] Returning data for', pillarId, ':', data);
     return data;
   };
+
+  const resultsData = results?.data || results;
+  console.log('[AssessmentResultsNew] Rendering with resultsData:', resultsData);
 
   return (
     <PageContainer>
@@ -662,7 +767,7 @@ const AssessmentResultsNew = () => {
             <TitleSection>
               <h1>Enterprise Data & AI Maturity Report</h1>
               <div className="subtitle">
-                Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'} | {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                Prepared for {resultsData?.assessmentInfo?.organizationName || 'Your Organization'} | {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </div>
             </TitleSection>
             <ActionButtons>
