@@ -130,7 +130,7 @@ function App() {
       const assessment = await assessmentService.startAssessment(organizationInfo);
       setCurrentAssessment(assessment);
       saveCurrentSession(assessment);
-      toast.success('Assessment started successfully!');
+      // Toast notification shown in AssessmentStart component to avoid duplicate
       return assessment;
     } catch (error) {
       console.error('Error starting assessment:', error);
