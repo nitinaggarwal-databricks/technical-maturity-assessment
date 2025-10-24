@@ -60,51 +60,75 @@ function App() {
   useEffect(() => {
     const loadCurrentAssessment = async () => {
       const path = window.location.pathname;
-      const assessmentMatch = path.match(/\/assessment\/([^\/]+)/);
+      const assessmentMatch = path.match(/\/assessment\/([^\/]+)|\/results\/([^\/]+)|\/pillar-results\/([^\/]+)|\/executive-summary\/([^\/]+)|\/dashboard/);
       
       if (assessmentMatch) {
-        const assessmentId = assessmentMatch[1];
-        try {
-          const assessment = await assessmentService.getAssessmentStatus(assessmentId);
-          if (assessment) {
-            // Calculate progress
-            const totalQuestions = assessmentFramework?.assessmentAreas?.reduce((total, area) => {
-              return total + (area.dimensions?.reduce((dimTotal, dim) => {
-                return dimTotal + (dim.questions?.length || 0);
-              }, 0) || 0);
-            }, 0) || 0;
-            
-            // Count unique questions (not perspectives)
-            const questionIds = new Set();
-            Object.keys(assessment.responses || {}).forEach(key => {
-              if (key.includes('_comment') || key.includes('_skipped')) return;
-              
-              // Remove perspective suffixes to get question ID
-              let questionId = key;
-              const perspectiveSuffixes = ['_current_state', '_future_state', '_technical_pain', '_business_pain'];
-              for (const suffix of perspectiveSuffixes) {
-                if (key.endsWith(suffix)) {
-                  questionId = key.substring(0, key.length - suffix.length);
-                  break;
-                }
+        // Extract assessment ID from URL or use from localStorage
+        const assessmentId = assessmentMatch[1] || assessmentMatch[2] || assessmentMatch[3] || assessmentMatch[4];
+        
+        // If on dashboard and no ID in URL, try to load from localStorage
+        if (path === '/dashboard' && !assessmentId) {
+          const savedAssessment = localStorage.getItem('currentAssessment');
+          if (savedAssessment) {
+            try {
+              const assessment = JSON.parse(savedAssessment);
+              // Refresh assessment data from server
+              const refreshedAssessment = await assessmentService.getAssessmentStatus(assessment.id || assessment.assessmentId);
+              if (refreshedAssessment) {
+                setCurrentAssessment(refreshedAssessment);
+                saveCurrentSession(refreshedAssessment);
               }
-              questionIds.add(questionId);
-            });
-            const answeredQuestions = questionIds.size;
-            
-            const progress = totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0;
-            
-            setCurrentAssessment({
-              ...assessment,
-              progress
-            });
+            } catch (error) {
+              console.error('Error loading assessment from localStorage:', error);
+            }
           }
-        } catch (error) {
-          console.error('Error loading current assessment:', error);
+          return;
         }
-      } else {
-        setCurrentAssessment(null);
+        
+        if (assessmentId) {
+          try {
+            const assessment = await assessmentService.getAssessmentStatus(assessmentId);
+            if (assessment) {
+              // Calculate progress
+              const totalQuestions = assessmentFramework?.assessmentAreas?.reduce((total, area) => {
+                return total + (area.dimensions?.reduce((dimTotal, dim) => {
+                  return dimTotal + (dim.questions?.length || 0);
+                }, 0) || 0);
+              }, 0) || 0;
+              
+              // Count unique questions (not perspectives)
+              const questionIds = new Set();
+              Object.keys(assessment.responses || {}).forEach(key => {
+                if (key.includes('_comment') || key.includes('_skipped')) return;
+                
+                // Remove perspective suffixes to get question ID
+                let questionId = key;
+                const perspectiveSuffixes = ['_current_state', '_future_state', '_technical_pain', '_business_pain'];
+                for (const suffix of perspectiveSuffixes) {
+                  if (key.endsWith(suffix)) {
+                    questionId = key.substring(0, key.length - suffix.length);
+                    break;
+                  }
+                }
+                questionIds.add(questionId);
+              });
+              const answeredQuestions = questionIds.size;
+              
+              const progress = totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0;
+              
+              setCurrentAssessment({
+                ...assessment,
+                progress
+              });
+              saveCurrentSession(assessment);
+            }
+          } catch (error) {
+            console.error('Error loading current assessment:', error);
+          }
+        }
       }
+      // Don't clear currentAssessment when navigating to other pages
+      // Only clear it explicitly via logout
     };
 
     if (assessmentFramework) {
