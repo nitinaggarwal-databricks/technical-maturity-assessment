@@ -997,6 +997,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   res.json({
+    status: 'ok',
     success: true,
     message: 'Databricks Maturity Assessment API is running',
     timestamp: new Date().toISOString(),
@@ -1229,22 +1230,20 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
 
     res.json({
       success: true,
-      data: {
-        assessmentId: id,
-        pillarId,
-        pillarDetails,
-        summary: pillarResults.summary || '',
-        recommendations: pillarResults.recommendations || [],
-        databricksFeatures: pillarResults.databricksFeatures || [],
-        painPointRecommendations: pillarResults.painPointRecommendations || [],
-        gapBasedActions: pillarResults.gapBasedActions || [],
-        commentBasedInsights: pillarResults.commentBasedInsights || [],
-        prioritizedActions: pillarResults.recommendations || [],
-        generatedAt: new Date().toISOString(),
-        isPillarSpecific: true,
-        _engineType: 'openai',
-        _contentSource: 'openai-generated'
-      }
+      pillarDetails,
+      summary: pillarResults.summary || '',
+      recommendations: pillarResults.recommendations || [],
+      databricksFeatures: pillarResults.databricksFeatures || [],
+      painPointRecommendations: pillarResults.painPointRecommendations || [],
+      gapBasedActions: pillarResults.gapBasedActions || [],
+      commentBasedInsights: pillarResults.commentBasedInsights || [],
+      prioritizedActions: pillarResults.recommendations || [],
+      assessmentId: id,
+      pillarId,
+      generatedAt: new Date().toISOString(),
+      isPillarSpecific: true,
+      _engineType: 'openai',
+      _contentSource: 'openai-generated'
     });
   } catch (error) {
     console.error('❌ Error generating pillar results:', error);
@@ -1304,6 +1303,53 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
   }
 });
 
+// Create new assessment
+app.post('/api/assessment', async (req, res) => {
+  try {
+    const { organizationName, industry, contactEmail, assessmentName } = req.body;
+    
+    if (!organizationName || !assessmentName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Organization name and assessment name are required'
+      });
+    }
+    
+    const newAssessment = {
+      id: `assessment_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      assessmentName,
+      organizationName,
+      industry: industry || '',
+      contactEmail: contactEmail || '',
+      status: 'in_progress',
+      startedAt: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+      responses: {},
+      completedCategories: [],
+      editHistory: []
+    };
+    
+    await assessments.set(newAssessment.id, newAssessment);
+    
+    console.log(`✅ New assessment created: ${newAssessment.id} (${newAssessment.assessmentName})`);
+    
+    res.json({
+      success: true,
+      message: 'Assessment created successfully',
+      id: newAssessment.id,
+      assessmentName: newAssessment.assessmentName,
+      organizationName: newAssessment.organizationName
+    });
+  } catch (error) {
+    console.error('❌ Error creating assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating assessment',
+      error: error.message
+    });
+  }
+});
+
 // Generate sample assessment with random realistic data
 app.post('/api/assessment/generate-sample', async (req, res) => {
   try {
@@ -1333,6 +1379,7 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
         organizationName: sampleAssessment.organizationName,
         status: sampleAssessment.status,
         completedCategories: sampleAssessment.completedCategories,
+        responses: sampleAssessment.responses,  // Include responses for validation
         totalResponses: Object.keys(sampleAssessment.responses).length
       }
     });
