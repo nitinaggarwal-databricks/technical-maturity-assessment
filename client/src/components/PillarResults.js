@@ -10,7 +10,8 @@ import {
   FiTrendingUp,
   FiAlertCircle,
   FiZap,
-  FiArrowRight
+  FiArrowRight,
+  FiRefreshCw
 } from 'react-icons/fi';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -329,19 +330,26 @@ const PillarResults = () => {
   const routerLocation = useLocation();
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadPillarResults = async () => {
       try {
         setLoading(true);
+        setError(null);
         console.log('Loading pillar results for:', assessmentId, pillarId);
         const pillarResults = await assessmentService.getPillarResults(assessmentId, pillarId);
         console.log('Pillar results loaded:', pillarResults);
         setResults(pillarResults);
       } catch (error) {
         console.error('Error loading pillar results:', error);
-        toast.error('Failed to load pillar results: ' + (error.response?.data?.message || error.message));
-        // Don't navigate away - let user see error and try again
+        const errorMessage = error.response?.data?.message || error.message;
+        setError(errorMessage);
+        
+        // Only show toast for unexpected errors, not for "no responses" case
+        if (!errorMessage.includes('No responses found')) {
+          toast.error('Failed to load pillar results: ' + errorMessage);
+        }
         setResults(null);
       } finally {
         setLoading(false);
@@ -352,6 +360,7 @@ const PillarResults = () => {
       loadPillarResults();
     } else {
       console.error('Missing assessmentId or pillarId');
+      setError('Missing required parameters');
       setLoading(false);
     }
   }, [assessmentId, pillarId, routerLocation.key]);
@@ -383,48 +392,87 @@ const PillarResults = () => {
   }
 
   if (!results || !results.pillarDetails) {
+    // Check if this is a "no responses" case
+    const isNoResponsesError = error && error.includes('No responses found');
+    const pillarName = assessmentFramework.assessmentAreas.find(area => area.id === pillarId)?.name || 'this pillar';
+    
     return (
       <ResultsContainer>
         <ContentWrapper>
-          <HeaderSection>
-            <h1>Results Not Available</h1>
-            <p>Unable to load pillar results. Please try again.</p>
-            <div style={{ marginTop: '20px', color: '#6b7280', fontSize: '0.9rem' }}>
-              Debug info: assessmentId={assessmentId}, pillarId={pillarId}, 
-              hasResults={!!results}, hasPillarDetails={!!results?.pillarDetails},
-              hasPainPoints={!!results?.painPointRecommendations}
-            </div>
-            <button 
-              onClick={() => window.location.reload()} 
-              style={{
-                marginTop: '20px',
-                padding: '12px 24px',
-                background: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600
-              }}
-            >
-              Retry
-            </button>
-            <button 
-              onClick={() => navigate(`/results/${assessmentId}`)} 
-              style={{
-                marginTop: '10px',
-                marginLeft: '10px',
-                padding: '12px 24px',
-                background: 'white',
-                color: '#374151',
-                border: '2px solid #e5e7eb',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600
-              }}
-            >
-              Go to Overall Results
-            </button>
+          <HeaderSection
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {isNoResponsesError ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <FiAlertCircle size={64} style={{ color: '#f59e0b', marginBottom: '16px' }} />
+                  <h1 style={{ fontSize: '1.75rem', color: '#111827', marginBottom: '12px' }}>
+                    No Responses Yet for {pillarName}
+                  </h1>
+                  <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '8px' }}>
+                    You haven't answered any questions for this pillar yet.
+                  </p>
+                  <p style={{ fontSize: '1rem', color: '#6b7280' }}>
+                    Start the assessment to see personalized results and recommendations.
+                  </p>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '32px' }}>
+                  <NavButton
+                    variant="primary"
+                    onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <FiArrowLeft size={16} />
+                    Start {pillarName} Assessment
+                  </NavButton>
+                  <NavButton
+                    variant="secondary"
+                    onClick={() => navigate(`/results/${assessmentId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    View Overall Results
+                  </NavButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <FiAlertCircle size={64} style={{ color: '#ef4444', marginBottom: '16px' }} />
+                  <h1>Results Not Available</h1>
+                  <p>Unable to load pillar results. Please try again.</p>
+                  {error && (
+                    <div style={{ marginTop: '16px', padding: '12px', background: '#fef2f2', borderRadius: '8px', color: '#991b1b', fontSize: '0.9rem' }}>
+                      {error}
+                    </div>
+                  )}
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '32px' }}>
+                  <NavButton
+                    variant="primary"
+                    onClick={() => window.location.reload()}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <FiRefreshCw size={16} />
+                    Retry
+                  </NavButton>
+                  <NavButton
+                    variant="secondary"
+                    onClick={() => navigate(`/results/${assessmentId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Go to Overall Results
+                  </NavButton>
+                </div>
+              </>
+            )}
           </HeaderSection>
         </ContentWrapper>
       </ResultsContainer>
