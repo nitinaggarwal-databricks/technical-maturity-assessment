@@ -758,11 +758,12 @@ const AssessmentResultsNew = () => {
       : null;
     console.log(`[AssessmentResultsNew] prioritized for ${pillarId}:`, prioritized);
 
-    // FIX: Backend uses theGood/theBad, not strengths/gaps
+    // FIX: Backend returns theGood/theBad in prioritizedActions array
+    // prioritizedActions is the source of truth for pillar-specific good/bad/recommendations
     const data = {
-      theGood: pillarResults?.strengths || prioritized?.theGood || [],
-      theBad: pillarResults?.weaknesses || prioritized?.theBad || [],
-      recommendations: prioritized?.actions || pillarResults?.recommendations || []
+      theGood: prioritized?.theGood || [],  // Direct access from prioritizedActions
+      theBad: prioritized?.theBad || [],    // Direct access from prioritizedActions
+      recommendations: prioritized?.actions || []  // Actions from prioritizedActions
     };
     
     console.log(`[AssessmentResultsNew] Final data for ${pillarId}:`, data);

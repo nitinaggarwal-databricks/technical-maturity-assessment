@@ -233,12 +233,27 @@ class ProfessionalPDFExporter {
     
     yPos += 30;
     
-    // Summary text
-    const summaryText = (this.results.summary || this.results.executiveSummary?.summary || 
-      'This assessment provides a comprehensive evaluation of your Databricks technical maturity across six key pillars. ' +
-      'The findings reveal structured processes with opportunities for optimization through automation, governance integration, and AI enablement.')
-      .substring(0, 400);
+    // Summary text - handle both string and object formats
+    let summaryText = '';
+    if (this.results.executiveSummary) {
+      if (typeof this.results.executiveSummary === 'string') {
+        summaryText = this.results.executiveSummary;
+      } else if (typeof this.results.executiveSummary === 'object') {
+        // Extract text from object (handle various possible fields)
+        summaryText = this.results.executiveSummary.summary || 
+                     this.results.executiveSummary.strategicSituation || 
+                     this.results.executiveSummary.keyInsights ||
+                     JSON.stringify(this.results.executiveSummary);  // Fallback
+      }
+    }
     
+    if (!summaryText || summaryText === '{}' || summaryText === '[object Object]') {
+      summaryText = 'This assessment provides a comprehensive evaluation of your Databricks technical maturity across six key pillars. ' +
+        'The findings reveal structured processes with opportunities for optimization through automation, governance integration, and AI enablement.';
+    }
+    
+    // Truncate and wrap text
+    summaryText = summaryText.substring(0, 800);  // Increased from 400 to show more content
     const summaryLines = this.doc.splitTextToSize(summaryText, this.contentWidth - 40);
     this.doc.text(summaryLines, this.margin + 20, yPos);
   }
