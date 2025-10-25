@@ -113,7 +113,7 @@ const HeaderSection = styled(motion.div)`
 
 const BackButton = styled(motion.button)`
   position: absolute;
-  top: 20px;
+  top: 88px; /* 68px GlobalNav + 20px spacing */
   left: 20px;
   background: white;
   border: 2px solid #e5e7eb;
@@ -122,6 +122,7 @@ const BackButton = styled(motion.button)`
   display: flex;
   align-items: center;
   gap: 8px;
+  z-index: 10; /* Ensure it's above other content */
   cursor: pointer;
   font-weight: 600;
   color: #374151;
