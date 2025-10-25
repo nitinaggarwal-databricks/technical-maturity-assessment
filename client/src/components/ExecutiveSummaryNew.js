@@ -749,15 +749,34 @@ const ExecutiveSummaryNew = () => {
   const targetMaturity = resultsData?.overall?.futureScore || 4;
   const improvementScope = targetMaturity - currentMaturity;
 
-  // Get pillars data
-  const pillars = [
-    { id: 'platform_governance', name: 'Platform', icon: '🧱', technical: 24, business: 23 },
-    { id: 'data_engineering', name: 'Data', icon: '📊', technical: 29, business: 22 },
-    { id: 'analytics_bi', name: 'Analytics', icon: '📈', technical: 28, business: 19 },
-    { id: 'machine_learning', name: 'ML', icon: '🤖', technical: 27, business: 19 },
-    { id: 'generative_ai', name: 'GenAI', icon: '💡', technical: 30, business: 20 },
-    { id: 'operational_excellence', name: 'Operations', icon: '⚙️', technical: 32, business: 23 },
-  ];
+  // Get actual pillars data from results (dynamically generated)
+  const pillarsData = [];
+  const categoryDetails = resultsData?.categoryDetails || {};
+  
+  Object.keys(categoryDetails).forEach(pillarId => {
+    const pillar = categoryDetails[pillarId];
+    if (pillar && pillar.name) {
+      pillarsData.push({
+        id: pillarId,
+        name: pillar.name,
+        currentScore: pillar.currentScore || 0,
+        futureScore: pillar.futureScore || 0,
+        gap: (pillar.futureScore || 0) - (pillar.currentScore || 0)
+      });
+    }
+  });
+  
+  // Get prioritized actions from results
+  const prioritizedActions = resultsData?.prioritizedActions || [];
+  
+  // Build transformation roadmap from prioritized actions
+  const transformationRoadmap = prioritizedActions.slice(0, 6).map(action => ({
+    pillar: action.pillarName || action.category || 'General',
+    gap: action.gap || 0,
+    timeline: action.gap >= 2 ? '6–12 months' : '3–6 months',
+    impact: action.gap >= 2 ? 'High' : action.gap >= 1 ? 'Medium' : 'Low',
+    actions: action.actions || []
+  }));
 
   return (
     <PageContainer>
@@ -860,24 +879,36 @@ const ExecutiveSummaryNew = () => {
                 Your assessment identified specific challenges across multiple pillars:
               </SidebarSubtitle>
 
-              {pillars.map((pillar, idx) => (
-                <PillarConstraintSection key={pillar.id}>
-                  <PillarHeader>
-                    <span className="icon">{pillar.icon}</span>
-                    <span className="title">{pillar.name}</span>
-                  </PillarHeader>
-                  <PainPointGrid>
-                    <PainPointBadge>
-                      <span className="count">{pillar.technical}</span>
-                      <span>technical</span>
-                    </PainPointBadge>
-                    <PainPointBadge>
-                      <span className="count">{pillar.business}</span>
-                      <span>business</span>
-                    </PainPointBadge>
-                  </PainPointGrid>
-                </PillarConstraintSection>
-              ))}
+              {pillarsData.map((pillar, idx) => {
+                // Get actual pillar details
+                const pillarDetails = categoryDetails[pillar.id] || {};
+                const gap = pillar.gap;
+                
+                return (
+                  <PillarConstraintSection key={pillar.id}>
+                    <PillarHeader>
+                      <span className="title">{pillar.name}</span>
+                      <span style={{ fontSize: '0.875rem', color: '#6b7280', marginLeft: '8px' }}>
+                        (Current: {pillar.currentScore}/5 → Target: {pillar.futureScore}/5)
+                      </span>
+                    </PillarHeader>
+                    <PainPointGrid>
+                      <PainPointBadge style={{ background: gap >= 2 ? '#fee2e2' : gap >= 1 ? '#fef3c7' : '#f0fdf4' }}>
+                        <span className="count" style={{ color: gap >= 2 ? '#991b1b' : gap >= 1 ? '#78350f' : '#065f46' }}>
+                          {gap}
+                        </span>
+                        <span style={{ color: gap >= 2 ? '#991b1b' : gap >= 1 ? '#78350f' : '#065f46' }}>
+                          level gap
+                        </span>
+                      </PainPointBadge>
+                      <PainPointBadge>
+                        <span className="count">{pillarDetails.questionsAnswered || 0}</span>
+                        <span>questions</span>
+                      </PainPointBadge>
+                    </PainPointGrid>
+                  </PillarConstraintSection>
+                );
+              })}
 
               {editMode ? (
                 <EditableTextarea
@@ -905,56 +936,39 @@ const ExecutiveSummaryNew = () => {
                 Transformation roadmap & business value
               </SectionTitle>
 
-              <RoadmapItem>
-                <div className="header">
-                  <div className="title">Platform (Level 2 → 3)</div>
-                  <div className="timeline">
-                    <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
-                    Timeline: 3–6 months • Impact: Medium
-                  </div>
-                </div>
-                <div className="actions">
-                  <ul>
-                    <li>Implement Unity Catalog for centralized governance</li>
-                    <li>Enable audit logging</li>
-                    <li>Deploy RBAC with attribute-based access control</li>
-                  </ul>
-                </div>
-              </RoadmapItem>
-
-              <RoadmapItem>
-                <div className="header">
-                  <div className="title">Data (Level 3 → 4)</div>
-                  <div className="timeline">
-                    <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
-                    Timeline: 3–6 months • Impact: Medium
-                  </div>
-                </div>
-                <div className="actions">
-                  <ul>
-                    <li>Adopt Delta Live Tables for automated pipelines</li>
-                    <li>Enable Lakehouse Monitoring for data quality</li>
-                    <li>Use Auto Loader for streaming ingestion</li>
-                  </ul>
-                </div>
-              </RoadmapItem>
-
-              <RoadmapItem>
-                <div className="header">
-                  <div className="title">Analytics (Level 3 → 4)</div>
-                  <div className="timeline">
-                    <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
-                    Timeline: 3–6 months • Impact: Medium
-                  </div>
-                </div>
-                <div className="actions">
-                  <ul>
-                    <li>Deploy Databricks SQL with Serverless compute</li>
-                    <li>Enable AI/BI dashboards</li>
-                    <li>Pilot Genie for natural-language queries</li>
-                  </ul>
-                </div>
-              </RoadmapItem>
+              {transformationRoadmap.length > 0 ? (
+                transformationRoadmap.map((roadmapItem, idx) => (
+                  <RoadmapItem key={idx}>
+                    <div className="header">
+                      <div className="title">
+                        {roadmapItem.pillar} (Level {categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.currentScore || 0} → 
+                        {categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.futureScore || 0})
+                      </div>
+                      <div className="timeline">
+                        <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
+                        Timeline: {roadmapItem.timeline} • Impact: {roadmapItem.impact}
+                      </div>
+                    </div>
+                    <div className="actions">
+                      <ul>
+                        {roadmapItem.actions && roadmapItem.actions.length > 0 ? (
+                          roadmapItem.actions.slice(0, 4).map((action, actionIdx) => (
+                            <li key={actionIdx}>
+                              {typeof action === 'string' ? action : action.action || action.title || action.description || 'Action item'}
+                            </li>
+                          ))
+                        ) : (
+                          <li>Focus on closing the maturity gap through structured improvements</li>
+                        )}
+                      </ul>
+                    </div>
+                  </RoadmapItem>
+                ))
+              ) : (
+                <DescriptionText>
+                  Complete more pillar assessments to generate a personalized transformation roadmap.
+                </DescriptionText>
+              )}
 
               <div style={{ marginTop: '24px' }}>
                 <h4 style={{ fontSize: '0.938rem', fontWeight: 600, color: '#111827', marginBottom: '12px' }}>
@@ -983,7 +997,7 @@ const ExecutiveSummaryNew = () => {
                   </li>
                 </OutcomesList>
                 <ConfidenceBadge>
-                  Assessment confidence: Based on 6 pillars with 296 specific challenges identified
+                  Assessment confidence: Based on {pillarsData.length} pillar{pillarsData.length !== 1 ? 's' : ''} with {resultsData?.assessmentInfo?.questionsAnswered || 0} questions answered
                 </ConfidenceBadge>
               </div>
             </Card>
