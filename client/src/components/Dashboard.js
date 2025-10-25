@@ -55,7 +55,7 @@ const Header = styled.div`
   margin-bottom: 32px;
 `;
 
-const Title = styled.h1`
+const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   color: #1f2937;
@@ -424,7 +424,7 @@ const Dashboard = () => {
   return (
     <PageContainer>
       <Header>
-        <Title>Assessment Insights Dashboard</Title>
+        <PageTitle>Assessment Insights Dashboard</PageTitle>
         <ActionButtons>
           <ActionButton
             onClick={handleExport}
