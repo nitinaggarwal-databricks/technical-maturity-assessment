@@ -8,7 +8,7 @@ const COLORS = {
   accent: '#1B3139',       // Dark Blue
   text: '#2C2C2C',
   lightGray: '#F5F5F5',
-  mediumGray: '#999999',
+  mediumGray: '#CCCCCC',
   darkGray: '#666666',
   white: '#FFFFFF',
   blue: '#3B82F6',
@@ -26,6 +26,16 @@ const MATURITY_COLORS = {
   5: '#00A972'
 };
 
+// Pillar icons (text-based, no emojis)
+const PILLAR_ICONS = {
+  platform_governance: 'PLATFORM',
+  data_engineering: 'DATA',
+  analytics_bi: 'ANALYTICS',
+  machine_learning: 'ML',
+  generative_ai: 'GENAI',
+  operational_excellence: 'OPS'
+};
+
 class ProfessionalPDFExporter {
   constructor(results, assessmentInfo) {
     this.doc = new jsPDF('p', 'pt', 'a4');
@@ -33,9 +43,9 @@ class ProfessionalPDFExporter {
     this.assessmentInfo = assessmentInfo;
     this.pageWidth = this.doc.internal.pageSize.width;
     this.pageHeight = this.doc.internal.pageSize.height;
-    this.margin = 50;
+    this.margin = 40;
     this.contentWidth = this.pageWidth - 2 * this.margin;
-    this.currentPage = 1;
+    this.lineHeight = 16;
   }
 
   // Generate the complete report
@@ -46,10 +56,9 @@ class ProfessionalPDFExporter {
     this.addCurrentVsFuture();
     this.addPillarDetails();
     this.addRecommendations();
-    this.addRoadmap();
     this.addMethodology();
     
-    // Add page numbers
+    // Add page numbers and footers
     this.addPageNumbers();
     
     return this.doc;
@@ -57,22 +66,19 @@ class ProfessionalPDFExporter {
 
   // Add header to pages (except cover)
   addHeader() {
-    // Databricks logo placeholder (text-based)
-    this.doc.setFontSize(12);
+    this.doc.setFontSize(10);
     this.doc.setTextColor(COLORS.primary);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('DATABRICKS', this.margin, 30);
+    this.doc.text('DATABRICKS', this.margin, 25);
     
-    // Document title
     this.doc.setFontSize(8);
     this.doc.setTextColor(COLORS.darkGray);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Technical Maturity Assessment Report', this.pageWidth - this.margin, 30, { align: 'right' });
+    this.doc.text('Technical Maturity Assessment Report', this.pageWidth - this.margin, 25, { align: 'right' });
     
-    // Divider line
     this.doc.setDrawColor(COLORS.mediumGray);
     this.doc.setLineWidth(0.5);
-    this.doc.line(this.margin, 40, this.pageWidth - this.margin, 40);
+    this.doc.line(this.margin, 32, this.pageWidth - this.margin, 32);
   }
 
   // Add footer with page numbers
@@ -81,28 +87,33 @@ class ProfessionalPDFExporter {
     
     for (let i = 2; i <= totalPages; i++) {
       this.doc.setPage(i);
+      
+      // Footer line
+      this.doc.setDrawColor(COLORS.mediumGray);
+      this.doc.setLineWidth(0.5);
+      this.doc.line(this.margin, this.pageHeight - 30, this.pageWidth - this.margin, this.pageHeight - 30);
+      
       this.doc.setFontSize(8);
       this.doc.setTextColor(COLORS.mediumGray);
       this.doc.setFont('helvetica', 'normal');
       this.doc.text(
         `Page ${i} of ${totalPages}`,
         this.pageWidth / 2,
-        this.pageHeight - 20,
+        this.pageHeight - 18,
         { align: 'center' }
       );
       
-      // Confidential footer
       this.doc.text(
-        'Confidential - For Internal Use Only',
+        'Confidential',
         this.margin,
-        this.pageHeight - 20
+        this.pageHeight - 18
       );
       
-      const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
       this.doc.text(
         date,
         this.pageWidth - this.margin,
-        this.pageHeight - 20,
+        this.pageHeight - 18,
         { align: 'right' }
       );
     }
@@ -110,64 +121,78 @@ class ProfessionalPDFExporter {
 
   // Cover Page
   addCoverPage() {
-    // Background accent
+    // Red header band
     this.doc.setFillColor(COLORS.primary);
-    this.doc.rect(0, 0, this.pageWidth, 200, 'F');
+    this.doc.rect(0, 0, this.pageWidth, 120, 'F');
     
-    // Main title
+    // Title
     this.doc.setTextColor(COLORS.white);
-    this.doc.setFontSize(36);
+    this.doc.setFontSize(32);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Databricks', this.pageWidth / 2, 100, { align: 'center' });
+    this.doc.text('Databricks', this.pageWidth / 2, 55, { align: 'center' });
     
-    this.doc.setFontSize(28);
-    this.doc.text('Technical Maturity', this.pageWidth / 2, 140, { align: 'center' });
-    this.doc.text('Assessment Report', this.pageWidth / 2, 175, { align: 'center' });
+    this.doc.setFontSize(20);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('Technical Maturity Assessment', this.pageWidth / 2, 90, { align: 'center' });
     
-    // Organization details
-    this.doc.setFillColor(COLORS.lightGray);
-    this.doc.rect(this.margin, 250, this.contentWidth, 150, 'F');
+    // Organization info box
+    let yPos = 160;
+    this.doc.setFillColor(245, 245, 245);
+    this.doc.rect(this.margin, yPos, this.contentWidth, 120, 'F');
     
     this.doc.setTextColor(COLORS.text);
-    this.doc.setFontSize(12);
+    this.doc.setFontSize(11);
     this.doc.setFont('helvetica', 'normal');
     
-    let yPos = 280;
-    const details = [
+    yPos += 25;
+    const infoItems = [
       ['Organization:', this.assessmentInfo.organizationName || 'Not Specified'],
-      ['Assessment Date:', new Date(this.assessmentInfo.startedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })],
-      ['Completion:', `${this.assessmentInfo.completionPercentage}% (${this.assessmentInfo.questionsAnswered}/${this.assessmentInfo.totalQuestions} questions)`],
+      ['Assessment Date:', new Date(this.assessmentInfo.startedAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })],
+      ['Completion:', `${this.assessmentInfo.completionPercentage || 0}% (${this.assessmentInfo.questionsAnswered || 0}/${this.assessmentInfo.totalQuestions || 0} questions)`],
       ['Overall Maturity:', `Level ${this.results.overall?.currentScore || 0}/5 - ${this.results.overall?.level?.level || 'Not Assessed'}`]
     ];
     
-    details.forEach(([label, value]) => {
+    infoItems.forEach(([label, value]) => {
       this.doc.setFont('helvetica', 'bold');
       this.doc.text(label, this.margin + 20, yPos);
       this.doc.setFont('helvetica', 'normal');
       this.doc.text(value, this.margin + 150, yPos);
-      yPos += 25;
+      yPos += 22;
     });
     
-    // Executive summary box
-    yPos = 450;
-    this.doc.setFillColor(COLORS.accent);
-    this.doc.rect(this.margin, yPos, this.contentWidth, 100, 'F');
-    
-    this.doc.setTextColor(COLORS.white);
+    // Key highlights box
+    yPos = 320;
     this.doc.setFontSize(14);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('At a Glance', this.pageWidth / 2, yPos + 30, { align: 'center' });
+    this.doc.setTextColor(COLORS.accent);
+    this.doc.text('Assessment Highlights', this.margin, yPos);
     
+    yPos += 25;
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
-    const summaryText = (this.results.summary || this.results.executiveSummary?.summary || 'Assessment in progress').substring(0, 200) + '...';
-    const summaryLines = this.doc.splitTextToSize(summaryText, this.contentWidth - 40);
-    this.doc.text(summaryLines, this.pageWidth / 2, yPos + 55, { align: 'center', maxWidth: this.contentWidth - 40 });
+    this.doc.setTextColor(COLORS.text);
+    
+    const highlights = [
+      `${this.assessmentInfo.completedPillars || 0} of ${this.assessmentInfo.totalPillars || 6} pillars completed`,
+      `${this.assessmentInfo.questionsAnswered || 0} questions answered across ${this.assessmentInfo.pillarsWithResponses || 0} pillar areas`,
+      `${(this.results.prioritizedActions?.length || 0)} priority actions identified for improvement`,
+      `Target maturity level: ${this.results.overall?.futureScore || 0}/5`
+    ];
+    
+    highlights.forEach(highlight => {
+      this.doc.text('• ' + highlight, this.margin + 10, yPos);
+      yPos += 20;
+    });
     
     // Footer
-    this.doc.setTextColor(COLORS.mediumGray);
     this.doc.setFontSize(9);
-    this.doc.text('Prepared by Data & AI Technical Maturity Assessment Platform', this.pageWidth / 2, this.pageHeight - 30, { align: 'center' });
+    this.doc.setTextColor(COLORS.mediumGray);
+    this.doc.text(
+      'Prepared by Databricks Technical Maturity Assessment Platform',
+      this.pageWidth / 2,
+      this.pageHeight - 30,
+      { align: 'center' }
+    );
   }
 
   // Executive Summary
@@ -175,166 +200,144 @@ class ProfessionalPDFExporter {
     this.doc.addPage();
     this.addHeader();
     
-    let yPos = 60;
+    let yPos = 55;
     
-    // Section title
     this.addSectionTitle('Executive Summary', yPos);
-    yPos += 50;
+    yPos += 35;
     
-    // Key findings box
-    this.doc.setFillColor(COLORS.lightGray);
+    // Key Findings box
+    this.doc.setFillColor(245, 245, 245);
     this.doc.rect(this.margin, yPos, this.contentWidth, 100, 'F');
     
-    this.doc.setTextColor(COLORS.text);
+    yPos += 20;
     this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Key Findings', this.margin + 15, yPos + 25);
+    this.doc.setTextColor(COLORS.text);
+    this.doc.text('Key Findings', this.margin + 15, yPos);
     
+    yPos += 20;
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
+    
     const keyPoints = [
-      `• Overall maturity level: ${this.results.overall?.level?.level || 'Not Assessed'} (${this.results.overall?.currentScore || 0}/5)`,
-      `• ${this.assessmentInfo.completedPillars}/${this.assessmentInfo.totalPillars} pillars completed`,
-      `• ${this.assessmentInfo.questionsAnswered} questions answered across ${this.assessmentInfo.pillarsWithResponses} pillar areas`,
-      `• ${this.results.prioritizedActions?.length || 0} priority actions identified`
+      `Overall maturity level: ${this.results.overall?.level?.level || 'Not Assessed'} (${this.results.overall?.currentScore || 0}/5)`,
+      `${this.assessmentInfo.completedPillars || 0}/${this.assessmentInfo.totalPillars || 6} pillars completed`,
+      `${this.assessmentInfo.questionsAnswered || 0} questions answered across ${this.assessmentInfo.pillarsWithResponses || 0} pillar areas`,
+      `${this.results.prioritizedActions?.length || 0} priority actions identified`
     ];
     
-    yPos += 45;
     keyPoints.forEach(point => {
-      this.doc.text(point, this.margin + 15, yPos);
-      yPos += 20;
+      this.doc.text('• ' + point, this.margin + 20, yPos);
+      yPos += 16;
     });
     
     yPos += 30;
     
     // Summary text
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    const summaryLines = this.doc.splitTextToSize(this.results.summary, this.contentWidth);
-    this.doc.text(summaryLines, this.margin, yPos);
-    yPos += summaryLines.length * 15 + 30;
+    const summaryText = (this.results.summary || this.results.executiveSummary?.summary || 
+      'This assessment provides a comprehensive evaluation of your Databricks technical maturity across six key pillars. ' +
+      'The findings reveal structured processes with opportunities for optimization through automation, governance integration, and AI enablement.')
+      .substring(0, 400);
     
-    // Maturity distribution
-    if (yPos + 200 > this.pageHeight - 60) {
-      this.doc.addPage();
-      this.addHeader();
-      yPos = 60;
-    }
-    
-    this.addSubsectionTitle('Pillar Maturity Distribution', yPos);
-    yPos += 30;
-    
-    // Create a table of pillar scores
-    const pillarData = [];
-    Object.keys(this.results.categoryDetails).forEach(pillarId => {
-      const pillar = this.results.categoryDetails[pillarId];
-      pillarData.push([
-        pillar.name,
-        `${pillar.currentScore || 0}/5`,
-        `${pillar.futureScore || 0}/5`,
-        pillar.level?.level || 'Not Assessed',
-        pillar.isPartial ? '🔄 In Progress' : '✓ Complete'
-      ]);
-    });
-    
-    autoTable(this.doc, {
-      startY: yPos,
-      head: [['Pillar', 'Current', 'Future Vision', 'Maturity Level', 'Status']],
-      body: pillarData,
-      margin: { left: this.margin, right: this.margin },
-      theme: 'striped',
-      headStyles: {
-        fillColor: COLORS.accent,
-        textColor: COLORS.white,
-        fontSize: 9,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fontSize: 9,
-        textColor: COLORS.text
-      },
-      alternateRowStyles: {
-        fillColor: COLORS.lightGray
-      }
-    });
+    const summaryLines = this.doc.splitTextToSize(summaryText, this.contentWidth - 40);
+    this.doc.text(summaryLines, this.margin + 20, yPos);
   }
 
-  // Maturity Overview with visualization
+  // Maturity Overview
   addMaturityOverview() {
     this.doc.addPage();
     this.addHeader();
     
-    let yPos = 60;
+    let yPos = 55;
     
     this.addSectionTitle('Maturity Overview', yPos);
-    yPos += 50;
+    yPos += 45;
     
-    // Overall score visualization
-    const scoreX = this.pageWidth / 2 - 100;
+    // Overall score indicator
+    const scoreX = this.pageWidth / 2 - 40;
     const scoreY = yPos;
-    const scoreRadius = 80;
     const overallScore = this.results.overall?.currentScore || 0;
     
-    // Draw circular score indicator
-    this.doc.setFillColor(MATURITY_COLORS[overallScore] || COLORS.mediumGray);
-    this.doc.circle(scoreX + 100, scoreY + 80, scoreRadius, 'F');
+    this.doc.setFillColor(MATURITY_COLORS[Math.round(overallScore)] || COLORS.mediumGray);
+    this.doc.circle(scoreX, scoreY, 35, 'F');
     
-    // Score text
     this.doc.setTextColor(COLORS.white);
-    this.doc.setFontSize(48);
+    this.doc.setFontSize(32);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text(overallScore.toString(), scoreX + 100, scoreY + 90, { align: 'center' });
+    this.doc.text(overallScore.toString(), scoreX, scoreY + 10, { align: 'center' });
     
-    this.doc.setFontSize(16);
-    this.doc.text('out of 5', scoreX + 100, scoreY + 110, { align: 'center' });
+    this.doc.setFontSize(11);
+    this.doc.setTextColor(COLORS.text);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('out of 5', scoreX, scoreY + 55, { align: 'center' });
+    
+    yPos += 110;
     
     // Maturity level description
-    yPos = scoreY + 180;
-    this.doc.setTextColor(COLORS.text);
-    this.doc.setFontSize(18);
+    this.doc.setFontSize(14);
     this.doc.setFont('helvetica', 'bold');
     this.doc.text(this.results.overall?.level?.level || 'Not Assessed', this.pageWidth / 2, yPos, { align: 'center' });
     
-    this.doc.setFontSize(11);
+    yPos += 20;
+    this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text(this.results.overall?.level?.description || 'Assessment in progress', this.pageWidth / 2, yPos + 25, { align: 'center' });
+    const descText = this.results.overall?.level?.description || 'Assessment in progress';
+    const descLines = this.doc.splitTextToSize(descText, this.contentWidth - 100);
+    this.doc.text(descLines, this.pageWidth / 2, yPos, { align: 'center', maxWidth: this.contentWidth - 100 });
     
-    yPos += 60;
+    yPos += descLines.length * 14 + 30;
     
-    // Maturity levels reference
-    this.addSubsectionTitle('Maturity Levels Framework', yPos);
-    yPos += 30;
+    // Pillar summary table
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(COLORS.accent);
+    this.doc.text('Pillar Maturity Distribution', this.margin, yPos);
+    yPos += 20;
     
-    const levelData = [
-      ['Level 1', 'Initial', 'Ad-hoc processes, limited capabilities'],
-      ['Level 2', 'Repeatable', 'Some processes defined, basic capabilities'],
-      ['Level 3', 'Defined', 'Structured approach with established processes'],
-      ['Level 4', 'Managed', 'Quantitatively managed, advanced capabilities'],
-      ['Level 5', 'Optimizing', 'Continuous improvement, innovation-driven']
-    ];
+    const pillarData = [];
+    const categoryDetails = this.results.categoryDetails || {};
     
-    autoTable(this.doc, {
-      startY: yPos,
-      head: [['Level', 'Name', 'Description']],
-      body: levelData,
-      margin: { left: this.margin, right: this.margin },
-      theme: 'plain',
-      headStyles: {
-        fillColor: COLORS.accent,
-        textColor: COLORS.white,
-        fontSize: 9,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fontSize: 9,
-        textColor: COLORS.text
-      },
-      columnStyles: {
-        0: { cellWidth: 60, fontStyle: 'bold' },
-        1: { cellWidth: 100, fontStyle: 'bold' },
-        2: { cellWidth: 'auto' }
-      }
+    Object.keys(categoryDetails).forEach(pillarId => {
+      const pillar = categoryDetails[pillarId];
+      pillarData.push([
+        pillar.name || 'Unknown',
+        `${pillar.currentScore || 0}/5`,
+        `${pillar.futureScore || 0}/5`,
+        pillar.level?.level || 'Not Assessed',
+        pillar.isPartial ? 'In Progress' : 'Complete'
+      ]);
     });
+    
+    if (pillarData.length > 0) {
+      autoTable(this.doc, {
+        startY: yPos,
+        head: [['Pillar', 'Current', 'Future', 'Maturity Level', 'Status']],
+        body: pillarData,
+        margin: { left: this.margin, right: this.margin },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [27, 49, 57],
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          fontSize: 9,
+          textColor: [44, 44, 44]
+        },
+        columnStyles: {
+          0: { cellWidth: 120 },
+          1: { halign: 'center', cellWidth: 60 },
+          2: { halign: 'center', cellWidth: 60 },
+          3: { halign: 'center', cellWidth: 100 },
+          4: { halign: 'center', cellWidth: 75 }
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250]
+        }
+      });
+    }
   }
 
   // Current vs Future State Analysis
@@ -342,24 +345,26 @@ class ProfessionalPDFExporter {
     this.doc.addPage();
     this.addHeader();
     
-    let yPos = 60;
+    let yPos = 55;
     
     this.addSectionTitle('Current vs Future State Analysis', yPos);
-    yPos += 50;
+    yPos += 35;
     
-    // Gap analysis intro
+    // Intro text
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
     this.doc.setTextColor(COLORS.text);
     const introText = 'This analysis compares your current capabilities against your future vision, highlighting areas for improvement and investment.';
     const introLines = this.doc.splitTextToSize(introText, this.contentWidth);
     this.doc.text(introLines, this.margin, yPos);
-    yPos += introLines.length * 12 + 25;
+    yPos += 30;
     
-    // Create comparison table
+    // Gap analysis table
     const comparisonData = [];
-    Object.keys(this.results.categoryDetails).forEach(pillarId => {
-      const pillar = this.results.categoryDetails[pillarId];
+    const categoryDetails = this.results.categoryDetails || {};
+    
+    Object.keys(categoryDetails).forEach(pillarId => {
+      const pillar = categoryDetails[pillarId];
       const currentScore = pillar.currentScore || 0;
       const futureScore = pillar.futureScore || 0;
       const gap = futureScore - currentScore;
@@ -375,132 +380,145 @@ class ProfessionalPDFExporter {
       ]);
     });
     
-    autoTable(this.doc, {
-      startY: yPos,
-      head: [['Pillar', 'Current', 'Future Vision', 'Gap', 'Priority']],
-      body: comparisonData,
-      margin: { left: this.margin, right: this.margin },
-      theme: 'striped',
-      headStyles: {
-        fillColor: COLORS.accent,
-        textColor: COLORS.white,
-        fontSize: 9,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fontSize: 9,
-        textColor: COLORS.text
-      },
-      columnStyles: {
-        0: { cellWidth: 'auto' },
-        1: { cellWidth: 70, halign: 'center' },
-        2: { cellWidth: 70, halign: 'center' },
-        3: { cellWidth: 60, halign: 'center', fontStyle: 'bold' },
-        4: { cellWidth: 80, halign: 'center' }
-      },
-      alternateRowStyles: {
-        fillColor: COLORS.lightGray
-      },
-      didParseCell: (data) => {
-        if (data.column.index === 4 && data.section === 'body') {
-          const priority = data.cell.raw;
-          if (priority === 'High') {
-            data.cell.styles.textColor = COLORS.red;
-            data.cell.styles.fontStyle = 'bold';
-          } else if (priority === 'Medium') {
-            data.cell.styles.textColor = COLORS.orange;
-            data.cell.styles.fontStyle = 'bold';
-          } else {
-            data.cell.styles.textColor = COLORS.green;
+    if (comparisonData.length > 0) {
+      autoTable(this.doc, {
+        startY: yPos,
+        head: [['Pillar', 'Current', 'Future', 'Gap', 'Priority']],
+        body: comparisonData,
+        margin: { left: this.margin, right: this.margin },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [27, 49, 57],
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          fontSize: 9,
+          textColor: [44, 44, 44],
+          halign: 'center'
+        },
+        columnStyles: {
+          0: { cellWidth: 150, halign: 'left' },
+          1: { cellWidth: 70 },
+          2: { cellWidth: 70 },
+          3: { cellWidth: 70, fontStyle: 'bold' },
+          4: { cellWidth: 90 }
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250]
+        },
+        didParseCell: (data) => {
+          if (data.column.index === 4 && data.section === 'body') {
+            const priority = data.cell.raw;
+            if (priority === 'High') {
+              data.cell.styles.textColor = [239, 68, 68];
+              data.cell.styles.fontStyle = 'bold';
+            } else if (priority === 'Medium') {
+              data.cell.styles.textColor = [245, 158, 11];
+              data.cell.styles.fontStyle = 'bold';
+            } else {
+              data.cell.styles.textColor = [16, 185, 129];
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
-  // Detailed Pillar Analysis
+  // Pillar Details
   addPillarDetails() {
-    Object.keys(this.results.categoryDetails).forEach((pillarId, index) => {
-      const pillar = this.results.categoryDetails[pillarId];
+    const categoryDetails = this.results.categoryDetails || {};
+    
+    Object.keys(categoryDetails).forEach((pillarId, index) => {
+      const pillar = categoryDetails[pillarId];
       
       this.doc.addPage();
       this.addHeader();
       
-      let yPos = 60;
+      let yPos = 55;
       
       // Pillar title
-      this.addSectionTitle(`Pillar ${index + 1}: ${pillar.name}`, yPos);
-      yPos += 40;
+      this.addSectionTitle(`${PILLAR_ICONS[pillarId] || ''} ${pillar.name || 'Unknown Pillar'}`, yPos);
+      yPos += 45;
       
       // Score indicators
-      const leftX = this.margin + 50;
-      const rightX = this.pageWidth - this.margin - 150;
+      const leftX = this.margin + 80;
+      const rightX = this.pageWidth - this.margin - 80;
       
       // Current Score
-      this.doc.setFillColor(COLORS.blue);
-      this.doc.circle(leftX, yPos + 30, 40, 'F');
-      this.doc.setTextColor(COLORS.white);
-      this.doc.setFontSize(24);
+      this.doc.setFillColor(59, 130, 246);
+      this.doc.circle(leftX, yPos, 30, 'F');
+      this.doc.setTextColor(255, 255, 255);
+      this.doc.setFontSize(20);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text((pillar.currentScore || 0).toString(), leftX, yPos + 37, { align: 'center' });
+      this.doc.text((pillar.currentScore || 0).toString(), leftX, yPos + 7, { align: 'center' });
       
       this.doc.setTextColor(COLORS.text);
-      this.doc.setFontSize(11);
-      this.doc.text('Current State', leftX, yPos + 70, { align: 'center' });
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.text('Current State', leftX, yPos + 45, { align: 'center' });
       
       // Future Score
-      this.doc.setFillColor(COLORS.green);
-      this.doc.circle(rightX, yPos + 30, 40, 'F');
-      this.doc.setTextColor(COLORS.white);
-      this.doc.setFontSize(24);
+      this.doc.setFillColor(16, 185, 129);
+      this.doc.circle(rightX, yPos, 30, 'F');
+      this.doc.setTextColor(255, 255, 255);
+      this.doc.setFontSize(20);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text((pillar.futureScore || 0).toString(), rightX, yPos + 37, { align: 'center' });
+      this.doc.text((pillar.futureScore || 0).toString(), rightX, yPos + 7, { align: 'center' });
       
       this.doc.setTextColor(COLORS.text);
-      this.doc.setFontSize(11);
-      this.doc.text('Future Vision', rightX, yPos + 70, { align: 'center' });
-      
-      yPos += 100;
-      
-      // Pillar description
       this.doc.setFontSize(10);
       this.doc.setFont('helvetica', 'normal');
-      const descLines = this.doc.splitTextToSize(pillar.description || 'No description available', this.contentWidth);
-      this.doc.text(descLines, this.margin, yPos);
-      yPos += descLines.length * 12 + 25;
+      this.doc.text('Future Vision', rightX, yPos + 45, { align: 'center' });
       
-      // Maturity level
-      this.doc.setFillColor(COLORS.lightGray);
-      this.doc.rect(this.margin, yPos, this.contentWidth, 40, 'F');
+      yPos += 75;
+      
+      // Description
+      if (pillar.description) {
+        this.doc.setFontSize(9);
+        const descLines = this.doc.splitTextToSize(pillar.description || 'No description available', this.contentWidth);
+        this.doc.text(descLines, this.margin, yPos);
+        yPos += Math.min(descLines.length * 12, 40);
+      }
+      
+      yPos += 15;
+      
+      // Maturity level box
+      this.doc.setFillColor(245, 245, 245);
+      this.doc.rect(this.margin, yPos, this.contentWidth, 30, 'F');
       
       this.doc.setFontSize(10);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Maturity Level:', this.margin + 15, yPos + 25);
+      this.doc.setTextColor(COLORS.text);
+      this.doc.text('Maturity Level:', this.margin + 15, yPos + 19);
       this.doc.setFont('helvetica', 'normal');
-      this.doc.text(`${pillar.level?.level || 'Not Assessed'} - ${pillar.level?.description || 'Assessment in progress'}`, this.margin + 120, yPos + 25);
+      this.doc.text(
+        `${pillar.level?.level || 'Not Assessed'} - ${pillar.level?.description || 'Assessment in progress'}`,
+        this.margin + 110,
+        yPos + 19
+      );
       
-      yPos += 60;
+      yPos += 45;
       
-      // Recommendations for this pillar
+      // Recommendations
       if (this.results.recommendations && this.results.recommendations[pillarId]) {
         const rec = this.results.recommendations[pillarId];
-        
-        this.addSubsectionTitle('Recommendations', yPos);
-        yPos += 25;
         
         this.doc.setFontSize(11);
         this.doc.setFont('helvetica', 'bold');
         this.doc.setTextColor(COLORS.primary);
-        const recTitle = this.doc.splitTextToSize(rec.title || 'Optimization Recommendations', this.contentWidth - 30);
-        this.doc.text(recTitle, this.margin + 15, yPos + 20);
+        this.doc.text('Key Recommendations', this.margin, yPos);
+        yPos += 20;
         
-        yPos += recTitle.length * 14 + 10;
-        
-        this.doc.setFontSize(10);
+        this.doc.setFontSize(9);
         this.doc.setFont('helvetica', 'normal');
         this.doc.setTextColor(COLORS.text);
-        const recDesc = this.doc.splitTextToSize(rec.description || '', this.contentWidth - 30);
-        this.doc.text(recDesc, this.margin + 15, yPos + 10);
+        
+        const recText = rec.description || rec.title || 'No specific recommendations available';
+        const recLines = this.doc.splitTextToSize(recText, this.contentWidth - 30);
+        this.doc.text(recLines, this.margin + 15, yPos);
       }
     });
   }
@@ -510,54 +528,50 @@ class ProfessionalPDFExporter {
     this.doc.addPage();
     this.addHeader();
     
-    let yPos = 60;
+    let yPos = 55;
     
     this.addSectionTitle('Priority Recommendations', yPos);
-    yPos += 50;
+    yPos += 35;
     
-    // Quick wins
+    // Quick wins section
     if (this.results.quickWins && this.results.quickWins.length > 0) {
-      this.addSubsectionTitle('Quick Wins', yPos);
-      yPos += 25;
+      this.doc.setFontSize(11);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(COLORS.accent);
+      this.doc.text('Quick Wins', this.margin, yPos);
+      yPos += 20;
       
       this.doc.setFontSize(9);
       this.doc.setFont('helvetica', 'normal');
       this.doc.setTextColor(COLORS.text);
       
-      this.results.quickWins.slice(0, 3).forEach((win, index) => {
-        this.doc.setFillColor(COLORS.green);
-        this.doc.circle(this.margin + 8, yPos + 5, 6, 'F');
-        
-        this.doc.setTextColor(COLORS.white);
-        this.doc.setFontSize(7);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.text((index + 1).toString(), this.margin + 8, yPos + 7, { align: 'center' });
-        
-        this.doc.setFontSize(10);
-        this.doc.setFont('helvetica', 'normal');
-        this.doc.setTextColor(COLORS.text);
-        const winLines = this.doc.splitTextToSize(win, this.contentWidth - 30);
-        this.doc.text(winLines, this.margin + 20, yPos + 8);
-        yPos += Math.max(winLines.length * 12, 20);
+      this.results.quickWins.slice(0, 5).forEach((win, index) => {
+        const winText = typeof win === 'string' ? win : win.action || win.title || 'Action item';
+        const winLines = this.doc.splitTextToSize(`${index + 1}. ${winText}`, this.contentWidth - 20);
+        this.doc.text(winLines, this.margin + 10, yPos);
+        yPos += Math.max(winLines.length * 12, 16);
       });
       
       yPos += 20;
     }
     
-    // Priority actions
+    // Priority actions table
     if (this.results.prioritizedActions && this.results.prioritizedActions.length > 0) {
       if (yPos + 100 > this.pageHeight - 60) {
         this.doc.addPage();
         this.addHeader();
-        yPos = 60;
+        yPos = 55;
       }
       
-      this.addSubsectionTitle('Priority Actions', yPos);
-      yPos += 30;
+      this.doc.setFontSize(11);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(COLORS.accent);
+      this.doc.text('Priority Actions', this.margin, yPos);
+      yPos += 20;
       
-      const actionData = this.results.prioritizedActions.slice(0, 10).map((action, index) => [
+      const actionData = this.results.prioritizedActions.slice(0, 12).map((action, index) => [
         (index + 1).toString(),
-        action.category || 'General',
+        action.category || action.pillarName || 'General',
         action.action || action.title || 'Action item',
         action.priority || 'Medium'
       ]);
@@ -567,34 +581,34 @@ class ProfessionalPDFExporter {
         head: [['#', 'Area', 'Action', 'Priority']],
         body: actionData,
         margin: { left: this.margin, right: this.margin },
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
-          fillColor: COLORS.accent,
-          textColor: COLORS.white,
+          fillColor: [27, 49, 57],
+          textColor: [255, 255, 255],
           fontSize: 9,
           fontStyle: 'bold'
         },
         bodyStyles: {
-          fontSize: 9,
-          textColor: COLORS.text
+          fontSize: 8,
+          textColor: [44, 44, 44]
         },
         columnStyles: {
-          0: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
-          1: { cellWidth: 100 },
+          0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },
+          1: { cellWidth: 80 },
           2: { cellWidth: 'auto' },
-          3: { cellWidth: 70, halign: 'center' }
+          3: { cellWidth: 60, halign: 'center' }
         },
         alternateRowStyles: {
-          fillColor: COLORS.lightGray
+          fillColor: [250, 250, 250]
         },
         didParseCell: (data) => {
           if (data.column.index === 3 && data.section === 'body') {
             const priority = data.cell.raw;
             if (priority === 'high' || priority === 'High') {
-              data.cell.styles.textColor = COLORS.red;
+              data.cell.styles.textColor = [239, 68, 68];
               data.cell.styles.fontStyle = 'bold';
             } else if (priority === 'medium' || priority === 'Medium') {
-              data.cell.styles.textColor = COLORS.orange;
+              data.cell.styles.textColor = [245, 158, 11];
             }
           }
         }
@@ -602,84 +616,16 @@ class ProfessionalPDFExporter {
     }
   }
 
-  // Implementation Roadmap
-  addRoadmap() {
-    this.doc.addPage();
-    this.addHeader();
-    
-    let yPos = 60;
-    
-    this.addSectionTitle('Implementation Roadmap', yPos);
-    yPos += 50;
-    
-    const roadmapPhases = [
-      { title: 'Immediate (0-3 months)', items: this.results.roadmap?.immediate || [], color: COLORS.red },
-      { title: 'Short-term (3-6 months)', items: this.results.roadmap?.shortTerm || [], color: COLORS.orange },
-      { title: 'Long-term (6-12 months)', items: this.results.roadmap?.longTerm || [], color: COLORS.green }
-    ];
-    
-    roadmapPhases.forEach((phase, phaseIndex) => {
-      if (yPos + 80 > this.pageHeight - 60) {
-        this.doc.addPage();
-        this.addHeader();
-        yPos = 60;
-      }
-      
-      // Phase header
-      this.doc.setFillColor(phase.color);
-      this.doc.rect(this.margin, yPos, this.contentWidth, 30, 'F');
-      
-      this.doc.setTextColor(COLORS.white);
-      this.doc.setFontSize(12);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text(phase.title, this.margin + 15, yPos + 20);
-      
-      yPos += 40;
-      
-      // Phase items
-      if (phase.items.length > 0) {
-        this.doc.setFontSize(10);
-        this.doc.setFont('helvetica', 'normal');
-        this.doc.setTextColor(COLORS.text);
-        
-        phase.items.slice(0, 5).forEach((item, index) => {
-          if (yPos + 20 > this.pageHeight - 60) {
-            this.doc.addPage();
-            this.addHeader();
-            yPos = 60;
-          }
-          
-          this.doc.setFillColor(phase.color);
-          this.doc.circle(this.margin + 8, yPos + 5, 4, 'F');
-          
-          const itemText = typeof item === 'string' ? item : item.action || item.title || 'Action item';
-          const itemLines = this.doc.splitTextToSize(itemText, this.contentWidth - 30);
-          this.doc.text(itemLines, this.margin + 20, yPos + 8);
-          yPos += Math.max(itemLines.length * 12, 18);
-        });
-      } else {
-        this.doc.setFontSize(9);
-        this.doc.setFont('helvetica', 'italic');
-        this.doc.setTextColor(COLORS.mediumGray);
-        this.doc.text('No specific actions identified for this phase', this.margin + 15, yPos);
-        yPos += 15;
-      }
-      
-      yPos += 25;
-    });
-  }
-
-  // Methodology and Appendix
+  // Methodology
   addMethodology() {
     this.doc.addPage();
     this.addHeader();
     
-    let yPos = 60;
+    let yPos = 55;
     
     this.addSectionTitle('Methodology', yPos);
-    yPos += 50;
+    yPos += 35;
     
-    // Assessment approach
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
     this.doc.setTextColor(COLORS.text);
@@ -687,11 +633,11 @@ class ProfessionalPDFExporter {
     const methodologyText = `This assessment evaluates your organization's Databricks technical maturity across six key pillars. Each pillar contains multiple dimensions with specific questions designed to assess current capabilities and future aspirations.
 
 The maturity framework uses a 5-level scale:
-• Level 1 (Initial): Ad-hoc processes, limited capabilities
-• Level 2 (Repeatable): Some processes defined, basic capabilities
-• Level 3 (Defined): Structured approach with established processes
-• Level 4 (Managed): Quantitatively managed, advanced capabilities
-• Level 5 (Optimizing): Continuous improvement, innovation-driven
+• Level 1 (Explore): Ad-hoc processes, limited capabilities
+• Level 2 (Experiment): Some processes defined, basic capabilities  
+• Level 3 (Formalize): Structured approach with established processes
+• Level 4 (Optimize): Quantitatively managed, advanced capabilities
+• Level 5 (Transform): Continuous improvement, innovation-driven
 
 Scores are calculated based on your responses across four perspectives:
 • Current State: Your existing capabilities
@@ -709,11 +655,14 @@ The overall maturity score is a weighted average across all completed pillars, w
     if (yPos + 150 > this.pageHeight - 60) {
       this.doc.addPage();
       this.addHeader();
-      yPos = 60;
+      yPos = 55;
     }
     
-    this.addSubsectionTitle('Assessment Statistics', yPos);
-    yPos += 30;
+    this.doc.setFontSize(11);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(COLORS.accent);
+    this.doc.text('Assessment Statistics', this.margin, yPos);
+    yPos += 20;
     
     const statsData = [
       ['Total Questions', (this.assessmentInfo.totalQuestions || 0).toString()],
@@ -731,40 +680,35 @@ The overall maturity score is a weighted average across all completed pillars, w
       margin: { left: this.margin, right: this.margin },
       theme: 'plain',
       bodyStyles: {
-        fontSize: 10,
-        textColor: COLORS.text
+        fontSize: 9,
+        textColor: [44, 44, 44]
       },
       columnStyles: {
-        0: { cellWidth: 200, fontStyle: 'bold', fillColor: COLORS.lightGray },
+        0: { cellWidth: 180, fontStyle: 'bold', fillColor: [245, 245, 245] },
         1: { cellWidth: 'auto', halign: 'right' }
       }
     });
   }
 
-  // Helper methods
+  // Helper: Add section title
   addSectionTitle(title, yPos) {
-    this.doc.setFontSize(18);
+    this.doc.setFontSize(16);
     this.doc.setFont('helvetica', 'bold');
     this.doc.setTextColor(COLORS.primary);
     this.doc.text(title, this.margin, yPos);
     
-    // Underline
     this.doc.setDrawColor(COLORS.primary);
     this.doc.setLineWidth(2);
-    this.doc.line(this.margin, yPos + 5, this.margin + 150, yPos + 5);
-  }
-
-  addSubsectionTitle(title, yPos) {
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.setTextColor(COLORS.accent);
-    this.doc.text(title, this.margin, yPos);
+    this.doc.line(this.margin, yPos + 5, this.margin + 120, yPos + 5);
   }
 }
 
 // Export function
 export const generateProfessionalReport = (results, assessmentInfo) => {
   try {
+    console.log('[PDF Export] Starting generation with results:', results);
+    console.log('[PDF Export] Assessment info:', assessmentInfo);
+    
     const exporter = new ProfessionalPDFExporter(results, assessmentInfo);
     const doc = exporter.generate();
     
@@ -776,12 +720,12 @@ export const generateProfessionalReport = (results, assessmentInfo) => {
     // Save the PDF
     doc.save(filename);
     
+    console.log('[PDF Export] PDF generated successfully:', filename);
     return { success: true, filename };
   } catch (error) {
-    console.error('Error generating PDF report:', error);
+    console.error('[PDF Export] Error generating PDF report:', error);
     return { success: false, error: error.message };
   }
 };
 
 export default { generateProfessionalReport };
-
