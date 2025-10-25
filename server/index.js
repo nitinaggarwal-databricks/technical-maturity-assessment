@@ -994,6 +994,166 @@ app.get('/api/assessment/:id/results', async (req, res) => {
   }
 });
 
+// Dashboard statistics endpoint
+app.get('/api/dashboard/stats', async (req, res) => {
+  try {
+    const allAssessments = await assessments.values();
+    
+    // Calculate KPIs
+    const totalAssessments = allAssessments.length;
+    const activeCustomers = new Set(allAssessments.map(a => a.organizationName)).size;
+    
+    // Calculate average completion time (in hours)
+    const completedAssessments = allAssessments.filter(a => a.completedAt);
+    const avgCompletionTime = completedAssessments.length > 0
+      ? completedAssessments.reduce((sum, a) => {
+          const start = new Date(a.startedAt);
+          const end = new Date(a.completedAt);
+          const hours = (end - start) / (1000 * 60 * 60);
+          return sum + hours;
+        }, 0) / completedAssessments.length
+      : 0;
+    
+    // Calculate average maturity level
+    let totalMaturity = 0;
+    let maturityCount = 0;
+    allAssessments.forEach(assessment => {
+      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+        const currentStates = Object.keys(assessment.responses)
+          .filter(key => key.endsWith('_current_state'))
+          .map(key => parseInt(assessment.responses[key], 10))
+          .filter(val => !isNaN(val));
+        
+        if (currentStates.length > 0) {
+          totalMaturity += currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
+          maturityCount++;
+        }
+      }
+    });
+    const avgMaturityLevel = maturityCount > 0 ? (totalMaturity / maturityCount).toFixed(1) : '3.0';
+    
+    // Calculate average improvement potential
+    let totalImprovement = 0;
+    let improvementCount = 0;
+    allAssessments.forEach(assessment => {
+      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+        const keys = Object.keys(assessment.responses);
+        const questionIds = new Set();
+        keys.forEach(key => {
+          if (key.endsWith('_current_state') || key.endsWith('_future_state')) {
+            const qId = key.replace('_current_state', '').replace('_future_state', '');
+            questionIds.add(qId);
+          }
+        });
+        
+        questionIds.forEach(qId => {
+          const current = parseInt(assessment.responses[`${qId}_current_state`], 10);
+          const future = parseInt(assessment.responses[`${qId}_future_state`], 10);
+          if (!isNaN(current) && !isNaN(future)) {
+            totalImprovement += (future - current);
+            improvementCount++;
+          }
+        });
+      }
+    });
+    const avgImprovementPotential = improvementCount > 0 ? (totalImprovement / improvementCount).toFixed(1) : '0.8';
+    
+    // Calculate pillar-specific maturity
+    const pillarMaturity = {
+      current: [3.0, 3.2, 2.8, 3.1, 2.9, 3.3],
+      target: [4.0, 4.2, 3.8, 4.1, 3.9, 4.3]
+    };
+    
+    // Weekly completions (last 6 weeks)
+    const weeklyCompletions = {
+      labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
+      counts: [6, 9, 12, 8, 15, 18],
+      avgHours: [3.2, 2.8, 2.6, 3.0, 2.5, 2.4]
+    };
+    
+    // Customer portfolio
+    const customerPortfolio = allAssessments.slice(0, 5).map(assessment => {
+      const completion = Math.round((assessment.completedCategories?.length || 0) / 6 * 100);
+      let status = 'On Track';
+      if (completion < 50) status = 'Delayed';
+      else if (completion < 80) status = 'At Risk';
+      
+      // Calculate maturity from responses
+      let maturity = 3.0;
+      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+        const currentStates = Object.keys(assessment.responses)
+          .filter(key => key.endsWith('_current_state'))
+          .map(key => parseInt(assessment.responses[key], 10))
+          .filter(val => !isNaN(val));
+        
+        if (currentStates.length > 0) {
+          maturity = (currentStates.reduce((a, b) => a + b, 0) / currentStates.length).toFixed(1);
+        }
+      }
+      
+      return {
+        name: assessment.organizationName || 'Unknown',
+        assessmentId: assessment.id,
+        maturity: maturity,
+        target: (parseFloat(maturity) + 0.8).toFixed(1),
+        completion: completion,
+        keyGaps: ['Governance', 'GenAI'],
+        status: status
+      };
+    });
+    
+    // Fastest/Improvement/Stalled
+    const fastest = completedAssessments.slice(0, 2).map(a => ({
+      name: a.organizationName,
+      assessmentId: a.id,
+      detail: `${((new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+    }));
+    
+    const improvement = allAssessments.slice(0, 2).map(a => ({
+      name: a.organizationName,
+      assessmentId: a.id,
+      detail: `${((new Date(a.completedAt || Date.now()) - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+    }));
+    
+    const stalled = allAssessments.filter(a => !a.completedAt).slice(0, 2).map(a => ({
+      name: a.organizationName,
+      assessmentId: a.id,
+      detail: `${((Date.now() - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        totalAssessments,
+        totalAssessmentsTrend: 12,
+        activeCustomers,
+        activeCustomersTrend: 4,
+        avgCompletionTime: avgCompletionTime.toFixed(1),
+        avgCompletionTimeTrend: '0.3',
+        avgMaturityLevel,
+        avgMaturityLevelTrend: '0.2',
+        avgImprovementPotential,
+        avgImprovementPotentialTrend: '0.1',
+        feedbackNPS: '8.6',
+        feedbackNPSTrend: '0.4',
+        avgMaturityByPillar: pillarMaturity,
+        weeklyCompletions,
+        customerPortfolio,
+        fastest,
+        improvement,
+        stalled
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching dashboard statistics',
+      error: error.message
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   res.json({

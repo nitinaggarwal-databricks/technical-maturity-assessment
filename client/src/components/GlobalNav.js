@@ -115,6 +115,7 @@ const GlobalNav = () => {
           <LogoText>Databricks</LogoText>
         </Logo>
         <TopNav>
+          <button onClick={() => navigate('/insights-dashboard')}>Dashboard</button>
           <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
           <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
           <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>

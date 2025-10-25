@@ -14,6 +14,7 @@ import ExecutiveSummary from './components/ExecutiveSummaryNew';
 import PillarResults from './components/PillarResults';
 import AssessmentManagement from './components/AssessmentsListNew';
 import AssessmentDashboard from './components/AssessmentDashboard';
+import Dashboard from './components/Dashboard';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Services
@@ -199,6 +200,11 @@ function App() {
           <Route 
             path="/" 
             element={<HomePage />} 
+          />
+          
+          <Route 
+            path="/insights-dashboard" 
+            element={<Dashboard />} 
           />
           
           <Route 

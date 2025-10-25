@@ -217,6 +217,21 @@ export const cloneAssessment = async (assessmentId, organizationData = {}) => {
 };
 
 /**
+ * Get dashboard statistics
+ */
+export const getDashboardStats = async () => {
+  try {
+    console.log('[getDashboardStats] Fetching dashboard statistics');
+    const response = await api.get('/dashboard/stats');
+    console.log('[getDashboardStats] Response:', response);
+    return response;
+  } catch (error) {
+    console.error('[getDashboardStats] Error:', error);
+    throw error;
+  }
+};
+
+/**
  * Delete an assessment
  */
 export const deleteAssessment = async (assessmentId) => {
