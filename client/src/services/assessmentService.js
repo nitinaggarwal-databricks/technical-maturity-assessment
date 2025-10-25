@@ -254,20 +254,21 @@ export const getPillarResults = async (assessmentId, pillarId) => {
     console.log('[getPillarResults] Raw response:', response);
     console.log('[getPillarResults] Response data:', response.data);
     
-    // Backend returns { success: true, data: { pillarDetails, ... } }
-    if (response.data && response.data.success && response.data.data) {
-      console.log('[getPillarResults] Returning response.data.data');
-      return response.data.data;
+    // Axios interceptor already unwraps response.data, so response IS the data
+    // Backend now returns flat structure: { success: true, pillarDetails, painPointRecommendations, ... }
+    if (response && response.success && response.pillarDetails) {
+      console.log('[getPillarResults] Returning flat response structure');
+      return response;
     }
     
-    // Fallback: if response.data has pillarDetails directly
-    if (response.data && response.data.pillarDetails) {
-      console.log('[getPillarResults] Returning response.data directly');
+    // Legacy fallback: if response has nested data property
+    if (response && response.data && response.data.pillarDetails) {
+      console.log('[getPillarResults] Returning response.data (legacy structure)');
       return response.data;
     }
     
     console.error('[getPillarResults] Unexpected response structure:', response);
-    console.error('[getPillarResults] Expected: { success: true, data: { pillarDetails, ... } }');
+    console.error('[getPillarResults] Expected: { success: true, pillarDetails, ... }');
     throw new Error('API returned unexpected response structure');
   } catch (error) {
     console.error('[getPillarResults] Error fetching pillar results:', error);
