@@ -238,22 +238,33 @@ class ProfessionalPDFExporter {
     if (this.results.executiveSummary) {
       if (typeof this.results.executiveSummary === 'string') {
         summaryText = this.results.executiveSummary;
-      } else if (typeof this.results.executiveSummary === 'object') {
+      } else if (typeof this.results.executiveSummary === 'object' && this.results.executiveSummary !== null) {
         // Extract text from object (handle various possible fields)
         summaryText = this.results.executiveSummary.summary || 
                      this.results.executiveSummary.strategicSituation || 
-                     this.results.executiveSummary.keyInsights ||
-                     JSON.stringify(this.results.executiveSummary);  // Fallback
+                     this.results.executiveSummary.keyInsights || '';
+        
+        // If still empty, try to build from other fields
+        if (!summaryText) {
+          const parts = [];
+          if (this.results.executiveSummary.currentState) parts.push(this.results.executiveSummary.currentState);
+          if (this.results.executiveSummary.desiredState) parts.push(this.results.executiveSummary.desiredState);
+          if (this.results.executiveSummary.gap) parts.push(this.results.executiveSummary.gap);
+          summaryText = parts.join(' ') || JSON.stringify(this.results.executiveSummary);
+        }
       }
     }
     
-    if (!summaryText || summaryText === '{}' || summaryText === '[object Object]') {
+    // Ensure summaryText is always a string
+    if (!summaryText || typeof summaryText !== 'string' || summaryText === '{}' || summaryText === '[object Object]' || summaryText === 'null' || summaryText === 'undefined') {
       summaryText = 'This assessment provides a comprehensive evaluation of your Databricks technical maturity across six key pillars. ' +
         'The findings reveal structured processes with opportunities for optimization through automation, governance integration, and AI enablement.';
     }
     
-    // Truncate and wrap text
-    summaryText = summaryText.substring(0, 800);  // Increased from 400 to show more content
+    // Truncate and wrap text - ensure it's a string before calling substring
+    if (typeof summaryText === 'string' && summaryText.length > 800) {
+      summaryText = summaryText.substring(0, 800);
+    }
     const summaryLines = this.doc.splitTextToSize(summaryText, this.contentWidth - 40);
     this.doc.text(summaryLines, this.margin + 20, yPos);
   }
