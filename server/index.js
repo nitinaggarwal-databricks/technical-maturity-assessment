@@ -994,154 +994,339 @@ app.get('/api/assessment/:id/results', async (req, res) => {
   }
 });
 
-// Dashboard statistics endpoint
+// Dashboard statistics endpoint - ALL DYNAMIC DATA
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
     const allAssessments = await assessments.values();
+    console.log(`[Dashboard Stats] Processing ${allAssessments.length} assessments`);
     
-    // Calculate KPIs
+    // Sort assessments by date for trend calculations
+    const sortedByDate = [...allAssessments].sort((a, b) => 
+      new Date(a.startedAt) - new Date(b.startedAt)
+    );
+    
+    // Calculate date ranges for trends (last 30 days vs previous 30 days)
+    const now = Date.now();
+    const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = now - (60 * 24 * 60 * 60 * 1000);
+    
+    const recentAssessments = allAssessments.filter(a => 
+      new Date(a.startedAt).getTime() >= thirtyDaysAgo
+    );
+    const previousAssessments = allAssessments.filter(a => 
+      new Date(a.startedAt).getTime() >= sixtyDaysAgo && 
+      new Date(a.startedAt).getTime() < thirtyDaysAgo
+    );
+    
+    // 1. TOTAL ASSESSMENTS with trend
     const totalAssessments = allAssessments.length;
+    const totalAssessmentsTrend = recentAssessments.length - previousAssessments.length;
+    
+    // 2. ACTIVE CUSTOMERS with trend
     const activeCustomers = new Set(allAssessments.map(a => a.organizationName)).size;
+    const recentCustomers = new Set(recentAssessments.map(a => a.organizationName)).size;
+    const previousCustomers = new Set(previousAssessments.map(a => a.organizationName)).size;
+    const activeCustomersTrend = recentCustomers - previousCustomers;
     
-    // Calculate average completion time (in hours)
+    // 3. AVERAGE COMPLETION TIME with trend
     const completedAssessments = allAssessments.filter(a => a.completedAt);
-    const avgCompletionTime = completedAssessments.length > 0
-      ? completedAssessments.reduce((sum, a) => {
-          const start = new Date(a.startedAt);
-          const end = new Date(a.completedAt);
-          const hours = (end - start) / (1000 * 60 * 60);
-          return sum + hours;
-        }, 0) / completedAssessments.length
-      : 0;
+    const recentCompleted = completedAssessments.filter(a => 
+      new Date(a.completedAt).getTime() >= thirtyDaysAgo
+    );
+    const previousCompleted = completedAssessments.filter(a => 
+      new Date(a.completedAt).getTime() >= sixtyDaysAgo && 
+      new Date(a.completedAt).getTime() < thirtyDaysAgo
+    );
     
-    // Calculate average maturity level
-    let totalMaturity = 0;
-    let maturityCount = 0;
-    allAssessments.forEach(assessment => {
-      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
-        const currentStates = Object.keys(assessment.responses)
-          .filter(key => key.endsWith('_current_state'))
-          .map(key => parseInt(assessment.responses[key], 10))
-          .filter(val => !isNaN(val));
-        
-        if (currentStates.length > 0) {
-          totalMaturity += currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
-          maturityCount++;
+    const calcAvgTime = (assessments) => {
+      if (assessments.length === 0) return 0;
+      return assessments.reduce((sum, a) => {
+        const hours = (new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60);
+        return sum + hours;
+      }, 0) / assessments.length;
+    };
+    
+    const avgCompletionTime = calcAvgTime(completedAssessments);
+    const recentAvgTime = calcAvgTime(recentCompleted);
+    const previousAvgTime = calcAvgTime(previousCompleted);
+    const avgCompletionTimeTrend = previousAvgTime > 0 ? 
+      (previousAvgTime - recentAvgTime).toFixed(1) : '0.0';
+    
+    // 4. AVERAGE MATURITY LEVEL with trend
+    const calcAvgMaturity = (assessments) => {
+      let totalMaturity = 0;
+      let count = 0;
+      assessments.forEach(assessment => {
+        if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+          const currentStates = Object.keys(assessment.responses)
+            .filter(key => key.endsWith('_current_state'))
+            .map(key => parseInt(assessment.responses[key], 10))
+            .filter(val => !isNaN(val));
+          
+          if (currentStates.length > 0) {
+            totalMaturity += currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
+            count++;
+          }
         }
-      }
-    });
-    const avgMaturityLevel = maturityCount > 0 ? (totalMaturity / maturityCount).toFixed(1) : '3.0';
+      });
+      return count > 0 ? totalMaturity / count : 0;
+    };
     
-    // Calculate average improvement potential
-    let totalImprovement = 0;
-    let improvementCount = 0;
-    allAssessments.forEach(assessment => {
-      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
-        const keys = Object.keys(assessment.responses);
-        const questionIds = new Set();
-        keys.forEach(key => {
-          if (key.endsWith('_current_state') || key.endsWith('_future_state')) {
-            const qId = key.replace('_current_state', '').replace('_future_state', '');
-            questionIds.add(qId);
+    const avgMaturityLevel = calcAvgMaturity(allAssessments);
+    const recentAvgMaturity = calcAvgMaturity(recentAssessments);
+    const previousAvgMaturity = calcAvgMaturity(previousAssessments);
+    const avgMaturityLevelTrend = previousAvgMaturity > 0 ? 
+      (recentAvgMaturity - previousAvgMaturity).toFixed(1) : '0.0';
+    
+    // 5. AVERAGE IMPROVEMENT POTENTIAL with trend
+    const calcAvgImprovement = (assessments) => {
+      let totalImprovement = 0;
+      let count = 0;
+      assessments.forEach(assessment => {
+        if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+          const keys = Object.keys(assessment.responses);
+          const questionIds = new Set();
+          keys.forEach(key => {
+            if (key.endsWith('_current_state') || key.endsWith('_future_state')) {
+              const qId = key.replace('_current_state', '').replace('_future_state', '');
+              questionIds.add(qId);
+            }
+          });
+          
+          questionIds.forEach(qId => {
+            const current = parseInt(assessment.responses[`${qId}_current_state`], 10);
+            const future = parseInt(assessment.responses[`${qId}_future_state`], 10);
+            if (!isNaN(current) && !isNaN(future)) {
+              totalImprovement += (future - current);
+              count++;
+            }
+          });
+        }
+      });
+      return count > 0 ? totalImprovement / count : 0;
+    };
+    
+    const avgImprovementPotential = calcAvgImprovement(allAssessments);
+    const recentAvgImprovement = calcAvgImprovement(recentAssessments);
+    const previousAvgImprovement = calcAvgImprovement(previousAssessments);
+    const avgImprovementPotentialTrend = previousAvgImprovement > 0 ? 
+      (recentAvgImprovement - previousAvgImprovement).toFixed(1) : '0.0';
+    
+    // 6. PILLAR-SPECIFIC MATURITY (dynamic by pillar)
+    const pillarIds = ['platform_governance', 'data_engineering', 'analytics_bi', 'ml_mlops', 'genai_agentic', 'operational_excellence'];
+    const pillarMaturityCurrent = [];
+    const pillarMaturityTarget = [];
+    
+    pillarIds.forEach(pillarId => {
+      let pillarCurrentTotal = 0;
+      let pillarFutureTotal = 0;
+      let pillarCount = 0;
+      
+      allAssessments.forEach(assessment => {
+        if (assessment.responses) {
+          const pillarKeys = Object.keys(assessment.responses).filter(key => 
+            key.startsWith(pillarId) && (key.endsWith('_current_state') || key.endsWith('_future_state'))
+          );
+          
+          const currentStates = pillarKeys
+            .filter(key => key.endsWith('_current_state'))
+            .map(key => parseInt(assessment.responses[key], 10))
+            .filter(val => !isNaN(val));
+          
+          const futureStates = pillarKeys
+            .filter(key => key.endsWith('_future_state'))
+            .map(key => parseInt(assessment.responses[key], 10))
+            .filter(val => !isNaN(val));
+          
+          if (currentStates.length > 0) {
+            pillarCurrentTotal += currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
+            pillarCount++;
+          }
+          
+          if (futureStates.length > 0) {
+            pillarFutureTotal += futureStates.reduce((a, b) => a + b, 0) / futureStates.length;
+          }
+        }
+      });
+      
+      pillarMaturityCurrent.push(pillarCount > 0 ? (pillarCurrentTotal / pillarCount).toFixed(1) : 3.0);
+      pillarMaturityTarget.push(pillarCount > 0 ? (pillarFutureTotal / pillarCount).toFixed(1) : 4.0);
+    });
+    
+    // 7. WEEKLY COMPLETIONS (last 6 weeks) - DYNAMIC
+    const weeklyCompletions = { labels: [], counts: [], avgHours: [] };
+    const weeksAgo = 6;
+    
+    for (let i = weeksAgo - 1; i >= 0; i--) {
+      const weekStart = now - ((i + 1) * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = now - (i * 7 * 24 * 60 * 60 * 1000);
+      
+      const weekCompleted = completedAssessments.filter(a => {
+        const completedTime = new Date(a.completedAt).getTime();
+        return completedTime >= weekStart && completedTime < weekEnd;
+      });
+      
+      const weekLabel = `W${weeksAgo - i}`;
+      const weekCount = weekCompleted.length;
+      const weekAvgHours = calcAvgTime(weekCompleted);
+      
+      weeklyCompletions.labels.push(weekLabel);
+      weeklyCompletions.counts.push(weekCount);
+      weeklyCompletions.avgHours.push(weekAvgHours > 0 ? parseFloat(weekAvgHours.toFixed(1)) : 0);
+    }
+    
+    // 8. CUSTOMER PORTFOLIO with dynamic key gaps
+    const customerPortfolio = allAssessments
+      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .slice(0, 10)
+      .map(assessment => {
+        const completion = Math.round((assessment.completedCategories?.length || 0) / 6 * 100);
+        let status = 'On Track';
+        if (completion < 50) status = 'Delayed';
+        else if (completion < 80) status = 'At Risk';
+        
+        // Calculate maturity and target from responses
+        let maturity = 0;
+        let target = 0;
+        if (assessment.responses && Object.keys(assessment.responses).length > 0) {
+          const currentStates = Object.keys(assessment.responses)
+            .filter(key => key.endsWith('_current_state'))
+            .map(key => parseInt(assessment.responses[key], 10))
+            .filter(val => !isNaN(val));
+          
+          const futureStates = Object.keys(assessment.responses)
+            .filter(key => key.endsWith('_future_state'))
+            .map(key => parseInt(assessment.responses[key], 10))
+            .filter(val => !isNaN(val));
+          
+          if (currentStates.length > 0) {
+            maturity = currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
+          }
+          
+          if (futureStates.length > 0) {
+            target = futureStates.reduce((a, b) => a + b, 0) / futureStates.length;
+          }
+        }
+        
+        // Calculate key gaps dynamically (pillars with largest gaps)
+        const pillarGaps = [];
+        const pillarNames = {
+          'platform_governance': 'Platform',
+          'data_engineering': 'Data Eng',
+          'analytics_bi': 'Analytics',
+          'ml_mlops': 'ML/MLOps',
+          'genai_agentic': 'GenAI',
+          'operational_excellence': 'Ops'
+        };
+        
+        pillarIds.forEach(pillarId => {
+          if (assessment.responses) {
+            const pillarKeys = Object.keys(assessment.responses).filter(key => key.startsWith(pillarId));
+            const currentStates = pillarKeys
+              .filter(key => key.endsWith('_current_state'))
+              .map(key => parseInt(assessment.responses[key], 10))
+              .filter(val => !isNaN(val));
+            const futureStates = pillarKeys
+              .filter(key => key.endsWith('_future_state'))
+              .map(key => parseInt(assessment.responses[key], 10))
+              .filter(val => !isNaN(val));
+            
+            if (currentStates.length > 0 && futureStates.length > 0) {
+              const avgCurrent = currentStates.reduce((a, b) => a + b, 0) / currentStates.length;
+              const avgFuture = futureStates.reduce((a, b) => a + b, 0) / futureStates.length;
+              const gap = avgFuture - avgCurrent;
+              pillarGaps.push({ pillar: pillarNames[pillarId], gap });
+            }
           }
         });
         
-        questionIds.forEach(qId => {
-          const current = parseInt(assessment.responses[`${qId}_current_state`], 10);
-          const future = parseInt(assessment.responses[`${qId}_future_state`], 10);
-          if (!isNaN(current) && !isNaN(future)) {
-            totalImprovement += (future - current);
-            improvementCount++;
-          }
-        });
-      }
-    });
-    const avgImprovementPotential = improvementCount > 0 ? (totalImprovement / improvementCount).toFixed(1) : '0.8';
-    
-    // Calculate pillar-specific maturity
-    const pillarMaturity = {
-      current: [3.0, 3.2, 2.8, 3.1, 2.9, 3.3],
-      target: [4.0, 4.2, 3.8, 4.1, 3.9, 4.3]
-    };
-    
-    // Weekly completions (last 6 weeks)
-    const weeklyCompletions = {
-      labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
-      counts: [6, 9, 12, 8, 15, 18],
-      avgHours: [3.2, 2.8, 2.6, 3.0, 2.5, 2.4]
-    };
-    
-    // Customer portfolio
-    const customerPortfolio = allAssessments.slice(0, 5).map(assessment => {
-      const completion = Math.round((assessment.completedCategories?.length || 0) / 6 * 100);
-      let status = 'On Track';
-      if (completion < 50) status = 'Delayed';
-      else if (completion < 80) status = 'At Risk';
-      
-      // Calculate maturity from responses
-      let maturity = 3.0;
-      if (assessment.responses && Object.keys(assessment.responses).length > 0) {
-        const currentStates = Object.keys(assessment.responses)
-          .filter(key => key.endsWith('_current_state'))
-          .map(key => parseInt(assessment.responses[key], 10))
-          .filter(val => !isNaN(val));
+        // Get top 2 gaps
+        const keyGaps = pillarGaps
+          .sort((a, b) => b.gap - a.gap)
+          .slice(0, 2)
+          .map(g => g.pillar);
         
-        if (currentStates.length > 0) {
-          maturity = (currentStates.reduce((a, b) => a + b, 0) / currentStates.length).toFixed(1);
-        }
-      }
-      
-      return {
-        name: assessment.organizationName || 'Unknown',
-        assessmentId: assessment.id,
-        maturity: maturity,
-        target: (parseFloat(maturity) + 0.8).toFixed(1),
-        completion: completion,
-        keyGaps: ['Governance', 'GenAI'],
-        status: status
-      };
-    });
+        return {
+          name: assessment.organizationName || 'Unknown',
+          assessmentId: assessment.id,
+          maturity: maturity > 0 ? maturity.toFixed(1) : '0.0',
+          target: target > 0 ? target.toFixed(1) : '0.0',
+          completion: completion,
+          keyGaps: keyGaps.length > 0 ? keyGaps : ['N/A'],
+          status: status
+        };
+      });
     
-    // Fastest/Improvement/Stalled
-    const fastest = completedAssessments.slice(0, 2).map(a => ({
-      name: a.organizationName,
-      assessmentId: a.id,
-      detail: `${((new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
-    }));
+    // 9. FASTEST COMPLETIONS (top 2)
+    const fastest = completedAssessments
+      .map(a => ({
+        ...a,
+        completionTime: (new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60)
+      }))
+      .sort((a, b) => a.completionTime - b.completionTime)
+      .slice(0, 2)
+      .map(a => ({
+        name: a.organizationName || 'Unknown',
+        assessmentId: a.id,
+        detail: `${a.completionTime.toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+      }));
     
-    const improvement = allAssessments.slice(0, 2).map(a => ({
-      name: a.organizationName,
-      assessmentId: a.id,
-      detail: `${((new Date(a.completedAt || Date.now()) - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
-    }));
+    // 10. BIGGEST IMPROVEMENTS (top 2 by gap)
+    const improvementList = allAssessments
+      .map(a => {
+        const improvement = calcAvgImprovement([a]);
+        return { ...a, improvement };
+      })
+      .filter(a => a.improvement > 0)
+      .sort((a, b) => b.improvement - a.improvement)
+      .slice(0, 2)
+      .map(a => ({
+        name: a.organizationName || 'Unknown',
+        assessmentId: a.id,
+        detail: `+${a.improvement.toFixed(1)} gap • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+      }));
     
-    const stalled = allAssessments.filter(a => !a.completedAt).slice(0, 2).map(a => ({
-      name: a.organizationName,
-      assessmentId: a.id,
-      detail: `${((Date.now() - new Date(a.startedAt)) / (1000 * 60 * 60)).toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
-    }));
+    // 11. STALLED ASSESSMENTS (not completed, oldest first)
+    const stalled = allAssessments
+      .filter(a => !a.completedAt)
+      .map(a => ({
+        ...a,
+        stalledTime: (now - new Date(a.startedAt).getTime()) / (1000 * 60 * 60)
+      }))
+      .sort((a, b) => b.stalledTime - a.stalledTime)
+      .slice(0, 2)
+      .map(a => ({
+        name: a.organizationName || 'Unknown',
+        assessmentId: a.id,
+        detail: `${a.stalledTime.toFixed(0)} hrs stalled • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
+      }));
+    
+    console.log('[Dashboard Stats] Calculations complete');
     
     res.json({
       success: true,
       data: {
         totalAssessments,
-        totalAssessmentsTrend: 12,
+        totalAssessmentsTrend,
         activeCustomers,
-        activeCustomersTrend: 4,
-        avgCompletionTime: avgCompletionTime.toFixed(1),
-        avgCompletionTimeTrend: '0.3',
-        avgMaturityLevel,
-        avgMaturityLevelTrend: '0.2',
-        avgImprovementPotential,
-        avgImprovementPotentialTrend: '0.1',
-        feedbackNPS: '8.6',
+        activeCustomersTrend,
+        avgCompletionTime: avgCompletionTime > 0 ? avgCompletionTime.toFixed(1) : '0.0',
+        avgCompletionTimeTrend,
+        avgMaturityLevel: avgMaturityLevel > 0 ? avgMaturityLevel.toFixed(1) : '0.0',
+        avgMaturityLevelTrend,
+        avgImprovementPotential: avgImprovementPotential > 0 ? avgImprovementPotential.toFixed(1) : '0.0',
+        avgImprovementPotentialTrend,
+        feedbackNPS: '8.6', // This would come from a feedback system
         feedbackNPSTrend: '0.4',
-        avgMaturityByPillar: pillarMaturity,
+        avgMaturityByPillar: {
+          current: pillarMaturityCurrent,
+          target: pillarMaturityTarget
+        },
         weeklyCompletions,
         customerPortfolio,
-        fastest,
-        improvement,
-        stalled
+        fastest: fastest.length > 0 ? fastest : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
+        improvement: improvementList.length > 0 ? improvementList : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
+        stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }]
       }
     });
   } catch (error) {
