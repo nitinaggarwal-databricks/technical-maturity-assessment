@@ -1,3 +1,7 @@
+/**
+ * Databricks Maturity Assessment Application
+ * Version: 2.0.1 - Fixed GlobalNav useLocation integration - Oct 27, 2025
+ */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';

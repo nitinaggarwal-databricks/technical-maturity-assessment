@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { FiBarChart2, FiArrowRight } from 'react-icons/fi';
 
+// Fixed: Using useLocation for proper React Router integration
+
 const Nav = styled.nav`
   position: fixed;
   top: 0;
