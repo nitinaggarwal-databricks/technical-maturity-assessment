@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -668,9 +668,23 @@ const FooterBottom = styled.div`
 
 const HomePageNew = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showSampleMenu, setShowSampleMenu] = useState(false);
   const [generatingSample, setGeneratingSample] = useState(false);
   const sampleMenuRef = useRef(null);
+
+  // Handle scrolling when navigated from another page
+  useEffect(() => {
+    if (location.state && location.state.scrollTo) {
+      // Small delay to ensure page is rendered
+      setTimeout(() => {
+        const element = document.getElementById(location.state.scrollTo);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [location]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
