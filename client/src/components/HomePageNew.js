@@ -953,6 +953,61 @@ const HomePageNew = () => {
         </Grid>
       </Section>
 
+      {/* How It Works Section */}
+      <Section id="how-it-works">
+        <SectionHeader>
+          <h2>How it works</h2>
+          <p>Get actionable insights in three simple steps</p>
+        </SectionHeader>
+
+        <Grid className="three-columns">
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>1</span>
+            </CardIcon>
+            <CardTitle>Answer Questions</CardTitle>
+            <CardDescription>
+              Complete 60 targeted questions across 6 pillars. Takes 15-20 minutes. Save and resume anytime.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>2</span>
+            </CardIcon>
+            <CardTitle>Get Insights</CardTitle>
+            <CardDescription>
+              Receive instant analysis of your maturity level, gaps, and opportunities across all dimensions.
+            </CardDescription>
+          </Card>
+
+          <Card
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
+              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>3</span>
+            </CardIcon>
+            <CardTitle>Take Action</CardTitle>
+            <CardDescription>
+              Download executive reports and implement prioritized recommendations with clear timelines and impact.
+            </CardDescription>
+          </Card>
+        </Grid>
+      </Section>
+
       {/* Assessment Pillars Section */}
       <Section id="pillars" className="alt-bg">
         <SectionHeader>
@@ -1116,61 +1171,6 @@ const HomePageNew = () => {
               Explore questions →
             </button>
           </PillarCard>
-        </Grid>
-      </Section>
-
-      {/* How It Works Section */}
-      <Section id="how-it-works">
-        <SectionHeader>
-          <h2>How it works</h2>
-          <p>Get actionable insights in three simple steps</p>
-        </SectionHeader>
-
-        <Grid className="three-columns">
-          <Card
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
-              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>1</span>
-            </CardIcon>
-            <CardTitle>Answer Questions</CardTitle>
-            <CardDescription>
-              Complete 60 targeted questions across 6 pillars. Takes 15-20 minutes. Save and resume anytime.
-            </CardDescription>
-          </Card>
-
-          <Card
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
-              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>2</span>
-            </CardIcon>
-            <CardTitle>Get Insights</CardTitle>
-            <CardDescription>
-              Receive instant analysis of your maturity level, gaps, and opportunities across all dimensions.
-            </CardDescription>
-          </Card>
-
-          <Card
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <CardIcon $bgColor="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)">
-              <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>3</span>
-            </CardIcon>
-            <CardTitle>Take Action</CardTitle>
-            <CardDescription>
-              Download executive reports and implement prioritized recommendations with clear timelines and impact.
-            </CardDescription>
-          </Card>
         </Grid>
       </Section>
 
