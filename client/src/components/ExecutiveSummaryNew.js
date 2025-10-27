@@ -263,6 +263,24 @@ const SectionTitle = styled.h2`
   }
 `;
 
+const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+
+  .section-title-wrapper {
+    flex: 1;
+  }
+
+  .section-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+`;
+
 const MaturityComparisonGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -623,6 +641,12 @@ const ExecutiveSummaryNew = () => {
   const [editingCardContent, setEditingCardContent] = useState({});
   const [roadmapCustomizations, setRoadmapCustomizations] = useState({});
   
+  // Individual section edit state
+  const [editingStrategicSection, setEditingStrategicSection] = useState(false);
+  const [editingConstraintsSection, setEditingConstraintsSection] = useState(false);
+  const [tempStrategicContent, setTempStrategicContent] = useState('');
+  const [tempConstraintsContent, setTempConstraintsContent] = useState('');
+  
   // NPS feedback modal state
   const [showNPSModal, setShowNPSModal] = useState(false);
   const [npsPromptShown, setNpsPromptShown] = useState(false);
@@ -749,6 +773,40 @@ const ExecutiveSummaryNew = () => {
       };
     }
     return { ...originalItem, isCustomized: false };
+  };
+
+  // Handlers for strategic section editing
+  const handleEditStrategicSection = () => {
+    setTempStrategicContent(editedContent.strategicSituation);
+    setEditingStrategicSection(true);
+  };
+
+  const handleSaveStrategicSection = () => {
+    setEditedContent({ ...editedContent, strategicSituation: tempStrategicContent });
+    setEditingStrategicSection(false);
+    toast.success('Strategic situation updated!');
+  };
+
+  const handleCancelStrategicEdit = () => {
+    setEditingStrategicSection(false);
+    setTempStrategicContent('');
+  };
+
+  // Handlers for constraints section editing
+  const handleEditConstraintsSection = () => {
+    setTempConstraintsContent(editedContent.criticalConstraints);
+    setEditingConstraintsSection(true);
+  };
+
+  const handleSaveConstraintsSection = () => {
+    setEditedContent({ ...editedContent, criticalConstraints: tempConstraintsContent });
+    setEditingConstraintsSection(false);
+    toast.success('Critical constraints updated!');
+  };
+
+  const handleCancelConstraintsEdit = () => {
+    setEditingConstraintsSection(false);
+    setTempConstraintsContent('');
   };
 
   const handleExportPDF = async () => {
@@ -926,10 +984,41 @@ const ExecutiveSummaryNew = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <SectionTitle>
-                <FiCheckCircle />
-                What this assessment reveals
-              </SectionTitle>
+              <SectionHeader>
+                <div className="section-title-wrapper">
+                  <SectionTitle style={{ marginBottom: 0 }}>
+                    <FiCheckCircle />
+                    What this assessment reveals
+                  </SectionTitle>
+                </div>
+                <div className="section-actions">
+                  {editingStrategicSection ? (
+                    <>
+                      <EditActionButton 
+                        $variant="success"
+                        onClick={handleSaveStrategicSection}
+                      >
+                        <FiSave size={10} />
+                        Save
+                      </EditActionButton>
+                      <EditActionButton 
+                        onClick={handleCancelStrategicEdit}
+                      >
+                        <FiX size={10} />
+                        Cancel
+                      </EditActionButton>
+                    </>
+                  ) : (
+                    <EditActionButton 
+                      onClick={handleEditStrategicSection}
+                    >
+                      <FiEdit3 size={10} />
+                      Edit
+                    </EditActionButton>
+                  )}
+                </div>
+              </SectionHeader>
+              
               <SidebarSubtitle style={{ marginBottom: '20px' }}>
                 Clear snapshot of where you are, where you're going, and what to do next.
               </SidebarSubtitle>
@@ -966,11 +1055,11 @@ const ExecutiveSummaryNew = () => {
                   </MaturityBox>
                 </MaturityComparisonGrid>
 
-                {editMode ? (
+                {editingStrategicSection ? (
                   <EditableTextarea
                     $minHeight="120px"
-                    value={editedContent.strategicSituation}
-                    onChange={(e) => setEditedContent({...editedContent, strategicSituation: e.target.value})}
+                    value={tempStrategicContent}
+                    onChange={(e) => setTempStrategicContent(e.target.value)}
                     placeholder="Describe the strategic situation and business value..."
                   />
                 ) : (
@@ -989,10 +1078,41 @@ const ExecutiveSummaryNew = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <SectionTitle>
-                <FiAlertCircle style={{ color: '#f59e0b' }} />
-                Critical constraints impacting performance
-              </SectionTitle>
+              <SectionHeader>
+                <div className="section-title-wrapper">
+                  <SectionTitle style={{ marginBottom: 0 }}>
+                    <FiAlertCircle style={{ color: '#f59e0b' }} />
+                    Critical constraints impacting performance
+                  </SectionTitle>
+                </div>
+                <div className="section-actions">
+                  {editingConstraintsSection ? (
+                    <>
+                      <EditActionButton 
+                        $variant="success"
+                        onClick={handleSaveConstraintsSection}
+                      >
+                        <FiSave size={10} />
+                        Save
+                      </EditActionButton>
+                      <EditActionButton 
+                        onClick={handleCancelConstraintsEdit}
+                      >
+                        <FiX size={10} />
+                        Cancel
+                      </EditActionButton>
+                    </>
+                  ) : (
+                    <EditActionButton 
+                      onClick={handleEditConstraintsSection}
+                    >
+                      <FiEdit3 size={10} />
+                      Edit
+                    </EditActionButton>
+                  )}
+                </div>
+              </SectionHeader>
+              
               <SidebarSubtitle style={{ marginBottom: '20px' }}>
                 Your assessment identified specific challenges across multiple pillars:
               </SidebarSubtitle>
@@ -1028,11 +1148,11 @@ const ExecutiveSummaryNew = () => {
                 );
               })}
 
-              {editMode ? (
+              {editingConstraintsSection ? (
                 <EditableTextarea
                   $minHeight="80px"
-                  value={editedContent.criticalConstraints}
-                  onChange={(e) => setEditedContent({...editedContent, criticalConstraints: e.target.value})}
+                  value={tempConstraintsContent}
+                  onChange={(e) => setTempConstraintsContent(e.target.value)}
                   placeholder="Describe the critical constraints..."
                   style={{ marginTop: '20px' }}
                 />
