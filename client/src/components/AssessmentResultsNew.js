@@ -11,7 +11,10 @@ import {
   FiZap,
   FiDownload,
   FiShare2,
-  FiEdit3
+  FiEdit3,
+  FiSave,
+  FiTrash2,
+  FiX
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -232,7 +235,15 @@ const PillarHeader = styled.div`
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
+
+  .pillar-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
 
   .pillar-icon {
     font-size: 2rem;
@@ -245,8 +256,14 @@ const PillarHeader = styled.div`
     margin: 0;
   }
 
+  .pillar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
   @media (max-width: 768px) {
     padding: 20px 24px;
+    flex-wrap: wrap;
 
     .pillar-icon {
       font-size: 1.75rem;
@@ -255,6 +272,59 @@ const PillarHeader = styled.div`
     h3 {
       font-size: 1.125rem;
     }
+
+    .pillar-actions {
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+  }
+`;
+
+const EditActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: ${props => props.$variant === 'danger' ? '#fee2e2' : props.$variant === 'success' ? '#d1fae5' : '#eff6ff'};
+  color: ${props => props.$variant === 'danger' ? '#dc2626' : props.$variant === 'success' ? '#059669' : '#3b82f6'};
+  border: 1px solid ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#bfdbfe'};
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#dbeafe'};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const EditableTextarea = styled.textarea`
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
   }
 `;
 
@@ -527,6 +597,15 @@ const AssessmentResultsNew = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
+  
+  // Edit state management
+  const [editingPillar, setEditingPillar] = useState(null);
+  const [editingPhase, setEditingPhase] = useState(null);
+  const [editedContent, setEditedContent] = useState({});
+  const [customizations, setCustomizations] = useState({
+    pillars: {},
+    phases: {}
+  });
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -566,6 +645,66 @@ const AssessmentResultsNew = () => {
       setLoading(false);
     }
   }, [assessmentId, routerLocation.key]);
+
+  // Edit handlers for pillar cards
+  const handleEditPillar = (pillarId, data) => {
+    setEditingPillar(pillarId);
+    setEditedContent({
+      theGood: data.theGood.join('\n'),
+      theBad: data.theBad.join('\n'),
+      recommendations: data.recommendations.join('\n')
+    });
+  };
+
+  const handleSavePillar = (pillarId) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.pillars[pillarId] = {
+      theGood: editedContent.theGood.split('\n').filter(line => line.trim()),
+      theBad: editedContent.theBad.split('\n').filter(line => line.trim()),
+      recommendations: editedContent.recommendations.split('\n').filter(line => line.trim())
+    };
+    setCustomizations(newCustomizations);
+    setEditingPillar(null);
+    toast.success('Pillar content saved!');
+  };
+
+  const handleCancelPillarEdit = () => {
+    setEditingPillar(null);
+    setEditedContent({});
+  };
+
+  const handleRemovePillarCustomization = (pillarId) => {
+    const newCustomizations = { ...customizations };
+    delete newCustomizations.pillars[pillarId];
+    setCustomizations(newCustomizations);
+    toast.success('Customization removed, showing original content');
+  };
+
+  // Edit handlers for phase cards
+  const handleEditPhase = (phaseId, items) => {
+    setEditingPhase(phaseId);
+    setEditedContent({ items: items.join('\n') });
+  };
+
+  const handleSavePhase = (phaseId) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.phases[phaseId] = editedContent.items.split('\n').filter(line => line.trim());
+    setCustomizations(newCustomizations);
+    setEditingPhase(null);
+    toast.success('Phase content saved!');
+  };
+
+  const handleCancelPhaseEdit = () => {
+    setEditingPhase(null);
+    setEditedContent({});
+  };
+
+  const handleRemovePhaseCustomization = (phaseId) => {
+    const newCustomizations = { ...customizations };
+    delete newCustomizations.phases[phaseId];
+    setCustomizations(newCustomizations);
+    toast.success('Customization removed, showing original content');
+  };
 
   const handleExportPDF = async () => {
     try {
@@ -748,6 +887,12 @@ const AssessmentResultsNew = () => {
     console.log(`[AssessmentResultsNew] categoryDetails:`, resultsData?.categoryDetails);
     console.log(`[AssessmentResultsNew] prioritizedActions:`, resultsData?.prioritizedActions);
     
+    // Check if there's a customization for this pillar
+    if (customizations.pillars[pillarId]) {
+      console.log(`[AssessmentResultsNew] Using customized data for ${pillarId}`);
+      return customizations.pillars[pillarId];
+    }
+    
     // categoryDetails is an object with pillar IDs as keys, not an array
     const pillarResults = resultsData?.categoryDetails?.[pillarId];
     console.log(`[AssessmentResultsNew] pillarResults for ${pillarId}:`, pillarResults);
@@ -879,10 +1024,83 @@ const AssessmentResultsNew = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <PillarHeader>
-                  <span className="pillar-icon">{pillar.icon}</span>
-                  <h3>{pillar.name}</h3>
+                  <div className="pillar-info">
+                    <span className="pillar-icon">{pillar.icon}</span>
+                    <h3>{pillar.name}</h3>
+                  </div>
+                  <div className="pillar-actions">
+                    {editingPillar === pillar.id ? (
+                      <>
+                        <EditActionButton 
+                          $variant="success"
+                          onClick={() => handleSavePillar(pillar.id)}
+                        >
+                          <FiSave size={14} />
+                          Save
+                        </EditActionButton>
+                        <EditActionButton 
+                          onClick={handleCancelPillarEdit}
+                        >
+                          <FiX size={14} />
+                          Cancel
+                        </EditActionButton>
+                      </>
+                    ) : (
+                      <>
+                        <EditActionButton 
+                          onClick={() => handleEditPillar(pillar.id, data)}
+                        >
+                          <FiEdit3 size={14} />
+                          Edit
+                        </EditActionButton>
+                        {customizations.pillars[pillar.id] && (
+                          <EditActionButton 
+                            $variant="danger"
+                            onClick={() => handleRemovePillarCustomization(pillar.id)}
+                          >
+                            <FiTrash2 size={14} />
+                            Remove
+                          </EditActionButton>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </PillarHeader>
-                <PillarBody>
+                {editingPillar === pillar.id ? (
+                  <PillarBody style={{ display: 'block' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#10b981' }}>
+                        The Good (one per line):
+                      </label>
+                      <EditableTextarea
+                        value={editedContent.theGood || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, theGood: e.target.value })}
+                        placeholder="Enter strengths, one per line..."
+                      />
+                    </div>
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#ef4444' }}>
+                        The Bad (one per line):
+                      </label>
+                      <EditableTextarea
+                        value={editedContent.theBad || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, theBad: e.target.value })}
+                        placeholder="Enter gaps, one per line..."
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#3b82f6' }}>
+                        Recommendations (one per line):
+                      </label>
+                      <EditableTextarea
+                        value={editedContent.recommendations || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, recommendations: e.target.value })}
+                        placeholder="Enter recommendations, one per line..."
+                      />
+                    </div>
+                  </PillarBody>
+                ) : (
+                  <PillarBody>
                   <PillarColumn $color="#10b981">
                     <div className="column-title">
                       <FiCheckCircle />
@@ -931,6 +1149,7 @@ const AssessmentResultsNew = () => {
                     </ul>
                   </PillarColumn>
                 </PillarBody>
+                )}
                 
                 {/* View Details Button */}
                 {/* Only show View Details button if pillar has responses */}
