@@ -232,6 +232,21 @@ export const getDashboardStats = async () => {
 };
 
 /**
+ * Submit NPS feedback
+ */
+export const submitNPSFeedback = async (assessmentId, feedbackData) => {
+  try {
+    console.log('[submitNPSFeedback] Submitting feedback for assessment:', assessmentId);
+    const response = await api.post(`/assessment/${assessmentId}/nps-feedback`, feedbackData);
+    console.log('[submitNPSFeedback] Response:', response);
+    return response;
+  } catch (error) {
+    console.error('[submitNPSFeedback] Error:', error);
+    throw error;
+  }
+};
+
+/**
  * Delete an assessment
  */
 export const deleteAssessment = async (assessmentId) => {

@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { generateProfessionalReport } from '../services/pdfExportService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
+import NPSFeedbackModal from './NPSFeedbackModal';
 
 // =======================
 // STYLED COMPONENTS
@@ -576,6 +577,29 @@ const ExecutiveSummaryNew = () => {
     targetMaturityDescription: '',
     improvementScopeDescription: ''
   });
+  
+  // NPS feedback modal state
+  const [showNPSModal, setShowNPSModal] = useState(false);
+  const [npsPromptShown, setNpsPromptShown] = useState(false);
+
+  // Show NPS modal after 10 seconds (only once per session)
+  useEffect(() => {
+    if (!npsPromptShown && results && !loading) {
+      // Check if user already provided feedback for this assessment
+      const feedbackKey = `nps_feedback_${assessmentId}`;
+      const alreadyProvided = localStorage.getItem(feedbackKey);
+      
+      if (!alreadyProvided) {
+        const timer = setTimeout(() => {
+          setShowNPSModal(true);
+          setNpsPromptShown(true);
+          localStorage.setItem(feedbackKey, 'prompted');
+        }, 10000); // 10 seconds
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [results, loading, npsPromptShown, assessmentId]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -1113,6 +1137,14 @@ const ExecutiveSummaryNew = () => {
           </Sidebar>
         </MainGrid>
       </ContentContainer>
+      
+      {/* NPS Feedback Modal */}
+      <NPSFeedbackModal
+        isOpen={showNPSModal}
+        onClose={() => setShowNPSModal(false)}
+        assessmentId={assessmentId}
+        assessmentName={resultsData?.assessmentInfo?.assessmentName || 'Assessment'}
+      />
     </PageContainer>
   );
 };

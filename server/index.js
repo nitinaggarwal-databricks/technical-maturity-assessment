@@ -994,6 +994,118 @@ app.get('/api/assessment/:id/results', async (req, res) => {
   }
 });
 
+// Submit NPS feedback
+app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { score, comment, assessmentName } = req.body;
+    
+    console.log(`[NPS Feedback] Received for assessment ${id}:`, { score, comment });
+    
+    // Validate score
+    if (score === null || score === undefined || score < 0 || score > 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid NPS score. Must be between 0 and 10.'
+      });
+    }
+    
+    const assessment = await assessments.get(id);
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    // Add NPS feedback to assessment
+    assessment.npsFeedback = {
+      score: parseInt(score, 10),
+      comment: comment || '',
+      submittedAt: new Date().toISOString(),
+      category: score >= 9 ? 'Promoter' : score >= 7 ? 'Passive' : 'Detractor'
+    };
+    
+    await assessments.set(id, assessment);
+    
+    console.log(`[NPS Feedback] Saved successfully for ${id}`);
+    
+    res.json({
+      success: true,
+      message: 'Feedback submitted successfully',
+      data: assessment.npsFeedback
+    });
+  } catch (error) {
+    console.error('Error submitting NPS feedback:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error submitting feedback',
+      error: error.message
+    });
+  }
+});
+
+// Helper functions for NPS calculation
+function calculateNPS(assessments) {
+  const withFeedback = assessments.filter(a => a.npsFeedback && a.npsFeedback.score !== null && a.npsFeedback.score !== undefined);
+  
+  if (withFeedback.length === 0) {
+    return 'N/A'; // No feedback yet
+  }
+  
+  const promoters = withFeedback.filter(a => a.npsFeedback.score >= 9).length;
+  const detractors = withFeedback.filter(a => a.npsFeedback.score <= 6).length;
+  const total = withFeedback.length;
+  
+  // NPS = (% Promoters - % Detractors)
+  const nps = ((promoters / total) * 100) - ((detractors / total) * 100);
+  
+  return nps.toFixed(1);
+}
+
+function calculateNPSTrend(allAssessments, recentAssessments, previousAssessments) {
+  const recentNPS = calculateNPS(recentAssessments);
+  const previousNPS = calculateNPS(previousAssessments);
+  
+  if (recentNPS === 'N/A' || previousNPS === 'N/A') {
+    return '0.0';
+  }
+  
+  const trend = parseFloat(recentNPS) - parseFloat(previousNPS);
+  return trend.toFixed(1);
+}
+
+function getNPSBreakdown(assessments) {
+  const withFeedback = assessments.filter(a => a.npsFeedback && a.npsFeedback.score !== null && a.npsFeedback.score !== undefined);
+  
+  if (withFeedback.length === 0) {
+    return {
+      promoters: 0,
+      passives: 0,
+      detractors: 0,
+      total: 0,
+      promotersPercent: 0,
+      passivesPercent: 0,
+      detractorsPercent: 0
+    };
+  }
+  
+  const promoters = withFeedback.filter(a => a.npsFeedback.score >= 9).length;
+  const passives = withFeedback.filter(a => a.npsFeedback.score >= 7 && a.npsFeedback.score <= 8).length;
+  const detractors = withFeedback.filter(a => a.npsFeedback.score <= 6).length;
+  const total = withFeedback.length;
+  
+  return {
+    promoters,
+    passives,
+    detractors,
+    total,
+    promotersPercent: ((promoters / total) * 100).toFixed(1),
+    passivesPercent: ((passives / total) * 100).toFixed(1),
+    detractorsPercent: ((detractors / total) * 100).toFixed(1)
+  };
+}
+
 // Dashboard statistics endpoint - ALL DYNAMIC DATA
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
@@ -1316,8 +1428,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
         avgMaturityLevelTrend,
         avgImprovementPotential: avgImprovementPotential > 0 ? avgImprovementPotential.toFixed(1) : '0.0',
         avgImprovementPotentialTrend,
-        feedbackNPS: '8.6', // This would come from a feedback system
-        feedbackNPSTrend: '0.4',
+        feedbackNPS: calculateNPS(allAssessments),
+        feedbackNPSTrend: calculateNPSTrend(allAssessments, recentAssessments, previousAssessments),
+        npsBreakdown: getNPSBreakdown(allAssessments),
         avgMaturityByPillar: {
           current: pillarMaturityCurrent,
           target: pillarMaturityTarget
