@@ -10,7 +10,10 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiTrendingUp,
-  FiCalendar
+  FiCalendar,
+  FiSave,
+  FiTrash2,
+  FiX
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -406,6 +409,7 @@ const RoadmapItem = styled.div`
   border: 1px solid #86efac;
   border-radius: 8px;
   margin-bottom: 12px;
+  position: relative;
 
   &:last-child {
     margin-bottom: 0;
@@ -424,6 +428,7 @@ const RoadmapItem = styled.div`
     font-size: 0.938rem;
     font-weight: 600;
     color: #166534;
+    flex: 1;
   }
 
   .timeline {
@@ -433,6 +438,12 @@ const RoadmapItem = styled.div`
     padding: 4px 10px;
     border-radius: 4px;
     font-weight: 500;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 8px;
   }
 
   .actions {
@@ -460,6 +471,35 @@ const RoadmapItem = styled.div`
     .actions {
       font-size: 0.813rem;
     }
+  }
+`;
+
+const EditActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: ${props => props.$variant === 'danger' ? '#fee2e2' : props.$variant === 'success' ? '#d1fae5' : '#eff6ff'};
+  color: ${props => props.$variant === 'danger' ? '#dc2626' : props.$variant === 'success' ? '#059669' : '#3b82f6'};
+  border: 1px solid ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#bfdbfe'};
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#dbeafe'};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `;
 
@@ -578,6 +618,11 @@ const ExecutiveSummaryNew = () => {
     improvementScopeDescription: ''
   });
   
+  // Individual card edit state
+  const [editingRoadmapCard, setEditingRoadmapCard] = useState(null); // Index of card being edited
+  const [editingCardContent, setEditingCardContent] = useState({});
+  const [roadmapCustomizations, setRoadmapCustomizations] = useState({});
+  
   // NPS feedback modal state
   const [showNPSModal, setShowNPSModal] = useState(false);
   const [npsPromptShown, setNpsPromptShown] = useState(false);
@@ -656,6 +701,55 @@ const ExecutiveSummaryNew = () => {
       fetchResults();
     }
   }, [assessmentId, routerLocation.key]);
+
+  // Handlers for individual roadmap card editing
+  const handleEditRoadmapCard = (index, roadmapItem) => {
+    setEditingRoadmapCard(index);
+    setEditingCardContent({
+      pillar: roadmapItem.pillar,
+      timeline: roadmapItem.timeline,
+      impact: roadmapItem.impact,
+      actions: roadmapItem.actions.map(a => typeof a === 'string' ? a : a.action || a.title || a.description || '').join('\n')
+    });
+  };
+
+  const handleSaveRoadmapCard = (index) => {
+    const newCustomizations = { ...roadmapCustomizations };
+    newCustomizations[index] = {
+      pillar: editingCardContent.pillar,
+      timeline: editingCardContent.timeline,
+      impact: editingCardContent.impact,
+      actions: editingCardContent.actions.split('\n').filter(line => line.trim())
+    };
+    setRoadmapCustomizations(newCustomizations);
+    setEditingRoadmapCard(null);
+    setEditingCardContent({});
+    toast.success('Roadmap item saved!');
+  };
+
+  const handleCancelRoadmapEdit = () => {
+    setEditingRoadmapCard(null);
+    setEditingCardContent({});
+  };
+
+  const handleRemoveRoadmapCustomization = (index) => {
+    const newCustomizations = { ...roadmapCustomizations };
+    delete newCustomizations[index];
+    setRoadmapCustomizations(newCustomizations);
+    toast.success('Customization removed, showing original content');
+  };
+
+  // Get roadmap item data (use customization if exists, otherwise use original)
+  const getRoadmapItemData = (index, originalItem) => {
+    if (roadmapCustomizations[index]) {
+      return {
+        ...originalItem,
+        ...roadmapCustomizations[index],
+        isCustomized: true
+      };
+    }
+    return { ...originalItem, isCustomized: false };
+  };
 
   const handleExportPDF = async () => {
     try {
@@ -961,33 +1055,126 @@ const ExecutiveSummaryNew = () => {
               </SectionTitle>
 
               {transformationRoadmap.length > 0 ? (
-                transformationRoadmap.map((roadmapItem, idx) => (
-                  <RoadmapItem key={idx}>
-                    <div className="header">
-                      <div className="title">
-                        {roadmapItem.pillar} (Level {categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.currentScore || 0} → 
-                        {categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.futureScore || 0})
+                transformationRoadmap.map((roadmapItem, idx) => {
+                  const isEditing = editingRoadmapCard === idx;
+                  const itemData = getRoadmapItemData(idx, roadmapItem);
+                  
+                  return (
+                    <RoadmapItem key={idx}>
+                      <div className="header">
+                        <div className="title">
+                          {isEditing ? 'Editing Roadmap Item' : `${itemData.pillar} (Level ${categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.currentScore || 0} → 
+                          ${categoryDetails[Object.keys(categoryDetails).find(k => categoryDetails[k].name === roadmapItem.pillar)]?.futureScore || 0})`}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {!isEditing && (
+                            <div className="timeline">
+                              <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
+                              Timeline: {itemData.timeline} • Impact: {itemData.impact}
+                            </div>
+                          )}
+                          <div className="card-actions">
+                            {isEditing ? (
+                              <>
+                                <EditActionButton 
+                                  $variant="success"
+                                  onClick={() => handleSaveRoadmapCard(idx)}
+                                >
+                                  <FiSave size={10} />
+                                </EditActionButton>
+                                <EditActionButton 
+                                  onClick={handleCancelRoadmapEdit}
+                                >
+                                  <FiX size={10} />
+                                </EditActionButton>
+                              </>
+                            ) : (
+                              <>
+                                <EditActionButton 
+                                  onClick={() => handleEditRoadmapCard(idx, itemData)}
+                                >
+                                  <FiEdit3 size={10} />
+                                </EditActionButton>
+                                {itemData.isCustomized && (
+                                  <EditActionButton 
+                                    $variant="danger"
+                                    onClick={() => handleRemoveRoadmapCustomization(idx)}
+                                  >
+                                    <FiTrash2 size={10} />
+                                  </EditActionButton>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="timeline">
-                        <FiCalendar size={12} style={{ marginRight: '4px', display: 'inline' }} />
-                        Timeline: {roadmapItem.timeline} • Impact: {roadmapItem.impact}
-                      </div>
-                    </div>
-                    <div className="actions">
-                      <ul>
-                        {roadmapItem.actions && roadmapItem.actions.length > 0 ? (
-                          roadmapItem.actions.slice(0, 4).map((action, actionIdx) => (
-                            <li key={actionIdx}>
-                              {typeof action === 'string' ? action : action.action || action.title || action.description || 'Action item'}
-                            </li>
-                          ))
-                        ) : (
-                          <li>Focus on closing the maturity gap through structured improvements</li>
-                        )}
-                      </ul>
-                    </div>
-                  </RoadmapItem>
-                ))
+                      
+                      {isEditing ? (
+                        <div>
+                          <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#166534', fontSize: '0.875rem' }}>
+                            Pillar:
+                          </label>
+                          <EditableTextarea
+                            value={editingCardContent.pillar || ''}
+                            onChange={(e) => setEditingCardContent({ ...editingCardContent, pillar: e.target.value })}
+                            placeholder="Enter pillar name..."
+                            style={{ minHeight: '50px' }}
+                          />
+                          
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                            <div>
+                              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#166534', fontSize: '0.875rem' }}>
+                                Timeline:
+                              </label>
+                              <input
+                                type="text"
+                                value={editingCardContent.timeline || ''}
+                                onChange={(e) => setEditingCardContent({ ...editingCardContent, timeline: e.target.value })}
+                                placeholder="e.g., 3-6 months"
+                                style={{ width: '100%', padding: '8px', border: '2px solid #e5e7eb', borderRadius: '6px', fontSize: '0.875rem' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#166534', fontSize: '0.875rem' }}>
+                                Impact:
+                              </label>
+                              <input
+                                type="text"
+                                value={editingCardContent.impact || ''}
+                                onChange={(e) => setEditingCardContent({ ...editingCardContent, impact: e.target.value })}
+                                placeholder="e.g., High, Medium, Low"
+                                style={{ width: '100%', padding: '8px', border: '2px solid #e5e7eb', borderRadius: '6px', fontSize: '0.875rem' }}
+                              />
+                            </div>
+                          </div>
+                          
+                          <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#166534', fontSize: '0.875rem' }}>
+                            Actions (one per line):
+                          </label>
+                          <EditableTextarea
+                            value={editingCardContent.actions || ''}
+                            onChange={(e) => setEditingCardContent({ ...editingCardContent, actions: e.target.value })}
+                            placeholder="Enter action items, one per line..."
+                          />
+                        </div>
+                      ) : (
+                        <div className="actions">
+                          <ul>
+                            {itemData.actions && itemData.actions.length > 0 ? (
+                              itemData.actions.slice(0, 4).map((action, actionIdx) => (
+                                <li key={actionIdx}>
+                                  {typeof action === 'string' ? action : action.action || action.title || action.description || 'Action item'}
+                                </li>
+                              ))
+                            ) : (
+                              <li>Focus on closing the maturity gap through structured improvements</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </RoadmapItem>
+                  );
+                })
               ) : (
                 <DescriptionText>
                   Complete more pillar assessments to generate a personalized transformation roadmap.
