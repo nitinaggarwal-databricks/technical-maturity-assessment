@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiBarChart2 } from 'react-icons/fi';
+import { FiBarChart2, FiArrowRight } from 'react-icons/fi';
 
 const Nav = styled.nav`
   position: fixed;
@@ -79,20 +79,70 @@ const TopNav = styled.div`
   @media (max-width: 640px) {
     display: none;
   }
+`;
 
-  button {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-weight: 500;
-    font-size: 0.9375rem;
-    cursor: pointer;
-    transition: color 0.2s;
-    padding: 8px 0;
+const NavLink = styled.button`
+  background: none;
+  border: none;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 8px 0;
+  position: relative;
 
-    &:hover {
-      color: #3b82f6;
-    }
+  &:hover {
+    color: #3b82f6;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #3b82f6;
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+`;
+
+const CTAButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    transition: transform 0.2s;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
   }
 `;
 
@@ -121,11 +171,15 @@ const GlobalNav = () => {
           <LogoText>Databricks Technical Maturity Assessment</LogoText>
         </Logo>
         <TopNav>
-          <button onClick={() => navigate('/insights-dashboard')}>Dashboard</button>
-          <button onClick={() => scrollToSection('why-assessment')}>Why Assessment</button>
-          <button onClick={() => scrollToSection('pillars')}>Explore Framework</button>
-          <button onClick={() => scrollToSection('how-it-works')}>How It Works</button>
-          <button onClick={() => navigate('/assessments')}>Past Assessments</button>
+          <NavLink onClick={() => scrollToSection('why-assessment')}>Why This Matters</NavLink>
+          <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
+          <NavLink onClick={() => scrollToSection('pillars')}>Explore Framework</NavLink>
+          <NavLink onClick={() => navigate('/assessments')}>My Assessments</NavLink>
+          <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
+          <CTAButton onClick={() => navigate('/start')}>
+            Start Assessment
+            <FiArrowRight size={16} />
+          </CTAButton>
         </TopNav>
       </NavContainer>
     </Nav>
