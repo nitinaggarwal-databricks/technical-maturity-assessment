@@ -369,13 +369,77 @@ const Dashboard = () => {
   };
 
   const handleExport = () => {
-    toast.success('Exporting dashboard data...');
-    // TODO: Implement export functionality
+    try {
+      if (!dashboardData) {
+        toast.error('No data to export');
+        return;
+      }
+
+      // Create CSV content
+      let csvContent = 'Dashboard Insights Export\n';
+      csvContent += `Generated: ${new Date().toLocaleString()}\n\n`;
+      
+      // KPIs Section
+      csvContent += 'KEY PERFORMANCE INDICATORS\n';
+      csvContent += 'Metric,Value,Trend\n';
+      csvContent += `Total Assessments,${dashboardData.totalAssessments},${dashboardData.totalAssessmentsTrend > 0 ? '+' : ''}${dashboardData.totalAssessmentsTrend}\n`;
+      csvContent += `Active Customers,${dashboardData.activeCustomers},${dashboardData.activeCustomersTrend > 0 ? '+' : ''}${dashboardData.activeCustomersTrend}\n`;
+      csvContent += `Avg Completion Time,${dashboardData.avgCompletionTime} hrs,${dashboardData.avgCompletionTimeTrend}\n`;
+      csvContent += `Avg Maturity Level,${dashboardData.avgMaturityLevel},${dashboardData.avgMaturityLevelTrend}\n`;
+      csvContent += `Avg Improvement Potential,${dashboardData.avgImprovementPotential},${dashboardData.avgImprovementPotentialTrend}\n`;
+      csvContent += `Feedback (NPS),${dashboardData.feedbackNPS},${dashboardData.feedbackNPSTrend}\n\n`;
+      
+      // Customer Portfolio Section
+      csvContent += 'CUSTOMER PORTFOLIO\n';
+      csvContent += 'Customer,Maturity,Target,Completion %,Key Gaps,Status\n';
+      dashboardData.customerPortfolio?.forEach(customer => {
+        csvContent += `"${customer.name}",${customer.maturity},${customer.target},${customer.completion},"${customer.keyGaps?.join(', ')}",${customer.status}\n`;
+      });
+      csvContent += '\n';
+      
+      // Weekly Completions Section
+      csvContent += 'WEEKLY COMPLETIONS\n';
+      csvContent += 'Week,Completed,Avg Hours\n';
+      dashboardData.weeklyCompletions?.labels?.forEach((label, idx) => {
+        csvContent += `${label},${dashboardData.weeklyCompletions.counts[idx]},${dashboardData.weeklyCompletions.avgHours[idx]}\n`;
+      });
+      csvContent += '\n';
+      
+      // Pillar Maturity Section
+      csvContent += 'PILLAR MATURITY\n';
+      csvContent += 'Pillar,Current,Target\n';
+      const pillarNames = ['Platform', 'Data Eng', 'Analytics', 'ML/MLOps', 'GenAI', 'Ops'];
+      pillarNames.forEach((name, idx) => {
+        csvContent += `${name},${dashboardData.avgMaturityByPillar?.current[idx]},${dashboardData.avgMaturityByPillar?.target[idx]}\n`;
+      });
+      
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `dashboard-insights-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Dashboard data exported successfully!');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export dashboard data');
+    }
   };
 
   const handleShare = () => {
-    toast.success('Share link copied to clipboard!');
-    // TODO: Implement share functionality
+    try {
+      const shareUrl = window.location.href;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success('Dashboard link copied to clipboard!');
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error('Failed to copy link');
+    }
   };
 
   if (loading) {
