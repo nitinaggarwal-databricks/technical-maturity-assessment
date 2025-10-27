@@ -421,12 +421,27 @@ const PhaseCard = styled(motion.div)`
   border: 2px solid ${props => props.$borderColor || '#fbbf24'};
   border-radius: 12px;
   padding: 28px 32px;
+  position: relative;
+
+  .phase-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
 
   .phase-header {
     font-size: 1.125rem;
     font-weight: 700;
     color: #1e293b;
-    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  .phase-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   ul {
@@ -879,6 +894,58 @@ const AssessmentResultsNew = () => {
     { id: 'operational_excellence', name: 'Operational Excellence & Adoption', icon: '⚙️' },
   ];
 
+  // Phase data for Strategic Roadmap
+  const defaultPhases = [
+    {
+      id: 'phase1',
+      title: 'Phase 1: Foundation (0–3 months)',
+      bgColor: '#fef3c7',
+      borderColor: '#fbbf24',
+      accentColor: '#f59e0b',
+      items: [
+        'Implement Unity Catalog with initial RBAC roles',
+        'Establish data quality monitoring and observability',
+        'Launch initial governance enablement sessions'
+      ]
+    },
+    {
+      id: 'phase2',
+      title: 'Phase 2: Scale (3–6 months)',
+      bgColor: '#fed7aa',
+      borderColor: '#fb923c',
+      accentColor: '#ea580c',
+      items: [
+        'Automate pipeline reliability tracking via DLT',
+        'Integrate ML flow metrics with centralized dashboards',
+        'Deploy first GenAI-enabled use case under governance'
+      ]
+    },
+    {
+      id: 'phase3',
+      title: 'Phase 3: Optimize (6–12 months)',
+      bgColor: '#d1fae5',
+      borderColor: '#86efac',
+      accentColor: '#10b981',
+      items: [
+        'Formalize MLOps CI/CD for model deployment',
+        'Expand GenAI use cases with RAG implementation',
+        'Align data mesh principles with Unity Catalog'
+      ]
+    }
+  ];
+
+  // Get phase data (use customization if exists, otherwise use default)
+  const getPhaseData = (phaseId) => {
+    if (customizations.phases[phaseId]) {
+      const defaultPhase = defaultPhases.find(p => p.id === phaseId);
+      return {
+        ...defaultPhase,
+        items: customizations.phases[phaseId]
+      };
+    }
+    return defaultPhases.find(p => p.id === phaseId);
+  };
+
   // Get pillar-specific results
   const getPillarData = (pillarId) => {
     const resultsData = results?.data || results;
@@ -1203,56 +1270,75 @@ const AssessmentResultsNew = () => {
             </p>
 
             <RoadmapPhases>
-              <PhaseCard
-                $bgColor="#fef3c7"
-                $borderColor="#fbbf24"
-                $accentColor="#f59e0b"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="phase-header">Phase 1: Foundation (0–3 months)</div>
-                <ul>
-                  <li>Implement Unity Catalog with initial RBAC roles</li>
-                  <li>Establish data quality monitoring and observability</li>
-                  <li>Launch initial governance enablement sessions</li>
-                </ul>
-              </PhaseCard>
-
-              <PhaseCard
-                $bgColor="#fed7aa"
-                $borderColor="#fb923c"
-                $accentColor="#ea580c"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <div className="phase-header">Phase 2: Scale (3–6 months)</div>
-                <ul>
-                  <li>Automate pipeline reliability tracking via DLT</li>
-                  <li>Integrate ML flow metrics with centralized dashboards</li>
-                  <li>Deploy first GenAI-enabled use case under governance</li>
-                </ul>
-              </PhaseCard>
-
-              <PhaseCard
-                $bgColor="#d1fae5"
-                $borderColor="#86efac"
-                $accentColor="#10b981"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                <div className="phase-header">Phase 3: Optimize (6–12 months)</div>
-                <ul>
-                  <li>Establish performance baselines for all workloads</li>
-                  <li>Operationalize AI CoE for continuous innovation</li>
-                  <li>Align data and AI KPIs with business outcomes</li>
-                </ul>
-              </PhaseCard>
+              {defaultPhases.map((phase, index) => {
+                const phaseData = getPhaseData(phase.id);
+                const isEditing = editingPhase === phase.id;
+                
+                return (
+                  <PhaseCard
+                    key={phase.id}
+                    $bgColor={phase.bgColor}
+                    $borderColor={phase.borderColor}
+                    $accentColor={phase.accentColor}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <div className="phase-header-container">
+                      <div className="phase-header">{phase.title}</div>
+                      <div className="phase-actions">
+                        {isEditing ? (
+                          <>
+                            <EditActionButton 
+                              $variant="success"
+                              onClick={() => handleSavePhase(phase.id)}
+                            >
+                              <FiSave size={12} />
+                            </EditActionButton>
+                            <EditActionButton 
+                              onClick={handleCancelPhaseEdit}
+                            >
+                              <FiX size={12} />
+                            </EditActionButton>
+                          </>
+                        ) : (
+                          <>
+                            <EditActionButton 
+                              onClick={() => handleEditPhase(phase.id, phaseData.items)}
+                            >
+                              <FiEdit3 size={12} />
+                            </EditActionButton>
+                            {customizations.phases[phase.id] && (
+                              <EditActionButton 
+                                $variant="danger"
+                                onClick={() => handleRemovePhaseCustomization(phase.id)}
+                              >
+                                <FiTrash2 size={12} />
+                              </EditActionButton>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {isEditing ? (
+                      <EditableTextarea
+                        value={editedContent.items || ''}
+                        onChange={(e) => setEditedContent({ items: e.target.value })}
+                        placeholder="Enter action items, one per line..."
+                        style={{ minHeight: '120px' }}
+                      />
+                    ) : (
+                      <ul>
+                        {phaseData.items.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </PhaseCard>
+                );
+              })}
             </RoadmapPhases>
           </RoadmapSection>
 
