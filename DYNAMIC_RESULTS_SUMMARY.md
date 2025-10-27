@@ -323,3 +323,5 @@ console.log(`   Completed pillars: ${sampleAssessment.completedCategories.length
 **The system now guarantees that every view of results reflects the CURRENT state of the assessment with freshly generated, AI-powered recommendations.**
 
 
+
+

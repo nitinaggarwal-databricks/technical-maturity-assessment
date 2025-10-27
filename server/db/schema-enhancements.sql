@@ -266,3 +266,5 @@ CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_db_user;
 -- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_db_user;
 
+
+

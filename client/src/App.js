@@ -1,6 +1,6 @@
 /**
  * Databricks Maturity Assessment Application
- * Version: 2.0.1 - Fixed GlobalNav useLocation integration - Oct 27, 2025
+ * Version: 2.1.0 - Added editable pillar & roadmap cards - Oct 27, 2025
  */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';

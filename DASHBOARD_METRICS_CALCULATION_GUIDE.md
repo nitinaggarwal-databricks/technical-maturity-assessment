@@ -585,3 +585,5 @@ All trends are calculated by comparing **last 30 days vs previous 30 days**.
 
 **No hardcoded values!** Everything is real-time from PostgreSQL.
 
+
+
