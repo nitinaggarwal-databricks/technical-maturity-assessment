@@ -48,8 +48,26 @@ ChartJS.register(
 // Styled Components
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #f8f9fa;
+  background: radial-gradient(ellipse at top, #e0e7ff 0%, #f3f4f6 50%, #ffffff 100%);
+  position: relative;
   padding: 100px 40px 40px 40px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 400px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 `;
 
 const Header = styled.div`

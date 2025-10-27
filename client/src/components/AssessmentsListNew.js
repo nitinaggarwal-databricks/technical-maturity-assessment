@@ -25,8 +25,21 @@ import { exportAssessmentToExcel } from '../services/excelExportService';
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #f9fafb;
+  background: radial-gradient(ellipse at top, #e0e7ff 0%, #f3f4f6 50%, #ffffff 100%);
+  position: relative;
   padding-top: 68px; /* Height of fixed GlobalNav */
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    height: 400px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
 `;
 
 const Breadcrumb = styled.div`
@@ -38,6 +51,8 @@ const Breadcrumb = styled.div`
   gap: 8px;
   font-size: 0.875rem;
   color: #6b7280;
+  position: relative;
+  z-index: 1;
 
   a, button {
     color: #3b82f6;
@@ -64,6 +79,8 @@ const ContentContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 32px 24px;
+  position: relative;
+  z-index: 1;
 
   @media (max-width: 768px) {
     padding: 20px 16px;
