@@ -208,14 +208,13 @@ const GlobalNav = () => {
           <LogoText>Databricks Technical Maturity Assessment</LogoText>
         </Logo>
         <TopNav>
-          <NavLink onClick={() => scrollToSection('why-assessment')}>Why This Matters</NavLink>
+          <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
           <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
-          <NavLink onClick={() => scrollToSection('pillars')}>Explore Framework</NavLink>
+          <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
           <NavLink onClick={() => navigate('/assessments')}>My Assessments</NavLink>
           <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
           <CTAButton onClick={() => navigate('/start')}>
-            Start Assessment
-            <FiArrowRight size={16} />
+            Start Assessment →
           </CTAButton>
         </TopNav>
       </NavContainer>
