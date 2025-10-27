@@ -70,9 +70,18 @@ const TopNav = styled.div`
   align-items: center;
   gap: 32px;
   padding-right: 24px;
+  flex-wrap: wrap;
+
+  @media (max-width: 1400px) {
+    gap: 20px;
+  }
+
+  @media (max-width: 1200px) {
+    gap: 16px;
+  }
 
   @media (max-width: 768px) {
-    gap: 16px;
+    gap: 12px;
     padding-right: 16px;
   }
 
@@ -91,6 +100,11 @@ const NavLink = styled.button`
   transition: all 0.2s;
   padding: 8px 0;
   position: relative;
+  white-space: nowrap;
+
+  @media (max-width: 1200px) {
+    font-size: 0.875rem;
+  }
 
   &:hover {
     color: #3b82f6;
@@ -127,6 +141,12 @@ const CTAButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  white-space: nowrap;
+
+  @media (max-width: 1200px) {
+    font-size: 0.875rem;
+    padding: 8px 20px;
+  }
 
   &:hover {
     transform: translateY(-2px);
