@@ -33,11 +33,16 @@ const Logo = styled.div`
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
   padding-left: 24px;
 
   &:hover {
     opacity: 0.8;
+    transform: translateX(-2px);
+  }
+
+  &:active {
+    transform: translateX(-3px);
   }
 
   @media (max-width: 768px) {
@@ -185,10 +190,18 @@ const GlobalNav = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    console.log('[GlobalNav] Logo clicked, navigating to home');
+    console.log('[GlobalNav] Current path:', location.pathname);
+    navigate('/');
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <Nav>
       <NavContainer>
-        <Logo onClick={() => navigate('/')}>
+        <Logo onClick={handleLogoClick}>
           <LogoIcon>
             <FiBarChart2 size={20} />
           </LogoIcon>
