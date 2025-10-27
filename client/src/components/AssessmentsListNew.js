@@ -606,6 +606,9 @@ const AssessmentsListNew = () => {
   const [pillarFilter, setPillarFilter] = useState('all');
   const [ownerFilter, setOwnerFilter] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [completionRangeFilter, setCompletionRangeFilter] = useState('all');
 
   useEffect(() => {
     fetchAssessments();
@@ -704,7 +707,8 @@ const AssessmentsListNew = () => {
     const matchesSearch = 
       searchTerm === '' ||
       (assessment.assessmentName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (assessment.organizationName || '').toLowerCase().includes(searchTerm.toLowerCase());
+      (assessment.organizationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (assessment.contactEmail || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = 
       statusFilter === 'all' ||
@@ -712,7 +716,27 @@ const AssessmentsListNew = () => {
       (statusFilter === 'in_progress' && assessment.completedCategories && assessment.completedCategories.length > 0 && assessment.status !== 'completed') ||
       (statusFilter === 'not_started' && (!assessment.completedCategories || assessment.completedCategories.length === 0));
 
-    return matchesSearch && matchesStatus;
+    const matchesPillar = 
+      pillarFilter === 'all' ||
+      (assessment.completedCategories && assessment.completedCategories.includes(pillarFilter));
+
+    const matchesOwner = 
+      ownerFilter === 'all' ||
+      (assessment.contactEmail || '').toLowerCase().includes(ownerFilter.toLowerCase());
+
+    const matchesIndustry = 
+      industryFilter === 'all' ||
+      (assessment.industry || '').toLowerCase() === industryFilter.toLowerCase();
+
+    const progress = (assessment.completedCategories?.length || 0) / 6 * 100;
+    const matchesCompletionRange = 
+      completionRangeFilter === 'all' ||
+      (completionRangeFilter === '0-25' && progress <= 25) ||
+      (completionRangeFilter === '26-50' && progress > 25 && progress <= 50) ||
+      (completionRangeFilter === '51-75' && progress > 50 && progress <= 75) ||
+      (completionRangeFilter === '76-100' && progress > 75);
+
+    return matchesSearch && matchesStatus && matchesPillar && matchesOwner && matchesIndustry && matchesCompletionRange;
   });
 
   const sortedAssessments = [...filteredAssessments].sort((a, b) => {
@@ -761,7 +785,14 @@ const AssessmentsListNew = () => {
     return date.toLocaleDateString();
   };
 
-  const pillars = ['Platform', 'Data', 'Analytics', 'ML', 'GenAI', 'Operations'];
+  const pillars = [
+    { id: 'platform_governance', name: 'Platform & Governance' },
+    { id: 'data_engineering', name: 'Data Engineering' },
+    { id: 'analytics_bi', name: 'Analytics & BI' },
+    { id: 'ml_mlops', name: 'ML & MLOps' },
+    { id: 'genai_agentic', name: 'GenAI & Agentic' },
+    { id: 'operational_excellence', name: 'Operational Excellence' }
+  ];
 
   if (loading) {
     return (
@@ -844,25 +875,91 @@ const AssessmentsListNew = () => {
           </div>
           <div className="bottom-row">
             <Dropdown value={pillarFilter} onChange={(e) => setPillarFilter(e.target.value)}>
-              <option value="all">Filter by pillar</option>
+              <option value="all">All pillars</option>
               {pillars.map(pillar => (
-                <option key={pillar} value={pillar.toLowerCase()}>{pillar}</option>
+                <option key={pillar.id} value={pillar.id}>{pillar.name}</option>
               ))}
             </Dropdown>
             <Dropdown value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
-              <option value="all">Owner</option>
+              <option value="all">All owners</option>
+              {[...new Set(assessments.map(a => a.contactEmail).filter(Boolean))].map(email => (
+                <option key={email} value={email}>{email.split('@')[0]}</option>
+              ))}
             </Dropdown>
             <Dropdown value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="recent">Sort by: Recent</option>
               <option value="name">Sort by: Name</option>
               <option value="progress">Sort by: Progress</option>
             </Dropdown>
-            <SecondaryButton style={{ padding: '8px 16px' }}>
+            <SecondaryButton 
+              style={{ padding: '8px 16px' }}
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
+            >
               <FiFilter size={16} />
-              More filters
+              More filters {showMoreFilters ? '▲' : '▼'}
             </SecondaryButton>
           </div>
         </FilterBar>
+
+        {/* More Filters Panel */}
+        {showMoreFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '20px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+            }}
+          >
+            <div style={{ marginBottom: '12px', fontWeight: 600, color: '#111827' }}>
+              Additional Filters
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+              <div>
+                <label style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                  Industry
+                </label>
+                <Dropdown value={industryFilter} onChange={(e) => setIndustryFilter(e.target.value)}>
+                  <option value="all">All industries</option>
+                  {[...new Set(assessments.map(a => a.industry).filter(Boolean))].map(industry => (
+                    <option key={industry} value={industry}>{industry}</option>
+                  ))}
+                </Dropdown>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                  Completion Range
+                </label>
+                <Dropdown value={completionRangeFilter} onChange={(e) => setCompletionRangeFilter(e.target.value)}>
+                  <option value="all">All ranges</option>
+                  <option value="0-25">0-25%</option>
+                  <option value="26-50">26-50%</option>
+                  <option value="51-75">51-75%</option>
+                  <option value="76-100">76-100%</option>
+                </Dropdown>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <SecondaryButton
+                  onClick={() => {
+                    setIndustryFilter('all');
+                    setCompletionRangeFilter('all');
+                    setPillarFilter('all');
+                    setOwnerFilter('all');
+                    setStatusFilter('all');
+                    setSearchTerm('');
+                  }}
+                  style={{ width: '100%' }}
+                >
+                  Clear All Filters
+                </SecondaryButton>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Results Count */}
         <BulkActionBar>
