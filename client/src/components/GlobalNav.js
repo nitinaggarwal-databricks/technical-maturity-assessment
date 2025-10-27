@@ -11,20 +11,19 @@ const Nav = styled.nav`
   z-index: 1000;
   background: white;
   border-bottom: 1px solid #e5e7eb;
-  padding: 16px 24px;
+  padding: 16px 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   @media (max-width: 768px) {
-    padding: 12px 16px;
+    padding: 12px 0;
   }
 `;
 
 const NavContainer = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 `;
 
 const Logo = styled.div`
@@ -33,9 +32,14 @@ const Logo = styled.div`
   gap: 12px;
   cursor: pointer;
   transition: opacity 0.2s;
+  padding-left: 24px;
 
   &:hover {
     opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 16px;
   }
 `;
 
@@ -65,9 +69,11 @@ const TopNav = styled.div`
   display: flex;
   align-items: center;
   gap: 32px;
+  padding-right: 24px;
 
   @media (max-width: 768px) {
     gap: 16px;
+    padding-right: 16px;
   }
 
   @media (max-width: 640px) {
@@ -112,7 +118,7 @@ const GlobalNav = () => {
           <LogoIcon>
             <FiBarChart2 size={20} />
           </LogoIcon>
-          <LogoText>Databricks</LogoText>
+          <LogoText>Databricks Technical Maturity Assessment</LogoText>
         </Logo>
         <TopNav>
           <button onClick={() => navigate('/insights-dashboard')}>Dashboard</button>
