@@ -187,10 +187,12 @@ function App() {
 
   if (loading) {
     return (
-      <div className="App">
-        <GlobalNav />
-        <LoadingSpinner message="Loading assessment framework..." />
-      </div>
+      <Router>
+        <div className="App">
+          <GlobalNav />
+          <LoadingSpinner message="Loading assessment framework..." />
+        </div>
+      </Router>
     );
   }
 
