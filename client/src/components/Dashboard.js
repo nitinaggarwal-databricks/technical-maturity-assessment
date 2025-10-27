@@ -357,6 +357,7 @@ const Dashboard = () => {
   const [regionFilter, setRegionFilter] = useState('all');
   const [customerFilter, setCustomerFilter] = useState('');
   const [activeTab, setActiveTab] = useState('fastest');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -584,11 +585,83 @@ const Dashboard = () => {
           </FilterSelect>
         </FilterGroup>
 
-        <ActionButton style={{ marginLeft: 'auto' }}>
+        <ActionButton 
+          style={{ marginLeft: 'auto' }}
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+        >
           <FiFilter size={16} />
-          Advanced filters
+          {showAdvancedFilters ? 'Hide filters' : 'Advanced filters'}
         </ActionButton>
       </Filters>
+
+      {/* Advanced Filters Panel */}
+      {showAdvancedFilters && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}
+        >
+          <div style={{ marginBottom: '16px', fontWeight: 600, color: '#111827', fontSize: '1rem' }}>
+            Additional Filters
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div>
+              <FilterLabel style={{ display: 'block', marginBottom: '8px' }}>
+                Maturity Level Range
+              </FilterLabel>
+              <FilterSelect style={{ width: '100%' }}>
+                <option value="all">All levels</option>
+                <option value="1-2">Level 1-2 (Explore-Experiment)</option>
+                <option value="3">Level 3 (Formalize)</option>
+                <option value="4-5">Level 4-5 (Optimize-Transform)</option>
+              </FilterSelect>
+            </div>
+            <div>
+              <FilterLabel style={{ display: 'block', marginBottom: '8px' }}>
+                Completion Status
+              </FilterLabel>
+              <FilterSelect style={{ width: '100%' }}>
+                <option value="all">All statuses</option>
+                <option value="completed">Completed</option>
+                <option value="in-progress">In Progress</option>
+                <option value="stalled">Stalled</option>
+              </FilterSelect>
+            </div>
+            <div>
+              <FilterLabel style={{ display: 'block', marginBottom: '8px' }}>
+                Improvement Potential
+              </FilterLabel>
+              <FilterSelect style={{ width: '100%' }}>
+                <option value="all">All ranges</option>
+                <option value="high">High (&gt; 2.0)</option>
+                <option value="medium">Medium (1.0-2.0)</option>
+                <option value="low">Low (&lt; 1.0)</option>
+              </FilterSelect>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <ActionButton
+                onClick={() => {
+                  setTimeRange('6weeks');
+                  setRegionFilter('all');
+                  setCustomerFilter('');
+                  setShowAdvancedFilters(false);
+                  toast.success('Filters cleared');
+                }}
+                style={{ width: '100%' }}
+              >
+                Clear All Filters
+              </ActionButton>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* KPI Cards */}
       <KPIGrid>
