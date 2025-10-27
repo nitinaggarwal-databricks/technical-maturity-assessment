@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { FiBarChart2, FiArrowRight } from 'react-icons/fi';
 
@@ -168,15 +168,17 @@ const CTAButton = styled.button`
 
 const GlobalNav = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToSection = (sectionId) => {
-    // If not on home page, navigate to home first
-    if (window.location.pathname !== '/') {
+    // If not on home page, navigate to home first with scroll state
+    if (location.pathname !== '/') {
       navigate('/', { state: { scrollTo: sectionId } });
     } else {
+      // Already on home page, just scroll
       const element = document.getElementById(sectionId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   };
