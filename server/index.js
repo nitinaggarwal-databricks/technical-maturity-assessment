@@ -20,11 +20,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files from React build in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-}
-
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
 console.log('🔍 DEBUG: Checking DATA_DIR environment variable...');
@@ -1853,6 +1848,16 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
 
 // Serve React app for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
+  // Serve static files (JS, CSS, images, manifest.json, etc.) - must be BEFORE catch-all
+  app.use(express.static(path.join(__dirname, '../client/build'), {
+    setHeaders: (res, filePath) => {
+      // Set proper content types
+      if (filePath.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json');
+      }
+    }
+  }));
+  
   // Catch-all handler for non-API routes - must be LAST
   app.get('*', async (req, res) => {
     const indexPath = path.join(__dirname, '../client/build', 'index.html');
