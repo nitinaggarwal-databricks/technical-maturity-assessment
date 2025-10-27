@@ -6,7 +6,16 @@
  */
 
 const axios = require('axios');
-const chalk = require('chalk');
+
+// Chalk v5+ is ESM only, so we'll use a simple color fallback
+const chalk = {
+  green: (text) => `\x1b[32m${text}\x1b[0m`,
+  red: (text) => `\x1b[31m${text}\x1b[0m`,
+  blue: (text) => `\x1b[34m${text}\x1b[0m`,
+  yellow: { bold: (text) => `\x1b[33m\x1b[1m${text}\x1b[0m` },
+  cyan: { bold: (text) => `\x1b[36m\x1b[1m${text}\x1b[0m` },
+  gray: (text) => `\x1b[90m${text}\x1b[0m`
+};
 
 const API_BASE = process.env.API_URL || 'http://localhost:5000';
 const TIMEOUT = 10000;
@@ -486,7 +495,7 @@ async function runAllTests() {
   console.log(`Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%\n`);
   
   if (results.failed > 0) {
-    console.log(chalk.red.bold('FAILED TESTS:'));
+    console.log(chalk.red('FAILED TESTS:'));
     results.tests.filter(t => t.status === 'FAIL').forEach(t => {
       console.log(chalk.red(`  ✗ ${t.name}`));
       console.log(chalk.gray(`    ${t.error}`));
@@ -499,7 +508,7 @@ async function runAllTests() {
 
 // Run tests
 runAllTests().catch(error => {
-  console.error(chalk.red.bold('Test suite crashed:'), error);
+  console.error(chalk.red('Test suite crashed:'), error);
   process.exit(1);
 });
 
