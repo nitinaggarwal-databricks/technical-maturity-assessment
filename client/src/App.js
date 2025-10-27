@@ -4,7 +4,6 @@ import toast, { Toaster } from 'react-hot-toast';
 
 // Components
 import GlobalNav from './components/GlobalNav';
-import Header from './components/Header';
 import HomePage from './components/HomePageNew';
 import LandingPage from './components/LandingPage';
 import AssessmentStart from './components/AssessmentStart';
@@ -185,7 +184,7 @@ function App() {
   if (loading) {
     return (
       <div className="App">
-        <Header />
+        <GlobalNav />
         <LoadingSpinner message="Loading assessment framework..." />
       </div>
     );
@@ -233,7 +232,6 @@ function App() {
             element={
               <AssessmentStart 
                 onStart={startAssessment}
-                currentAssessment={currentAssessment}
               />
             } 
           />
