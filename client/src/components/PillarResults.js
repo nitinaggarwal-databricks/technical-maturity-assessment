@@ -11,7 +11,11 @@ import {
   FiAlertCircle,
   FiZap,
   FiArrowRight,
-  FiRefreshCw
+  FiRefreshCw,
+  FiEdit3,
+  FiSave,
+  FiTrash2,
+  FiX
 } from 'react-icons/fi';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -244,16 +248,80 @@ const RecommendationCard = styled(motion.div)`
   padding: 24px;
   margin-bottom: 16px;
   border-left: 4px solid ${props => props.priority === 'high' ? '#ef4444' : props.priority === 'medium' ? '#f59e0b' : '#10b981'};
+  position: relative;
+`;
+
+const RecommendationHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
 `;
 
 const RecommendationTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 12px;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+`;
+
+const EditActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: ${props => props.$variant === 'danger' ? '#fee2e2' : props.$variant === 'success' ? '#d1fae5' : '#eff6ff'};
+  color: ${props => props.$variant === 'danger' ? '#dc2626' : props.$variant === 'success' ? '#059669' : '#3b82f6'};
+  border: 1px solid ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#bfdbfe'};
+  border-radius: 6px;
+  font-size: 0.813rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#dbeafe'};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const EditableTextarea = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
 `;
 
 const RecommendationDescription = styled.p`
@@ -332,6 +400,14 @@ const PillarResults = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Edit state management
+  const [editingCard, setEditingCard] = useState(null); // Format: 'pain-0', 'gap-1', etc.
+  const [editedContent, setEditedContent] = useState({});
+  const [customizations, setCustomizations] = useState({
+    painPoints: {},
+    gapRecommendations: {}
+  });
 
   useEffect(() => {
     const loadPillarResults = async () => {
@@ -365,6 +441,66 @@ const PillarResults = () => {
       setLoading(false);
     }
   }, [assessmentId, pillarId, routerLocation.key]);
+
+  // Edit handlers for recommendation cards
+  const handleEditCard = (cardType, index, rec) => {
+    const cardId = `${cardType}-${index}`;
+    setEditingCard(cardId);
+    
+    // Prepare content for editing
+    const actions = rec.actions || [];
+    setEditedContent({
+      title: rec.title || rec.solution || '',
+      whyNow: rec.whyNow || '',
+      actions: actions.map(a => typeof a === 'string' ? a : a.action || a.title || a.description || '').join('\n')
+    });
+  };
+
+  const handleSaveCard = (cardType, index) => {
+    const cardId = `${cardType}-${index}`;
+    const newCustomizations = { ...customizations };
+    
+    if (!newCustomizations[cardType]) {
+      newCustomizations[cardType] = {};
+    }
+    
+    newCustomizations[cardType][index] = {
+      title: editedContent.title,
+      whyNow: editedContent.whyNow,
+      actions: editedContent.actions.split('\n').filter(line => line.trim())
+    };
+    
+    setCustomizations(newCustomizations);
+    setEditingCard(null);
+    setEditedContent({});
+    toast.success('Card content saved!');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCard(null);
+    setEditedContent({});
+  };
+
+  const handleRemoveCustomization = (cardType, index) => {
+    const newCustomizations = { ...customizations };
+    if (newCustomizations[cardType] && newCustomizations[cardType][index]) {
+      delete newCustomizations[cardType][index];
+      setCustomizations(newCustomizations);
+      toast.success('Customization removed, showing original content');
+    }
+  };
+
+  // Get card data (use customization if exists, otherwise use original)
+  const getCardData = (cardType, index, originalRec) => {
+    if (customizations[cardType] && customizations[cardType][index]) {
+      return {
+        ...originalRec,
+        ...customizations[cardType][index],
+        isCustomized: true
+      };
+    }
+    return { ...originalRec, isCustomized: false };
+  };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -648,19 +784,95 @@ const PillarResults = () => {
                 <FiAlertCircle size={20} style={{ color: '#ef4444' }} />
                 Critical Pain Points to Address
               </h3>
-              {results.painPointRecommendations.map((rec, idx) => (
-                <RecommendationCard
-                  priority={rec.priority}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.8 + idx * 0.1 }}
-                  key={idx}
-                >
-                  <RecommendationTitle>
-                    {getPriorityIcon(rec.priority)}
-                    {rec.title || rec.solution}
-                  </RecommendationTitle>
-                  <RecommendationDescription>
+              {results.painPointRecommendations.map((rec, idx) => {
+                const cardId = `painPoints-${idx}`;
+                const isEditing = editingCard === cardId;
+                const cardData = getCardData('painPoints', idx, rec);
+                
+                return (
+                  <RecommendationCard
+                    priority={rec.priority}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.8 + idx * 0.1 }}
+                    key={idx}
+                  >
+                    <RecommendationHeader>
+                      <RecommendationTitle>
+                        {getPriorityIcon(rec.priority)}
+                        {isEditing ? 'Editing Recommendation' : (cardData.title || rec.solution)}
+                      </RecommendationTitle>
+                      <CardActions>
+                        {isEditing ? (
+                          <>
+                            <EditActionButton 
+                              $variant="success"
+                              onClick={() => handleSaveCard('painPoints', idx)}
+                            >
+                              <FiSave size={12} />
+                              Save
+                            </EditActionButton>
+                            <EditActionButton 
+                              onClick={handleCancelEdit}
+                            >
+                              <FiX size={12} />
+                              Cancel
+                            </EditActionButton>
+                          </>
+                        ) : (
+                          <>
+                            <EditActionButton 
+                              onClick={() => handleEditCard('painPoints', idx, cardData)}
+                            >
+                              <FiEdit3 size={12} />
+                              Edit
+                            </EditActionButton>
+                            {cardData.isCustomized && (
+                              <EditActionButton 
+                                $variant="danger"
+                                onClick={() => handleRemoveCustomization('painPoints', idx)}
+                              >
+                                <FiTrash2 size={12} />
+                              </EditActionButton>
+                            )}
+                          </>
+                        )}
+                      </CardActions>
+                    </RecommendationHeader>
+                    
+                    {isEditing ? (
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Title:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.title || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, title: e.target.value })}
+                          placeholder="Enter recommendation title..."
+                          style={{ minHeight: '60px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Why This Matters:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.whyNow || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, whyNow: e.target.value })}
+                          placeholder="Explain why this recommendation is important..."
+                          style={{ minHeight: '80px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Implementation Steps (one per line):
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.actions || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, actions: e.target.value })}
+                          placeholder="Enter action items, one per line..."
+                        />
+                      </div>
+                    ) : (
+                      <RecommendationDescription>
                     {/* Why Now - Pain Points Addressed */}
                     {(rec.whyNow || (rec.painPointNames && rec.painPointNames.length > 0)) && (
                       <div style={{ marginBottom: '12px', padding: '10px', background: '#fef3c7', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
@@ -716,7 +928,9 @@ const PillarResults = () => {
                     {/* Legacy Impact field */}
                     {rec.impact && !rec.whyNow && <div style={{ marginTop: '12px' }}><strong>Impact:</strong> {rec.impact}</div>}
                   </RecommendationDescription>
-                  {rec.latestSolutions && rec.latestSolutions.length > 0 && (
+                    )}
+                  
+                  {!isEditing && rec.latestSolutions && rec.latestSolutions.length > 0 && (
                     <div style={{ marginTop: '12px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
                       <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <FiZap size={16} /> Latest Databricks Solutions:
@@ -730,11 +944,14 @@ const PillarResults = () => {
                       ))}
                     </div>
                   )}
-                  <div style={{ marginTop: '12px', fontSize: '0.85rem', color: '#6b7280' }}>
-                    <strong>Priority:</strong> <span style={{ color: getPriorityColor(rec.priority), fontWeight: 600 }}>{rec.priority.toUpperCase()}</span>
-                  </div>
+                  {!isEditing && (
+                    <div style={{ marginTop: '12px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      <strong>Priority:</strong> <span style={{ color: getPriorityColor(rec.priority), fontWeight: 600 }}>{rec.priority.toUpperCase()}</span>
+                    </div>
+                  )}
                 </RecommendationCard>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -745,28 +962,96 @@ const PillarResults = () => {
                 <FiTarget size={20} style={{ color: '#3b82f6' }} />
                 Bridge the Gap: Current → Future
               </h3>
-              {results.gapBasedActions.map((action, idx) => (
-                <RecommendationCard
-                  priority="medium"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 1.0 + idx * 0.1 }}
-                  key={idx}
-                >
-                  <RecommendationTitle>
-                    <FiArrowRight />
-                    {action.dimension}
-                  </RecommendationTitle>
-                  <RecommendationDescription>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span><strong>Current:</strong> Level {action.current}/5</span>
-                      <span><strong>Target:</strong> Level {action.future}/5</span>
-                      <span><strong>Gap:</strong> {action.gap} levels</span>
-                    </div>
-                    <div><strong>Recommended Action:</strong> {action.recommendation}</div>
-                  </RecommendationDescription>
-                </RecommendationCard>
-              ))}
+              {results.gapBasedActions.map((action, idx) => {
+                const cardId = `gapRecommendations-${idx}`;
+                const isEditing = editingCard === cardId;
+                const cardData = getCardData('gapRecommendations', idx, { title: action.dimension, whyNow: '', actions: [action.recommendation] });
+                
+                return (
+                  <RecommendationCard
+                    priority="medium"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 1.0 + idx * 0.1 }}
+                    key={idx}
+                  >
+                    <RecommendationHeader>
+                      <RecommendationTitle>
+                        <FiArrowRight />
+                        {isEditing ? 'Editing Gap Action' : (cardData.title || action.dimension)}
+                      </RecommendationTitle>
+                      <CardActions>
+                        {isEditing ? (
+                          <>
+                            <EditActionButton 
+                              $variant="success"
+                              onClick={() => handleSaveCard('gapRecommendations', idx)}
+                            >
+                              <FiSave size={12} />
+                              Save
+                            </EditActionButton>
+                            <EditActionButton 
+                              onClick={handleCancelEdit}
+                            >
+                              <FiX size={12} />
+                              Cancel
+                            </EditActionButton>
+                          </>
+                        ) : (
+                          <>
+                            <EditActionButton 
+                              onClick={() => handleEditCard('gapRecommendations', idx, cardData)}
+                            >
+                              <FiEdit3 size={12} />
+                              Edit
+                            </EditActionButton>
+                            {cardData.isCustomized && (
+                              <EditActionButton 
+                                $variant="danger"
+                                onClick={() => handleRemoveCustomization('gapRecommendations', idx)}
+                              >
+                                <FiTrash2 size={12} />
+                              </EditActionButton>
+                            )}
+                          </>
+                        )}
+                      </CardActions>
+                    </RecommendationHeader>
+                    
+                    {isEditing ? (
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Dimension:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.title || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, title: e.target.value })}
+                          placeholder="Enter dimension name..."
+                          style={{ minHeight: '60px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Recommended Action:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.actions || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, actions: e.target.value })}
+                          placeholder="Enter recommended actions..."
+                        />
+                      </div>
+                    ) : (
+                      <RecommendationDescription>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span><strong>Current:</strong> Level {action.current}/5</span>
+                          <span><strong>Target:</strong> Level {action.future}/5</span>
+                          <span><strong>Gap:</strong> {action.gap} levels</span>
+                        </div>
+                        <div><strong>Recommended Action:</strong> {cardData.actions?.[0] || action.recommendation}</div>
+                      </RecommendationDescription>
+                    )}
+                  </RecommendationCard>
+                );
+              })}
             </div>
           )}
 
