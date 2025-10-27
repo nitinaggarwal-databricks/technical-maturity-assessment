@@ -236,3 +236,4 @@ Potential additions:
 - Backend: `uuid` package
 - Frontend: `react-hot-toast`, `framer-motion`
 
+

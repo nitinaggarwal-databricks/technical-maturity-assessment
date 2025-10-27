@@ -337,6 +337,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [timeRange, setTimeRange] = useState('6weeks');
   const [regionFilter, setRegionFilter] = useState('all');
+  const [customerFilter, setCustomerFilter] = useState('');
   const [activeTab, setActiveTab] = useState('fastest');
 
   useEffect(() => {
@@ -346,10 +347,21 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const data = await assessmentService.getDashboardStats();
+      console.log('[Dashboard] Fetching dashboard data...');
+      const response = await assessmentService.getDashboardStats();
+      console.log('[Dashboard] Raw response:', response);
+      console.log('[Dashboard] Response type:', typeof response);
+      console.log('[Dashboard] Response keys:', Object.keys(response || {}));
+      
+      // The response might be wrapped in a data property
+      const data = response?.data || response;
+      console.log('[Dashboard] Extracted data:', data);
+      console.log('[Dashboard] Total assessments:', data?.totalAssessments);
+      
       setDashboardData(data);
+      console.log('[Dashboard] State updated with data');
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('[Dashboard] Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -477,8 +489,16 @@ const Dashboard = () => {
 
         <FilterGroup>
           <FilterLabel>Filter by customer or AE...</FilterLabel>
-          <FilterSelect>
+          <FilterSelect 
+            value={customerFilter} 
+            onChange={(e) => setCustomerFilter(e.target.value)}
+          >
             <option value="">All</option>
+            {dashboardData?.customerPortfolio?.map((customer, idx) => (
+              <option key={idx} value={customer.name}>
+                {customer.name}
+              </option>
+            ))}
           </FilterSelect>
         </FilterGroup>
 
@@ -674,7 +694,9 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {dashboardData.customerPortfolio?.map((customer, index) => (
+            {dashboardData.customerPortfolio
+              ?.filter(customer => !customerFilter || customer.name === customerFilter)
+              ?.map((customer, index) => (
               <tr key={index} style={{ cursor: 'pointer' }} onClick={() => navigate(`/results/${customer.assessmentId}`)}>
                 <Td style={{ fontWeight: 600 }}>{customer.name}</Td>
                 <Td>{customer.maturity}</Td>

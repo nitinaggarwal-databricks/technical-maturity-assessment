@@ -472,3 +472,4 @@ fetch('/api/assessment/ASSESSMENT_ID/pillar/platform_governance/results')
 
 **Remember:** It's better to spend 15 minutes testing than to deploy a broken fix that takes hours to debug!
 
+
