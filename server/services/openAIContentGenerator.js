@@ -419,6 +419,8 @@ Return JSON with this structure:
     const actions = [];
     const responses = assessment.responses || {};
     
+    console.log(`[OpenAI] Generating pillar actions for ${Object.keys(pillarScores).length} pillars`);
+    
     Object.keys(pillarScores).forEach(pillarId => {
       const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
       if (!pillar) return;
@@ -461,6 +463,7 @@ Return JSON with this structure:
       });
       
       // Generate action for ALL completed pillars (even if gap is 0)
+      console.log(`[OpenAI] Creating action for pillar ${pillarId} (gap: ${gap})`);
       actions.push({
         pillarId: pillarId,
         pillarName: pillar.name,
@@ -484,6 +487,8 @@ Return JSON with this structure:
         recommendations: []
       });
     });
+    
+    console.log(`[OpenAI] Generated ${actions.length} pillar actions total`);
     
     // Sort by gap (largest first) then by priority
     return actions.sort((a, b) => {

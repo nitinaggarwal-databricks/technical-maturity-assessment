@@ -4,11 +4,11 @@
  * Based on actual pain points, comments, and current/future state gap
  */
 
-const DatabricksFeatureMapper = require('./databricksFeatureMapper');
+const databricksFeatureMapper = require('./databricksFeatureMapper');
 
 class IntelligentRecommendationEngine {
   constructor() {
-    this.featureMapper = new DatabricksFeatureMapper();
+    this.featureMapper = databricksFeatureMapper; // It's already an instance
     // Map pain points to specific, actionable solutions
     this.solutionMap = {
       // Platform Governance
@@ -176,30 +176,20 @@ class IntelligentRecommendationEngine {
       databricksFeatures: []
     };
     
-    // Extract relevant Databricks features from solutions and convert to full feature objects
-    const featureNames = new Set();
-    painPoints.forEach(pp => {
-      const solution = this.solutionMap[pp.value];
-      if (solution && solution.databricks_features) {
-        solution.databricks_features.forEach(feature => {
-          featureNames.add(feature);
-        });
-      }
-    });
-    
-    // Convert feature names to full feature objects using the feature mapper
+    // Get Databricks features from DatabricksFeatureMapper (always reliable)
     const currentScore = Math.round(stateGaps[0]?.current || 3);
     const futureScore = Math.round(stateGaps[0]?.future || 4);
-    const allFeatures = this.featureMapper.getRelevantFeatures(pillarId, currentScore, futureScore);
+    const pillarRecs = this.featureMapper.getRecommendationsForPillar(pillarId, currentScore, {});
     
-    featureNames.forEach(featureName => {
-      const featureObj = allFeatures.find(f => f.name === featureName || f.name.includes(featureName));
-      if (featureObj && !recommendations.databricksFeatures.find(f => f.name === featureObj.name)) {
-        recommendations.databricksFeatures.push(featureObj);
-      }
-    });
+    // Extract features from the mapper's response structure
+    const currentFeatures = pillarRecs?.currentMaturity?.features || [];
+    const nextLevelFeatures = pillarRecs?.nextLevel?.features || [];
+    const allMapperFeatures = [...currentFeatures, ...nextLevelFeatures];
     
-    console.log(`[IntelligentEngine] Converted ${featureNames.size} feature names to ${recommendations.databricksFeatures.length} feature objects`);
+    // Use feature mapper's features as the primary source
+    recommendations.databricksFeatures = allMapperFeatures.slice(0, 4); // Top 4 most relevant
+    
+    console.log(`[IntelligentEngine] Using ${recommendations.databricksFeatures.length} Databricks features from feature mapper for pillar ${pillarId}`);
     
     return recommendations;
   }

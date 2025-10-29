@@ -11085,7 +11085,21 @@
     ],
     "currentCategory": "platform_governance",
     "editHistory": [],
-    "completedAt": "2025-10-29T06:30:49.279Z",
-    "lastModified": "2025-10-29T06:30:49.279Z"
+    "completedAt": "2025-10-29T06:30:54.534Z",
+    "lastModified": "2025-10-29T06:30:54.534Z"
+  },
+  "1ccc204b-d3a3-496a-a88f-e7090ccaa803": {
+    "id": "1ccc204b-d3a3-496a-a88f-e7090ccaa803",
+    "organizationName": "Demo Organization",
+    "contactEmail": "demo@example.com",
+    "industry": "Technology",
+    "assessmentName": "Sample Assessment - 10/29/2025, 12:15:54 PM [o0rquw]",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T16:15:54.281Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
   }
 }
