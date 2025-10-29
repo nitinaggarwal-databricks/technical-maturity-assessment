@@ -11,6 +11,7 @@ const LiveDataEnhancer = require('./services/liveDataEnhancer');
 const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const DatabricksFeatureMapper = require('./services/databricksFeatureMapper');
 const ContextAwareRecommendationEngine = require('./services/contextAwareRecommendationEngine');
+const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine');
 const StorageAdapter = require('./utils/storageAdapter');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 
@@ -1079,11 +1080,11 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       };
     });
 
-    // 🔥 CONTEXT-AWARE RECOMMENDATIONS: Enhance prioritizedActions with pain-point and comment-based insights
-    console.log('🧠 Enhancing recommendations with context-aware analysis...');
-    const contextEngine = new ContextAwareRecommendationEngine();
+    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable recommendations
+    console.log('🧠 Generating intelligent, customer-specific recommendations...');
+    const intelligentEngine = new IntelligentRecommendationEngine();
     
-    // Enhance each pillar's prioritizedActions with context-specific recommendations
+    // Enhance each pillar's prioritizedActions with intelligent, customer-specific recommendations
     if (recommendations.prioritizedActions && Array.isArray(recommendations.prioritizedActions)) {
       recommendations.prioritizedActions = recommendations.prioritizedActions.map(action => {
         const pillarId = action.pillarId || action.area || action.pillar;
@@ -1094,38 +1095,33 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         // Get the pillar framework data to pass actual question IDs
         const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
         
-        // Generate context-aware recommendations
-        const contextRecs = contextEngine.generateContextAwareRecommendations(
+        // Generate intelligent, customer-specific recommendations
+        const intelligentRecs = intelligentEngine.generateRecommendations(
           assessment,
           pillarId,
-          pillarMaturity,
-          pillarFramework // Pass the actual pillar structure
+          pillarFramework
         );
         
-        console.log(`✅ Found ${contextRecs.recommendations.length} specific recommendations for ${pillarId}`);
-        console.log(`✅ Found ${contextRecs.nextSteps.length} next steps for ${pillarId}`);
+        console.log(`✅ Found ${intelligentRecs.recommendations.length} intelligent recommendations for ${pillarId}`);
+        console.log(`✅ Found ${intelligentRecs.nextSteps.length} customer-specific next steps for ${pillarId}`);
         
-        // DEBUG: Log what we're actually replacing
-        if (contextRecs.recommendations.length > 0) {
-          console.log(`📝 Context-aware recommendations for ${pillarId}:`, JSON.stringify(contextRecs.recommendations.slice(0, 2), null, 2));
-        }
-        if (action.recommendations) {
-          console.log(`🔄 Original recommendations for ${pillarId}:`, JSON.stringify(action.recommendations.slice(0, 2), null, 2));
+        // DEBUG: Log intelligent recommendations
+        if (intelligentRecs.recommendations.length > 0) {
+          console.log(`📝 Intelligent recommendations for ${pillarId}:`, intelligentRecs.recommendations.slice(0, 1));
         }
         
-        // Replace generic recommendations with context-specific ones
-        // NOTE: We keep databricksFeatures from original (has proper structure)
-        // We only enhance the recommendations (bullet list) and nextSteps
+        // Replace generic recommendations with intelligent, customer-specific ones
         return {
           ...action,
-          // Keep original databricksFeatures structure (has name, description, docs)
-          // databricksFeatures: action.databricksFeatures, // Keep as-is
-          // Replace text recommendations with context-specific ones
-          recommendations: contextRecs.recommendations.length > 0 ? contextRecs.recommendations : action.recommendations,
-          specificRecommendations: contextRecs.nextSteps.length > 0 ? contextRecs.nextSteps : action.specificRecommendations,
-          _contextAnalyzed: true,
-          _painPointsFound: contextRecs.features.length,
-          _insights: contextRecs.insights
+          // Override with intelligent recommendations based on actual pain points and comments
+          theGood: intelligentRecs.theGood.length > 0 ? intelligentRecs.theGood : action.theGood,
+          theBad: intelligentRecs.theBad.length > 0 ? intelligentRecs.theBad : action.theBad,
+          recommendations: intelligentRecs.recommendations.length > 0 ? intelligentRecs.recommendations : action.recommendations,
+          specificRecommendations: intelligentRecs.nextSteps.length > 0 ? intelligentRecs.nextSteps : action.specificRecommendations,
+          databricksFeatures: intelligentRecs.databricksFeatures.length > 0 ? intelligentRecs.databricksFeatures : action.databricksFeatures,
+          _intelligentEngine: true,
+          _painPointsAnalyzed: intelligentRecs.theBad.length,
+          _strengthsIdentified: intelligentRecs.theGood.length
         };
       });
     }
@@ -1905,36 +1901,43 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       pillarResults.databricksFeatures = [];
     }
     
-    // 🔥 CONTEXT-AWARE RECOMMENDATIONS: Enhance with pain-point and comment-based insights
-    console.log(`🧠 Enhancing pillar ${pillarId} with context-aware analysis...`);
+    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable solutions
+    console.log(`🧠 Generating intelligent recommendations for pillar ${pillarId}...`);
     try {
-      const contextEngine = new ContextAwareRecommendationEngine();
-      const contextRecs = contextEngine.generateContextAwareRecommendations(
+      const intelligentEngine = new IntelligentRecommendationEngine();
+      const intelligentRecs = intelligentEngine.generateRecommendations(
         assessment,
         pillarId,
-        Math.round(currentScore),
         pillar // Pass the pillar framework structure
       );
       
-      console.log(`✅ Found ${contextRecs.recommendations.length} context-specific recommendations`);
-      console.log(`✅ Found ${contextRecs.nextSteps.length} context-specific next steps`);
+      console.log(`✅ Generated ${intelligentRecs.recommendations.length} intelligent recommendations`);
+      console.log(`✅ Generated ${intelligentRecs.nextSteps.length} customer-specific next steps`);
+      console.log(`✅ Identified ${intelligentRecs.theGood.length} strengths and ${intelligentRecs.theBad.length} challenges`);
       
-      // Replace with context-specific recommendations if found
-      // NOTE: Keep databricksFeatures from original (has proper name/description/docs structure)
-      // Only replace text recommendations and next steps
-      if (contextRecs.recommendations.length > 0) {
-        pillarResults.recommendations = contextRecs.recommendations;
+      // Replace with intelligent, customer-specific recommendations
+      if (intelligentRecs.theGood.length > 0) {
+        pillarResults.theGood = intelligentRecs.theGood;
       }
-      if (contextRecs.nextSteps.length > 0) {
-        pillarResults.specificRecommendations = contextRecs.nextSteps;
-        pillarResults.quickWins = contextRecs.nextSteps;
+      if (intelligentRecs.theBad.length > 0) {
+        pillarResults.theBad = intelligentRecs.theBad;
+      }
+      if (intelligentRecs.recommendations.length > 0) {
+        pillarResults.recommendations = intelligentRecs.recommendations;
+      }
+      if (intelligentRecs.nextSteps.length > 0) {
+        pillarResults.specificRecommendations = intelligentRecs.nextSteps;
+        pillarResults.quickWins = intelligentRecs.nextSteps;
+      }
+      if (intelligentRecs.databricksFeatures.length > 0) {
+        pillarResults.databricksFeatures = intelligentRecs.databricksFeatures;
       }
       
-      pillarResults._contextAnalyzed = true;
-      pillarResults._painPointsFound = contextRecs.features.length;
-      pillarResults._insights = contextRecs.insights;
+      pillarResults._intelligentEngine = true;
+      pillarResults._painPointsAnalyzed = intelligentRecs.theBad.length;
+      pillarResults._strengthsIdentified = intelligentRecs.theGood.length;
     } catch (error) {
-      console.error('⚠️  Error in context-aware enhancement:', error);
+      console.error('⚠️  Error in intelligent recommendation generation:', error);
     }
     
     // Use pillar details from OpenAI
