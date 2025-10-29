@@ -191,11 +191,22 @@ const SkipMessage = styled.div`
 
 const PerspectivesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
   gap: 16px;
   margin-bottom: 0;
+  overflow-x: auto;
+  
+  @media (max-width: 1600px) {
+    grid-template-columns: repeat(3, minmax(250px, 1fr));
+    gap: 16px;
+  }
   
   @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 20px;
   }
@@ -204,10 +215,11 @@ const PerspectivesGrid = styled.div`
 const PerspectiveColumn = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 220px;
 `;
 
 const PerspectiveHeader = styled.h4`
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 16px;
@@ -215,6 +227,8 @@ const PerspectiveHeader = styled.h4`
   background: #f8f9fa;
   border-radius: 8px;
   text-align: center;
+  line-height: 1.3;
+  word-wrap: break-word;
 `;
 
 const OptionGroup = styled.div`
@@ -225,19 +239,24 @@ const OptionGroup = styled.div`
 `;
 
 const OptionButton = styled.button`
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 2px solid ${props => props.selected ? '#ff6b35' : '#e0e0e0'};
   border-radius: 8px;
   background: ${props => props.selected ? '#fff5f2' : 'white'};
   color: ${props => props.selected ? '#ff6b35' : '#333'};
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
-  height: 60px;
+  min-height: 60px;
+  height: auto;
   display: flex;
   align-items: center;
   width: 100%;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   
   &:hover {
     border-color: #ff6b35;
@@ -248,16 +267,21 @@ const OptionButton = styled.button`
 const MultiSelectOption = styled.label`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 12px 14px;
   border: 2px solid ${props => props.selected ? '#ff6b35' : '#e0e0e0'};
   border-radius: 8px;
   background: ${props => props.selected ? '#fff5f2' : 'white'};
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.85rem;
-  height: 60px;
+  font-size: 0.9rem;
+  min-height: 60px;
+  height: auto;
   width: 100%;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   
   &:hover {
     border-color: #ff6b35;
@@ -267,16 +291,19 @@ const MultiSelectOption = styled.label`
   input[type="checkbox"] {
     margin: 0;
     flex-shrink: 0;
+    width: 18px;
+    height: 18px;
   }
 `;
 
 const CommentSection = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 220px;
 `;
 
 const CommentHeader = styled.h4`
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 16px;
@@ -284,6 +311,8 @@ const CommentHeader = styled.h4`
   background: #f8f9fa;
   border-radius: 8px;
   text-align: center;
+  line-height: 1.3;
+  word-wrap: break-word;
 `;
 
 const CommentInputWrapper = styled.div`
@@ -296,10 +325,11 @@ const CommentInputWrapper = styled.div`
 const CommentTextarea = styled.textarea`
   width: 100%;
   height: 316px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
   font-family: inherit;
   resize: vertical;
   transition: border-color 0.3s ease;
