@@ -105,54 +105,54 @@ class DatabricksFeatureMapper {
         optimized: {
           features: [
             {
-              name: 'C5 Compliance Controls',
-              description: 'Enhanced compliance for regulated industries',
+              name: 'Enhanced Security & Compliance',
+              description: 'Enterprise-grade security controls for regulated industries',
               benefits: ['Regulatory compliance', 'Audit readiness', 'Security certifications'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/security/privacy/c5-compliance.html'
+              docs: 'https://docs.databricks.com/security/index.html'
             },
             {
-              name: 'Compatibility Mode',
-              description: 'Smooth migration path from legacy systems',
-              benefits: ['Reduced migration risk', 'Legacy support', 'Gradual modernization'],
-              releaseDate: 'Public Preview - October 2025',
-              docs: 'https://docs.databricks.com/migration/compatibility-mode.html'
+              name: 'Unity Catalog External Locations',
+              description: 'Secure external data access with centralized governance',
+              benefits: ['Centralized access control', 'Cloud storage security', 'Audit logging'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/data-governance/unity-catalog/manage-external-locations-and-credentials.html'
             },
             {
-              name: 'Path Credential Vending',
-              description: 'Fine-grained cloud storage access control',
-              benefits: ['Enhanced security', 'Least-privilege access', 'Cloud-native integration'],
-              releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/security/credential-vending.html'
+              name: 'Advanced Cluster Policies',
+              description: 'Fine-grained control over cluster configurations',
+              benefits: ['Cost control', 'Security enforcement', 'Standardization'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/administration-guide/clusters/policies.html'
             }
           ],
           recommendations: [
-            'Implement C5 Compliance Controls for regulated workloads',
-            'Use Compatibility Mode for legacy migrations',
-            'Enable Path Credential Vending for fine-grained security'
+            'Implement advanced security controls and compliance features',
+            'Configure Unity Catalog external locations for governed data access',
+            'Enforce cluster policies for cost and security governance'
           ]
         },
         innovative: {
           features: [
             {
-              name: 'Serverless Workspaces',
-              description: 'Fully serverless workspace experience',
-              benefits: ['Zero infrastructure management', 'Instant availability', 'Auto-scaling'],
-              releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/serverless/index.html'
+              name: 'Serverless SQL',
+              description: 'Fully managed SQL compute with instant availability',
+              benefits: ['Zero infrastructure management', 'Instant queries', 'Auto-scaling'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/sql/admin/create-sql-warehouse.html'
             },
             {
-              name: 'Databricks One',
-              description: 'Unified platform for all data workloads',
-              benefits: ['Single pane of glass', 'Integrated experience', 'Simplified architecture'],
-              releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/databricks-one/index.html'
+              name: 'Databricks Assistant',
+              description: 'AI-powered coding assistant for notebooks and SQL',
+              benefits: ['AI code generation', 'Query optimization', 'Error fixing'],
+              releaseDate: 'Public Preview',
+              docs: 'https://docs.databricks.com/notebooks/databricks-assistant.html'
             }
           ],
           recommendations: [
-            'Adopt Serverless Workspaces for ultimate simplicity',
-            'Migrate to Databricks One for unified platform',
-            'Contribute to beta programs and feature previews'
+            'Adopt Serverless SQL for simplified data analytics',
+            'Enable Databricks Assistant for AI-powered development',
+            'Explore latest platform innovations and beta features'
           ]
         }
       },
