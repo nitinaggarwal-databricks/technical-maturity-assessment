@@ -4,8 +4,11 @@
  * Based on actual pain points, comments, and current/future state gap
  */
 
+const DatabricksFeatureMapper = require('./databricksFeatureMapper');
+
 class IntelligentRecommendationEngine {
   constructor() {
+    this.featureMapper = new DatabricksFeatureMapper();
     // Map pain points to specific, actionable solutions
     this.solutionMap = {
       // Platform Governance
@@ -173,51 +176,92 @@ class IntelligentRecommendationEngine {
       databricksFeatures: []
     };
     
-    // Extract relevant Databricks features from solutions
+    // Extract relevant Databricks features from solutions and convert to full feature objects
+    const featureNames = new Set();
     painPoints.forEach(pp => {
       const solution = this.solutionMap[pp.value];
       if (solution && solution.databricks_features) {
         solution.databricks_features.forEach(feature => {
-          if (!recommendations.databricksFeatures.includes(feature)) {
-            recommendations.databricksFeatures.push(feature);
-          }
+          featureNames.add(feature);
         });
       }
     });
+    
+    // Convert feature names to full feature objects using the feature mapper
+    const currentScore = Math.round(stateGaps[0]?.current || 3);
+    const futureScore = Math.round(stateGaps[0]?.future || 4);
+    const allFeatures = this.featureMapper.getRelevantFeatures(pillarId, currentScore, futureScore);
+    
+    featureNames.forEach(featureName => {
+      const featureObj = allFeatures.find(f => f.name === featureName || f.name.includes(featureName));
+      if (featureObj && !recommendations.databricksFeatures.find(f => f.name === featureObj.name)) {
+        recommendations.databricksFeatures.push(featureObj);
+      }
+    });
+    
+    console.log(`[IntelligentEngine] Converted ${featureNames.size} feature names to ${recommendations.databricksFeatures.length} feature objects`);
     
     return recommendations;
   }
 
   extractPainPoints(responses, framework) {
     const painPoints = [];
-    if (!framework || !framework.dimensions) return painPoints;
+    if (!framework || !framework.dimensions) {
+      console.log('[IntelligentEngine] No framework or dimensions');
+      return painPoints;
+    }
+    
+    console.log(`[IntelligentEngine] Extracting pain points from ${framework.dimensions.length} dimensions`);
+    console.log('[IntelligentEngine] Sample response keys:', Object.keys(responses).slice(0, 5));
     
     framework.dimensions.forEach(dim => {
       dim.questions.forEach(q => {
         const techPain = q.perspectives?.find(p => p.id === 'technical_pain');
         if (techPain) {
-          const selected = responses[`${q.id}_technical_pain`] || [];
-          selected.forEach(value => {
-            const option = techPain.options.find(o => o.value === value);
-            if (option) {
-              painPoints.push({ value, label: option.label, type: 'technical' });
-            }
-          });
+          const responseKey = `${q.id}_technical_pain`;
+          const selected = responses[responseKey];
+          console.log(`[IntelligentEngine] Question ${q.id}, technical_pain response:`, selected);
+          
+          if (Array.isArray(selected) && selected.length > 0) {
+            selected.forEach(value => {
+              const option = techPain.options.find(o => o.value === value);
+              if (option) {
+                painPoints.push({ 
+                  value, 
+                  label: option.label, 
+                  type: 'technical',
+                  score: option.score || 3
+                });
+                console.log(`[IntelligentEngine] Found technical pain: ${option.label}`);
+              }
+            });
+          }
         }
         
         const bizPain = q.perspectives?.find(p => p.id === 'business_pain');
         if (bizPain) {
-          const selected = responses[`${q.id}_business_pain`] || [];
-          selected.forEach(value => {
-            const option = bizPain.options.find(o => o.value === value);
-            if (option) {
-              painPoints.push({ value, label: option.label, type: 'business' });
-            }
-          });
+          const responseKey = `${q.id}_business_pain`;
+          const selected = responses[responseKey];
+          
+          if (Array.isArray(selected) && selected.length > 0) {
+            selected.forEach(value => {
+              const option = bizPain.options.find(o => o.value === value);
+              if (option) {
+                painPoints.push({ 
+                  value, 
+                  label: option.label, 
+                  type: 'business',
+                  score: option.score || 3
+                });
+                console.log(`[IntelligentEngine] Found business pain: ${option.label}`);
+              }
+            });
+          }
         }
       });
     });
     
+    console.log(`[IntelligentEngine] Total pain points extracted: ${painPoints.length}`);
     return painPoints;
   }
 
