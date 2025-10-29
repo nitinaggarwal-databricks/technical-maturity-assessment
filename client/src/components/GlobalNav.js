@@ -431,14 +431,21 @@ const GlobalNav = () => {
 
       // Submit all responses
       console.log('[GlobalNav] Submitting bulk responses for assessment:', assessmentId);
+      console.log('[GlobalNav] Total responses to submit:', Object.keys(allResponses).length);
+      console.log('[GlobalNav] Completed categories:', completedCategories);
       console.log('[GlobalNav] Sample data variance check - First 5 scores:', 
         Object.keys(allResponses)
           .filter(k => k.includes('current_state'))
           .slice(0, 5)
           .map(k => ({ [k]: allResponses[k] }))
       );
-      await assessmentService.submitBulkResponses(assessmentId, allResponses, completedCategories);
-      console.log('[GlobalNav] Bulk responses submitted successfully');
+      
+      const bulkResult = await assessmentService.submitBulkResponses(assessmentId, allResponses, completedCategories);
+      console.log('[GlobalNav] Bulk responses submitted successfully. Result:', bulkResult);
+      
+      // Verify the responses were actually saved
+      const statusCheck = await assessmentService.getAssessmentStatus(assessmentId);
+      console.log('[GlobalNav] Status check - Responses saved:', Object.keys(statusCheck.responses || {}).length);
       
       // Wait for file I/O to complete (critical for local file storage)
       await new Promise(resolve => setTimeout(resolve, 1000));

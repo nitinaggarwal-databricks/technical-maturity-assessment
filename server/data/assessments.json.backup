@@ -11096,6 +11096,817 @@
     "assessmentName": "Sample Assessment - 10/29/2025, 12:15:54 PM [o0rquw]",
     "assessmentDescription": "",
     "startedAt": "2025-10-29T16:15:54.281Z",
+    "status": "completed",
+    "responses": {
+      "env_standardization_current_state": 4,
+      "env_standardization_future_state": 5,
+      "env_standardization_comment": "Full Unity Catalog with ABAC policies. Testing Compliance for Vector Search and serverless SQL warehouse integration for production workloads.",
+      "env_standardization_technical_pain": [
+        "resource_conflicts",
+        "inconsistent_configs"
+      ],
+      "env_standardization_business_pain": [
+        "quality_issues",
+        "compliance_risks",
+        "slow_deployment"
+      ],
+      "scaling_effectiveness_current_state": 3,
+      "scaling_effectiveness_future_state": 5,
+      "scaling_effectiveness_comment": "Centralized metastore running. Need to enable Delta Sharing for external partners and implement fine-grained access controls on features.",
+      "scaling_effectiveness_technical_pain": [
+        "resource_contention",
+        "performance_degradation"
+      ],
+      "scaling_effectiveness_business_pain": [
+        "poor_utilization",
+        "high_costs",
+        "team_blocking"
+      ],
+      "auth_consistency_current_state": 2,
+      "auth_consistency_future_state": 5,
+      "auth_consistency_comment": "Security team reviews data access quarterly. Want real-time audit logs and automated policy enforcement through Unity Catalog.",
+      "auth_consistency_technical_pain": [
+        "security_gaps",
+        "auth_complexity",
+        "audit_trails",
+        "access_management"
+      ],
+      "auth_consistency_business_pain": [
+        "security_breaches",
+        "admin_overhead",
+        "user_frustration"
+      ],
+      "security_controls_current_state": 5,
+      "security_controls_future_state": 5,
+      "security_controls_comment": "Advanced Unity Catalog setup with row/column security. Working on cost attribution tags and budget policies for chargeback allocation.",
+      "security_controls_technical_pain": [
+        "over_privileged",
+        "policy_enforcement",
+        "monitoring_blind_spots"
+      ],
+      "security_controls_business_pain": [
+        "customer_trust",
+        "audit_failures",
+        "regulatory_risk",
+        "data_breaches"
+      ],
+      "governance_centralization_current_state": 1,
+      "governance_centralization_future_state": 2,
+      "governance_centralization_comment": "Security team reviews data access quarterly. Want real-time audit logs and automated policy enforcement through Unity Catalog.",
+      "governance_centralization_technical_pain": [
+        "integration_complexity",
+        "manual_processes",
+        "policy_gaps",
+        "metadata_management"
+      ],
+      "governance_centralization_business_pain": [
+        "regulatory_fines",
+        "data_quality_issues",
+        "decision_delays",
+        "compliance_failures"
+      ],
+      "compliance_management_current_state": 1,
+      "compliance_management_future_state": 2,
+      "compliance_management_comment": "Currently using separate Hive metastore per workspace. Planning Unity Catalog migration to centralize governance and lineage tracking.",
+      "compliance_management_technical_pain": [
+        "reporting_gaps",
+        "data_retention"
+      ],
+      "compliance_management_business_pain": [
+        "business_risk",
+        "audit_failures"
+      ],
+      "visibility_comprehensiveness_current_state": 1,
+      "visibility_comprehensiveness_future_state": 3,
+      "visibility_comprehensiveness_comment": "Currently using separate Hive metastore per workspace. Planning Unity Catalog migration to centralize governance and lineage tracking.",
+      "visibility_comprehensiveness_technical_pain": [
+        "alert_noise",
+        "monitoring_gaps",
+        "tool_fragmentation"
+      ],
+      "visibility_comprehensiveness_business_pain": [
+        "unplanned_downtime",
+        "slow_issue_resolution",
+        "resource_waste",
+        "user_impact"
+      ],
+      "proactive_monitoring_current_state": 3,
+      "proactive_monitoring_future_state": 4,
+      "proactive_monitoring_comment": "Centralized metastore running. Need to enable Delta Sharing for external partners and implement fine-grained access controls on features.",
+      "proactive_monitoring_technical_pain": [
+        "manual_response",
+        "escalation_delays",
+        "root_cause_analysis",
+        "late_detection"
+      ],
+      "proactive_monitoring_business_pain": [
+        "missed_slas",
+        "operational_costs",
+        "team_burnout"
+      ],
+      "cost_tracking_current_state": 3,
+      "cost_tracking_future_state": 4,
+      "cost_tracking_comment": "Unity Catalog deployed in 3 workspaces. Working on ABAC policies and row-level security. Need training on dynamic views.",
+      "cost_tracking_technical_pain": [
+        "tagging_inconsistency",
+        "reporting_complexity",
+        "cost_attribution",
+        "usage_visibility"
+      ],
+      "cost_tracking_business_pain": [
+        "budget_planning",
+        "budget_overruns"
+      ],
+      "optimization_practices_current_state": 1,
+      "optimization_practices_future_state": 3,
+      "optimization_practices_comment": "Security team reviews data access quarterly. Want real-time audit logs and automated policy enforcement through Unity Catalog.",
+      "optimization_practices_technical_pain": [
+        "optimization_complexity",
+        "resource_rightsizing"
+      ],
+      "optimization_practices_business_pain": [
+        "roi_unclear",
+        "no_cost_discipline",
+        "wasted_spend"
+      ],
+      "ingestion_automation_current_state": 4,
+      "ingestion_automation_future_state": 5,
+      "ingestion_automation_comment": "Advanced DLT with CDC processing. Auto Loader with schema evolution. Evaluating serverless jobs performance mode for cost optimization.",
+      "ingestion_automation_technical_pain": [
+        "data_format_issues",
+        "error_handling",
+        "pipeline_maintenance",
+        "throughput_issues"
+      ],
+      "ingestion_automation_business_pain": [
+        "data_delays",
+        "data_quality",
+        "business_agility",
+        "integration_costs"
+      ],
+      "ingestion_resilience_current_state": 1,
+      "ingestion_resilience_future_state": 4,
+      "ingestion_resilience_comment": "Running batch Spark jobs via notebooks. No data quality checks. Looking at Delta Live Tables for automated expectations and monitoring.",
+      "ingestion_resilience_technical_pain": [
+        "recovery_complexity",
+        "monitoring_gaps"
+      ],
+      "ingestion_resilience_business_pain": [
+        "sla_breaches",
+        "operational_overhead"
+      ],
+      "lakehouse_structure_current_state": 1,
+      "lakehouse_structure_future_state": 2,
+      "lakehouse_structure_comment": "Data quality issues found by downstream users. Need DLT expectations (expect_or_fail) and Lakehouse Monitoring for proactive alerting and validation.",
+      "lakehouse_structure_technical_pain": [
+        "transformation_complexity",
+        "layer_confusion",
+        "duplicate_data"
+      ],
+      "lakehouse_structure_business_pain": [
+        "storage_costs",
+        "data_discovery",
+        "inconsistent_metrics"
+      ],
+      "architecture_adaptability_current_state": 1,
+      "architecture_adaptability_future_state": 2,
+      "architecture_adaptability_comment": "Manual pipeline management through ADF. Want to migrate to Databricks workflows with Auto Loader for streaming ingestion and recovery.",
+      "architecture_adaptability_technical_pain": [
+        "integration_effort",
+        "format_limitations",
+        "rigid_structure"
+      ],
+      "architecture_adaptability_business_pain": [
+        "competitive_lag",
+        "slow_adaptation",
+        "missed_opportunities",
+        "integration_delays"
+      ],
+      "orchestration_reliability_current_state": 4,
+      "orchestration_reliability_future_state": 5,
+      "orchestration_reliability_comment": "Streaming ingestion with Auto Loader. DLT expectations catching 95% of issues. Implementing Lakehouse Monitoring for data quality dashboards.",
+      "orchestration_reliability_technical_pain": [
+        "retry_logic",
+        "monitoring_gaps"
+      ],
+      "orchestration_reliability_business_pain": [
+        "pipeline_failures",
+        "team_frustration",
+        "sla_misses",
+        "data_freshness"
+      ],
+      "pipeline_lifecycle_current_state": 3,
+      "pipeline_lifecycle_future_state": 4,
+      "pipeline_lifecycle_comment": "Delta tables with daily batch. Testing streaming with structured streaming API. Planning migration to DLT for unified batch and stream.",
+      "pipeline_lifecycle_technical_pain": [
+        "testing_gaps",
+        "environment_drift"
+      ],
+      "pipeline_lifecycle_business_pain": [
+        "quality_issues",
+        "rollback_complexity"
+      ],
+      "quality_validation_current_state": 3,
+      "quality_validation_future_state": 5,
+      "quality_validation_comment": "Using Delta Lake with manual quality checks. Piloting DLT pipelines for critical workflows. Want full observability and automated expectations.",
+      "quality_validation_technical_pain": [
+        "reconciliation_complexity",
+        "recovery_procedures",
+        "quality_rules"
+      ],
+      "quality_validation_business_pain": [
+        "compliance_violations",
+        "bad_decisions",
+        "trust_erosion",
+        "operational_overhead"
+      ],
+      "quality_monitoring_current_state": 3,
+      "quality_monitoring_future_state": 4,
+      "quality_monitoring_comment": "Auto Loader deployed for S3 ingestion. Building DLT pipelines with expectations. Need to implement CDC with APPLY CHANGES and monitoring.",
+      "quality_monitoring_technical_pain": [
+        "alert_noise",
+        "trend_analysis",
+        "metric_visibility",
+        "monitoring_gaps"
+      ],
+      "quality_monitoring_business_pain": [
+        "late_discovery",
+        "reputation_damage",
+        "reactive_approach"
+      ],
+      "performance_optimization_current_state": 1,
+      "performance_optimization_future_state": 3,
+      "performance_optimization_comment": "Running batch Spark jobs via notebooks. No data quality checks. Looking at Delta Live Tables for automated expectations and monitoring.",
+      "performance_optimization_technical_pain": [
+        "resource_inefficiency",
+        "parallelization_gaps",
+        "optimization_difficulty"
+      ],
+      "performance_optimization_business_pain": [
+        "compute_costs",
+        "scalability_limits",
+        "user_experience",
+        "data_latency"
+      ],
+      "scalability_demand_current_state": 2,
+      "scalability_demand_future_state": 5,
+      "scalability_demand_comment": "Data quality issues found by downstream users. Need DLT expectations (expect_or_fail) and Lakehouse Monitoring for proactive alerting and validation.",
+      "scalability_demand_technical_pain": [
+        "manual_scaling",
+        "scaling_delays",
+        "resource_contention"
+      ],
+      "scalability_demand_business_pain": [
+        "cost_inefficiency",
+        "business_impact",
+        "capacity_planning"
+      ],
+      "performance_consistency_current_state": 3,
+      "performance_consistency_future_state": 4,
+      "performance_consistency_comment": "Databricks SQL deployed with classic clusters. Testing serverless warehouses. Want AI/BI dashboards and Genie for NL query access.",
+      "performance_consistency_technical_pain": [
+        "monitoring_gaps",
+        "inconsistent_performance",
+        "resource_contention",
+        "slow_queries"
+      ],
+      "performance_consistency_business_pain": [
+        "adoption_barriers",
+        "report_timeouts",
+        "competitive_lag",
+        "user_frustration"
+      ],
+      "optimization_approach_current_state": 1,
+      "optimization_approach_future_state": 3,
+      "optimization_approach_comment": "Data accessed via Python notebooks. Want SQL endpoint for business users. Considering AI/BI and Genie for natural language queries.",
+      "optimization_approach_technical_pain": [
+        "indexing_gaps",
+        "lack_of_tools"
+      ],
+      "optimization_approach_business_pain": [
+        "high_compute_costs",
+        "poor_user_experience"
+      ],
+      "metrics_consistency_current_state": 4,
+      "metrics_consistency_future_state": 5,
+      "metrics_consistency_comment": "Advanced SQL analytics with Photon acceleration. AI/BI in production. Implementing federation for external data sources and partner integration.",
+      "metrics_consistency_technical_pain": [
+        "no_shared_layer",
+        "duplicate_logic",
+        "metric_inconsistency"
+      ],
+      "metrics_consistency_business_pain": [
+        "decision_delays",
+        "conflicting_reports",
+        "trust_issues"
+      ],
+      "data_discovery_current_state": 4,
+      "data_discovery_future_state": 5,
+      "data_discovery_comment": "Full serverless SQL with Photon. AI/BI dashboards deployed. Testing Genie for business users. Working on query optimization and caching.",
+      "data_discovery_technical_pain": [
+        "quality_uncertainty",
+        "unclear_lineage",
+        "catalog_gaps"
+      ],
+      "data_discovery_business_pain": [
+        "trust_deficit",
+        "duplicate_work"
+      ],
+      "dashboard_integration_current_state": 2,
+      "dashboard_integration_future_state": 5,
+      "dashboard_integration_comment": "Data accessed via Python notebooks. Want SQL endpoint for business users. Considering AI/BI and Genie for natural language queries.",
+      "dashboard_integration_technical_pain": [
+        "data_extracts",
+        "integration_complexity",
+        "performance_issues",
+        "refresh_delays"
+      ],
+      "dashboard_integration_business_pain": [
+        "user_frustration",
+        "limited_adoption",
+        "stale_dashboards"
+      ],
+      "reporting_governance_current_state": 1,
+      "reporting_governance_future_state": 2,
+      "reporting_governance_comment": "BI team waits for data engineer support. Need serverless SQL warehouse with query history and Photon acceleration for performance.",
+      "reporting_governance_technical_pain": [
+        "access_management",
+        "inconsistent_schedules",
+        "version_control",
+        "kpi_proliferation"
+      ],
+      "reporting_governance_business_pain": [
+        "trust_erosion",
+        "compliance_gaps",
+        "maintenance_burden"
+      ],
+      "user_empowerment_current_state": 2,
+      "user_empowerment_future_state": 4,
+      "user_empowerment_comment": "Analysts write complex SQL in notebooks. No self-service. Looking at Databricks SQL serverless warehouses for business user access.",
+      "user_empowerment_technical_pain": [
+        "limited_tooling",
+        "training_gaps",
+        "support_burden",
+        "access_barriers"
+      ],
+      "user_empowerment_business_pain": [
+        "slow_decisions",
+        "analyst_bottleneck",
+        "missed_opportunities",
+        "user_frustration"
+      ],
+      "governed_autonomy_current_state": 4,
+      "governed_autonomy_future_state": 5,
+      "governed_autonomy_comment": "Serverless warehouses scaled to 200 users. Genie adoption at 40%. Working on semantic layer and metric definitions for consistency.",
+      "governed_autonomy_technical_pain": [
+        "policy_enforcement",
+        "quality_control",
+        "security_gaps"
+      ],
+      "governed_autonomy_business_pain": [
+        "compliance_risk",
+        "inconsistent_analysis"
+      ],
+      "external_sharing_current_state": 4,
+      "external_sharing_future_state": 5,
+      "external_sharing_comment": "Full serverless SQL with Photon. AI/BI dashboards deployed. Testing Genie for business users. Working on query optimization and caching.",
+      "external_sharing_technical_pain": [
+        "security_concerns",
+        "format_compatibility",
+        "access_provisioning",
+        "sharing_complexity"
+      ],
+      "external_sharing_business_pain": [
+        "competitive_disadvantage",
+        "revenue_impact",
+        "partner_friction",
+        "collaboration_barriers"
+      ],
+      "cross_domain_analytics_current_state": 5,
+      "cross_domain_analytics_future_state": 5,
+      "cross_domain_analytics_comment": "Advanced SQL analytics with Photon acceleration. AI/BI in production. Implementing federation for external data sources and partner integration.",
+      "cross_domain_analytics_technical_pain": [
+        "governance_gaps",
+        "data_silos",
+        "integration_complexity",
+        "join_performance"
+      ],
+      "cross_domain_analytics_business_pain": [
+        "opportunity_cost",
+        "strategic_limitations",
+        "integration_delays",
+        "decision_friction"
+      ],
+      "experiment_tracking_current_state": 4,
+      "experiment_tracking_future_state": 5,
+      "experiment_tracking_comment": "Production ML platform with automated pipelines. Feature Store lineage tracking. Evaluating Lakehouse Monitoring for model quality and performance.",
+      "experiment_tracking_technical_pain": [
+        "no_tracking",
+        "manual_logging"
+      ],
+      "experiment_tracking_business_pain": [
+        "wasted_effort",
+        "limited_reuse"
+      ],
+      "model_reproducibility_current_state": 1,
+      "model_reproducibility_future_state": 4,
+      "model_reproducibility_comment": "Feature engineering duplicated across teams. Need Feature Store for consistency. Planning MLflow for experiment tracking and model governance.",
+      "model_reproducibility_technical_pain": [
+        "model_packaging",
+        "environment_drift",
+        "data_versioning"
+      ],
+      "model_reproducibility_business_pain": [
+        "production_failures",
+        "compliance_risk",
+        "rollback_complexity"
+      ],
+      "deployment_automation_current_state": 3,
+      "deployment_automation_future_state": 4,
+      "deployment_automation_comment": "MLflow tracking deployed. Working on Feature Store implementation. Want Model Serving for real-time inference and model monitoring setup.",
+      "deployment_automation_technical_pain": [
+        "manual_deployment",
+        "testing_gaps"
+      ],
+      "deployment_automation_business_pain": [
+        "resource_intensive",
+        "business_risk",
+        "slow_time_to_value",
+        "deployment_failures"
+      ],
+      "model_monitoring_current_state": 5,
+      "model_monitoring_future_state": 5,
+      "model_monitoring_comment": "Full MLOps with MLflow and Feature Store. Testing Mosaic AI for LLM fine-tuning. Want AI playground for experimentation.",
+      "model_monitoring_technical_pain": [
+        "manual_retraining",
+        "no_monitoring",
+        "alert_gaps"
+      ],
+      "model_monitoring_business_pain": [
+        "customer_impact",
+        "trust_erosion",
+        "revenue_loss",
+        "reactive_approach"
+      ],
+      "feature_store_current_state": 2,
+      "feature_store_future_state": 4,
+      "feature_store_comment": "ML notebooks with manual versioning. No experiment tracking. Looking at MLflow for model registry and feature store for reuse.",
+      "feature_store_technical_pain": [
+        "duplicate_features",
+        "versioning_gaps",
+        "consistency_issues",
+        "no_feature_store"
+      ],
+      "feature_store_business_pain": [
+        "model_failures",
+        "wasted_effort"
+      ],
+      "data_prep_current_state": 2,
+      "data_prep_future_state": 4,
+      "data_prep_comment": "Feature engineering duplicated across teams. Need Feature Store for consistency. Planning MLflow for experiment tracking and model governance.",
+      "data_prep_technical_pain": [
+        "scalability_issues",
+        "pipeline_fragility",
+        "inconsistent_practices",
+        "quality_gaps"
+      ],
+      "data_prep_business_pain": [
+        "data_scientist_bottleneck",
+        "resource_waste",
+        "slow_iteration"
+      ],
+      "ml_ownership_current_state": 3,
+      "ml_ownership_future_state": 5,
+      "ml_ownership_comment": "MLflow tracking deployed. Working on Feature Store implementation. Want Model Serving for real-time inference and model monitoring setup.",
+      "ml_ownership_technical_pain": [
+        "no_approval_gates",
+        "unclear_ownership",
+        "change_tracking",
+        "documentation_gaps"
+      ],
+      "ml_ownership_business_pain": [
+        "compliance_failures",
+        "risk_exposure",
+        "incident_response",
+        "accountability_gaps"
+      ],
+      "ml_compliance_current_state": 3,
+      "ml_compliance_future_state": 5,
+      "ml_compliance_comment": "MLflow tracking deployed. Working on Feature Store implementation. Want Model Serving for real-time inference and model monitoring setup.",
+      "ml_compliance_technical_pain": [
+        "bias_detection",
+        "explainability_gaps",
+        "no_lineage",
+        "audit_gaps"
+      ],
+      "ml_compliance_business_pain": [
+        "regulatory_risk",
+        "bias_incidents"
+      ],
+      "production_delivery_current_state": 4,
+      "production_delivery_future_state": 5,
+      "production_delivery_comment": "Full MLOps with MLflow and Feature Store. Testing Mosaic AI for LLM fine-tuning. Want AI playground for experimentation.",
+      "production_delivery_technical_pain": [
+        "pilot_to_prod_gap",
+        "infrastructure_gaps"
+      ],
+      "production_delivery_business_pain": [
+        "low_roi",
+        "long_timelines",
+        "stakeholder_frustration",
+        "failed_pilots"
+      ],
+      "ml_scalability_current_state": 2,
+      "ml_scalability_future_state": 3,
+      "ml_scalability_comment": "Feature engineering duplicated across teams. Need Feature Store for consistency. Planning MLflow for experiment tracking and model governance.",
+      "ml_scalability_technical_pain": [
+        "resource_constraints",
+        "custom_solutions"
+      ],
+      "ml_scalability_business_pain": [
+        "team_bottleneck",
+        "long_onboarding",
+        "competitive_lag",
+        "limited_ml_adoption"
+      ],
+      "genai_vision_current_state": 5,
+      "genai_vision_future_state": 5,
+      "genai_vision_comment": "Production RAG app with Vector Search. Fine-tuning Llama models. Testing multimodal capabilities. Want AI playground for experimentation.",
+      "genai_vision_technical_pain": [
+        "unclear_use_cases",
+        "no_strategy",
+        "technology_uncertainty"
+      ],
+      "genai_vision_business_pain": [
+        "competitive_pressure",
+        "stakeholder_expectations",
+        "missed_opportunities",
+        "unclear_roi"
+      ],
+      "use_case_definition_current_state": 2,
+      "use_case_definition_future_state": 5,
+      "use_case_definition_comment": "Experimenting with OpenAI API externally. Want Databricks Foundation Models and Vector Search for internal knowledge base RAG applications.",
+      "use_case_definition_technical_pain": [
+        "unrealistic_expectations",
+        "data_readiness",
+        "evaluation_gaps"
+      ],
+      "use_case_definition_business_pain": [
+        "prioritization_challenges",
+        "resource_waste"
+      ],
+      "knowledge_sources_current_state": 5,
+      "knowledge_sources_future_state": 5,
+      "knowledge_sources_comment": "Production RAG app with Vector Search. Fine-tuning Llama models. Testing multimodal capabilities. Want AI playground for experimentation.",
+      "knowledge_sources_technical_pain": [
+        "unstructured_data",
+        "chunking_challenges",
+        "integration_gaps",
+        "no_vector_search"
+      ],
+      "knowledge_sources_business_pain": [
+        "business_impact",
+        "poor_relevance"
+      ],
+      "knowledge_governance_current_state": 5,
+      "knowledge_governance_future_state": 5,
+      "knowledge_governance_comment": "Advanced GenAI platform with Model Serving. Vector Search scaled to 1M vectors. Working on evaluation framework and guardrails.",
+      "knowledge_governance_technical_pain": [
+        "quality_checks",
+        "ungoverned_sources"
+      ],
+      "knowledge_governance_business_pain": [
+        "output_quality",
+        "compliance_risk",
+        "misinformation"
+      ],
+      "application_capability_current_state": 3,
+      "application_capability_future_state": 5,
+      "application_capability_comment": "Mosaic AI deployed for 2 use cases. Vector Search indexes for documentation. Working on LLM evaluation metrics and guardrails.",
+      "application_capability_technical_pain": [
+        "cost_concerns",
+        "scalability_issues"
+      ],
+      "application_capability_business_pain": [
+        "reliability_issues",
+        "competitive_lag"
+      ],
+      "integration_patterns_current_state": 5,
+      "integration_patterns_future_state": 5,
+      "integration_patterns_comment": "Multiple GenAI apps in production. Vector Search with hybrid search. Testing Claude Opus 4.1 and function calling for agentic workflows.",
+      "integration_patterns_technical_pain": [
+        "custom_solutions",
+        "error_handling"
+      ],
+      "integration_patterns_business_pain": [
+        "security_incidents",
+        "inconsistent_ux",
+        "maintenance_burden"
+      ],
+      "output_validation_current_state": 3,
+      "output_validation_future_state": 5,
+      "output_validation_comment": "Mosaic AI deployed for 2 use cases. Vector Search indexes for documentation. Working on LLM evaluation metrics and guardrails.",
+      "output_validation_technical_pain": [
+        "quality_metrics",
+        "no_validation",
+        "testing_gaps",
+        "hallucination_detection"
+      ],
+      "output_validation_business_pain": [
+        "reputation_damage",
+        "manual_overhead",
+        "output_quality",
+        "business_risk"
+      ],
+      "genai_monitoring_current_state": 1,
+      "genai_monitoring_future_state": 4,
+      "genai_monitoring_comment": "No GenAI capability. Data team interested in RAG use cases. Looking at Mosaic AI and Vector Search infrastructure.",
+      "genai_monitoring_technical_pain": [
+        "user_feedback",
+        "drift_detection"
+      ],
+      "genai_monitoring_business_pain": [
+        "silent_degradation",
+        "user_complaints",
+        "brand_risk",
+        "safety_incidents"
+      ],
+      "ethical_guardrails_current_state": 4,
+      "ethical_guardrails_future_state": 5,
+      "ethical_guardrails_comment": "Advanced GenAI platform with Model Serving. Vector Search scaled to 1M vectors. Working on evaluation framework and guardrails.",
+      "ethical_guardrails_technical_pain": [
+        "bias_detection",
+        "policy_enforcement",
+        "no_guardrails",
+        "content_filtering"
+      ],
+      "ethical_guardrails_business_pain": [
+        "legal_exposure",
+        "ethical_concerns"
+      ],
+      "genai_transparency_current_state": 3,
+      "genai_transparency_future_state": 5,
+      "genai_transparency_comment": "Vector Search POC running. Testing RAG with Databricks Foundation Models. Want prompt engineering best practices and monitoring framework.",
+      "genai_transparency_technical_pain": [
+        "audit_trails",
+        "user_attribution",
+        "no_logging"
+      ],
+      "genai_transparency_business_pain": [
+        "regulatory_risk",
+        "debugging_difficulty",
+        "audit_failures"
+      ],
+      "coe_structure_current_state": 4,
+      "coe_structure_future_state": 5,
+      "coe_structure_comment": "Mature CoE with dedicated team. 90% user adoption. Full cost attribution with tags. Advanced training with certification program.",
+      "coe_structure_technical_pain": [
+        "no_coe",
+        "resource_constraints"
+      ],
+      "coe_structure_business_pain": [
+        "quality_issues",
+        "slow_adoption",
+        "inconsistent_practices",
+        "knowledge_silos"
+      ],
+      "coe_effectiveness_current_state": 2,
+      "coe_effectiveness_future_state": 3,
+      "coe_effectiveness_comment": "Platform investment unclear. No usage tracking. Looking at system tables for cost attribution and chargeback to business units.",
+      "coe_effectiveness_technical_pain": [
+        "low_influence",
+        "tooling_gaps",
+        "measurement_gaps",
+        "feedback_loops"
+      ],
+      "coe_effectiveness_business_pain": [
+        "architecture_debt",
+        "governance_gaps",
+        "team_confusion"
+      ],
+      "collaboration_strength_current_state": 1,
+      "collaboration_strength_future_state": 3,
+      "collaboration_strength_comment": "Ad-hoc platform usage. No CoE structure. Want training programs and adoption metrics to track ROI and user satisfaction.",
+      "collaboration_strength_technical_pain": [
+        "siloed_teams",
+        "no_sharing_platform"
+      ],
+      "collaboration_strength_business_pain": [
+        "duplicate_work",
+        "knowledge_loss",
+        "innovation_lag"
+      ],
+      "asset_exchange_current_state": 3,
+      "asset_exchange_future_state": 4,
+      "asset_exchange_comment": "CoE established with 3 members. Monthly training sessions. Tracking usage with system tables. Want better ROI metrics.",
+      "asset_exchange_technical_pain": [
+        "version_control",
+        "discovery_difficulty",
+        "quality_standards"
+      ],
+      "asset_exchange_business_pain": [
+        "quality_inconsistency",
+        "low_reuse",
+        "reinvention"
+      ],
+      "training_programs_current_state": 3,
+      "training_programs_future_state": 5,
+      "training_programs_comment": "CoE established with 3 members. Monthly training sessions. Tracking usage with system tables. Want better ROI metrics.",
+      "training_programs_technical_pain": [
+        "outdated_content",
+        "limited_coverage"
+      ],
+      "training_programs_business_pain": [
+        "underutilization",
+        "slow_adoption"
+      ],
+      "continuous_learning_current_state": 2,
+      "continuous_learning_future_state": 5,
+      "continuous_learning_comment": "Platform investment unclear. No usage tracking. Looking at system tables for cost attribution and chargeback to business units.",
+      "continuous_learning_technical_pain": [
+        "demo_gaps",
+        "communication_gaps",
+        "no_updates"
+      ],
+      "continuous_learning_business_pain": [
+        "missed_opportunities",
+        "capability_unawareness",
+        "innovation_barriers",
+        "competitive_lag"
+      ],
+      "value_linkage_current_state": 5,
+      "value_linkage_future_state": 5,
+      "value_linkage_comment": "Comprehensive enablement platform. Usage dashboards in production. Automated chargeback. Working on ML for cost optimization recommendations.",
+      "value_linkage_technical_pain": [
+        "metric_gaps",
+        "reporting_complexity"
+      ],
+      "value_linkage_business_pain": [
+        "roi_unclear",
+        "budget_justification"
+      ],
+      "value_reviews_current_state": 4,
+      "value_reviews_future_state": 5,
+      "value_reviews_comment": "Platform adoption at 95% with 300 active users. ROI tracked quarterly. Advanced monitoring with system tables and custom metrics.",
+      "value_reviews_technical_pain": [
+        "manual_analysis",
+        "stakeholder_engagement",
+        "metric_gaps",
+        "no_reviews"
+      ],
+      "value_reviews_business_pain": [
+        "reactive_approach",
+        "accountability_gaps",
+        "wasted_spend",
+        "budget_overruns"
+      ],
+      "innovation_adoption_current_state": 1,
+      "innovation_adoption_future_state": 4,
+      "innovation_adoption_comment": "Ad-hoc platform usage. No CoE structure. Want training programs and adoption metrics to track ROI and user satisfaction.",
+      "innovation_adoption_technical_pain": [
+        "risk_aversion",
+        "resource_constraints",
+        "adoption_delays",
+        "no_evaluation"
+      ],
+      "innovation_adoption_business_pain": [
+        "innovation_lag",
+        "competitive_disadvantage"
+      ],
+      "continuous_improvement_current_state": 5,
+      "continuous_improvement_future_state": 5,
+      "continuous_improvement_comment": "Comprehensive enablement platform. Usage dashboards in production. Automated chargeback. Working on ML for cost optimization recommendations.",
+      "continuous_improvement_technical_pain": [
+        "retrospective_gaps",
+        "learning_capture",
+        "no_feedback_loop"
+      ],
+      "continuous_improvement_business_pain": [
+        "team_disengagement",
+        "value_leakage"
+      ]
+    },
+    "completedCategories": [
+      "platform_governance",
+      "data_engineering",
+      "analytics_bi",
+      "machine_learning",
+      "generative_ai",
+      "operational_excellence"
+    ],
+    "currentCategory": "platform_governance",
+    "editHistory": [],
+    "completedAt": "2025-10-29T16:15:54.299Z",
+    "lastModified": "2025-10-29T16:15:54.299Z"
+  },
+  "ebef6b5d-cde2-4563-821c-4f232d018985": {
+    "id": "ebef6b5d-cde2-4563-821c-4f232d018985",
+    "organizationName": "Test",
+    "contactEmail": "test@test.com",
+    "industry": "Tech",
+    "assessmentName": "Curl Test",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T17:17:23.968Z",
     "status": "in_progress",
     "responses": {},
     "completedCategories": [],

@@ -683,7 +683,9 @@ Return JSON with this structure:
       );
       
       // Transform to use pillar-structured actions
+      console.log('[OpenAI] About to generate pillar actions. areaScores:', Object.keys(recommendations.areaScores || {}).length, 'pillars');
       const pillarActions = this.generatePillarPrioritizedActions(recommendations.areaScores, assessment);
+      console.log('[OpenAI] pillarActions generated:', pillarActions.length);
       recommendations.prioritizedActions = pillarActions;
       
       return recommendations;
