@@ -1677,7 +1677,7 @@ const AssessmentResultsNew = () => {
                     </div>
                     <div style={{ marginBottom: '20px' }}>
                       <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <FiAlertTriangle /> What You Need (one per line):
+                        <FiAlertTriangle /> Key Challenges (one per line):
                       </label>
                       <EditableTextarea
                         value={editedContent.theBad || ''}
@@ -1698,7 +1698,7 @@ const AssessmentResultsNew = () => {
                   </PillarBody>
                 ) : (
                   <PillarBody>
-                    {/* Top Row: What's Working and What You Need */}
+                    {/* Top Row: What's Working and Key Challenges */}
                     <PillarTopRow>
                       {/* What's Working - Premium Card Style */}
                       <div style={{ 
@@ -1769,7 +1769,7 @@ const AssessmentResultsNew = () => {
                         </div>
                       </div>
 
-                      {/* What You Need - Premium Card Style */}
+                      {/* Key Challenges - Premium Card Style */}
                       <div style={{ 
                         background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
                         borderRadius: '16px',
@@ -1788,7 +1788,7 @@ const AssessmentResultsNew = () => {
                           letterSpacing: '0.05em'
                         }}>
                           <FiAlertTriangle size={20} />
-                          What You Need
+                          KEY CHALLENGES
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theBad.length > 0 ? (

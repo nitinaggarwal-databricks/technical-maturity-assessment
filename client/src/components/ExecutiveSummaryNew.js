@@ -934,7 +934,7 @@ const ExecutiveSummaryNew = () => {
                 </div>
                 <div style={{ fontSize: '1rem', marginBottom: '16px', lineHeight: 1.6 }}>
                   This assessment has <strong>{resultsData?.assessmentInfo?.questionsAnswered || 0} questions answered</strong>. 
-                  The Executive Summary requires assessment responses to generate "What's Working", "What You Need", and Databricks recommendations.
+                  The Executive Summary requires assessment responses to generate "What's Working", "Key Challenges", and Databricks recommendations.
                 </div>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <button

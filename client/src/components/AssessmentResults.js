@@ -1879,7 +1879,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                           gap: '8px'
                         }}>
                           <span style={{ fontSize: '1.5rem' }}>⚠</span>
-                          What You Need
+                          KEY CHALLENGES
                         </h4>
                         <ul style={{
                           listStyle: 'none',
