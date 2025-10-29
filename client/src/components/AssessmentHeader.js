@@ -20,6 +20,10 @@ const HeaderContent = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 16px 20px;
+  
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+  }
 `;
 
 const TopRow = styled.div`
@@ -27,6 +31,14 @@ const TopRow = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  gap: 12px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 `;
 
 const TitleSection = styled.div`
@@ -35,6 +47,12 @@ const TitleSection = styled.div`
   gap: 12px;
   flex: 1;
   min-width: 0;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    gap: 8px;
+  }
 `;
 
 const AssessmentName = styled.h1`
@@ -45,6 +63,14 @@ const AssessmentName = styled.h1`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const SampleBadge = styled.div`
@@ -59,6 +85,11 @@ const SampleBadge = styled.div`
   gap: 4px;
   white-space: nowrap;
   border: 1px solid #fbbf24;
+  
+  @media (max-width: 480px) {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
 `;
 
 const ActionButtons = styled.div`
@@ -67,6 +98,12 @@ const ActionButtons = styled.div`
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
 `;
 
 const EditButton = styled.button`
@@ -147,6 +184,7 @@ const NavigationTabs = styled.div`
   display: flex;
   gap: 4px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   
   &::-webkit-scrollbar {
     height: 4px;
@@ -155,6 +193,11 @@ const NavigationTabs = styled.div`
   &::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    gap: 2px;
+    padding-bottom: 4px;
   }
 `;
 
@@ -166,6 +209,17 @@ const Tab = styled(motion.button)`
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
   cursor: pointer;
   display: flex;
   align-items: center;

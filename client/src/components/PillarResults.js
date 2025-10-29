@@ -48,6 +48,10 @@ const ResultsContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 40px 20px;
   padding-top: 68px; /* Just GlobalNav height - AssessmentHeader is sticky below it */
+  
+  @media (max-width: 768px) {
+    padding: 20px 12px;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -61,6 +65,11 @@ const PillarNavigation = styled.div`
   padding: 20px;
   margin-bottom: 24px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
 `;
 
 const PillarNavTitle = styled.div`
@@ -70,12 +79,21 @@ const PillarNavTitle = styled.div`
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const PillarNavGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
+  
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 `;
 
 const PillarNavItem = styled(motion.button)`
@@ -113,6 +131,12 @@ const HeaderSection = styled(motion.div)`
   margin-bottom: 32px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   text-align: center;
+  
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+  }
 `;
 
 const BackButton = styled(motion.button)`
@@ -137,6 +161,14 @@ const BackButton = styled(motion.button)`
     color: #3b82f6;
     transform: translateX(-2px);
   }
+  
+  @media (max-width: 768px) {
+    top: 78px;
+    left: 12px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    gap: 6px;
+  }
 `;
 
 const ViewOverallButton = styled(motion.button)`
@@ -160,6 +192,14 @@ const ViewOverallButton = styled(motion.button)`
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
   }
+  
+  @media (max-width: 768px) {
+    padding: 14px 24px;
+    font-size: 1rem;
+    margin: 24px auto;
+    width: 100%;
+    max-width: 300px;
+  }
 `;
 
 const PillarTitle = styled.h1`
@@ -171,6 +211,18 @@ const PillarTitle = styled.h1`
   align-items: center;
   justify-content: center;
   gap: 16px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+    gap: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+    flex-direction: column;
+    gap: 8px;
+  }
 `;
 
 const ScoreSection = styled.div`
@@ -179,6 +231,12 @@ const ScoreSection = styled.div`
   justify-content: center;
   gap: 24px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    gap: 16px;
+    flex-direction: column;
+  }
 `;
 
 const ScoreCard = styled(motion.div)`
@@ -188,6 +246,13 @@ const ScoreCard = styled(motion.div)`
   border-radius: 16px;
   text-align: center;
   min-width: 200px;
+  
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+    min-width: auto;
+    width: 100%;
+    max-width: 280px;
+  }
 `;
 
 const ChartSection = styled(motion.div)`
@@ -196,22 +261,45 @@ const ChartSection = styled(motion.div)`
   padding: 40px;
   margin-bottom: 32px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+  }
 `;
 
 const ChartContainer = styled.div`
   height: 400px;
   margin-top: 24px;
+  
+  @media (max-width: 768px) {
+    height: 300px;
+    margin-top: 16px;
+  }
 `;
 
 const ScoreValue = styled.div`
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 8px;
+  
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 `;
 
 const ScoreLabel = styled.div`
   font-size: 1.1rem;
   opacity: 0.9;
+  
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const MaturityLevel = styled(motion.div)`
@@ -221,6 +309,13 @@ const MaturityLevel = styled(motion.div)`
   border-radius: 12px;
   font-weight: 600;
   font-size: 1.1rem;
+  
+  @media (max-width: 768px) {
+    padding: 12px 20px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 280px;
+  }
 `;
 
 const RecommendationsSection = styled(motion.div)`
@@ -229,6 +324,12 @@ const RecommendationsSection = styled(motion.div)`
   padding: 40px;
   margin-bottom: 32px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -239,6 +340,17 @@ const SectionTitle = styled.h2`
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const RecommendationCard = styled(motion.div)`
@@ -249,6 +361,11 @@ const RecommendationCard = styled(motion.div)`
   margin-bottom: 16px;
   border-left: 4px solid ${props => props.priority === 'high' ? '#ef4444' : props.priority === 'medium' ? '#f59e0b' : '#10b981'};
   position: relative;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
 `;
 
 const RecommendationHeader = styled.div`
@@ -257,6 +374,11 @@ const RecommendationHeader = styled.div`
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 12px;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 12px;
+  }
 `;
 
 const RecommendationTitle = styled.h3`
@@ -268,12 +390,23 @@ const RecommendationTitle = styled.h3`
   align-items: center;
   gap: 8px;
   flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const CardActions = styled.div`
   display: flex;
   gap: 6px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 `;
 
 const EditActionButton = styled.button`
