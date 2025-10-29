@@ -11907,6 +11907,741 @@
     "assessmentName": "Curl Test",
     "assessmentDescription": "",
     "startedAt": "2025-10-29T17:17:23.968Z",
+    "status": "completed",
+    "responses": {
+      "env_standardization_current_state": 3,
+      "env_standardization_future_state": 4,
+      "env_standardization_comment": "We use manual deployments",
+      "env_standardization_technical_pain": [
+        "resource_conflicts",
+        "error_handling"
+      ],
+      "env_standardization_business_pain": [
+        "deployment_delays"
+      ]
+    },
+    "completedCategories": [
+      "platform_governance"
+    ],
+    "currentCategory": "platform_governance",
+    "editHistory": [],
+    "completedAt": "2025-10-29T17:17:33.901Z",
+    "lastModified": "2025-10-29T17:17:33.901Z"
+  },
+  "c2c3bcc5-2c6f-45eb-b1ab-2dd38421de2e": {
+    "id": "c2c3bcc5-2c6f-45eb-b1ab-2dd38421de2e",
+    "organizationName": "Test Org",
+    "contactEmail": "test@example.com",
+    "industry": "Technology",
+    "assessmentName": "Full Test Sample",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T17:20:07.879Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
+  },
+  "ed95dfaf-e80d-4705-8070-66d1d31fb0d4": {
+    "id": "ed95dfaf-e80d-4705-8070-66d1d31fb0d4",
+    "organizationName": "Test Org",
+    "contactEmail": "test@example.com",
+    "industry": "Technology",
+    "assessmentName": "Python Full Test Sample",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T17:20:38.200Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
+  },
+  "c4e2ad88-a7de-449d-8a0e-52e432ba4184": {
+    "id": "c4e2ad88-a7de-449d-8a0e-52e432ba4184",
+    "organizationName": "Test Org",
+    "contactEmail": "test@example.com",
+    "industry": "Technology",
+    "assessmentName": "Python Full Test Sample",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T17:21:01.571Z",
+    "status": "completed",
+    "responses": {
+      "env_standardization_current_state": 2,
+      "env_standardization_future_state": 4,
+      "env_standardization_comment": "Testing How standardized and isolated . Needs improvement.",
+      "env_standardization_technical_pain": [
+        "deployment_issues",
+        "resource_conflicts",
+        "poor_isolation"
+      ],
+      "env_standardization_business_pain": [
+        "environment_costs",
+        "team_bottlenecks"
+      ],
+      "scaling_effectiveness_current_state": 4,
+      "scaling_effectiveness_future_state": 5,
+      "scaling_effectiveness_comment": "Testing How effectively does your curr. Needs improvement.",
+      "scaling_effectiveness_technical_pain": [
+        "resource_contention"
+      ],
+      "scaling_effectiveness_business_pain": [
+        "team_blocking",
+        "poor_utilization"
+      ],
+      "auth_consistency_current_state": 4,
+      "auth_consistency_future_state": 5,
+      "auth_consistency_comment": "Testing How consistent are your authen. Needs improvement.",
+      "auth_consistency_technical_pain": [
+        "access_management",
+        "auth_complexity",
+        "security_gaps"
+      ],
+      "auth_consistency_business_pain": [
+        "compliance_violations",
+        "user_frustration"
+      ],
+      "security_controls_current_state": 2,
+      "security_controls_future_state": 4,
+      "security_controls_comment": "Testing How well do your security cont. Needs improvement.",
+      "security_controls_technical_pain": [
+        "over_privileged",
+        "encryption_gaps",
+        "monitoring_blind_spots"
+      ],
+      "security_controls_business_pain": [
+        "data_breaches",
+        "business_disruption",
+        "audit_failures"
+      ],
+      "governance_centralization_current_state": 3,
+      "governance_centralization_future_state": 5,
+      "governance_centralization_comment": "Testing How centralized and consistent. Needs improvement.",
+      "governance_centralization_technical_pain": [
+        "manual_processes",
+        "integration_complexity"
+      ],
+      "governance_centralization_business_pain": [
+        "regulatory_fines",
+        "data_quality_issues",
+        "decision_delays"
+      ],
+      "compliance_management_current_state": 2,
+      "compliance_management_future_state": 4,
+      "compliance_management_comment": "Testing How effectively do you manage . Needs improvement.",
+      "compliance_management_technical_pain": [
+        "tool_integration",
+        "change_tracking",
+        "data_retention"
+      ],
+      "compliance_management_business_pain": [
+        "audit_costs",
+        "business_risk"
+      ],
+      "visibility_comprehensiveness_current_state": 3,
+      "visibility_comprehensiveness_future_state": 5,
+      "visibility_comprehensiveness_comment": "Testing How comprehensive is your visi. Needs improvement.",
+      "visibility_comprehensiveness_technical_pain": [
+        "metric_correlation",
+        "monitoring_gaps"
+      ],
+      "visibility_comprehensiveness_business_pain": [
+        "resource_waste"
+      ],
+      "proactive_monitoring_current_state": 4,
+      "proactive_monitoring_future_state": 5,
+      "proactive_monitoring_comment": "Testing How proactive is your approach. Needs improvement.",
+      "proactive_monitoring_technical_pain": [
+        "late_detection",
+        "manual_response"
+      ],
+      "proactive_monitoring_business_pain": [
+        "service_disruption",
+        "team_burnout",
+        "customer_impact"
+      ],
+      "cost_tracking_current_state": 4,
+      "cost_tracking_future_state": 5,
+      "cost_tracking_comment": "Testing How effectively do you track D. Needs improvement.",
+      "cost_tracking_technical_pain": [
+        "reporting_complexity",
+        "tool_limitations",
+        "cost_attribution"
+      ],
+      "cost_tracking_business_pain": [
+        "budget_overruns",
+        "budget_planning"
+      ],
+      "optimization_practices_current_state": 4,
+      "optimization_practices_future_state": 5,
+      "optimization_practices_comment": "Testing How consistently do you apply . Needs improvement.",
+      "optimization_practices_technical_pain": [
+        "tool_integration",
+        "automation_gaps"
+      ],
+      "optimization_practices_business_pain": [
+        "no_cost_discipline",
+        "roi_unclear",
+        "wasted_spend"
+      ],
+      "ingestion_automation_current_state": 2,
+      "ingestion_automation_future_state": 4,
+      "ingestion_automation_comment": "Testing How unified and automated are . Needs improvement.",
+      "ingestion_automation_technical_pain": [
+        "data_format_issues",
+        "error_handling"
+      ],
+      "ingestion_automation_business_pain": [
+        "integration_costs",
+        "team_bottlenecks",
+        "data_delays"
+      ],
+      "ingestion_resilience_current_state": 4,
+      "ingestion_resilience_future_state": 5,
+      "ingestion_resilience_comment": "Testing How resilient are your ingesti. Needs improvement.",
+      "ingestion_resilience_technical_pain": [
+        "manual_fixes"
+      ],
+      "ingestion_resilience_business_pain": [
+        "sla_breaches",
+        "trust_issues"
+      ],
+      "lakehouse_structure_current_state": 2,
+      "lakehouse_structure_future_state": 4,
+      "lakehouse_structure_comment": "Testing How well-structured are your r. Needs improvement.",
+      "lakehouse_structure_technical_pain": [
+        "duplicate_data"
+      ],
+      "lakehouse_structure_business_pain": [
+        "data_discovery"
+      ],
+      "architecture_adaptability_current_state": 3,
+      "architecture_adaptability_future_state": 4,
+      "architecture_adaptability_comment": "Testing How adaptable is your architec. Needs improvement.",
+      "architecture_adaptability_technical_pain": [
+        "integration_effort",
+        "rigid_structure",
+        "new_source_complexity"
+      ],
+      "architecture_adaptability_business_pain": [
+        "integration_delays"
+      ],
+      "orchestration_reliability_current_state": 4,
+      "orchestration_reliability_future_state": 5,
+      "orchestration_reliability_comment": "Testing How reliable and maintainable . Needs improvement.",
+      "orchestration_reliability_technical_pain": [
+        "monitoring_gaps",
+        "dependency_failures",
+        "maintenance_burden"
+      ],
+      "orchestration_reliability_business_pain": [
+        "data_freshness"
+      ],
+      "pipeline_lifecycle_current_state": 4,
+      "pipeline_lifecycle_future_state": 5,
+      "pipeline_lifecycle_comment": "Testing How effectively do you version. Needs improvement.",
+      "pipeline_lifecycle_technical_pain": [
+        "version_control",
+        "change_tracking"
+      ],
+      "pipeline_lifecycle_business_pain": [
+        "rollback_complexity"
+      ],
+      "quality_validation_current_state": 2,
+      "quality_validation_future_state": 4,
+      "quality_validation_comment": "Testing How standardized are your data. Needs improvement.",
+      "quality_validation_technical_pain": [
+        "quality_rules"
+      ],
+      "quality_validation_business_pain": [
+        "trust_erosion"
+      ],
+      "quality_monitoring_current_state": 3,
+      "quality_monitoring_future_state": 5,
+      "quality_monitoring_comment": "Testing How consistently are quality r. Needs improvement.",
+      "quality_monitoring_technical_pain": [
+        "metric_visibility",
+        "stakeholder_communication"
+      ],
+      "quality_monitoring_business_pain": [
+        "reactive_approach",
+        "late_discovery"
+      ],
+      "performance_optimization_current_state": 4,
+      "performance_optimization_future_state": 5,
+      "performance_optimization_comment": "Testing How optimized are your data pi. Needs improvement.",
+      "performance_optimization_technical_pain": [
+        "optimization_difficulty",
+        "parallelization_gaps"
+      ],
+      "performance_optimization_business_pain": [
+        "competitive_disadvantage"
+      ],
+      "scalability_demand_current_state": 4,
+      "scalability_demand_future_state": 5,
+      "scalability_demand_comment": "Testing How dynamically can your workl. Needs improvement.",
+      "scalability_demand_technical_pain": [
+        "configuration_complexity",
+        "over_provisioning"
+      ],
+      "scalability_demand_business_pain": [
+        "capacity_planning"
+      ],
+      "performance_consistency_current_state": 3,
+      "performance_consistency_future_state": 4,
+      "performance_consistency_comment": "Testing How consistently do your analy. Needs improvement.",
+      "performance_consistency_technical_pain": [
+        "slow_queries",
+        "optimization_difficulty",
+        "inconsistent_performance"
+      ],
+      "performance_consistency_business_pain": [
+        "delayed_insights",
+        "adoption_barriers"
+      ],
+      "optimization_approach_current_state": 4,
+      "optimization_approach_future_state": 5,
+      "optimization_approach_comment": "Testing How structured is your approac. Needs improvement.",
+      "optimization_approach_technical_pain": [
+        "query_complexity",
+        "indexing_gaps",
+        "ad_hoc_optimization"
+      ],
+      "optimization_approach_business_pain": [
+        "optimization_delays",
+        "reactive_approach",
+        "limited_scalability"
+      ],
+      "metrics_consistency_current_state": 2,
+      "metrics_consistency_future_state": 4,
+      "metrics_consistency_comment": "Testing How unified are your data defi. Needs improvement.",
+      "metrics_consistency_technical_pain": [
+        "version_confusion",
+        "documentation_gaps"
+      ],
+      "metrics_consistency_business_pain": [
+        "decision_delays",
+        "trust_issues"
+      ],
+      "data_discovery_current_state": 2,
+      "data_discovery_future_state": 3,
+      "data_discovery_comment": "Testing How easily can analysts discov. Needs improvement.",
+      "data_discovery_technical_pain": [
+        "unclear_lineage"
+      ],
+      "data_discovery_business_pain": [
+        "onboarding_delays"
+      ],
+      "dashboard_integration_current_state": 3,
+      "dashboard_integration_future_state": 4,
+      "dashboard_integration_comment": "Testing How well integrated are your d. Needs improvement.",
+      "dashboard_integration_technical_pain": [
+        "limited_interactivity",
+        "refresh_delays"
+      ],
+      "dashboard_integration_business_pain": [
+        "user_frustration"
+      ],
+      "reporting_governance_current_state": 3,
+      "reporting_governance_future_state": 5,
+      "reporting_governance_comment": "Testing How standardized are refresh s. Needs improvement.",
+      "reporting_governance_technical_pain": [
+        "inconsistent_schedules",
+        "kpi_proliferation"
+      ],
+      "reporting_governance_business_pain": [
+        "conflicting_kpis",
+        "compliance_gaps",
+        "trust_erosion"
+      ],
+      "user_empowerment_current_state": 4,
+      "user_empowerment_future_state": 5,
+      "user_empowerment_comment": "Testing How empowered are business use. Needs improvement.",
+      "user_empowerment_technical_pain": [
+        "tool_complexity",
+        "support_burden"
+      ],
+      "user_empowerment_business_pain": [
+        "user_frustration",
+        "missed_opportunities",
+        "slow_decisions"
+      ],
+      "governed_autonomy_current_state": 2,
+      "governed_autonomy_future_state": 4,
+      "governed_autonomy_comment": "Testing How effectively do you balance. Needs improvement.",
+      "governed_autonomy_technical_pain": [
+        "security_gaps",
+        "policy_enforcement"
+      ],
+      "governed_autonomy_business_pain": [
+        "regulatory_exposure"
+      ],
+      "external_sharing_current_state": 3,
+      "external_sharing_future_state": 5,
+      "external_sharing_comment": "Testing How easily can users or partne. Needs improvement.",
+      "external_sharing_technical_pain": [
+        "access_provisioning",
+        "format_compatibility",
+        "tracking_gaps"
+      ],
+      "external_sharing_business_pain": [
+        "compliance_risk",
+        "revenue_impact"
+      ],
+      "cross_domain_analytics_current_state": 4,
+      "cross_domain_analytics_future_state": 5,
+      "cross_domain_analytics_comment": "Testing How well does your platform su. Needs improvement.",
+      "cross_domain_analytics_technical_pain": [
+        "integration_complexity",
+        "data_silos",
+        "governance_gaps"
+      ],
+      "cross_domain_analytics_business_pain": [
+        "opportunity_cost"
+      ],
+      "experiment_tracking_current_state": 4,
+      "experiment_tracking_future_state": 5,
+      "experiment_tracking_comment": "Testing How systematically are experim. Needs improvement.",
+      "experiment_tracking_technical_pain": [
+        "no_tracking",
+        "comparison_difficulty",
+        "manual_logging"
+      ],
+      "experiment_tracking_business_pain": [
+        "limited_reuse"
+      ],
+      "model_reproducibility_current_state": 2,
+      "model_reproducibility_future_state": 4,
+      "model_reproducibility_comment": "Testing How reproducible are your mode. Needs improvement.",
+      "model_reproducibility_technical_pain": [
+        "dependency_issues"
+      ],
+      "model_reproducibility_business_pain": [
+        "trust_issues",
+        "rollback_complexity",
+        "production_failures"
+      ],
+      "deployment_automation_current_state": 4,
+      "deployment_automation_future_state": 5,
+      "deployment_automation_comment": "Testing How automated is your model de. Needs improvement.",
+      "deployment_automation_technical_pain": [
+        "testing_gaps",
+        "manual_deployment",
+        "environment_inconsistency"
+      ],
+      "deployment_automation_business_pain": [
+        "slow_time_to_value"
+      ],
+      "model_monitoring_current_state": 3,
+      "model_monitoring_future_state": 4,
+      "model_monitoring_comment": "Testing How standardized are your mech. Needs improvement.",
+      "model_monitoring_technical_pain": [
+        "manual_retraining",
+        "performance_tracking"
+      ],
+      "model_monitoring_business_pain": [
+        "customer_impact"
+      ],
+      "feature_store_current_state": 2,
+      "feature_store_future_state": 4,
+      "feature_store_comment": "Testing How effectively are reusable f. Needs improvement.",
+      "feature_store_technical_pain": [
+        "discovery_difficulty",
+        "duplicate_features",
+        "versioning_gaps"
+      ],
+      "feature_store_business_pain": [
+        "quality_issues",
+        "model_failures",
+        "slow_development"
+      ],
+      "data_prep_current_state": 2,
+      "data_prep_future_state": 4,
+      "data_prep_comment": "Testing How consistent are data-prepar. Needs improvement.",
+      "data_prep_technical_pain": [
+        "quality_gaps",
+        "scalability_issues",
+        "manual_processes"
+      ],
+      "data_prep_business_pain": [
+        "model_failures",
+        "resource_waste",
+        "data_scientist_bottleneck"
+      ],
+      "ml_ownership_current_state": 4,
+      "ml_ownership_future_state": 5,
+      "ml_ownership_comment": "Testing How clearly are ownership, rev. Needs improvement.",
+      "ml_ownership_technical_pain": [
+        "unclear_ownership",
+        "change_tracking",
+        "review_inconsistency"
+      ],
+      "ml_ownership_business_pain": [
+        "quality_issues"
+      ],
+      "ml_compliance_current_state": 3,
+      "ml_compliance_future_state": 4,
+      "ml_compliance_comment": "Testing How well are compliance, repro. Needs improvement.",
+      "ml_compliance_technical_pain": [
+        "bias_detection"
+      ],
+      "ml_compliance_business_pain": [
+        "regulatory_risk",
+        "reputation_damage"
+      ],
+      "production_delivery_current_state": 2,
+      "production_delivery_future_state": 4,
+      "production_delivery_comment": "Testing How effectively do your ML mod. Needs improvement.",
+      "production_delivery_technical_pain": [
+        "performance_issues"
+      ],
+      "production_delivery_business_pain": [
+        "failed_pilots"
+      ],
+      "ml_scalability_current_state": 4,
+      "ml_scalability_future_state": 5,
+      "ml_scalability_comment": "Testing How scalable is your process f. Needs improvement.",
+      "ml_scalability_technical_pain": [
+        "resource_constraints",
+        "platform_gaps",
+        "custom_solutions"
+      ],
+      "ml_scalability_business_pain": [
+        "limited_ml_adoption"
+      ],
+      "genai_vision_current_state": 3,
+      "genai_vision_future_state": 4,
+      "genai_vision_comment": "Testing How aligned is your GenAI visi. Needs improvement.",
+      "genai_vision_technical_pain": [
+        "no_strategy",
+        "unclear_use_cases",
+        "skills_gaps"
+      ],
+      "genai_vision_business_pain": [
+        "missed_opportunities",
+        "budget_uncertainty"
+      ],
+      "use_case_definition_current_state": 4,
+      "use_case_definition_future_state": 5,
+      "use_case_definition_comment": "Testing How clearly defined are your f. Needs improvement.",
+      "use_case_definition_technical_pain": [
+        "unrealistic_expectations",
+        "data_readiness"
+      ],
+      "use_case_definition_business_pain": [
+        "scattered_efforts",
+        "value_uncertainty",
+        "prioritization_challenges"
+      ],
+      "knowledge_sources_current_state": 2,
+      "knowledge_sources_future_state": 3,
+      "knowledge_sources_comment": "Testing How prepared is your existing . Needs improvement.",
+      "knowledge_sources_technical_pain": [
+        "no_vector_search"
+      ],
+      "knowledge_sources_business_pain": [
+        "poor_relevance",
+        "data_prep_delays"
+      ],
+      "knowledge_governance_current_state": 4,
+      "knowledge_governance_future_state": 5,
+      "knowledge_governance_comment": "Testing How governed are your knowledg. Needs improvement.",
+      "knowledge_governance_technical_pain": [
+        "version_control"
+      ],
+      "knowledge_governance_business_pain": [
+        "output_quality"
+      ],
+      "application_capability_current_state": 2,
+      "application_capability_future_state": 3,
+      "application_capability_comment": "Testing How capable is your current se. Needs improvement.",
+      "application_capability_technical_pain": [
+        "no_infrastructure"
+      ],
+      "application_capability_business_pain": [
+        "user_experience",
+        "cost_overruns",
+        "slow_development"
+      ],
+      "integration_patterns_current_state": 4,
+      "integration_patterns_future_state": 5,
+      "integration_patterns_comment": "Testing How standardized is your appro. Needs improvement.",
+      "integration_patterns_technical_pain": [
+        "monitoring_gaps"
+      ],
+      "integration_patterns_business_pain": [
+        "scaling_challenges",
+        "inconsistent_ux",
+        "security_incidents"
+      ],
+      "output_validation_current_state": 4,
+      "output_validation_future_state": 5,
+      "output_validation_comment": "Testing How structured is your process. Needs improvement.",
+      "output_validation_technical_pain": [
+        "quality_metrics",
+        "no_validation",
+        "testing_gaps"
+      ],
+      "output_validation_business_pain": [
+        "user_trust",
+        "output_quality"
+      ],
+      "genai_monitoring_current_state": 4,
+      "genai_monitoring_future_state": 5,
+      "genai_monitoring_comment": "Testing How do you monitor performance. Needs improvement.",
+      "genai_monitoring_technical_pain": [
+        "drift_detection",
+        "user_feedback",
+        "alert_gaps"
+      ],
+      "genai_monitoring_business_pain": [
+        "user_complaints"
+      ],
+      "ethical_guardrails_current_state": 2,
+      "ethical_guardrails_future_state": 3,
+      "ethical_guardrails_comment": "Testing How defined are your ethical, . Needs improvement.",
+      "ethical_guardrails_technical_pain": [
+        "policy_enforcement"
+      ],
+      "ethical_guardrails_business_pain": [
+        "adoption_barriers",
+        "compliance_risk"
+      ],
+      "genai_transparency_current_state": 4,
+      "genai_transparency_future_state": 5,
+      "genai_transparency_comment": "Testing How transparent and traceable . Needs improvement.",
+      "genai_transparency_technical_pain": [
+        "no_logging"
+      ],
+      "genai_transparency_business_pain": [
+        "audit_failures"
+      ],
+      "coe_structure_current_state": 2,
+      "coe_structure_future_state": 3,
+      "coe_structure_comment": "Testing How formally is your CoE struc. Needs improvement.",
+      "coe_structure_technical_pain": [
+        "standards_gaps",
+        "unclear_charter",
+        "no_coe"
+      ],
+      "coe_structure_business_pain": [
+        "inconsistent_practices",
+        "knowledge_silos"
+      ],
+      "coe_effectiveness_current_state": 4,
+      "coe_effectiveness_future_state": 5,
+      "coe_effectiveness_comment": "Testing How effectively does it drive . Needs improvement.",
+      "coe_effectiveness_technical_pain": [
+        "measurement_gaps",
+        "tooling_gaps",
+        "low_influence"
+      ],
+      "coe_effectiveness_business_pain": [
+        "architecture_debt",
+        "roi_unclear",
+        "governance_gaps"
+      ],
+      "collaboration_strength_current_state": 2,
+      "collaboration_strength_future_state": 4,
+      "collaboration_strength_comment": "Testing How strong is the internal col. Needs improvement.",
+      "collaboration_strength_technical_pain": [
+        "documentation_gaps"
+      ],
+      "collaboration_strength_business_pain": [
+        "slow_problem_solving"
+      ],
+      "asset_exchange_current_state": 4,
+      "asset_exchange_future_state": 5,
+      "asset_exchange_comment": "Testing How frequently do practitioner. Needs improvement.",
+      "asset_exchange_technical_pain": [
+        "documentation_gaps",
+        "discovery_difficulty",
+        "quality_standards"
+      ],
+      "asset_exchange_business_pain": [
+        "low_reuse"
+      ],
+      "training_programs_current_state": 3,
+      "training_programs_future_state": 5,
+      "training_programs_comment": "Testing How comprehensive are your Dat. Needs improvement.",
+      "training_programs_technical_pain": [
+        "outdated_content",
+        "hands_on_gaps"
+      ],
+      "training_programs_business_pain": [
+        "skills_gaps",
+        "underutilization",
+        "slow_adoption"
+      ],
+      "continuous_learning_current_state": 2,
+      "continuous_learning_future_state": 4,
+      "continuous_learning_comment": "Testing How regularly are new capabili. Needs improvement.",
+      "continuous_learning_technical_pain": [
+        "feedback_loops"
+      ],
+      "continuous_learning_business_pain": [
+        "stale_practices"
+      ],
+      "value_linkage_current_state": 4,
+      "value_linkage_future_state": 5,
+      "value_linkage_comment": "Testing How clearly are Databricks cos. Needs improvement.",
+      "value_linkage_technical_pain": [
+        "metric_gaps"
+      ],
+      "value_linkage_business_pain": [
+        "cost_perception"
+      ],
+      "value_reviews_current_state": 2,
+      "value_reviews_future_state": 4,
+      "value_reviews_comment": "Testing How frequently do you review u. Needs improvement.",
+      "value_reviews_technical_pain": [
+        "no_reviews",
+        "manual_analysis"
+      ],
+      "value_reviews_business_pain": [
+        "accountability_gaps",
+        "misaligned_priorities"
+      ],
+      "innovation_adoption_current_state": 3,
+      "innovation_adoption_future_state": 4,
+      "innovation_adoption_comment": "Testing How proactive is your organiza. Needs improvement.",
+      "innovation_adoption_technical_pain": [
+        "risk_aversion",
+        "resource_constraints"
+      ],
+      "innovation_adoption_business_pain": [
+        "innovation_lag"
+      ],
+      "continuous_improvement_current_state": 3,
+      "continuous_improvement_future_state": 5,
+      "continuous_improvement_comment": "Testing How effectively are feedback a. Needs improvement.",
+      "continuous_improvement_technical_pain": [
+        "action_tracking"
+      ],
+      "continuous_improvement_business_pain": [
+        "culture_impact"
+      ]
+    },
+    "completedCategories": [
+      "platform_governance",
+      "data_engineering",
+      "analytics_bi",
+      "machine_learning",
+      "generative_ai",
+      "operational_excellence"
+    ],
+    "currentCategory": "platform_governance",
+    "editHistory": [],
+    "completedAt": "2025-10-29T17:21:01.646Z",
+    "lastModified": "2025-10-29T17:21:01.646Z"
+  },
+  "157137a0-f66f-4d25-be65-c3ff9b83a6d0": {
+    "id": "157137a0-f66f-4d25-be65-c3ff9b83a6d0",
+    "organizationName": "Test Org",
+    "contactEmail": "test@example.com",
+    "industry": "Technology",
+    "assessmentName": "Python Full Test Sample",
+    "assessmentDescription": "",
+    "startedAt": "2025-10-29T17:26:02.194Z",
     "status": "in_progress",
     "responses": {},
     "completedCategories": [],

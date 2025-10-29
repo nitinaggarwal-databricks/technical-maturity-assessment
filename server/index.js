@@ -805,6 +805,8 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 // Generate assessment results and recommendations (ADAPTIVE with live data)
 app.get('/api/assessment/:id/results', async (req, res) => {
   try {
+    console.log(`🎯 [RESULTS ENDPOINT] Request for assessment: ${req.params.id}`);
+    
     // CRITICAL: Prevent caching of dynamic results
     res.set({
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -817,11 +819,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     const assessment = await assessments.get(id);
 
     if (!assessment) {
+      console.log(`❌ [RESULTS ENDPOINT] Assessment ${id} not found`);
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
+    
+    console.log(`✅ [RESULTS ENDPOINT] Assessment ${id} found, has ${Object.keys(assessment.responses || {}).length} responses`);
 
     // DEBUG: Log what we retrieved
     console.log('🔍 Results endpoint - Retrieved assessment:', id);

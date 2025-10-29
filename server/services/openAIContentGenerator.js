@@ -678,15 +678,19 @@ Return JSON with this structure:
       };
     } else {
       // Generate overall fallback
+      console.log('[OpenAI] ⭐ FALLBACK: Generating overall assessment (not pillar-specific)');
       const recommendations = engine.generateAdaptiveRecommendations(
         validResponses
       );
+      console.log('[OpenAI] ⭐ FALLBACK: Adaptive engine returned, checking areaScores...');
+      console.log('[OpenAI] ⭐ FALLBACK: recommendations object keys:', Object.keys(recommendations || {}));
       
       // Transform to use pillar-structured actions
       console.log('[OpenAI] About to generate pillar actions. areaScores:', Object.keys(recommendations.areaScores || {}).length, 'pillars');
       const pillarActions = this.generatePillarPrioritizedActions(recommendations.areaScores, assessment);
       console.log('[OpenAI] pillarActions generated:', pillarActions.length);
       recommendations.prioritizedActions = pillarActions;
+      console.log('[OpenAI] ⭐ FALLBACK: Returning recommendations with prioritizedActions:', recommendations.prioritizedActions?.length);
       
       return recommendations;
     }
