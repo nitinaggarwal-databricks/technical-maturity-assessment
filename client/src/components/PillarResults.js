@@ -1,0 +1,1257 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { 
+  FiArrowLeft, 
+  FiBarChart2, 
+  FiCheckCircle, 
+  FiTarget,
+  FiTrendingUp,
+  FiAlertCircle,
+  FiZap,
+  FiArrowRight,
+  FiRefreshCw,
+  FiEdit3,
+  FiSave,
+  FiTrash2,
+  FiX
+} from 'react-icons/fi';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import toast from 'react-hot-toast';
+import * as assessmentService from '../services/assessmentService';
+import LoadingSpinner from './LoadingSpinner';
+import AssessmentHeader from './AssessmentHeader';
+import assessmentFramework from '../data/assessmentFramework';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const ResultsContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px 20px;
+  padding-top: 68px; /* Just GlobalNav height - AssessmentHeader is sticky below it */
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const PillarNavigation = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+`;
+
+const PillarNavTitle = styled.div`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const PillarNavGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+`;
+
+const PillarNavItem = styled(motion.button)`
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 2px solid ${props => props.$active ? '#3b82f6' : '#e5e7eb'};
+  background: ${props => props.$active ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' : 'white'};
+  color: ${props => props.$active ? 'white' : '#374151'};
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    border-color: #3b82f6;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const HeaderSection = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+`;
+
+const BackButton = styled(motion.button)`
+  position: absolute;
+  top: 88px; /* 68px GlobalNav + 20px spacing */
+  left: 20px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10; /* Ensure it's above other content */
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    transform: translateX(-2px);
+  }
+`;
+
+const ViewOverallButton = styled(motion.button)`
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 40px auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+  }
+`;
+
+const PillarTitle = styled.h1`
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+`;
+
+const ScoreSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+`;
+
+const ScoreCard = styled(motion.div)`
+  background: ${props => props.bgColor || 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'};
+  color: white;
+  padding: 24px 32px;
+  border-radius: 16px;
+  text-align: center;
+  min-width: 200px;
+`;
+
+const ChartSection = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+`;
+
+const ChartContainer = styled.div`
+  height: 400px;
+  margin-top: 24px;
+`;
+
+const ScoreValue = styled.div`
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+`;
+
+const ScoreLabel = styled.div`
+  font-size: 1.1rem;
+  opacity: 0.9;
+`;
+
+const MaturityLevel = styled(motion.div)`
+  background: ${props => props.color || '#10b981'};
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+`;
+
+const RecommendationsSection = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const RecommendationCard = styled(motion.div)`
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border-left: 4px solid ${props => props.priority === 'high' ? '#ef4444' : props.priority === 'medium' ? '#f59e0b' : '#10b981'};
+  position: relative;
+`;
+
+const RecommendationHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+`;
+
+const RecommendationTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+`;
+
+const EditActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: ${props => props.$variant === 'danger' ? '#fee2e2' : props.$variant === 'success' ? '#d1fae5' : '#eff6ff'};
+  color: ${props => props.$variant === 'danger' ? '#dc2626' : props.$variant === 'success' ? '#059669' : '#3b82f6'};
+  border: 1px solid ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#bfdbfe'};
+  border-radius: 6px;
+  font-size: 0.813rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#dbeafe'};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const EditableTextarea = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+`;
+
+const RecommendationDescription = styled.p`
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 16px;
+`;
+
+const ActionItems = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const ActionItem = styled.li`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 0.95rem;
+
+  &:before {
+    content: "→";
+    color: #3b82f6;
+    font-weight: bold;
+    margin-top: 2px;
+  }
+`;
+
+const NavigationSection = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+`;
+
+const NavButton = styled(motion.button)`
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+
+  ${props => props.variant === 'primary' && `
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+  `}
+
+  ${props => props.variant === 'secondary' && `
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+    
+    &:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+  `}
+`;
+
+const PillarResults = () => {
+  const { assessmentId, pillarId } = useParams();
+  const navigate = useNavigate();
+  const routerLocation = useLocation();
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Edit state management
+  const [editingCard, setEditingCard] = useState(null); // Format: 'pain-0', 'gap-1', etc.
+  const [editedContent, setEditedContent] = useState({});
+  const [customizations, setCustomizations] = useState({
+    painPoints: {},
+    gapRecommendations: {}
+  });
+
+  useEffect(() => {
+    const loadPillarResults = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('Loading pillar results for:', assessmentId, pillarId);
+        const pillarResults = await assessmentService.getPillarResults(assessmentId, pillarId);
+        console.log('Pillar results loaded:', pillarResults);
+        setResults(pillarResults);
+      } catch (error) {
+        console.error('Error loading pillar results:', error);
+        const errorMessage = error.response?.data?.message || error.message;
+        setError(errorMessage);
+        
+        // Only show toast for unexpected errors, not for "no responses" case
+        if (!errorMessage.includes('No responses found')) {
+          toast.error('Failed to load pillar results: ' + errorMessage);
+        }
+        setResults(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (assessmentId && pillarId) {
+      loadPillarResults();
+    } else {
+      console.error('Missing assessmentId or pillarId');
+      setError('Missing required parameters');
+      setLoading(false);
+    }
+  }, [assessmentId, pillarId, routerLocation.key]);
+
+  // Edit handlers for recommendation cards
+  const handleEditCard = (cardType, index, rec) => {
+    const cardId = `${cardType}-${index}`;
+    setEditingCard(cardId);
+    
+    // Prepare content for editing
+    const actions = rec.actions || [];
+    setEditedContent({
+      title: rec.title || rec.solution || '',
+      whyNow: rec.whyNow || '',
+      actions: actions.map(a => typeof a === 'string' ? a : a.action || a.title || a.description || '').join('\n')
+    });
+  };
+
+  const handleSaveCard = (cardType, index) => {
+    const cardId = `${cardType}-${index}`;
+    const newCustomizations = { ...customizations };
+    
+    if (!newCustomizations[cardType]) {
+      newCustomizations[cardType] = {};
+    }
+    
+    newCustomizations[cardType][index] = {
+      title: editedContent.title,
+      whyNow: editedContent.whyNow,
+      actions: editedContent.actions.split('\n').filter(line => line.trim())
+    };
+    
+    setCustomizations(newCustomizations);
+    setEditingCard(null);
+    setEditedContent({});
+    toast.success('Card content saved!');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCard(null);
+    setEditedContent({});
+  };
+
+  const handleRemoveCustomization = (cardType, index) => {
+    const newCustomizations = { ...customizations };
+    if (newCustomizations[cardType] && newCustomizations[cardType][index]) {
+      delete newCustomizations[cardType][index];
+      setCustomizations(newCustomizations);
+      toast.success('Customization removed, showing original content');
+    }
+  };
+
+  // Get card data (use customization if exists, otherwise use original)
+  const getCardData = (cardType, index, originalRec) => {
+    if (customizations[cardType] && customizations[cardType][index]) {
+      return {
+        ...originalRec,
+        ...customizations[cardType][index],
+        isCustomized: true
+      };
+    }
+    return { ...originalRec, isCustomized: false };
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return '#ef4444';
+      case 'medium': return '#f59e0b';
+      case 'low': return '#10b981';
+      default: return '#6b7280';
+    }
+  };
+
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case 'high': return <FiAlertCircle />;
+      case 'medium': return <FiTarget />;
+      case 'low': return <FiZap />;
+      default: return <FiCheckCircle />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <ResultsContainer>
+        <LoadingSpinner message="Generating pillar recommendations..." />
+      </ResultsContainer>
+    );
+  }
+
+  if (!results || !results.pillarDetails) {
+    // Check if this is a "no responses" case
+    const isNoResponsesError = error && error.includes('No responses found');
+    const pillarName = assessmentFramework.assessmentAreas.find(area => area.id === pillarId)?.name || 'this pillar';
+    
+    return (
+      <ResultsContainer>
+        <ContentWrapper>
+          <HeaderSection
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {isNoResponsesError ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <FiAlertCircle size={64} style={{ color: '#f59e0b', marginBottom: '16px' }} />
+                  <h1 style={{ fontSize: '1.75rem', color: '#111827', marginBottom: '12px' }}>
+                    No Responses Yet for {pillarName}
+                  </h1>
+                  <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '8px' }}>
+                    You haven't answered any questions for this pillar yet.
+                  </p>
+                  <p style={{ fontSize: '1rem', color: '#6b7280' }}>
+                    Start the assessment to see personalized results and recommendations.
+                  </p>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '32px' }}>
+                  <NavButton
+                    variant="primary"
+                    onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <FiArrowLeft size={16} />
+                    Start {pillarName} Assessment
+                  </NavButton>
+                  <NavButton
+                    variant="secondary"
+                    onClick={() => navigate(`/results/${assessmentId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    View Overall Results
+                  </NavButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <FiAlertCircle size={64} style={{ color: '#ef4444', marginBottom: '16px' }} />
+                  <h1>Results Not Available</h1>
+                  <p>Unable to load pillar results. Please try again.</p>
+                  {error && (
+                    <div style={{ marginTop: '16px', padding: '12px', background: '#fef2f2', borderRadius: '8px', color: '#991b1b', fontSize: '0.9rem' }}>
+                      {error}
+                    </div>
+                  )}
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '32px' }}>
+                  <NavButton
+                    variant="primary"
+                    onClick={() => window.location.reload()}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <FiRefreshCw size={16} />
+                    Retry
+                  </NavButton>
+                  <NavButton
+                    variant="secondary"
+                    onClick={() => navigate(`/results/${assessmentId}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Go to Overall Results
+                  </NavButton>
+                </div>
+              </>
+            )}
+          </HeaderSection>
+        </ContentWrapper>
+      </ResultsContainer>
+    );
+  }
+
+  return (
+    <>
+      <AssessmentHeader
+        assessmentId={assessmentId}
+        assessmentName={results?.assessmentInfo?.assessmentName || 'Assessment'}
+        organizationName={results?.assessmentInfo?.organizationName}
+        currentView="pillar-results"
+        onAssessmentUpdate={(updatedData) => {
+          if (updatedData.assessmentName) {
+            // Reload pillar results after edit
+            window.location.reload();
+          }
+        }}
+        isSample={results?.assessmentInfo?.assessmentName?.includes('Sample')}
+      />
+      
+      <ResultsContainer>
+        <BackButton
+          onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+        <FiArrowLeft size={16} />
+        Back to Assessment
+      </BackButton>
+
+      <ContentWrapper>
+        {/* Pillar Navigation */}
+        <PillarNavigation>
+          <PillarNavTitle>Jump to Pillar Results:</PillarNavTitle>
+          <PillarNavGrid>
+            {assessmentFramework.assessmentAreas.map((pillar) => (
+              <PillarNavItem
+                key={pillar.id}
+                $active={pillar.id === pillarId}
+                onClick={() => navigate(`/pillar-results/${assessmentId}/${pillar.id}`)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {pillar.icon} {pillar.name}
+              </PillarNavItem>
+            ))}
+          </PillarNavGrid>
+        </PillarNavigation>
+
+        <HeaderSection
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <PillarTitle>
+            <FiBarChart2 size={32} />
+            {results.pillarDetails.name} Results
+          </PillarTitle>
+          
+          <ScoreSection>
+            <ScoreCard
+              bgColor="linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <ScoreValue>{results.pillarDetails.currentScore || 0}</ScoreValue>
+              <ScoreLabel>Current Maturity</ScoreLabel>
+            </ScoreCard>
+            
+            <ScoreCard
+              bgColor="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <ScoreValue>{results.pillarDetails.futureScore || 0}</ScoreValue>
+              <ScoreLabel>Future Vision</ScoreLabel>
+            </ScoreCard>
+            
+            <MaturityLevel
+              color={results.pillarDetails.maturityLevel.color}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              {results.pillarDetails.maturityLevel.level}: {results.pillarDetails.maturityLevel.description}
+            </MaturityLevel>
+          </ScoreSection>
+
+          <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
+            Based on {results.pillarDetails.questionsAnswered} questions across {results.pillarDetails.dimensionsCompleted} dimensions
+          </p>
+        </HeaderSection>
+
+        <ChartSection
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <SectionTitle>
+            <FiBarChart2 />
+            Maturity Comparison
+          </SectionTitle>
+          <ChartContainer>
+            <Bar 
+              data={{
+                labels: ['Current State', 'Future Vision'],
+                datasets: [{
+                  label: results.pillarDetails.name,
+                  data: [results.pillarDetails.currentScore || 0, results.pillarDetails.futureScore || 0],
+                  backgroundColor: [
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(16, 185, 129, 0.8)'
+                  ],
+                  borderColor: [
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(16, 185, 129, 1)'
+                  ],
+                  borderWidth: 2,
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: false
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        return `Score: ${context.parsed.y}/5`;
+                      }
+                    }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 5,
+                    ticks: {
+                      stepSize: 1
+                    },
+                    title: {
+                      display: true,
+                      text: 'Maturity Score'
+                    }
+                  }
+                }
+              }}
+            />
+          </ChartContainer>
+        </ChartSection>
+
+        <RecommendationsSection
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <SectionTitle>
+            <FiTrendingUp />
+            {results.databricksFeatures && results.databricksFeatures.length > 0 ? 'Databricks Recommendations' : 'Adaptive Recommendations'} for {results.pillarDetails.name}
+          </SectionTitle>
+
+          {/* Databricks Features */}
+          {results.databricksFeatures && results.databricksFeatures.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiCheckCircle size={20} style={{ color: '#10b981' }} />
+                Recommended Databricks Features for Your Maturity Level
+              </h3>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                {results.databricksFeatures.map((feature, idx) => (
+                  <RecommendationCard
+                    priority="medium"
+                    key={`databricks-${idx}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 + idx * 0.1 }}
+                  >
+                    <RecommendationHeader>
+                      <RecommendationTitle style={{ fontSize: '1.1rem', color: '#1e40af' }}>
+                        📦 {feature.name}
+                      </RecommendationTitle>
+                      {feature.releaseDate && (
+                        <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600, backgroundColor: '#f0fdf4', padding: '4px 12px', borderRadius: '12px' }}>
+                          {feature.releaseDate}
+                        </span>
+                      )}
+                    </RecommendationHeader>
+                    
+                    <div style={{ marginBottom: '12px', color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                      {feature.description}
+                    </div>
+                    
+                    {feature.benefits && feature.benefits.length > 0 && (
+                      <div>
+                        <div style={{ fontWeight: 600, color: '#374151', marginBottom: '8px', fontSize: '0.9rem' }}>
+                          Key Benefits:
+                        </div>
+                        <ul style={{ margin: 0, paddingLeft: '20px', color: '#64748b' }}>
+                          {feature.benefits.map((benefit, bIdx) => (
+                            <li key={bIdx} style={{ marginBottom: '4px' }}>{benefit}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {feature.docs && (
+                      <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
+                        <a 
+                          href={feature.docs}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: '6px', 
+                            color: '#3b82f6', 
+                            textDecoration: 'none', 
+                            fontWeight: 600,
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          📚 View Documentation →
+                        </a>
+                      </div>
+                    )}
+                  </RecommendationCard>
+                ))}
+              </div>
+              
+              {results.specificRecommendations && results.specificRecommendations.length > 0 && (
+                <div style={{ marginTop: '24px', padding: '20px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '2px solid #3b82f6' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#1e40af', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FiZap size={18} />
+                    Quick Actions to Get Started:
+                  </h4>
+                  <ul style={{ margin: 0, paddingLeft: '20px', color: '#374151' }}>
+                    {results.specificRecommendations.map((rec, idx) => (
+                      <li key={idx} style={{ marginBottom: '8px', lineHeight: 1.6 }}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {results._source && (
+                <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#9ca3af', fontStyle: 'italic', textAlign: 'center' }}>
+                  Source: {results._source}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pain Point Recommendations */}
+          {results.painPointRecommendations && results.painPointRecommendations.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiAlertCircle size={20} style={{ color: '#ef4444' }} />
+                Critical Pain Points to Address
+              </h3>
+              {results.painPointRecommendations.map((rec, idx) => {
+                const cardId = `painPoints-${idx}`;
+                const isEditing = editingCard === cardId;
+                const cardData = getCardData('painPoints', idx, rec);
+                
+                return (
+                  <RecommendationCard
+                    priority={rec.priority}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.8 + idx * 0.1 }}
+                    key={idx}
+                  >
+                    <RecommendationHeader>
+                      <RecommendationTitle>
+                        {getPriorityIcon(rec.priority)}
+                        {isEditing ? 'Editing Recommendation' : (cardData.title || rec.solution)}
+                      </RecommendationTitle>
+                      <CardActions>
+                        {isEditing ? (
+                          <>
+                            <EditActionButton 
+                              $variant="success"
+                              onClick={() => handleSaveCard('painPoints', idx)}
+                            >
+                              <FiSave size={12} />
+                              Save
+                            </EditActionButton>
+                            <EditActionButton 
+                              onClick={handleCancelEdit}
+                            >
+                              <FiX size={12} />
+                              Cancel
+                            </EditActionButton>
+                          </>
+                        ) : (
+                          <>
+                            <EditActionButton 
+                              onClick={() => handleEditCard('painPoints', idx, cardData)}
+                            >
+                              <FiEdit3 size={12} />
+                              Edit
+                            </EditActionButton>
+                            {cardData.isCustomized && (
+                              <EditActionButton 
+                                $variant="danger"
+                                onClick={() => handleRemoveCustomization('painPoints', idx)}
+                              >
+                                <FiTrash2 size={12} />
+                              </EditActionButton>
+                            )}
+                          </>
+                        )}
+                      </CardActions>
+                    </RecommendationHeader>
+                    
+                    {isEditing ? (
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Title:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.title || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, title: e.target.value })}
+                          placeholder="Enter recommendation title..."
+                          style={{ minHeight: '60px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Why This Matters:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.whyNow || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, whyNow: e.target.value })}
+                          placeholder="Explain why this recommendation is important..."
+                          style={{ minHeight: '80px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Implementation Steps (one per line):
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.actions || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, actions: e.target.value })}
+                          placeholder="Enter action items, one per line..."
+                        />
+                      </div>
+                    ) : (
+                      <RecommendationDescription>
+                    {/* Why Now - Pain Points Addressed */}
+                    {(rec.whyNow || (rec.painPointNames && rec.painPointNames.length > 0)) && (
+                      <div style={{ marginBottom: '12px', padding: '10px', background: '#fef3c7', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
+                        <strong style={{ color: '#b45309' }}>🎯 Why This Matters:</strong>
+                        <div style={{ marginTop: '4px', color: '#78350f' }}>
+                          {rec.whyNow || `Addresses: ${rec.painPointNames.join(', ')}`}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Specific Actions */}
+                    {rec.actions && rec.actions.length > 0 && (
+                      <div style={{ marginTop: '12px' }}>
+                        <strong style={{ color: '#1e40af', display: 'block', marginBottom: '8px' }}>📋 Implementation Steps:</strong>
+                        <ol style={{ marginTop: '4px', marginLeft: '24px', lineHeight: '1.8' }}>
+                          {rec.actions.map((action, actionIdx) => (
+                            <li key={actionIdx} style={{ marginBottom: '6px', color: '#1e3a8a' }}>
+                              {typeof action === 'string' ? action : action.action || action.title || action.description || JSON.stringify(action)}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
+                    {/* Prerequisites, Timeline, Team */}
+                    <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.9rem' }}>
+                      {rec.prerequisites && (
+                        <div style={{ padding: '8px', background: '#eff6ff', borderRadius: '6px' }}>
+                          <strong style={{ color: '#1e40af' }}>Prerequisites:</strong>
+                          <div style={{ marginTop: '4px', color: '#1e3a8a' }}>{rec.prerequisites}</div>
+                        </div>
+                      )}
+                      {rec.timeline && (
+                        <div style={{ padding: '8px', background: '#f0fdf4', borderRadius: '6px' }}>
+                          <strong style={{ color: '#047857' }}>Timeline:</strong>
+                          <div style={{ marginTop: '4px', color: '#065f46' }}>{rec.timeline}</div>
+                        </div>
+                      )}
+                      {rec.teamRequired && (
+                        <div style={{ padding: '8px', background: '#fef3c7', borderRadius: '6px' }}>
+                          <strong style={{ color: '#b45309' }}>Team:</strong>
+                          <div style={{ marginTop: '4px', color: '#78350f' }}>{rec.teamRequired}</div>
+                        </div>
+                      )}
+                      {rec.successMetrics && (
+                        <div style={{ padding: '8px', background: '#f5f3ff', borderRadius: '6px' }}>
+                          <strong style={{ color: '#6b21a8' }}>Success Metrics:</strong>
+                          <div style={{ marginTop: '4px', color: '#581c87' }}>{rec.successMetrics}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Legacy Impact field */}
+                    {rec.impact && !rec.whyNow && <div style={{ marginTop: '12px' }}><strong>Impact:</strong> {rec.impact}</div>}
+                  </RecommendationDescription>
+                    )}
+                  
+                  {!isEditing && rec.latestSolutions && rec.latestSolutions.length > 0 && (
+                    <div style={{ marginTop: '12px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
+                      <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <FiZap size={16} /> Latest Databricks Solutions:
+                      </strong>
+                      {rec.latestSolutions.map((sol, solIdx) => (
+                        <div key={solIdx} style={{ marginTop: '8px', fontSize: '0.9rem' }}>
+                          <div style={{ fontWeight: 600, color: '#047857' }}>{sol.name}</div>
+                          <div style={{ color: '#6b7280', marginTop: '4px' }}>{sol.description}</div>
+                          {sol.benefit && <div style={{ color: '#059669', marginTop: '4px', fontStyle: 'italic' }}>✓ {sol.benefit}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {!isEditing && (
+                    <div style={{ marginTop: '12px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      <strong>Priority:</strong> <span style={{ color: getPriorityColor(rec.priority), fontWeight: 600 }}>{rec.priority.toUpperCase()}</span>
+                    </div>
+                  )}
+                </RecommendationCard>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Gap-Based Actions */}
+          {results.gapBasedActions && results.gapBasedActions.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiTarget size={20} style={{ color: '#3b82f6' }} />
+                Bridge the Gap: Current → Future
+              </h3>
+              {results.gapBasedActions.map((action, idx) => {
+                const cardId = `gapRecommendations-${idx}`;
+                const isEditing = editingCard === cardId;
+                const cardData = getCardData('gapRecommendations', idx, { title: action.dimension, whyNow: '', actions: [action.recommendation] });
+                
+                return (
+                  <RecommendationCard
+                    priority="medium"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 1.0 + idx * 0.1 }}
+                    key={idx}
+                  >
+                    <RecommendationHeader>
+                      <RecommendationTitle>
+                        <FiArrowRight />
+                        {isEditing ? 'Editing Gap Action' : (cardData.title || action.dimension)}
+                      </RecommendationTitle>
+                      <CardActions>
+                        {isEditing ? (
+                          <>
+                            <EditActionButton 
+                              $variant="success"
+                              onClick={() => handleSaveCard('gapRecommendations', idx)}
+                            >
+                              <FiSave size={12} />
+                              Save
+                            </EditActionButton>
+                            <EditActionButton 
+                              onClick={handleCancelEdit}
+                            >
+                              <FiX size={12} />
+                              Cancel
+                            </EditActionButton>
+                          </>
+                        ) : (
+                          <>
+                            <EditActionButton 
+                              onClick={() => handleEditCard('gapRecommendations', idx, cardData)}
+                            >
+                              <FiEdit3 size={12} />
+                              Edit
+                            </EditActionButton>
+                            {cardData.isCustomized && (
+                              <EditActionButton 
+                                $variant="danger"
+                                onClick={() => handleRemoveCustomization('gapRecommendations', idx)}
+                              >
+                                <FiTrash2 size={12} />
+                              </EditActionButton>
+                            )}
+                          </>
+                        )}
+                      </CardActions>
+                    </RecommendationHeader>
+                    
+                    {isEditing ? (
+                      <div>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Dimension:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.title || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, title: e.target.value })}
+                          placeholder="Enter dimension name..."
+                          style={{ minHeight: '60px' }}
+                        />
+                        
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: '#374151' }}>
+                          Recommended Action:
+                        </label>
+                        <EditableTextarea
+                          value={editedContent.actions || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, actions: e.target.value })}
+                          placeholder="Enter recommended actions..."
+                        />
+                      </div>
+                    ) : (
+                      <RecommendationDescription>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span><strong>Current:</strong> Level {action.current}/5</span>
+                          <span><strong>Target:</strong> Level {action.future}/5</span>
+                          <span><strong>Gap:</strong> {action.gap} levels</span>
+                        </div>
+                        <div><strong>Recommended Action:</strong> {cardData.actions?.[0] || action.recommendation}</div>
+                      </RecommendationDescription>
+                    )}
+                  </RecommendationCard>
+                );
+              })}
+            </div>
+          )}
+
+          {/* What's New from Databricks */}
+          {results.whatsNew && results.whatsNew.relevantToYou && results.whatsNew.relevantToYou.length > 0 && (
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiZap size={20} style={{ color: '#10b981' }} />
+                Latest Databricks Features Relevant to You
+              </h3>
+              {results.whatsNew.relevantToYou.map((feature, idx) => (
+                <RecommendationCard
+                  priority="high"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.4 + idx * 0.1 }}
+                  key={idx}
+                  style={{ background: '#f0fdf4', borderLeft: '4px solid #10b981' }}
+                >
+                  <RecommendationTitle style={{ color: '#059669' }}>
+                    <FiZap />
+                    {feature.name}
+                  </RecommendationTitle>
+                  <RecommendationDescription>
+                    <div>{feature.description}</div>
+                    {feature.benefit && (
+                      <div style={{ marginTop: '8px', color: '#047857', fontWeight: 600 }}>
+                        ✓ {feature.benefit}
+                      </div>
+                    )}
+                    {feature.relevanceReason && (
+                      <div style={{ marginTop: '8px', padding: '8px', background: 'white', borderRadius: '6px', fontSize: '0.9rem' }}>
+                        <strong>Why this matters to you:</strong> {feature.relevanceReason}
+                      </div>
+                    )}
+                    {feature.guide && (
+                      <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#6b7280' }}>
+                        <strong>Implementation:</strong> {feature.guide}
+                      </div>
+                    )}
+                    <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      <strong>Relevance Score:</strong> {feature.relevanceScore}/100 | <strong>Impact:</strong> {feature.impact} | <strong>Difficulty:</strong> {feature.difficulty}
+                    </div>
+                  </RecommendationDescription>
+                </RecommendationCard>
+              ))}
+            </div>
+          )}
+
+          {/* Show message if no recommendations */}
+          {(!results.painPointRecommendations || results.painPointRecommendations.length === 0) &&
+           (!results.gapBasedActions || results.gapBasedActions.length === 0) &&
+           (!results.commentBasedInsights || results.commentBasedInsights.length === 0) && (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+              <FiCheckCircle size={48} style={{ marginBottom: '16px' }} />
+              <h3>Excellent Work!</h3>
+              <p>This pillar shows strong maturity. Continue monitoring and optimizing your current practices.</p>
+            </div>
+          )}
+        </RecommendationsSection>
+
+        <NavigationSection>
+          {(() => {
+            // Find current pillar index and next pillar
+            const currentIndex = assessmentFramework.assessmentAreas.findIndex(area => area.id === pillarId);
+            const nextPillar = currentIndex >= 0 && currentIndex < assessmentFramework.assessmentAreas.length - 1
+              ? assessmentFramework.assessmentAreas[currentIndex + 1]
+              : null;
+            
+            return (
+              <>
+                <NavButton
+                  variant="secondary"
+                  onClick={() => navigate(`/assessment/${assessmentId}/${pillarId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <FiArrowLeft size={16} />
+                  Edit This Pillar
+                </NavButton>
+                
+                {nextPillar && (
+                  <NavButton
+                    variant="primary"
+                    onClick={() => navigate(`/assessment/${assessmentId}/${nextPillar.id}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Continue to {nextPillar.name}
+                    <FiArrowRight size={16} />
+                  </NavButton>
+                )}
+                
+                <NavButton
+                  variant={nextPillar ? "secondary" : "primary"}
+                  onClick={() => navigate(`/results/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  View Overall Results
+                  <FiArrowRight size={16} />
+                </NavButton>
+              </>
+            );
+          })()}
+        </NavigationSection>
+      </ContentWrapper>
+    </ResultsContainer>
+    </>
+  );
+};
+
+export default PillarResults;
