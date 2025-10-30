@@ -142,26 +142,87 @@ class SampleAssessmentGenerator {
   }
 
   /**
-   * Generate realistic comment
+   * Generate realistic, tool-specific comment describing current legacy solutions
+   * Highlights specific tools, metrics, and pain points to identify modernization opportunities
    */
-  generateComment(question, currentState, futureState) {
-    const comments = [
-      `Currently at level ${currentState}. Planning to reach level ${futureState} in next 12-18 months.`,
-      `We have some capabilities but need more structure. Target is level ${futureState}.`,
-      `Working towards improving from ${currentState} to ${futureState} through planned initiatives.`,
-      `Current state needs improvement. Investing in tools and processes to reach ${futureState}.`,
-      `This is a priority area. Moving from ${currentState} to ${futureState} is critical for our data strategy.`,
-      null, // 20% chance of no comment
-      null
+  generateComment(question, currentState, futureState, pillarId, dimensionName) {
+    // Legacy tools and systems by pillar
+    const legacyToolLibrary = {
+      platform_governance: {
+        tools: ['manual Excel spreadsheets', 'legacy IAM', 'custom Python scripts', 'shared service accounts', 'Terraform', 'Azure DevOps'],
+        metrics: ['150+ service accounts', '50+ access requests weekly', '20+ environments', '500+ users', '30+ workspaces', '200+ manual policies'],
+        problems: ['security gaps', 'compliance risks', 'audit failures', 'access sprawl', 'no lineage tracking', 'cost overruns']
+      },
+      data_engineering: {
+        tools: ['Informatica PowerCenter', 'Azure Data Factory', 'SSIS', 'Talend', 'FiveTran', 'Airflow', 'Glue jobs', 'DBT', 'stored procedures', 'Stitch'],
+        metrics: ['200+ Informatica mappings', '150+ ADF pipelines', '80+ SSIS packages', '100+ Glue jobs', '50+ Airflow DAGs', '300+ DBT models', '5TB daily ingestion', '20+ source systems'],
+        problems: ['frequent pipeline failures', 'schema drift issues', 'slow processing', 'high maintenance burden', 'vendor lock-in', '$200K+ annual licensing', 'no monitoring', 'manual deployments']
+      },
+      analytics_bi: {
+        tools: ['Tableau', 'Power BI', 'Snowflake', 'Redshift', 'Oracle', 'SQL Server', 'Looker', 'Excel reports', 'Qlik', 'MicroStrategy'],
+        metrics: ['100+ Tableau dashboards', '200+ Power BI reports', '50+ data marts', '500+ queries daily', '1000+ business users', '10TB Snowflake warehouse', '$40K monthly Snowflake costs', '30+ data sources'],
+        problems: ['slow queries (5+ min)', 'dashboard sprawl', 'inconsistent metrics', 'exploding costs', 'no self-service', 'data silos', 'manual refreshes', 'poor performance']
+      },
+      machine_learning: {
+        tools: ['SageMaker', 'Jupyter notebooks', 'Azure ML', 'on-prem Python', 'Excel models', 'R scripts', 'SAS', 'custom Flask APIs', 'MLflow OSS'],
+        metrics: ['50+ ML models', '30+ scattered Jupyter notebooks', '20+ SageMaker endpoints', '100+ untracked experiments', '10+ data scientists', '15+ model versions', '200GB model artifacts'],
+        problems: ['no experiment tracking', 'manual deployment', 'version chaos', 'zero monitoring', 'model drift undetected', 'slow iteration cycles', 'siloed work', '3-week deployment delays']
+      },
+      generative_ai: {
+        tools: ['OpenAI API', 'Azure OpenAI', 'custom LLM wrappers', 'Pinecone', 'Chroma', 'LangChain', 'Hugging Face', 'AWS Bedrock'],
+        metrics: ['10+ GenAI pilots', '50+ unmanaged API keys', '20+ prompt templates', '5+ use cases', '100K+ API calls monthly', '$10K+ monthly LLM costs', '3+ vector databases'],
+        problems: ['no governance', 'cost explosion', 'security vulnerabilities', 'hallucinations', 'no evaluation framework', 'compliance gaps', 'siloed experiments', 'zero ROI tracking']
+      },
+      operational_excellence: {
+        tools: ['CloudWatch', 'DataDog', 'Splunk', 'manual log analysis', 'Excel cost tracking', 'email alerts', 'Grafana', 'PagerDuty', 'New Relic'],
+        metrics: ['500+ CloudWatch alarms', '20+ monitoring dashboards', '100GB+ logs daily', '50+ false alerts weekly', '$50K+ monthly cloud spend', '10+ disconnected tools', '30+ on-call engineers'],
+        problems: ['alert fatigue', 'no cost attribution', 'reactive firefighting', 'manual investigation', 'siloed metrics', 'hidden costs', 'poor visibility', '2+ hour MTTR']
+      }
+    };
+    
+    // Get pillar-specific context
+    const pillarTools = legacyToolLibrary[pillarId] || legacyToolLibrary.operational_excellence;
+    
+    // Select 1-2 random legacy tools and metrics
+    const tool1 = this.randomChoice(pillarTools.tools);
+    const tool2 = this.randomChoice(pillarTools.tools.filter(t => t !== tool1));
+    const metric = this.randomChoice(pillarTools.metrics);
+    const problem = this.randomChoice(pillarTools.problems);
+    
+    // Detailed comment templates describing current legacy state
+    const commentTemplates = [
+      `Currently using ${tool1} to handle this. We maintain ${metric} which is becoming unmanageable. Major pain points: ${problem}, blocking our ability to innovate. Team spends 50%+ time on maintenance vs building new capabilities.`,
+      
+      `We rely on ${tool1} and ${tool2} for this today. Managing ${metric} manually with significant ${problem}. Looking to modernize - current licensing costs $150K/year plus operational overhead.`,
+      
+      `Legacy ${tool1} environment is hurting productivity. We have ${metric} with constant ${problem}. Our data engineering team wastes 60% of time troubleshooting instead of delivering value. Need to consolidate to Databricks.`,
+      
+      `Running outdated ${tool1} with ${metric}. System performance degrading - experiencing ${problem} weekly. Maintenance window growing, business getting frustrated. Evaluating Databricks for 10x improvement.`,
+      
+      `Stuck on ${tool1} managing ${metric}. Critical issues: ${problem}, high TCO ($200K+ annually), vendor limitations. Business approved migration to modern Lakehouse - targeting 50% cost reduction.`,
+      
+      `Current setup: ${tool1} + ${tool2} with ${metric}. ${problem} causing SLA breaches and business impact. CTO pushing for unified platform - Databricks POC approved for Q1 2026.`,
+      
+      `Maintaining ${metric} across fragmented ${tool1} infrastructure. Daily ${problem} requiring manual intervention. Team morale low due to technical debt. Executive mandate to modernize platform.`,
+      
+      `Operations bottleneck with ${tool1} - managing ${metric}. ${problem} limiting our competitive advantage. Cannot support real-time use cases or ML workloads with current architecture.`,
+      
+      `Multi-vendor cost spiral: ${tool1} ($120K/year), Snowflake warehouse ($40K/month), ${tool2} licenses ($80K/year). Total: $600K+ annually. Plus ${metric} and ${problem}. ROI case for Databricks consolidation approved.`,
+      
+      `Painful fragmentation: ${tool1} for ingestion, Snowflake for storage, ${tool2} for transformation. ${metric} scattered across tools. ${problem} due to lack of integration. Need unified Lakehouse platform.`,
+      
+      `Technical debt accumulating with ${tool1}. We have ${metric} that nobody wants to touch. ${problem} becoming existential risk. Board asking why we can't do real-time analytics like competitors.`,
+      
+      `Currently on ${tool1} which lacks modern capabilities. ${metric} managed through manual processes and scripts. ${problem} preventing us from adopting GenAI and advanced analytics. Migration planning underway.`
     ];
     
-    return this.randomChoice(comments);
+    return this.randomChoice(commentTemplates);
   }
 
   /**
    * Generate responses for a single question
    */
-  generateQuestionResponses(question) {
+  generateQuestionResponses(question, pillarId, dimensionName) {
     const responses = {};
     const { currentState, futureState } = this.generateMaturityPair();
     
@@ -192,9 +253,9 @@ class SampleAssessmentGenerator {
       }
     });
     
-    // Add comment (70% of the time)
-    if (this.randomBool(0.7)) {
-      const comment = this.generateComment(question, currentState, futureState);
+    // Add comment (90% of the time) - describing current legacy tools and pain points
+    if (this.randomBool(0.9)) {
+      const comment = this.generateComment(question, currentState, futureState, pillarId, dimensionName);
       if (comment) {
         responses[`${question.id}_comment`] = comment;
       }
@@ -300,7 +361,7 @@ class SampleAssessmentGenerator {
     pillarsToComplete.forEach(area => {
       area.dimensions.forEach(dimension => {
         dimension.questions.forEach(question => {
-          const questionResponses = this.generateQuestionResponses(question);
+          const questionResponses = this.generateQuestionResponses(question, area.id, dimension.name);
           Object.assign(assessment.responses, questionResponses);
         });
       });
