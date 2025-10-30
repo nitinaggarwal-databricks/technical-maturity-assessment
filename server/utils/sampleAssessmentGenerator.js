@@ -6,24 +6,81 @@ const assessmentFramework = require('../data/assessmentFramework');
  */
 class SampleAssessmentGenerator {
   constructor() {
+    // Diverse, realistic company names across different industries
     this.companyNames = [
-      'Acme Corporation', 'Global Tech Industries', 'Innovation Labs', 
-      'DataCorp Analytics', 'Enterprise Solutions Inc', 'TechVentures Group',
-      'NextGen Systems', 'Digital Transformation Co', 'CloudScale Enterprises',
-      'AI Innovations Inc'
+      // Technology Companies
+      'Nexus Technologies', 'DataStream Solutions', 'CloudFirst Innovations', 
+      'Quantum Analytics Corp', 'ByteForge Systems', 'Synapse AI Labs',
+      'TechNova Enterprises', 'CoreLogic Software', 'InfraScale Global',
+      
+      // Financial Services
+      'Silverline Financial Group', 'Apex Capital Management', 'TrustBank Corporation',
+      'Summit Investment Partners', 'Heritage Credit Union', 'Pinnacle Asset Management',
+      
+      // Healthcare & Life Sciences
+      'MedTech Innovations', 'HealthBridge Systems', 'BioGenesis Research',
+      'CareFirst Medical Group', 'LifeScience Analytics', 'Wellness Data Corp',
+      
+      // Retail & E-commerce
+      'GlobalMart Retail', 'ShopSphere Digital', 'NextGen Commerce',
+      'PrimeLine Distributors', 'MarketPlace Ventures', 'Urban Retail Group',
+      
+      // Manufacturing & Industrial
+      'Precision Manufacturing Inc', 'Industrial IoT Solutions', 'SmartFactory Systems',
+      'AutomationFirst Corp', 'Advanced Materials Group', 'PowerGrid Industries',
+      
+      // Media & Entertainment
+      'StreamVision Media', 'Digital Content Studios', 'MediaHub Networks',
+      'ContentFirst Productions', 'NextWave Entertainment', 'BroadcastPro Systems',
+      
+      // Telecommunications
+      'TeleConnect Global', 'NetworkEdge Communications', 'FiberLink Technologies',
+      'MobileFirst Networks', 'ConnectPlus Telecom', 'DataWave Communications',
+      
+      // Energy & Utilities
+      'GreenPower Energy', 'SmartGrid Solutions', 'RenewEnergy Corp',
+      'PowerGen Utilities', 'CleanTech Energy Group', 'EcoGrid Systems',
+      
+      // Transportation & Logistics
+      'LogiChain Solutions', 'FastTrack Logistics', 'TransGlobal Shipping',
+      'RouteOptimize Systems', 'SupplyChain Innovations', 'FleetManage Pro',
+      
+      // Government & Public Sector
+      'Metro Government Services', 'Public Safety Systems', 'CityTech Solutions',
+      'StateWide Data Initiative', 'GovCloud Services', 'Municipal Analytics Group'
     ];
     
+    // More specific, realistic industries
     this.industries = [
-      'Technology', 'Financial Services', 'Healthcare', 'Retail', 
-      'Manufacturing', 'Telecommunications', 'Energy', 'Media & Entertainment'
+      'Technology & Software', 
+      'Financial Services & Banking', 
+      'Healthcare & Life Sciences', 
+      'Retail & E-commerce', 
+      'Manufacturing & Industrial',
+      'Telecommunications', 
+      'Energy & Utilities', 
+      'Media & Entertainment',
+      'Transportation & Logistics',
+      'Insurance',
+      'Pharmaceuticals',
+      'Government & Public Sector',
+      'Education',
+      'Professional Services',
+      'Hospitality & Travel'
     ];
     
+    // More varied assessment purposes
     this.assessmentDescriptions = [
-      'Annual technical maturity assessment for strategic planning',
-      'Quarterly evaluation of data and AI capabilities',
-      'Databricks platform readiness assessment',
-      'Digital transformation maturity evaluation',
-      'Cloud migration readiness assessment'
+      'Q4 2025 data platform maturity assessment for board presentation',
+      'Cloud migration readiness evaluation - Phase 2',
+      'Annual Databricks optimization and cost analysis review',
+      'Post-merger data integration capability assessment',
+      'GenAI readiness and ML platform evaluation',
+      'Regulatory compliance and data governance audit',
+      'Enterprise data strategy roadmap development',
+      'Digital transformation initiative - data workstream',
+      'Data lake modernization feasibility study',
+      'Real-time analytics capability assessment'
     ];
     
     this.painPointProbabilities = {
@@ -163,16 +220,47 @@ class SampleAssessmentGenerator {
     const companyName = this.randomChoice(this.companyNames);
     const industry = this.randomChoice(this.industries);
     const description = this.randomChoice(this.assessmentDescriptions);
-    const contactEmail = `contact@${companyName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
+    
+    // Generate realistic company domain (remove special chars, handle spaces)
+    const companyDomain = companyName.toLowerCase()
+      .replace(/corporation|corp|inc|ltd|llc|group|enterprises|systems|solutions|services|technologies|global/gi, '')
+      .replace(/[^a-z0-9]/g, '')
+      .trim();
+    
+    // Varied email formats
+    const emailFormats = [
+      `contact@${companyDomain}.com`,
+      `info@${companyDomain}.com`,
+      `data-team@${companyDomain}.com`,
+      `analytics@${companyDomain}.com`,
+      `platform-team@${companyDomain}.com`,
+      `assessment@${companyDomain}.com`
+    ];
+    const contactEmail = this.randomChoice(emailFormats);
+    
+    // More realistic assessment names with context
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+    const currentMonth = months[new Date().getMonth()];
+    const currentYear = new Date().getFullYear();
+    
+    const nameFormats = [
+      `${companyName} - ${currentMonth} ${currentYear} Maturity Assessment`,
+      `${companyName} Data Platform Assessment - Q${Math.ceil((new Date().getMonth() + 1) / 3)} ${currentYear}`,
+      `${companyName} Databricks Readiness Evaluation`,
+      `${companyName} - ${completionLevel === 'full' ? 'Comprehensive' : 'Preliminary'} Technical Review`,
+      `${companyName} Cloud Analytics Assessment ${currentYear}`
+    ];
+    const assessmentName = this.randomChoice(nameFormats);
     
     const assessment = {
       id: assessmentId,
-      assessmentName: `${companyName} - ${completionLevel === 'full' ? 'Complete' : completionLevel === 'partial' ? 'Partial' : 'Initial'} Assessment`,
+      assessmentName: assessmentName,
       organizationName: companyName,
       contactEmail: contactEmail,
       industry: industry,
       assessmentDescription: description,
-      editorEmail: 'sample-generator@databricks.com',
+      editorEmail: `${this.randomChoice(['john.smith', 'jane.doe', 'michael.chen', 'sarah.johnson', 'david.williams'])}@${companyDomain}.com`,
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
