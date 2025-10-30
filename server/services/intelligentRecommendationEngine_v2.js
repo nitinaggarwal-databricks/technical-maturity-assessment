@@ -1027,6 +1027,181 @@ class IntelligentRecommendationEngine {
     return impact;
   }
   
+  /**
+   * Generate dynamic maturity summary based on assessment data
+   */
+  generateMaturitySummary(assessment, prioritizedActions, currentScore, targetScore, industry = 'Technology') {
+    console.log('[generateMaturitySummary] Generating for:', { currentScore, targetScore, industry });
+    
+    // Sort pillars by maturity (to identify strengths and weaknesses)
+    const sorted = [...prioritizedActions].sort((a, b) => b.currentScore - a.currentScore);
+    
+    const strongPillars = sorted.filter(p => p.currentScore >= 4).slice(0, 2);
+    const weakPillars = sorted.filter(p => p.currentScore <= 2).slice(0, 2);
+    const criticalGaps = sorted.filter(p => p.gap >= 2).slice(0, 2);
+    
+    // Current Maturity Description
+    let currentDescription = '';
+    if (strongPillars.length > 0) {
+      const strongNames = strongPillars.map(p => p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')).join(' and ');
+      currentDescription += `Strong ${strongNames}`;
+      
+      // Add specific capabilities
+      const topFeature = strongPillars[0]?.databricksFeatures?.[0];
+      if (topFeature?.name) {
+        currentDescription += ` with ${topFeature.name} operational`;
+      }
+    }
+    
+    if (weakPillars.length > 0) {
+      const weakNames = weakPillars.map(p => p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')).join(' and ');
+      if (currentDescription) {
+        currentDescription += ', but ';
+      }
+      currentDescription += `${weakNames} ${weakPillars.length === 1 ? 'is' : 'are'} still in early stages with manual processes`;
+    }
+    
+    if (!currentDescription) {
+      currentDescription = 'Balanced maturity across pillars with opportunities for automation and optimization';
+    }
+    
+    // Target Maturity Description
+    let targetDescription = '';
+    if (criticalGaps.length > 0) {
+      const improvements = criticalGaps.map(gap => {
+        const pillarName = gap.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
+        const topFeature = gap.databricksFeatures?.[0]?.name;
+        if (topFeature) {
+          return `${pillarName} with ${topFeature}`;
+        }
+        return pillarName;
+      });
+      targetDescription = `Advanced automation in ${improvements.join(' and ')}`;
+    }
+    
+    // Add governance if Platform is in focus
+    const platformPillar = prioritizedActions.find(p => p.pillarId === 'platform_governance');
+    if (platformPillar && platformPillar.gap >= 1) {
+      const hasGovernance = targetDescription.toLowerCase().includes('platform');
+      if (!hasGovernance) {
+        targetDescription += targetDescription ? ' with unified governance and security' : 'Unified governance and security across all pillars';
+      }
+    }
+    
+    if (!targetDescription) {
+      targetDescription = 'Optimized, governed, and automated capabilities across all pillars';
+    }
+    
+    // Improvement Potential Description
+    let improvementDescription = 'Deploy ';
+    const topGaps = sorted.filter(p => p.gap >= 1).slice(0, 3);
+    const deployments = topGaps.map(gap => {
+      const topFeature = gap.databricksFeatures?.[0]?.name;
+      const pillarName = gap.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
+      if (topFeature) {
+        return `${topFeature} for ${pillarName.toLowerCase()}`;
+      }
+      return `automation for ${pillarName.toLowerCase()}`;
+    });
+    
+    if (deployments.length > 0) {
+      improvementDescription += deployments.join(', ');
+    } else {
+      improvementDescription = 'Optimize existing capabilities and expand automation coverage';
+    }
+    
+    const maturitySummary = {
+      current: {
+        score: currentScore,
+        level: this.getMaturityLevelName(currentScore),
+        description: currentDescription
+      },
+      target: {
+        score: targetScore,
+        level: this.getMaturityLevelName(targetScore),
+        description: targetDescription
+      },
+      improvement: {
+        gap: targetScore - currentScore,
+        timeline: '6–12 months',
+        description: improvementDescription
+      },
+      roadmapIntro: this.generateRoadmapIntro(prioritizedActions, industry)
+    };
+    
+    console.log('[generateMaturitySummary] Generated summary:', JSON.stringify(maturitySummary, null, 2));
+    return maturitySummary;
+  }
+  
+  getMaturityLevelName(score) {
+    const roundedScore = Math.round(score);
+    const levels = {
+      1: 'Initial',
+      2: 'Repeatable',
+      3: 'Defined',
+      4: 'Managed',
+      5: 'Optimizing'
+    };
+    return levels[roundedScore] || 'Defined';
+  }
+  
+  generateRoadmapIntro(prioritizedActions, industry) {
+    const criticalGaps = prioritizedActions.filter(p => p.gap >= 2);
+    const highPriority = prioritizedActions.filter(p => p.gap === 1);
+    
+    let intro = 'This roadmap ';
+    
+    // Mention critical gaps
+    if (criticalGaps.length > 0) {
+      const gapNames = criticalGaps.map(p => {
+        const name = p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
+        return `${name} (${p.gap} ${p.gap === 1 ? 'level' : 'levels'})`;
+      });
+      intro += `addresses your critical gaps in ${gapNames.join(' and ')}, `;
+    } else if (highPriority.length > 0) {
+      const priorityNames = highPriority.slice(0, 2).map(p => 
+        p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')
+      );
+      intro += `focuses on ${priorityNames.join(' and ')} optimization, `;
+    } else {
+      intro += 'optimizes your existing capabilities, ';
+    }
+    
+    // Mention focus areas
+    const hasGovernance = criticalGaps.some(p => p.pillarId === 'platform_governance');
+    const hasAutomation = criticalGaps.some(p => p.pillarId === 'data_engineering');
+    const hasML = criticalGaps.some(p => p.pillarId === 'machine_learning');
+    const hasGenAI = criticalGaps.some(p => p.pillarId === 'generative_ai');
+    
+    const focuses = [];
+    if (hasGovernance) focuses.push('governance');
+    if (hasAutomation) focuses.push('automation');
+    if (hasML) focuses.push('MLOps');
+    if (hasGenAI) focuses.push('GenAI capabilities');
+    
+    if (focuses.length > 0) {
+      intro += `focusing on ${focuses.join(' and ')}. `;
+    } else {
+      intro += 'with balanced improvements across all pillars. ';
+    }
+    
+    // Industry context
+    const industryContext = {
+      'Financial Services': 'Emphasis on compliance, security, and data governance',
+      'Healthcare': 'Focus on data privacy, compliance, and secure analytics',
+      'Retail': 'Prioritizing real-time analytics and customer insights',
+      'Manufacturing': 'Optimizing operational efficiency and predictive maintenance',
+      'Technology': 'Accelerating innovation and time-to-market',
+      'Telecommunications': 'Enhancing customer experience and network optimization',
+      'Energy': 'Improving operational efficiency and regulatory compliance'
+    };
+    
+    const context = industryContext[industry] || 'Tailored to your industry requirements';
+    intro += context + '.';
+    
+    return intro;
+  }
+  
   // ... (rest of the methods: extractPainPoints, extractComments, etc. - keeping them as-is)
   
   extractPainPoints(responses, framework) {

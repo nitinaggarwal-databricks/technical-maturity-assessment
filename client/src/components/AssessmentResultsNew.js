@@ -1458,9 +1458,12 @@ const AssessmentResultsNew = () => {
                 <FiTarget size={24} />
               </div>
               <div className="label">Current Maturity</div>
-              <div className="value">Level {currentMaturity} — Defined</div>
+              <div className="value">
+                Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Defined'}
+              </div>
               <div className="description">
-                Standardized processes across key domains, limited automation.
+                {resultsData?.maturitySummary?.current?.description || 
+                 'Standardized processes across key domains, limited automation.'}
               </div>
             </MaturityCard>
 
@@ -1469,9 +1472,12 @@ const AssessmentResultsNew = () => {
                 <FiTrendingUp size={24} />
               </div>
               <div className="label">Target Maturity</div>
-              <div className="value">Level {targetMaturity} — Managed</div>
+              <div className="value">
+                Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Managed'}
+              </div>
               <div className="description">
-                Governed, measurable maturity with continuous optimization.
+                {resultsData?.maturitySummary?.target?.description || 
+                 'Governed, measurable maturity with continuous optimization.'}
               </div>
             </MaturityCard>
 
@@ -1480,9 +1486,12 @@ const AssessmentResultsNew = () => {
                 <FiZap size={24} />
               </div>
               <div className="label">Improvement Potential</div>
-              <div className="value">+{improvementLevel} Level (6–12 months)</div>
+              <div className="value">
+                +{improvementLevel} Level ({resultsData?.maturitySummary?.improvement?.timeline || '6–12 months'})
+              </div>
               <div className="description">
-                Achievable through automation, governance integration, and AI enablement.
+                {resultsData?.maturitySummary?.improvement?.description || 
+                 'Achievable through automation, governance integration, and AI enablement.'}
               </div>
             </MaturityCard>
           </MaturityOverview>
@@ -2114,7 +2123,8 @@ const AssessmentResultsNew = () => {
           <RoadmapSection>
             <SectionTitle>Strategic Roadmap & Next Steps</SectionTitle>
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
-              This roadmap outlines short-, mid-, and long-term priorities across each pillar to achieve targeted maturity improvements.
+              {resultsData?.maturitySummary?.roadmapIntro || 
+               'This roadmap outlines short-, mid-, and long-term priorities across each pillar to achieve targeted maturity improvements.'}
             </p>
 
             <RoadmapPhases>

@@ -1145,6 +1145,20 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       );
       recommendations.businessImpact = businessImpact;
       console.log(`✅ Business impact calculated: ${businessImpact.decisionSpeed?.value}, ${businessImpact.costOptimization?.value}, ${businessImpact.manualOverhead?.value}`);
+      
+      // 📊 GENERATE DYNAMIC MATURITY SUMMARY based on assessment
+      console.log('📊 Generating dynamic maturity summary...');
+      const currentScore = recommendations.overall?.currentScore || 3;
+      const targetScore = recommendations.overall?.futureScore || 4;
+      const maturitySummary = intelligentEngine.generateMaturitySummary(
+        assessment,
+        recommendations.prioritizedActions,
+        currentScore,
+        targetScore,
+        assessment.industry || 'Technology'
+      );
+      recommendations.maturitySummary = maturitySummary;
+      console.log(`✅ Maturity summary generated: ${maturitySummary.current.level} → ${maturitySummary.target.level}`);
     }
 
     const results = {
@@ -1177,6 +1191,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       prioritizedActions: recommendations.prioritizedActions,
       roadmap: recommendations.roadmap,
       businessImpact: recommendations.businessImpact, // DYNAMIC: Calculated based on gaps, industry, and features
+      maturitySummary: recommendations.maturitySummary, // DYNAMIC: Descriptions of current, target, and improvement
       quickWins: recommendations.quickWins,
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
