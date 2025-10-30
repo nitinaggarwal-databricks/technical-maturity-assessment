@@ -112,31 +112,26 @@ class SampleAssessmentGenerator {
 
   /**
    * Generate realistic current and future state values
-   * Most organizations are at level 2-3 for current, aiming for 3-5 for future
+   * Current state: Only 1, 2, or 3 (never 4 or 5) - organizations seeking modernization
+   * Future state: Always +1 or +2 higher than current (shows improvement goal)
    */
   generateMaturityPair() {
-    // Current state: Weighted towards 2-3 (Experiment/Formalize)
-    const currentWeights = [0.05, 0.30, 0.40, 0.20, 0.05]; // Levels 1-5
-    let rand = Math.random();
-    let currentState = 1;
-    let cumulative = 0;
+    // Current state: Only 1, 2, or 3 (representing organizations that need modernization)
+    // Weighted distribution: 20% level 1, 50% level 2, 30% level 3
+    const rand = Math.random();
+    let currentState;
     
-    for (let i = 0; i < currentWeights.length; i++) {
-      cumulative += currentWeights[i];
-      if (rand < cumulative) {
-        currentState = i + 1;
-        break;
-      }
+    if (rand < 0.20) {
+      currentState = 1; // 20% - Explore (ad-hoc)
+    } else if (rand < 0.70) {
+      currentState = 2; // 50% - Experiment (repeatable)
+    } else {
+      currentState = 3; // 30% - Formalize (defined processes)
     }
 
-    // Future state: Must be >= current, typically 1-2 levels higher
-    const gap = this.randomInt(0, 2); // 0, 1, or 2 level gap
-    let futureState = Math.min(5, currentState + gap);
-    
-    // Occasionally aim for maximum (Transform)
-    if (Math.random() < 0.15 && currentState >= 3) {
-      futureState = 5;
-    }
+    // Future state: Always +1 or +2 levels higher (showing improvement ambition)
+    const gap = this.randomInt(1, 2); // Gap is 1 or 2 levels (never 0)
+    const futureState = Math.min(5, currentState + gap);
 
     return { currentState, futureState };
   }
