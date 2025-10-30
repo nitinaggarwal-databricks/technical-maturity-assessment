@@ -1129,6 +1129,12 @@ app.get('/api/assessment/:id/results', async (req, res) => {
           _strengthsIdentified: intelligentRecs.theGood.length
         };
       });
+      
+      // 🗺️ GENERATE DYNAMIC STRATEGIC ROADMAP based on prioritized actions
+      console.log('🗺️ Generating dynamic strategic roadmap...');
+      const dynamicRoadmap = intelligentEngine.generateStrategicRoadmap(recommendations.prioritizedActions);
+      recommendations.roadmap = dynamicRoadmap;
+      console.log(`✅ Dynamic roadmap generated with ${dynamicRoadmap.phases?.length || 0} phases`);
     }
 
     const results = {

@@ -1205,57 +1205,79 @@ const AssessmentResultsNew = () => {
     { id: 'operational_excellence', name: 'Operational Excellence & Adoption', icon: '⚙️' },
   ];
 
-  // Phase data for Strategic Roadmap
-  const defaultPhases = [
-    {
-      id: 'phase1',
-      title: 'Phase 1: Foundation (0–3 months)',
+  // Phase colors for Strategic Roadmap
+  const phaseColors = {
+    phase1: {
       bgColor: '#fef3c7',
       borderColor: '#fbbf24',
-      accentColor: '#f59e0b',
-      items: [
-        'Implement Unity Catalog with initial RBAC roles',
-        'Establish data quality monitoring and observability',
-        'Launch initial governance enablement sessions'
-      ]
+      accentColor: '#f59e0b'
     },
-    {
-      id: 'phase2',
-      title: 'Phase 2: Scale (3–6 months)',
+    phase2: {
       bgColor: '#fed7aa',
       borderColor: '#fb923c',
-      accentColor: '#ea580c',
-      items: [
-        'Automate pipeline reliability tracking via DLT',
-        'Integrate ML flow metrics with centralized dashboards',
-        'Deploy first GenAI-enabled use case under governance'
-      ]
+      accentColor: '#ea580c'
     },
-    {
-      id: 'phase3',
-      title: 'Phase 3: Optimize (6–12 months)',
+    phase3: {
       bgColor: '#d1fae5',
       borderColor: '#86efac',
-      accentColor: '#10b981',
-      items: [
-        'Formalize MLOps CI/CD for model deployment',
-        'Expand GenAI use cases with RAG implementation',
-        'Align data mesh principles with Unity Catalog'
-      ]
+      accentColor: '#10b981'
     }
-  ];
-
-  // Get phase data (use customization if exists, otherwise use default)
-  const getPhaseData = (phaseId) => {
-    if (customizations.phases[phaseId]) {
-      const defaultPhase = defaultPhases.find(p => p.id === phaseId);
-      return {
-        ...defaultPhase,
-        items: customizations.phases[phaseId]
-      };
-    }
-    return defaultPhases.find(p => p.id === phaseId);
   };
+  
+  // Get dynamic roadmap phases from API (with customization override)
+  const getRoadmapPhases = () => {
+    const resultsData = results?.data || results;
+    const apiRoadmap = resultsData?.roadmap;
+    
+    console.log('[AssessmentResultsNew] API roadmap:', apiRoadmap);
+    
+    // Use dynamic roadmap from API if available
+    if (apiRoadmap?.phases && Array.isArray(apiRoadmap.phases)) {
+      return apiRoadmap.phases.map(phase => ({
+        ...phase,
+        ...phaseColors[phase.id],
+        // Allow customization override
+        items: customizations.phases[phase.id] || phase.items
+      }));
+    }
+    
+    // Fallback to default if API doesn't return roadmap
+    console.log('[AssessmentResultsNew] No API roadmap, using default phases');
+    return [
+      {
+        id: 'phase1',
+        title: 'Phase 1: Foundation (0–3 months)',
+        ...phaseColors.phase1,
+        items: customizations.phases.phase1 || [
+          'Implement Unity Catalog with initial RBAC roles',
+          'Establish data quality monitoring and observability',
+          'Launch initial governance enablement sessions'
+        ]
+      },
+      {
+        id: 'phase2',
+        title: 'Phase 2: Scale (3–6 months)',
+        ...phaseColors.phase2,
+        items: customizations.phases.phase2 || [
+          'Automate pipeline reliability tracking via DLT',
+          'Integrate ML flow metrics with centralized dashboards',
+          'Deploy first GenAI-enabled use case under governance'
+        ]
+      },
+      {
+        id: 'phase3',
+        title: 'Phase 3: Optimize (6–12 months)',
+        ...phaseColors.phase3,
+        items: customizations.phases.phase3 || [
+          'Formalize MLOps CI/CD for model deployment',
+          'Expand GenAI use cases with RAG implementation',
+          'Align data mesh principles with Unity Catalog'
+        ]
+      }
+    ];
+  };
+  
+  const roadmapPhases = getRoadmapPhases();
 
   // Get pillar-specific results
   const getPillarData = (pillarId) => {
@@ -2096,8 +2118,7 @@ const AssessmentResultsNew = () => {
             </p>
 
             <RoadmapPhases>
-              {defaultPhases.map((phase, index) => {
-                const phaseData = getPhaseData(phase.id);
+              {roadmapPhases.map((phase, index) => {
                 const isEditing = editingPhase === phase.id;
                 
                 return (
@@ -2131,7 +2152,7 @@ const AssessmentResultsNew = () => {
                         ) : (
                           <>
                             <EditActionButton 
-                              onClick={() => handleEditPhase(phase.id, phaseData.items)}
+                              onClick={() => handleEditPhase(phase.id, phase.items)}
                             >
                               <FiEdit3 size={12} />
                             </EditActionButton>
@@ -2157,7 +2178,7 @@ const AssessmentResultsNew = () => {
                       />
                     ) : (
                       <ul>
-                        {phaseData.items.map((item, idx) => (
+                        {phase.items.map((item, idx) => (
                           <li key={idx}>{item}</li>
                         ))}
                       </ul>

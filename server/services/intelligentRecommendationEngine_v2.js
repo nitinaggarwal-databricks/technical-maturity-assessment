@@ -709,6 +709,130 @@ class IntelligentRecommendationEngine {
     return benefits[featureName] || ['Addresses identified challenges', 'Databricks managed service'];
   }
   
+  /**
+   * Generate dynamic strategic roadmap based on assessment priorities and gaps
+   */
+  generateStrategicRoadmap(prioritizedActions) {
+    console.log('[generateStrategicRoadmap] Generating roadmap from', prioritizedActions.length, 'pillars');
+    
+    // Sort by priority and gap
+    const sorted = [...prioritizedActions].sort((a, b) => {
+      // Critical first, then high, then medium/low
+      const priorityOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };
+      if (priorityOrder[b.priority] !== priorityOrder[a.priority]) {
+        return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
+      return b.gap - a.gap;
+    });
+    
+    // Phase 1 (0-3 months): Foundation - Critical items + Unity Catalog (foundational)
+    const phase1Items = [];
+    const phase2Items = [];
+    const phase3Items = [];
+    
+    // Always include Unity Catalog if there are governance/platform challenges
+    const hasGovernanceChallenges = sorted.some(p => 
+      p.pillarId === 'platform_governance' || 
+      p.theBad?.some(challenge => 
+        challenge.toLowerCase().includes('governance') ||
+        challenge.toLowerCase().includes('access control') ||
+        challenge.toLowerCase().includes('compliance')
+      )
+    );
+    
+    if (hasGovernanceChallenges) {
+      phase1Items.push('Implement Unity Catalog for centralized governance and access control');
+    }
+    
+    // Phase 1: Critical priority pillars (gap >= 2)
+    const criticalPillars = sorted.filter(p => p.gap >= 2);
+    criticalPillars.slice(0, 2).forEach(pillar => {
+      const topChallenge = pillar.theBad?.[0] || `Maturity gap of ${pillar.gap} levels`;
+      const topFeature = pillar.databricksFeatures?.[0]?.name || 'recommended features';
+      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${topChallenge.substring(0, 60)}...`);
+    });
+    
+    // Ensure we have at least 3 items in Phase 1
+    if (phase1Items.length < 3 && sorted.length > 0) {
+      const nextPillar = sorted.find(p => !criticalPillars.includes(p));
+      if (nextPillar) {
+        phase1Items.push(`Establish ${nextPillar.pillarName} monitoring and baseline metrics`);
+      }
+    }
+    
+    // Phase 2: High priority pillars (gap = 1) + scale critical solutions
+    const highPriorityPillars = sorted.filter(p => p.gap === 1 || (p.gap >= 2 && !criticalPillars.slice(0, 2).includes(p)));
+    highPriorityPillars.slice(0, 2).forEach(pillar => {
+      const topFeature = pillar.databricksFeatures?.[1]?.name || pillar.databricksFeatures?.[0]?.name || 'capabilities';
+      phase2Items.push(`${pillar.pillarName}: Scale ${topFeature} across teams and use cases`);
+    });
+    
+    // Add integration items for Phase 2
+    if (sorted.length >= 3) {
+      phase2Items.push('Integrate monitoring dashboards across all pillars for visibility');
+    }
+    
+    // Ensure we have at least 3 items in Phase 2
+    if (phase2Items.length < 3 && sorted.length > 0) {
+      phase2Items.push('Deploy second wave of capabilities based on Phase 1 learnings');
+    }
+    
+    // Phase 3: Optimization and remaining gaps
+    const remainingPillars = sorted.filter(p => p.gap === 0 || (p.gap === 1 && !highPriorityPillars.slice(0, 2).includes(p)));
+    
+    // Add MLOps/CI-CD if ML pillar exists
+    const mlPillar = sorted.find(p => p.pillarId === 'machine_learning');
+    if (mlPillar) {
+      phase3Items.push('Formalize MLOps CI/CD pipeline for automated model deployment');
+    }
+    
+    // Add GenAI if pillar exists
+    const genaiPillar = sorted.find(p => p.pillarId === 'genai');
+    if (genaiPillar) {
+      const hasRAG = genaiPillar.theBad?.some(c => c.toLowerCase().includes('rag'));
+      if (hasRAG) {
+        phase3Items.push('Expand GenAI use cases with RAG implementation and vector search');
+      } else {
+        phase3Items.push('Deploy production GenAI applications with governance guardrails');
+      }
+    }
+    
+    // Add data mesh if multiple pillars are mature
+    const maturePillars = sorted.filter(p => p.currentScore >= 4);
+    if (maturePillars.length >= 3) {
+      phase3Items.push('Align data mesh principles with Unity Catalog for domain-oriented data ownership');
+    }
+    
+    // Ensure we have at least 3 items in Phase 3
+    if (phase3Items.length < 3) {
+      phase3Items.push('Optimize and tune all deployed capabilities for maximum ROI');
+      phase3Items.push('Establish center of excellence for ongoing Databricks best practices');
+    }
+    
+    const roadmap = {
+      phases: [
+        {
+          id: 'phase1',
+          title: 'Phase 1: Foundation (0–3 months)',
+          items: phase1Items.slice(0, 3)
+        },
+        {
+          id: 'phase2',
+          title: 'Phase 2: Scale (3–6 months)',
+          items: phase2Items.slice(0, 3)
+        },
+        {
+          id: 'phase3',
+          title: 'Phase 3: Optimize (6–12 months)',
+          items: phase3Items.slice(0, 3)
+        }
+      ]
+    };
+    
+    console.log('[generateStrategicRoadmap] Generated roadmap:', JSON.stringify(roadmap, null, 2));
+    return roadmap;
+  }
+  
   // ... (rest of the methods: extractPainPoints, extractComments, etc. - keeping them as-is)
   
   extractPainPoints(responses, framework) {
