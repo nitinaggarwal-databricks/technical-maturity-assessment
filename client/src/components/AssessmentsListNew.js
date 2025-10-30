@@ -1110,12 +1110,12 @@ const AssessmentsListNew = () => {
                         className="primary"
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(`[AssessmentsListNew] Open clicked, navigating to: /results/${assessmentId}`);
+                          console.log(`[AssessmentsListNew] View Report clicked, navigating to: /results/${assessmentId}`);
                           navigate(`/results/${assessmentId}`);
                         }}
                       >
                         <FiStar />
-                        Open
+                        View Report
                       </ActionButton>
                     </div>
                   </div>
