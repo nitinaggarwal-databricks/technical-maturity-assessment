@@ -633,6 +633,7 @@ class IntelligentRecommendationEngine {
       }
       
       // 🎯 Generate contextual, non-repetitive next steps based on full assessment context
+      console.log(`[IntelligentEngine V2] 🎯 Calling buildContextualNextSteps for ${pillarId}...`);
       const contextualNextSteps = await this.buildContextualNextSteps(
         assessment,
         pillarId,
@@ -641,10 +642,12 @@ class IntelligentRecommendationEngine {
         stateGaps,
         dbFeatures
       );
+      console.log(`[IntelligentEngine V2] 📦 buildContextualNextSteps returned:`, contextualNextSteps);
       allNextSteps.push(...contextualNextSteps);
       
       console.log(`[IntelligentEngine V2] ✅ Generated ${allRecommendations.length} recommendations from DATABASE`);
       console.log(`[IntelligentEngine V2] ✅ Generated ${contextualNextSteps.length} contextual next steps`);
+      console.log(`[IntelligentEngine V2] 📊 allNextSteps now contains ${allNextSteps.length} items`);
       
     } else {
       console.log(`[IntelligentEngine V2] ⚠️ No database features, falling back to hardcoded solutionMap`);
@@ -692,6 +695,7 @@ class IntelligentRecommendationEngine {
     
     console.log(`[IntelligentEngine V2] 📊 FINAL COUNTS: ${allRecommendations.length} recommendations, ${allNextSteps.length} next steps, ${painPointFeatures.length} features`);
     console.log(`[IntelligentEngine V2] 📊 What's Working: ${theGood.length}, Key Challenges: ${theBad.length}`);
+    console.log(`[IntelligentEngine V2] 🔍 First 2 next steps for ${pillarId}:`, allNextSteps.slice(0, 2));
     
     return {
       theGood: theGood.slice(0, 5),
