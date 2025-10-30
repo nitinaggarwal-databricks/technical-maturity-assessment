@@ -814,127 +814,139 @@ class IntelligentRecommendationEngine {
   }
 
   /**
-   * 🎯 Build context-aware next steps based on assessment data
-   * Generates pillar-specific workshops, enablement, adoption, and partner engagement recommendations
+   * 🎯 Build specific, relevant next steps from comprehensive list
+   * Selects actionable items tailored to each pillar
    */
   async buildContextualNextSteps(assessment, pillarId, painPoints, comments, stateGaps, features) {
-    const nextSteps = [];
-    
-    // Calculate current and future average scores
+    // Calculate current and future average scores for decision logic
     const avgCurrent = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.current, 0) / stateGaps.length : 0;
-    const avgFuture = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.future, 0) / stateGaps.length : 0;
-    const avgGap = avgFuture - avgCurrent;
+    const avgGap = stateGaps.length > 0 ? (stateGaps.reduce((sum, g) => sum + g.future, 0) / stateGaps.length) - avgCurrent : 0;
     
-    // Extract what customer is doing today from comments
-    const currentPractices = comments.map(c => c.text).join(' ').toLowerCase();
-    
-    // Pillar-specific next step templates
-    const pillarStrategies = {
-      platform_governance: {
-        workshop: `Schedule Platform Governance Blueprint Workshop with Databricks SA to design Unity Catalog architecture, workspace hierarchy, and access control patterns tailored to your ${assessment.industry || 'organization'}`,
-        enablement: avgGap > 2 
-          ? `Provide hands-on training for platform admins on Unity Catalog, ABAC policies, data classification, and FinOps best practices`
-          : `Upskill platform team on advanced governance features including audit logs, system tables, and automated compliance reporting`,
-        adoption: currentPractices.includes('manual') || currentPractices.includes('spreadsheet')
-          ? `Migrate from manual access management to Unity Catalog self-service access requests - start with one high-compliance domain (e.g., Finance, PII data)`
-          : `Roll out governance incrementally - establish CoE to define catalog standards, ownership model, and data classification policies`,
-        assessment: `Conduct Governance Maturity & Compliance Readiness Assessment with Databricks Professional Services focusing on regulatory requirements and audit preparedness`,
-        kpis: `Track catalog coverage %, data ownership clarity, % of datasets under lineage tracking, cost visibility improvements`
-      },
-      data_engineering: {
-        workshop: `Host Delta Live Tables & LakeFlow Workshop to modernize ${currentPractices.includes('airflow') ? 'Airflow' : currentPractices.includes('glue') ? 'Glue' : 'legacy'} pipelines with declarative ETL and automated quality checks`,
-        enablement: avgGap > 2
-          ? `Train data engineers on DLT expectations, Auto Loader, and streaming ingestion patterns with hands-on labs`
-          : `Advanced enablement on pipeline optimization, liquid clustering, deletion vectors, and cost-efficient streaming`,
-        adoption: currentPractices.includes('manual') || currentPractices.includes('notebook')
-          ? `Migrate 2-3 critical pipelines to Delta Live Tables as "lighthouse projects" - demonstrate reliability, observability, and cost improvements`
-          : `Standardize all new pipelines on DLT/LakeFlow - establish pipeline templates and CI/CD patterns with Asset Bundles`,
-        assessment: `Run Pipeline Health & Cost Optimization Assessment analyzing ${painPoints.length} identified pain points including data quality, latency, and resource utilization`,
-        kpis: `Monitor pipeline reliability (SLA adherence), data freshness, ingestion cost per TB, DQ incident reduction`
-      },
-      analytics_bi: {
-        workshop: `Conduct Modern BI on Lakehouse Workshop showcasing Databricks SQL, serverless warehouses, and ${currentPractices.includes('tableau') ? 'Tableau' : currentPractices.includes('power bi') ? 'Power BI' : 'BI tool'} integration`,
-        enablement: avgGap > 2
-          ? `Enable business analysts on SQL Analytics, dashboard creation, query optimization, and Delta Sharing for governed data distribution`
-          : `Advanced training on Genie AI Analyst, query federation, and embedding analytics into operational applications`,
-        adoption: currentPractices.includes('legacy') || currentPractices.includes('slow')
-          ? `Identify top 10 business-critical dashboards for migration - certify datasets via Unity Catalog and measure query performance improvements`
-          : `Expand SQL Analytics adoption with self-service analytics program - create certified datasets and promote data democratization`,
-        assessment: `Perform BI Readiness & Performance Assessment evaluating dashboard latency, concurrency bottlenecks, and cost per query`,
-        kpis: `Track # of certified datasets, BI adoption rate, time-to-insight, dashboard latency reduction`
-      },
-      machine_learning: {
-        workshop: `Run MLOps Accelerator Workshop covering MLflow experiment tracking, model registry, Feature Store, and ${avgGap > 2 ? 'foundational' : 'advanced'} model serving patterns`,
-        enablement: avgGap > 2
-          ? `Train DS/ML teams on end-to-end ML lifecycle - experiment tracking, model versioning, feature engineering, and model monitoring`
-          : `Advanced MLOps training on AutoML, distributed training, online feature serving, and production-grade model governance`,
-        adoption: currentPractices.includes('notebook') || currentPractices.includes('manual')
-          ? `Deploy first production model using MLflow Model Serving - establish model approval workflow and monitoring framework`
-          : `Scale MLOps adoption - mandate MLflow for all models, implement feature store, and create reusable ML templates`,
-        assessment: `Conduct ML Readiness & Governance Assessment covering model lifecycle, bias evaluation, explainability, and compliance requirements`,
-        kpis: `Measure # of models in registry, model deployment frequency, approval SLAs, ROI from ML initiatives`
-      },
-      generative_ai: {
-        workshop: `Host GenAI & RAG Accelerator Workshop including Vector Search, AI Gateway, prompt engineering, and LLM evaluation frameworks tailored to ${assessment.industry || 'your'} use cases`,
-        enablement: avgGap > 2
-          ? `Enable teams on GenAI fundamentals - RAG architecture, prompt engineering, LLM safety, guardrails, and cost management`
-          : `Advanced GenAI training on multi-agent systems, fine-tuning, custom model serving, and production LLMOps`,
-        adoption: currentPractices.includes('exploring') || currentPractices.includes('pilot')
-          ? `Launch first GenAI POC with AI Gateway and Vector Search - focus on high-value use case with clear ROI (e.g., document Q&A, content generation)`
-          : `Scale GenAI adoption with governed AI Gateway - implement rate limits, cost tracking, and LLM evaluation pipelines`,
-        assessment: `Perform GenAI Maturity Assessment covering data readiness, infrastructure requirements, safety controls, and use case prioritization`,
-        kpis: `Track API usage, cost per request, user satisfaction, hallucination rate, and business value delivered`
-      },
-      operational_excellence: {
-        workshop: `Conduct Platform Ops & Observability Workshop covering system tables, cost attribution, alerting, and incident management best practices`,
-        enablement: avgGap > 2
-          ? `Train operations team on system tables, audit log analysis, budget alerts, and proactive monitoring dashboards`
-          : `Advanced ops training on predictive optimization, auto-scaling policies, custom metrics, and FinOps automation`,
-        adoption: currentPractices.includes('manual') || currentPractices.includes('reactive')
-          ? `Deploy centralized cost dashboards and SLA monitoring - establish monthly ops scorecards with platform health metrics`
-          : `Implement advanced observability - set up automated incident response, capacity planning, and cost optimization workflows`,
-        assessment: `Execute Operations Maturity Review analyzing ${painPoints.length} identified gaps in monitoring, incident response, and cost management`,
-        kpis: `Monitor downtime reduction, mean time to detect (MTTD), DBU cost trend, ticket resolution time`
-      }
+    // Comprehensive next steps library by pillar
+    const nextStepsLibrary = {
+      platform_governance: [
+        '🤝 **Executive Alignment**: Secure leadership endorsement for a unified governance model (Unity Catalog, cross-workspace governance)',
+        '📚 **Workshop**: Schedule Platform Governance Blueprint Workshop with Databricks SA + Governance SME (1–2 weeks)',
+        '🎓 **Enablement**: Train platform admins on workspace hierarchy, catalog design, FinOps, and access control patterns',
+        '🚀 **Adoption**: Roll out governance incrementally — start with one domain (e.g., Finance or Clinical Data) before full enterprise rollout',
+        '📊 **Industry Benchmarking**: Review governance maturity benchmarks vs. peers (e.g., GxP, HIPAA, HITRUST adoption trends)',
+        '🤝 **Partner Engagement**: Engage SI partners specializing in platform setup (e.g., Wipro, Deloitte, TCS, Slalom) for scalable implementation',
+        '📈 **KPIs**: Catalog coverage %, data ownership clarity, % of datasets under lineage tracking, cost visibility improvements'
+      ],
+      data_engineering: [
+        '📚 **Workshop**: Conduct LakeFlow & DLT Workshop to align ingestion patterns (batch, streaming, CDC)',
+        '🎓 **Enablement**: Provide hands-on DLT / Auto Loader / LakeFlow Connect enablement for engineers',
+        '🚀 **Adoption**: Migrate 1–2 high-impact pipelines (e.g., Claims, Provider, EHR) to Delta architecture as "lighthouse projects"',
+        '📊 **Assessment**: Run a Pipeline Health & Cost Optimization Assessment with Databricks PS or partner',
+        '💡 **Industry Outlook**: Emphasize trends like near real-time ingestion for patient 360, interoperability (FHIR, HL7)',
+        '🤝 **Partner Engagement**: Identify ETL modernization partners (Accenture, Cognizant, Infosys) for migration planning',
+        '📈 **KPIs**: Pipeline reliability (SLA adherence), data freshness, ingestion cost per TB, DQ incident reduction'
+      ],
+      analytics_bi: [
+        '📚 **Workshop**: Host DBSQL Analytics Workshop or "Modern BI on Lakehouse" session with Databricks + Power BI integration demo',
+        '🎓 **Enablement**: Train business analysts on Databricks SQL, Delta Sharing, and certified datasets',
+        '🚀 **Adoption**: Identify top dashboards to migrate from legacy BI platforms; certify datasets via Unity Catalog',
+        '💡 **Industry Outlook**: Showcase payer/provider success stories (e.g., care analytics, cost optimization)',
+        '🤝 **Partner Engagement**: Collaborate with SI/ISV BI specialists (e.g., Thorogood, Tredence) to streamline dashboard migration',
+        '📊 **Assessment**: Conduct BI Readiness & Performance Assessment to identify latency and concurrency issues',
+        '📈 **KPIs**: # of certified datasets, BI adoption rate, time-to-insight, dashboard latency reduction'
+      ],
+      machine_learning: [
+        '📚 **Workshop**: Run MLflow + Model Serving Enablement Workshop and GenAI/RAG Accelerator sessions',
+        '🎓 **Enablement**: Train DS/ML teams on experiment tracking, model registry, and GenAI evaluation',
+        '🚀 **Adoption**: Deploy first model in Model Serving or AI Gateway; demonstrate end-to-end MLOps',
+        '📊 **Assessment**: Conduct ML Readiness & Governance Assessment for model lifecycle and bias evaluation',
+        '💡 **Industry Outlook**: Present trends — e.g., healthcare GenAI agents for prior auth, patient summarization, and LLMOps best practices',
+        '🤝 **Partner Engagement**: Engage domain-specific AI partners (e.g., ZS, IQVIA, Deloitte) for solution acceleration',
+        '📈 **KPIs**: # of models in registry, model deployment frequency, approval SLAs, ROI from GenAI pilots'
+      ],
+      generative_ai: [
+        '📚 **Workshop**: Run MLflow + Model Serving Enablement Workshop and GenAI/RAG Accelerator sessions',
+        '🎓 **Enablement**: Train DS/ML teams on experiment tracking, model registry, and GenAI evaluation',
+        '🚀 **Adoption**: Deploy first model in Model Serving or AI Gateway; demonstrate end-to-end MLOps',
+        '📊 **Assessment**: Conduct ML Readiness & Governance Assessment for model lifecycle and bias evaluation',
+        '💡 **Industry Outlook**: Present trends — e.g., healthcare GenAI agents for prior auth, patient summarization, and LLMOps best practices',
+        '🤝 **Partner Engagement**: Engage domain-specific AI partners (e.g., ZS, IQVIA, Deloitte) for solution acceleration',
+        '📈 **KPIs**: # of models in registry, model deployment frequency, approval SLAs, ROI from GenAI pilots'
+      ],
+      operational_excellence: [
+        '📚 **Workshop**: Conduct Ops Observability & Cost Optimization Workshop (system tables, audit logs, FinOps)',
+        '🎓 **Enablement**: Train admin teams on system tables, alerting, and proactive monitoring',
+        '🚀 **Adoption**: Deploy central cost dashboards and SLA metrics; create monthly Ops scorecards',
+        '📊 **Assessment**: Perform Ops Maturity Review focusing on incident management and autoscaling policies',
+        '💡 **Industry Outlook**: Benchmark cost per user, DBU per workload against peer institutions',
+        '🤝 **Partner Engagement**: Use managed services vendors (e.g., Persistent, Capgemini) for ops automation or 24x7 monitoring',
+        '📈 **KPIs**: Downtime reduction, mean time to detect (MTTD), DBU cost trend, ticket resolution time'
+      ]
     };
     
-    const strategy = pillarStrategies[pillarId] || pillarStrategies.operational_excellence;
+    // Common next steps (applicable to all pillars)
+    const commonNextSteps = [
+      '🎓 **Training Pathways**: Launch Databricks Academy learning paths for Admins, Data Engineers, Data Scientists, and BI Analysts',
+      '🏆 **Certification Plan**: Set a goal: 30% of practitioners certified within 6 months',
+      '👥 **Community of Practice**: Formalize monthly CoP sessions — invite Databricks SMEs to present platform features or new releases',
+      '📊 **Leadership Briefings**: Conduct quarterly Executive Readouts on maturity progress and business value realization',
+      '📈 **Adoption Metrics**: Track active users, workspace usage, and # of certified datasets',
+      '🎉 **Culture Enablement**: Run "Data Day" or "AI Hackathon" events to engage broader teams',
+      '🤝 **SI/Vendor Engagement**: Identify top-tier partners by workstream (platform setup, data eng, BI, ML/AI)',
+      '🗺️ **Joint Roadmap Planning**: Align Databricks AE, SA, and SI partner on quarterly goals and delivery accountability',
+      '🚀 **Accelerators**: Leverage Industry Solutions (e.g., Digital Pathology, Patient 360, Prior Auth Optimization)',
+      '💡 **Co-Innovation**: Explore GenAI Proofs-of-Concept (POCs) co-developed with Databricks Labs or Field Engineering',
+      '🔧 **Vendor Rationalization**: Evaluate overlapping tools and consolidate into the Databricks ecosystem',
+      '📋 **Roadmap Governance**: Establish a PMO to oversee pillar-wise execution',
+      '📊 **Quarterly Business Reviews**: Review KPIs, risks, and blockers with Databricks leadership',
+      '🔄 **Maturity Re-Assessment**: Re-evaluate progress every 6–12 months using the same scoring framework',
+      '💰 **Funding & Budgeting**: Allocate resources for enablement, partner services, and platform expansion',
+      '📈 **Executive Scorecard**: Create visual dashboards showing maturity delta and value realized per quarter'
+    ];
     
-    // Generate 5-6 contextual next steps
-    nextSteps.push(`📚 **Workshop**: ${strategy.workshop}`);
-    nextSteps.push(`🎓 **Enablement**: ${strategy.enablement}`);
-    nextSteps.push(`🚀 **Adoption**: ${strategy.adoption}`);
+    // Get pillar-specific next steps
+    const pillarNextSteps = nextStepsLibrary[pillarId] || nextStepsLibrary.operational_excellence;
     
-    // Add feature-specific implementation step if we have features
-    if (features && features.length > 0) {
-      const topFeature = features[0];
-      const implementationComplexity = topFeature.complexity_weeks || 2;
-      const timeframe = implementationComplexity > 4 ? '8-12 weeks' : implementationComplexity > 2 ? '4-6 weeks' : '2-3 weeks';
-      
-      nextSteps.push(`⚙️ **Implementation**: Deploy ${topFeature.name} (${timeframe}) - start with pilot in non-production environment, validate with key stakeholders, then roll out enterprise-wide`);
+    // Select up to 6 unique, high-impact, collaborative next steps
+    const selectedNextSteps = [];
+    
+    // 1. Always include Workshop (involves Databricks SA/SME)
+    const workshop = pillarNextSteps.find(step => step.includes('**Workshop**'));
+    if (workshop) selectedNextSteps.push(workshop);
+    
+    // 2. Always include Partner Engagement (involves SI vendors)
+    const partner = pillarNextSteps.find(step => step.includes('**Partner Engagement**'));
+    if (partner) selectedNextSteps.push(partner);
+    
+    // 3. Include Enablement OR Assessment (capacity building)
+    const enablement = pillarNextSteps.find(step => step.includes('**Enablement**'));
+    const assessment = pillarNextSteps.find(step => step.includes('**Assessment**'));
+    if (Math.random() > 0.5 && enablement) {
+      selectedNextSteps.push(enablement);
+    } else if (assessment) {
+      selectedNextSteps.push(assessment);
     }
     
-    nextSteps.push(`📊 **Assessment**: ${strategy.assessment}`);
+    // 4. Include Adoption (implementation focus)
+    const adoption = pillarNextSteps.find(step => step.includes('**Adoption**'));
+    if (adoption) selectedNextSteps.push(adoption);
     
-    // Add partner engagement for complex scenarios
-    if (avgGap > 2 || painPoints.length > 8) {
-      const partnerTypes = {
-        platform_governance: 'SI partners specializing in governance (Deloitte, Accenture, Slalom)',
-        data_engineering: 'ETL modernization partners (Cognizant, Infosys, TCS)',
-        analytics_bi: 'BI specialists (Thorogood, Tredence)',
-        machine_learning: 'AI/ML partners (ZS, Capgemini)',
-        generative_ai: 'GenAI specialists (Databricks Labs, Field Engineering)',
-        operational_excellence: 'Managed services vendors (Persistent, Wipro)'
-      };
-      
-      nextSteps.push(`🤝 **Partner Engagement**: Consider engaging ${partnerTypes[pillarId] || 'system integration partners'} to accelerate implementation and provide specialized expertise`);
-    }
+    // 5-6. Add 2 high-impact common next steps that promote collaboration
+    const highImpactCommon = [
+      '🗺️ **Joint Roadmap Planning**: Align Databricks AE, SA, and SI partner on quarterly goals and delivery accountability',
+      '📊 **Quarterly Business Reviews**: Review KPIs, risks, and blockers with Databricks leadership',
+      '👥 **Community of Practice**: Formalize monthly CoP sessions — invite Databricks SMEs to present platform features or new releases',
+      '🚀 **Accelerators**: Leverage Industry Solutions (e.g., Digital Pathology, Patient 360, Prior Auth Optimization)',
+      '💡 **Co-Innovation**: Explore GenAI Proofs-of-Concept (POCs) co-developed with Databricks Labs or Field Engineering',
+      '📊 **Leadership Briefings**: Conduct quarterly Executive Readouts on maturity progress and business value realization'
+    ];
     
-    // Add KPIs
-    nextSteps.push(`📈 **Success Metrics**: ${strategy.kpis}`);
+    // Randomly select 2 high-impact collaborative steps
+    const shuffledHighImpact = highImpactCommon.sort(() => Math.random() - 0.5);
+    const remainingSlots = 6 - selectedNextSteps.length;
+    selectedNextSteps.push(...shuffledHighImpact.slice(0, remainingSlots));
     
-    console.log(`[IntelligentEngine V2] ✅ Built ${nextSteps.length} contextual next steps for ${pillarId}`);
-    return nextSteps;
+    // Ensure uniqueness and limit to 6
+    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, 6);
+    
+    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} high-impact collaborative next steps for ${pillarId}`);
+    return uniqueNextSteps;
   }
 
   /**
