@@ -28,8 +28,12 @@ class DatabricksFeatureDatabase {
    */
   async getFeaturesForPainPoints(painPointValues, pillar) {
     try {
+      // Add keyword-based relevance scoring to break ties when all features match all pain points
+      // Convert pain point values to keywords for text matching
+      const painPointKeywords = painPointValues.map(p => p.replace(/_/g, ' ')).join(' ');
+      
       const query = `
-        SELECT DISTINCT ON (f.id)
+        SELECT 
           f.id,
           f.name,
           f.category,
@@ -42,21 +46,34 @@ class DatabricksFeatureDatabase {
           f.is_serverless,
           f.requires_unity_catalog,
           f.complexity_weeks,
-          fpm.recommendation_text,
+          MAX(fpm.recommendation_text) as recommendation_text,
+          COUNT(DISTINCT fpm.pain_point_value) as pain_point_matches,
           (CASE f.ga_status 
             WHEN 'GA' THEN 1 
             WHEN 'Public Preview' THEN 2 
             ELSE 3
-          END) as ga_priority
+          END) as ga_priority,
+          -- Keyword relevance score: how well does feature name/description match pain point keywords?
+          (
+            SELECT COUNT(*)
+            FROM unnest($1::text[]) AS pain_value
+            WHERE 
+              f.name ILIKE '%' || replace(pain_value, '_', ' ') || '%'
+              OR f.short_description ILIKE '%' || replace(pain_value, '_', ' ') || '%'
+          ) as keyword_relevance
         FROM databricks_features f
         INNER JOIN feature_pain_point_mapping fpm ON f.id = fpm.feature_id
         WHERE fpm.pain_point_value = ANY($1)
           AND (fpm.pillar = $2 OR fpm.pillar IS NULL)
           AND f.ga_status IN ('GA', 'Public Preview')
+        GROUP BY f.id, f.name, f.category, f.short_description, f.detailed_description, 
+                 f.release_date, f.ga_quarter, f.ga_status, f.documentation_url, 
+                 f.is_serverless, f.requires_unity_catalog, f.complexity_weeks
         ORDER BY 
-          f.id,
-          ga_priority,
-          f.release_date DESC
+          pain_point_matches DESC,   -- Most relevant features first
+          keyword_relevance DESC,     -- Break ties with keyword matching
+          ga_priority ASC,            -- Prefer GA over Preview  
+          f.release_date DESC         -- Prefer newer features
         LIMIT 10;
       `;
       
