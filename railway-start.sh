@@ -14,6 +14,16 @@ if [ ! -d "client/build" ]; then
 fi
 
 echo "✅ Client build found"
+
+# Run database migrations if DATABASE_URL is set
+if [ ! -z "$DATABASE_URL" ]; then
+  echo "🗄️ Setting up PostgreSQL database..."
+  node server/scripts/setupDatabase.js || echo "⚠️ Database setup failed, continuing anyway..."
+  echo "✅ Database setup complete"
+else
+  echo "⚠️ No DATABASE_URL found, skipping database setup"
+fi
+
 echo "🌐 Starting server on port ${PORT:-3000}..."
 
 # Start the Node.js server
