@@ -1135,6 +1135,16 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       const dynamicRoadmap = intelligentEngine.generateStrategicRoadmap(recommendations.prioritizedActions);
       recommendations.roadmap = dynamicRoadmap;
       console.log(`✅ Dynamic roadmap generated with ${dynamicRoadmap.phases?.length || 0} phases`);
+      
+      // 💰 CALCULATE BUSINESS IMPACT based on assessment gaps and features
+      console.log('💰 Calculating dynamic business impact metrics...');
+      const businessImpact = intelligentEngine.calculateBusinessImpact(
+        assessment,
+        recommendations.prioritizedActions,
+        assessment.industry || 'Technology'
+      );
+      recommendations.businessImpact = businessImpact;
+      console.log(`✅ Business impact calculated: ${businessImpact.decisionSpeed?.value}, ${businessImpact.costOptimization?.value}, ${businessImpact.manualOverhead?.value}`);
     }
 
     const results = {
@@ -1166,6 +1176,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       commentBasedInsights: recommendations.commentBasedInsights || [], // ADAPTIVE: Insights from user notes
       prioritizedActions: recommendations.prioritizedActions,
       roadmap: recommendations.roadmap,
+      businessImpact: recommendations.businessImpact, // DYNAMIC: Calculated based on gaps, industry, and features
       quickWins: recommendations.quickWins,
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary

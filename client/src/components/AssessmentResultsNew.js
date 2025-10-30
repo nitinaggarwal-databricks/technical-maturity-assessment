@@ -2199,10 +2199,17 @@ const AssessmentResultsNew = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4 }}
               >
-                <div className="metric-value">2.8×</div>
-                <div className="metric-label">
-                  Increase in analytics-driven decision-making speed
+                <div className="metric-value">
+                  {resultsData?.businessImpact?.decisionSpeed?.value || '2.8×'}
                 </div>
+                <div className="metric-label">
+                  {resultsData?.businessImpact?.decisionSpeed?.label || 'Increase in analytics-driven decision-making speed'}
+                </div>
+                {resultsData?.businessImpact?.decisionSpeed?.drivers && resultsData.businessImpact.decisionSpeed.drivers.length > 0 && (
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                    Key drivers: {resultsData.businessImpact.decisionSpeed.drivers.join(', ')}
+                  </div>
+                )}
               </MetricCard>
 
               <MetricCard
@@ -2211,10 +2218,17 @@ const AssessmentResultsNew = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.1 }}
               >
-                <div className="metric-value">6%</div>
-                <div className="metric-label">
-                  Average cost optimization through platform automation
+                <div className="metric-value">
+                  {resultsData?.businessImpact?.costOptimization?.value || '6%'}
                 </div>
+                <div className="metric-label">
+                  {resultsData?.businessImpact?.costOptimization?.label || 'Average cost optimization through platform automation'}
+                </div>
+                {resultsData?.businessImpact?.costOptimization?.drivers && resultsData.businessImpact.costOptimization.drivers.length > 0 && (
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                    Key drivers: {resultsData.businessImpact.costOptimization.drivers.slice(0, 2).join(', ')}
+                  </div>
+                )}
               </MetricCard>
 
               <MetricCard
@@ -2223,10 +2237,17 @@ const AssessmentResultsNew = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                <div className="metric-value">30%</div>
-                <div className="metric-label">
-                  Reduction in manual operational overhead
+                <div className="metric-value">
+                  {resultsData?.businessImpact?.manualOverhead?.value || '30%'}
                 </div>
+                <div className="metric-label">
+                  {resultsData?.businessImpact?.manualOverhead?.label || 'Reduction in manual operational overhead'}
+                </div>
+                {resultsData?.businessImpact?.manualOverhead?.drivers && resultsData.businessImpact.manualOverhead.drivers.length > 0 && (
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                    Key drivers: {resultsData.businessImpact.manualOverhead.drivers.slice(0, 2).join(', ')}
+                  </div>
+                )}
               </MetricCard>
             </ImpactMetrics>
           </ImpactSection>
