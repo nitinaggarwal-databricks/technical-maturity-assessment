@@ -11,7 +11,7 @@ const LiveDataEnhancer = require('./services/liveDataEnhancer');
 const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const DatabricksFeatureMapper = require('./services/databricksFeatureMapper');
 const ContextAwareRecommendationEngine = require('./services/contextAwareRecommendationEngine');
-const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine');
+const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine_v2');
 const StorageAdapter = require('./utils/storageAdapter');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 
