@@ -2074,47 +2074,6 @@ const AssessmentResultsNew = () => {
                     )}
                 </PillarBody>
                 )}
-                
-                {/* View Details Button */}
-                {/* Only show View Details button if pillar has responses */}
-                {resultsData?.categoryDetails?.[pillar.id] && (
-                  <div style={{ 
-                    marginTop: '16px', 
-                    paddingTop: '16px', 
-                    borderTop: '1px solid #e5e7eb',
-                    display: 'flex',
-                    justifyContent: 'flex-end'
-                  }}>
-                    <button
-                      onClick={() => navigate(`/pillar-results/${assessmentId}/${pillar.id}`)}
-                      style={{
-                        padding: '10px 20px',
-                        background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontWeight: 600,
-                        fontSize: '0.9rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.transform = 'translateX(2px)';
-                        e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.transform = 'translateX(0)';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    >
-                      View Detailed {pillar.name} Results
-                      <FiTarget size={16} />
-                    </button>
-                  </div>
-                )}
               </PillarSection>
             );
           })}
