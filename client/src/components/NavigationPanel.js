@@ -347,14 +347,6 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
     navigate(`/assessment/${assessmentId}/${pillarId}?dimension=${dimensionIndex}`);
   };
 
-  const navigateToPillarResults = (pillarId) => {
-    if (!assessmentId) {
-      console.error('No assessment ID available');
-      return;
-    }
-    navigate(`/pillar-results/${assessmentId}/${pillarId}`);
-  };
-
   const navigateToOverallResults = () => {
     if (!assessmentId) {
       console.error('No assessment ID available');
@@ -492,32 +484,6 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
 
       <ActionButtonsContainer>
         <ResultsSection>
-          <ResultsSectionTitle>
-            <FiTarget size={14} />
-            Individual Pillar Results
-          </ResultsSectionTitle>
-          {framework.assessmentAreas?.map((pillar) => {
-            const isCompleted = pillarProgress[pillar.id]?.completed || false;
-            const pillarName = pillar.name.replace(/[^\w\s]/g, '').split(' ').slice(0, 3).join(' ');
-            
-            return (
-              <PillarResultButton
-                key={pillar.id}
-                isCompleted={isCompleted}
-                disabled={!isCompleted}
-                onClick={() => isCompleted && navigateToPillarResults(pillar.id)}
-                whileHover={isCompleted ? { scale: 1.02 } : {}}
-                whileTap={isCompleted ? { scale: 0.98 } : {}}
-              >
-                <FiTarget size={16} />
-                <span style={{ flex: 1, textAlign: 'left' }}>{pillarName}</span>
-                {isCompleted && <FiCheckCircle size={16} />}
-              </PillarResultButton>
-            );
-          })}
-        </ResultsSection>
-
-        <ResultsSection style={{ marginTop: '16px', paddingTop: '16px', borderTop: '2px solid #e5e7eb' }}>
           <ResultsSectionTitle>
             <FiBarChart2 size={14} />
             Overall Results

@@ -12,7 +12,6 @@ import HomePage from './components/HomePageNew';
 import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
 import AssessmentResults from './components/AssessmentResultsNew';
-import PillarResults from './components/PillarResults';
 import AssessmentManagement from './components/AssessmentsListNew';
 import AssessmentDashboard from './components/AssessmentDashboard';
 import Dashboard from './components/Dashboard';
@@ -262,12 +261,6 @@ function App() {
                 framework={assessmentFramework}
               />
             } 
-          />
-          
-          
-          <Route 
-            path="/pillar-results/:assessmentId/:pillarId" 
-            element={<PillarResults />} 
           />
           
           <Route 

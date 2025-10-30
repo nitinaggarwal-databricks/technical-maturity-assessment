@@ -298,41 +298,6 @@ export const updateAssessmentMetadata = async (assessmentId, metadata) => {
 };
 
 /**
- * Get pillar-specific results and recommendations
- */
-export const getPillarResults = async (assessmentId, pillarId) => {
-  try {
-    console.log(`[getPillarResults] Fetching for assessment: ${assessmentId}, pillar: ${pillarId}`);
-    // Add cache-busting timestamp to force fresh fetch
-    const cacheBuster = Date.now();
-    const response = await api.get(`/assessment/${assessmentId}/pillar/${pillarId}/results?_=${cacheBuster}`);
-    console.log('[getPillarResults] Raw response:', response);
-    console.log('[getPillarResults] Response data:', response.data);
-    
-    // Axios interceptor already unwraps response.data, so response IS the data
-    // Backend now returns flat structure: { success: true, pillarDetails, painPointRecommendations, ... }
-    if (response && response.success && response.pillarDetails) {
-      console.log('[getPillarResults] Returning flat response structure');
-      return response;
-    }
-    
-    // Legacy fallback: if response has nested data property
-    if (response && response.data && response.data.pillarDetails) {
-      console.log('[getPillarResults] Returning response.data (legacy structure)');
-      return response.data;
-    }
-    
-    console.error('[getPillarResults] Unexpected response structure:', response);
-    console.error('[getPillarResults] Expected: { success: true, pillarDetails, ... }');
-    throw new Error('API returned unexpected response structure');
-  } catch (error) {
-    console.error('[getPillarResults] Error fetching pillar results:', error);
-    console.error('[getPillarResults] Error response:', error.response?.data);
-    throw error;
-  }
-};
-
-/**
  * Generate a sample assessment with random data
  */
 export const generateSampleAssessment = async (completionLevel = 'full', specificPillars = null) => {
