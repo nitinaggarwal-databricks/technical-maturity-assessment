@@ -1130,7 +1130,12 @@ app.get('/api/assessment/:id/results', async (req, res) => {
           databricksFeatures: intelligentRecs.databricksFeatures.length > 0 ? intelligentRecs.databricksFeatures : action.databricksFeatures,
           _intelligentEngine: true,
           _painPointsAnalyzed: intelligentRecs.theBad.length,
-          _strengthsIdentified: intelligentRecs.theGood.length
+          _strengthsIdentified: intelligentRecs.theGood.length,
+          _debugNextSteps: {
+            count: intelligentRecs.nextSteps.length,
+            first: intelligentRecs.nextSteps[0],
+            source: 'intelligentEngine.generateRecommendations'
+          }
         };
       }));
       
