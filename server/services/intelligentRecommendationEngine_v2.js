@@ -7,10 +7,12 @@
  */
 
 const databricksFeatureMapper = require('./databricksFeatureMapper');
+const featureDB = require('./databricksFeatureDatabase');
 
 class IntelligentRecommendationEngine {
   constructor() {
     this.featureMapper = databricksFeatureMapper;
+    this.featureDB = featureDB;
     
     // KEYWORD → DATABRICKS FEATURE/SOLUTION MAPPING
     this.keywordMap = {
@@ -373,53 +375,186 @@ class IntelligentRecommendationEngine {
     
     // Use the first (most relevant) keyword match
     const keywordData = this.keywordMap[keywords[0]];
+    const primaryFeature = keywordData.features[0];
+    const secondaryFeature = keywordData.features[1] || keywordData.features[0];
+    
+    // Generate API-level technical recommendations
+    const apiRecommendations = this.generateTechnicalImplementation(primaryFeature, secondaryFeature, painPoint.label, keywordData.category);
     
     return {
       problem: painPoint.label,
-      solution: keywordData.solution,
+      solution: `${keywordData.solution} — Implementation requires Databricks API expertise, infrastructure-as-code patterns, and production deployment experience.`,
       recommendations: [
-        `**Address ${painPoint.label}**: ${keywordData.solution}`,
-        `**Key capabilities**: Leverage ${keywordData.features.slice(0, 3).join(', ')} for immediate impact`,
-        `**Implementation approach**: Start with POC (2 weeks), validate with pilot team (1 month), roll out to all teams (3 months)`
+        `**Technical Implementation for ${painPoint.label}**:`,
+        ...apiRecommendations.steps,
+        `**Complexity**: ${apiRecommendations.complexity}`,
+        `**Prerequisites**: ${apiRecommendations.prerequisites}`
       ],
       databricks_features: keywordData.features,
       next_steps: [
-        `Workshop: ${painPoint.label} Assessment and Solution Design (half-day)`,
-        `POC: Implement ${keywordData.features[0]} for pilot use case (2 weeks)`,
-        `Training: Team enablement on ${keywordData.features.slice(0, 2).join(' and ')}`,
-        `Rollout: Production deployment with monitoring and support`
+        `Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate approach and integration points`,
+        `API Configuration: Implement ${primaryFeature} using REST API \`/api/2.1/...\` with OAuth 2.0 service principals and RBAC (1-2 weeks)`,
+        `Infrastructure-as-Code: Deploy via Databricks Asset Bundles or Terraform provider with CI/CD pipeline integration (2-3 weeks)`,
+        `Testing & Validation: Load testing, security scanning, compliance validation in non-prod environment (1 week)`,
+        `Production Deployment: Blue-green deployment with monitoring, alerting, and runbooks (1 week + ongoing support)`
       ]
     };
   }
   
   /**
-   * Pillar-specific default recommendations
+   * Generate deeply technical, API-level implementation guidance
+   */
+  generateTechnicalImplementation(primaryFeature, secondaryFeature, painPointLabel, category) {
+    // Feature-specific API endpoints and configuration
+    const technicalMappings = {
+      'Unity Catalog': {
+        steps: [
+          '• Deploy Unity Catalog metastore via REST API: \`POST /api/2.1/unity-catalog/metastores\` with AWS S3/Azure ADLS/GCS root storage configuration',
+          '• Configure fine-grained access control with \`GRANT\` statements: \`GRANT SELECT ON catalog.schema.table TO \`user@domain.com\`\` and attribute-based policies',
+          '• Enable audit logging: \`ALTER CATALOG catalog_name SET AUDIT = true\` and stream to System Tables (\`system.access.audit\`) for compliance dashboards',
+          '• Integrate with Identity Provider via SCIM 2.0: \`POST /api/2.0/accounts/{account_id}/scim/v2/Users\` for automated user/group provisioning'
+        ],
+        complexity: '4-6 weeks, requires Databricks Certified Associate + security/IAM expertise + Terraform/IaC skills',
+        prerequisites: 'Account admin permissions, cloud IAM roles, external location credentials, Delta Lake knowledge'
+      },
+      'Delta Live Tables': {
+        steps: [
+          '• Define DLT pipelines in Python/SQL with declarative expectations: \`@dlt.table(name="orders_clean", expectations={"valid_order": "order_id IS NOT NULL"})\`',
+          '• Configure DLT settings via API: \`POST /api/2.0/pipelines\` with \`{"development": false, "photon_enabled": true, "serverless": true}\`',
+          '• Implement Change Data Capture (CDC) with APPLY CHANGES: \`dlt.apply_changes(target="orders", source="orders_cdc", keys=["order_id"], sequence_by="updated_at")\`',
+          '• Monitor pipeline health via Event Log: \`SELECT * FROM event_log(TABLE(LIVE.pipeline_events)) WHERE level = "ERROR"\` and integrate with PagerDuty/Slack'
+        ],
+        complexity: '3-5 weeks, requires PySpark expertise + DataOps experience + CI/CD pipeline skills',
+        prerequisites: 'Databricks Runtime 11.3+, Unity Catalog enabled, source data in Delta format, version control (Git)'
+      },
+      'MLflow': {
+        steps: [
+          '• Configure MLflow Tracking Server with backend store: \`mlflow.set_tracking_uri("databricks")\` and artifact store in Unity Catalog volumes',
+          '• Implement experiment tracking with autologging: \`mlflow.autolog()\` for scikit-learn/XGBoost/TensorFlow with hyperparameter capture',
+          '• Register models in Unity Catalog: \`mlflow.register_model(f"runs:/{run_id}/model", "catalog.schema.model_name")\` with versioning and aliases',
+          '• Deploy to Model Serving: \`POST /api/2.0/serving-endpoints\` with \`{"served_models": [{"model_name": "...", "model_version": "1", "workload_size": "Small", "scale_to_zero_enabled": true}]}\`'
+        ],
+        complexity: '3-4 weeks, requires ML engineering + MLOps + Kubernetes/container knowledge',
+        prerequisites: 'Databricks ML Runtime, Unity Catalog, Model Registry access, production endpoint permissions'
+      },
+      'Databricks SQL': {
+        steps: [
+          '• Provision Serverless SQL Warehouse: \`POST /api/2.0/sql/warehouses\` with \`{"name": "...", "cluster_size": "2X-Small", "serverless": true, "enable_photon": true}\`',
+          '• Implement Liquid Clustering for query optimization: \`ALTER TABLE catalog.schema.table CLUSTER BY (column1, column2)\` for 2-5× performance improvement',
+          '• Configure Query Result Caching and Delta Caching for sub-second response times on repeated queries',
+          '• Set up SQL Alerts with Webhooks: \`POST /api/2.0/preview/sql/alerts\` with Slack/email notification on SLA breach or anomaly detection'
+        ],
+        complexity: '2-3 weeks, requires SQL optimization + data modeling + BI integration experience',
+        prerequisites: 'Databricks SQL Pro/Serverless, Unity Catalog with SELECT grants, Photon enabled, Serverless GA (Q2 2024)'
+      },
+      'Model Serving': {
+        steps: [
+          '• Deploy Serverless Model Serving endpoint: \`POST /api/2.0/serving-endpoints\` with auto-scaling (0-10 instances) and GPU support (A10G/A100)',
+          '• Configure AI Gateway for rate limiting, PII detection: \`POST /api/2.0/serving-endpoints/{name}/config\` with Lakehouse Monitoring integration',
+          '• Implement A/B testing with traffic splitting: Update endpoint config with \`{"traffic_config": {"routes": [{"served_model_name": "champion", "traffic_percentage": 90}, {"served_model_name": "challenger", "traffic_percentage": 10}]}}\`',
+          '• Monitor inference latency and drift: Query \`system.serving.inference_log\` and \`system.serving.request_log\` for real-time dashboards'
+        ],
+        complexity: '3-5 weeks, requires MLOps + distributed systems + monitoring/observability expertise',
+        prerequisites: 'Databricks ML Runtime, registered models in Unity Catalog, production workspace, Serverless Compute GA'
+      },
+      'Workflows': {
+        steps: [
+          '• Define multi-task DAG via Jobs API: \`POST /api/2.1/jobs/create\` with task dependencies, retry policies, timeout configurations',
+          '• Implement parameterized workflows with Widgets: \`dbutils.widgets.text("param", "default")\` and pass values via Job Parameters JSON',
+          '• Configure Git-based source control: Link workflow to GitHub/GitLab repo via \`git_source\` with branch/tag/commit SHA for reproducibility',
+          '• Set up alerting and SLA monitoring: \`POST /api/2.1/jobs/{job_id}/runs/submit\` with email/webhook notifications on failure, timeout, or SLA breach'
+        ],
+        complexity: '2-4 weeks, requires orchestration + DevOps + Git workflow expertise',
+        prerequisites: 'Databricks Jobs access, Git integration enabled, service principal for automation, Unity Catalog for secrets'
+      }
+    };
+    
+    // Get technical implementation for primary feature, fallback to generic
+    const implementation = technicalMappings[primaryFeature] || {
+      steps: [
+        `• Deploy ${primaryFeature} via Databricks REST API (\`/api/2.1/...\`) with OAuth 2.0 service principal authentication`,
+        `• Configure ${secondaryFeature} integration using infrastructure-as-code (Databricks Asset Bundles or Terraform Provider)`,
+        `• Implement monitoring and observability with System Tables (\`system.compute.*\`, \`system.billing.*\`) and Lakehouse Monitoring`,
+        `• Enable CI/CD pipeline with automated testing (pytest), security scanning (SAST/DAST), and blue-green deployment`,
+        `**Latest Features**: Serverless Compute (GA Q2 2024), Enhanced Autoscaling, System Tables for Billing/Governance`
+      ],
+      complexity: '3-6 weeks | Requires: Databricks Certified Associate + platform engineering + DevOps + cloud architecture',
+      prerequisites: 'Account/Workspace admin, Unity Catalog, cloud IAM roles (AWS/Azure/GCP), Git repository, CI/CD platform'
+    };
+    
+    return implementation;
+  }
+  
+  /**
+   * Pillar-specific default recommendations - TECHNICAL IMPLEMENTATION FOCUSED
    */
   pillarDefaultRecommendation(painPoint, pillarId) {
     const pillarDefaults = {
       'platform_governance': {
         features: ['Unity Catalog', 'Account Console', 'Audit Logs', 'Cluster Policies'],
-        solution: 'Implement platform governance with Unity Catalog, audit logging, and cluster policies'
+        apiEndpoints: [
+          '\`POST /api/2.1/unity-catalog/metastores\` - Deploy centralized metastore with multi-cloud storage',
+          '\`POST /api/2.0/policies/clusters/create\` - Enforce compute governance with auto-termination and Photon',
+          '\`GET /api/2.0/accounts/{account_id}/audit\` - Stream audit logs to SIEM (Splunk/DataDog) via System Tables',
+          '\`POST /api/2.0/accounts/{account_id}/scim/v2/Groups\` - Automate RBAC with Azure AD/Okta SCIM integration'
+        ],
+        complexity: '5-7 weeks | Requires: Account Admin + Cloud IAM + Security/Compliance expertise',
+        latestFeature: 'Attribute-Based Access Control (ABAC) - GA Q3 2024'
       },
       'data_engineering': {
         features: ['Delta Live Tables', 'Workflows', 'Auto Loader', 'Lakehouse Monitoring'],
-        solution: 'Modernize data pipelines with Delta Live Tables, Workflows orchestration, and quality monitoring'
+        apiEndpoints: [
+          '\`POST /api/2.0/pipelines\` - Deploy DLT with Serverless compute and Change Data Capture (CDC)',
+          '\`POST /api/2.1/jobs/create\` - Orchestrate multi-task DAGs with conditional execution and retries',
+          '\`POST /api/2.0/lakehouse-monitors\` - Monitor data quality with drift detection and automated alerting',
+          '\`SELECT * FROM cloud_files("s3://bucket", "json")\` - Auto Loader for schema evolution and backfill'
+        ],
+        complexity: '4-6 weeks | Requires: PySpark + Databricks Runtime 13.3+ + DataOps/DevOps skills',
+        latestFeature: 'DLT Serverless + Predictive I/O - GA Q1 2024'
       },
       'analytics_bi': {
-        features: ['Databricks SQL', 'Photon', 'Dashboards', 'Genie'],
-        solution: 'Accelerate analytics with Databricks SQL, Photon engine, and natural language with Genie'
+        features: ['Databricks SQL', 'Photon', 'Genie', 'Liquid Clustering'],
+        apiEndpoints: [
+          '\`POST /api/2.0/sql/warehouses\` - Provision Serverless SQL with auto-scaling (2X-Small to 4X-Large)',
+          '\`ALTER TABLE catalog.schema.table CLUSTER BY (col1, col2)\` - Implement Liquid Clustering for 2-5× query speedup',
+          '\`POST /api/2.0/preview/genie/spaces\` - Deploy Genie AI analyst with natural language query interface',
+          '\`POST /api/2.0/sql/dashboards\` - Automate dashboard refresh with scheduled queries and Slack alerts'
+        ],
+        complexity: '3-5 weeks | Requires: SQL tuning + Unity Catalog + BI tool integration (Tableau/Power BI)',
+        latestFeature: 'Genie (AI Analyst) + Serverless SQL GA - Q2 2024'
       },
       'machine_learning': {
-        features: ['MLflow', 'Feature Store', 'Model Serving', 'AutoML'],
-        solution: 'Streamline ML lifecycle with MLflow tracking, Feature Store, and production Model Serving'
+        features: ['MLflow', 'Feature Store', 'Model Serving', 'Lakehouse Monitoring'],
+        apiEndpoints: [
+          '\`mlflow.register_model("runs:/{run_id}/model", "catalog.schema.model")\` - Version models in Unity Catalog',
+          '\`POST /api/2.0/serving-endpoints\` - Deploy Serverless Model Serving with GPU (A10G) and auto-scaling',
+          '\`POST /api/2.0/feature-store/feature-tables\` - Centralize features with Online Tables for <10ms serving',
+          '\`POST /api/2.0/lakehouse-monitors\` - Monitor model drift, data quality, and inference latency in production'
+        ],
+        complexity: '4-6 weeks | Requires: ML Engineering + MLOps + Kubernetes + monitoring expertise',
+        latestFeature: 'Serverless Model Serving + Lakehouse Monitoring for ML - GA Q1 2024'
       },
       'generative_ai': {
         features: ['Mosaic AI Agent Framework', 'Vector Search', 'Foundation Model APIs', 'AI Gateway'],
-        solution: 'Build GenAI applications with Agent Framework, Vector Search for RAG, and Foundation Model APIs'
+        apiEndpoints: [
+          '\`POST /api/2.0/vector-search/indexes\` - Deploy hybrid search with embedding models (BGE, OpenAI, Cohere)',
+          '\`mlflow.langchain.log_model()\` - Register RAG chain in Model Registry with Agent Evaluation framework',
+          '\`POST /api/2.0/serving-endpoints/{name}/invocations\` - Serve Foundation Models (Llama 3, DBRX, Mixtral) via AI Gateway',
+          '\`POST /api/2.0/serving-endpoints/{name}/config\` - Configure rate limiting, PII detection, prompt firewall'
+        ],
+        complexity: '5-8 weeks | Requires: LLM expertise + Vector DB + RAG architecture + Python SDK',
+        latestFeature: 'Mosaic AI Agent Framework + Agent Evaluation - GA Q3 2024'
       },
       'operational_excellence': {
         features: ['Unity Catalog', 'System Tables', 'Databricks Academy', 'Asset Bundles'],
-        solution: 'Drive adoption with Unity Catalog governance, System Tables observability, and Academy training'
+        apiEndpoints: [
+          '\`SELECT * FROM system.compute.clusters WHERE date >= current_date() - 30\` - Analyze compute utilization',
+          '\`databricks bundle deploy\` - Deploy infrastructure-as-code with Asset Bundles (YAML + Git)',
+          '\`POST /api/2.0/workspace/import\` - Automate notebook deployment with CI/CD (GitHub Actions)',
+          '\`GET /api/2.0/clusters/list\` - Audit cluster configurations for compliance and cost optimization'
+        ],
+        complexity: '3-5 weeks | Requires: Platform engineering + System Tables + Terraform + DevOps',
+        latestFeature: 'Databricks Asset Bundles (DABs) + Enhanced System Tables - GA Q4 2023'
       }
     };
     
@@ -427,26 +562,31 @@ class IntelligentRecommendationEngine {
     
     return {
       problem: painPoint.label,
-      solution: defaults.solution,
+      solution: `Deploy ${defaults.features.join(', ')} with production-grade architecture, security, and monitoring. Implementation requires deep Databricks platform expertise and infrastructure-as-code patterns.`,
       recommendations: [
-        `**Address ${painPoint.label}**: ${defaults.solution}`,
-        `**Recommended approach**: Evaluate ${defaults.features[0]} and ${defaults.features[1]} for your specific use case`,
-        `**Next actions**: Schedule assessment with Databricks Solutions Architect to design implementation roadmap`
+        `**Technical Architecture for ${painPoint.label}**:`,
+        ...defaults.apiEndpoints,
+        ``,
+        `**Implementation Complexity**: ${defaults.complexity}`,
+        `**Latest Features**: ${defaults.latestFeature}`,
+        `**Deliverables**: Architecture design docs, Terraform/DAB configs, CI/CD pipelines, runbooks, team training`
       ],
       databricks_features: defaults.features,
       next_steps: [
-        `Consultation: Databricks Solutions Architect for ${painPoint.label} assessment`,
-        `POC: Pilot implementation with ${defaults.features[0]} (2-4 weeks)`,
-        `Training: Team enablement on recommended capabilities`,
-        `Rollout: Production deployment and monitoring`
+        `Architecture Workshop: 4-hour design session with Databricks Solutions Architect + Cloud Architect to validate approach`,
+        `API Integration: Implement core APIs using OAuth 2.0 service principals, with error handling and retry logic (2-3 weeks)`,
+        `Infrastructure-as-Code: Deploy via Databricks Asset Bundles or Terraform with dev/staging/prod environments (2-3 weeks)`,
+        `CI/CD Pipeline: GitHub Actions or GitLab CI with automated testing, security scans, and blue-green deployment (1-2 weeks)`,
+        `Production Deployment: Load testing (>1000 req/sec), monitoring setup (PagerDuty/DataDog), runbook creation (1 week)`
       ]
     };
   }
   
   /**
    * Generate intelligent recommendations for a pillar
+   * NOW WITH DATABASE INTEGRATION! 🚀
    */
-  generateRecommendations(assessment, pillarId, pillarFramework) {
+  async generateRecommendations(assessment, pillarId, pillarFramework) {
     console.log(`[IntelligentEngine V2] Analyzing pillar: ${pillarId}`);
     
     const responses = assessment.responses || {};
@@ -467,35 +607,61 @@ class IntelligentRecommendationEngine {
       .sort((a, b) => (b.score || 3) - (a.score || 3))
       .slice(0, 10); // Top 10 most critical
     
-    for (const painPoint of topPainPoints) {
-      // Try exact match first
-      let solution = this.solutionMap[painPoint.value];
+    // 🚀 QUERY DATABASE FOR FEATURES THAT SOLVE THESE PAIN POINTS
+    const dbFeatures = await this.queryDatabaseFeatures(topPainPoints, pillarId);
+    console.log(`[IntelligentEngine V2] 🎯 Found ${dbFeatures.length} features from database for ${topPainPoints.length} pain points`);
+    
+    // 🔥 NEW: USE DATABASE FEATURES TO GENERATE ALL CONTENT
+    if (dbFeatures.length > 0) {
+      console.log(`[IntelligentEngine V2] 🚀 USING DATABASE for ALL recommendation content`);
       
-      console.log(`[IntelligentEngine V2] Pain point: ${painPoint.value} (${painPoint.label})`);
-      console.log(`[IntelligentEngine V2] Exact match found: ${!!solution}`);
-      
-      if (!solution) {
-        // Use smart fallback
-        console.log(`[IntelligentEngine V2] Using smart fallback for: ${painPoint.value}`);
-        solution = this.smartFallback(painPoint, pillarId);
-      } else {
-        console.log(`[IntelligentEngine V2] Using strategic mapping for: ${painPoint.value}`);
+      // Generate recommendations from database features
+      for (const feature of dbFeatures) {
+        // Get full feature details including technical info and benefits
+        const featureDetails = await this.getFeatureDetails(feature.id);
+        
+        if (featureDetails) {
+          // Build recommendation from database data
+          const recommendation = await this.buildRecommendationFromDatabase(feature, featureDetails);
+          if (recommendation) {
+            allRecommendations.push(recommendation);
+          }
+          
+          // Build next steps from database data
+          const nextStep = await this.buildNextStepFromDatabase(feature, featureDetails);
+          if (nextStep) {
+            allNextSteps.push(nextStep);
+          }
+          
+          // Collect feature name
+          featureSet.add(feature.name);
+        }
       }
       
-      if (solution) {
-        // Add recommendations
-        if (solution.recommendations) {
-          allRecommendations.push(...solution.recommendations);
+      console.log(`[IntelligentEngine V2] ✅ Generated ${allRecommendations.length} recommendations from DATABASE`);
+      console.log(`[IntelligentEngine V2] ✅ Generated ${allNextSteps.length} next steps from DATABASE`);
+      
+    } else {
+      console.log(`[IntelligentEngine V2] ⚠️ No database features, falling back to hardcoded solutionMap`);
+      
+      // FALLBACK: Use hardcoded solutionMap only if database has no results
+      for (const painPoint of topPainPoints) {
+        let solution = this.solutionMap[painPoint.value];
+        
+        if (!solution) {
+          solution = this.smartFallback(painPoint, pillarId);
         }
         
-        // Add next steps
-        if (solution.next_steps) {
-          allNextSteps.push(...solution.next_steps);
-        }
-        
-        // Collect features
-        if (solution.databricks_features) {
-          solution.databricks_features.forEach(f => featureSet.add(f));
+        if (solution) {
+          if (solution.recommendations) {
+            allRecommendations.push(...solution.recommendations);
+          }
+          if (solution.next_steps) {
+            allNextSteps.push(...solution.next_steps);
+          }
+          if (solution.databricks_features) {
+            solution.databricks_features.forEach(f => featureSet.add(f));
+          }
         }
       }
     }
@@ -504,18 +670,226 @@ class IntelligentRecommendationEngine {
     const theGood = this.extractStrengths(comments, painPoints, stateGaps, pillarId, pillarFramework);
     const theBad = topPainPoints.slice(0, 5).map(pp => pp.label);
     
-    // Get Databricks features that SOLVE the pain points (not generic by maturity)
-    const painPointFeatures = this.mapPainPointsToFeatures(topPainPoints, pillarId);
+    // 🚀 BUILD DATABRICKS FEATURES from database
+    let painPointFeatures;
+    if (dbFeatures.length > 0) {
+      console.log(`[IntelligentEngine V2] ✅ Building ${dbFeatures.length} Databricks Features from DATABASE`);
+      painPointFeatures = dbFeatures.map(f => ({
+        name: f.name,
+        description: f.description || f.short_description,
+        benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
+        docsLink: f.docs || f.documentation_url
+      }));
+    } else {
+      console.log(`[IntelligentEngine V2] ⚠️ No database features, using hardcoded feature mapping`);
+      painPointFeatures = this.mapPainPointsToFeatures(topPainPoints, pillarId);
+    }
     
-    console.log(`[IntelligentEngine V2] Mapped ${topPainPoints.length} pain points to ${painPointFeatures.length} relevant Databricks features`);
+    console.log(`[IntelligentEngine V2] 📊 FINAL COUNTS: ${allRecommendations.length} recommendations, ${allNextSteps.length} next steps, ${painPointFeatures.length} features`);
     
     return {
       theGood: theGood.slice(0, 5),
       theBad: theBad,
-      recommendations: allRecommendations.slice(0, 5), // Top 5 recommendations
-      nextSteps: allNextSteps.slice(0, 5), // Top 5 next steps
-      databricksFeatures: painPointFeatures.slice(0, 4) // Features that solve the pain points
+      recommendations: allRecommendations.slice(0, 8),
+      nextSteps: allNextSteps.slice(0, 5),
+      databricksFeatures: painPointFeatures.slice(0, 4)
     };
+  }
+
+  /**
+   * 🚀 NEW: Query database for features that solve pain points
+   */
+  async queryDatabaseFeatures(painPoints, pillarId) {
+    try {
+      const painPointValues = painPoints.map(p => p.value);
+      console.log(`[IntelligentEngine V2] 🔍 Querying database for pain points:`, painPointValues.slice(0, 3));
+      
+      const features = await this.featureDB.getFeaturesForPainPoints(painPointValues, pillarId);
+      
+      console.log(`[IntelligentEngine V2] 📊 Database returned ${features.length} features`);
+      
+      return features;
+    } catch (error) {
+      console.error(`[IntelligentEngine V2] ❌ Database query failed:`, error.message);
+      return []; // Return empty array on error, fall back to hardcoded
+    }
+  }
+
+  /**
+   * 🚀 NEW: Get full feature details from database (including technical details and benefits)
+   */
+  async getFeatureDetails(featureId) {
+    try {
+      const details = await this.featureDB.getFeatureDetails(featureId);
+      return details;
+    } catch (error) {
+      console.error(`[IntelligentEngine V2] ❌ Failed to get feature details for ID ${featureId}:`, error.message);
+      return null;
+    }
+  }
+
+  /**
+   * 🚀 NEW: Build a recommendation object from database feature data
+   */
+  async buildRecommendationFromDatabase(feature, featureDetails) {
+    try {
+      // Extract benefits from featureDetails (array of benefit objects)
+      let benefits = [];
+      if (featureDetails && Array.isArray(featureDetails.benefits)) {
+        benefits = featureDetails.benefits.map(b => b.benefit_description || b.description);
+      }
+      
+      // Fallback benefits if none found
+      if (benefits.length === 0) {
+        benefits = [
+          `Released: ${feature.ga_quarter || 'Latest'}`,
+          `Category: ${feature.category || 'Enterprise'}`,
+          `Status: ${feature.ga_status || 'GA'}`
+        ];
+      }
+
+      // Build the recommendation structure
+      const recommendation = {
+        title: feature.name,
+        description: feature.detailed_description || feature.description || 'Advanced Databricks capability to address your technical challenges',
+        benefits: benefits,
+        icon: this.getCategoryIcon(feature.category),
+        docsLink: feature.documentation_url || feature.docs || 'https://docs.databricks.com',
+        gaStatus: feature.ga_status || 'GA',
+        releaseDate: feature.ga_quarter || 'Latest',
+        category: feature.category,
+        recommendationText: feature.recommendation_text // From pain point mapping
+      };
+
+      // Add technical details if available
+      if (featureDetails && featureDetails.capabilities) {
+        const tech = featureDetails.capabilities;
+        recommendation.technicalDetails = {
+          complexity: this.getComplexityFromWeeks(feature.complexity_weeks),
+          prerequisites: tech.prerequisites || 'Databricks workspace with appropriate permissions',
+          apiEndpoint: tech.api_endpoint,
+          apiMethod: tech.api_method,
+          configExample: tech.configuration_example,
+          terraformResource: tech.terraform_resource,
+          databricksCLI: tech.databricks_cli_command
+        };
+
+        // Add implementation steps if available
+        if (Array.isArray(featureDetails.implementation_steps) && featureDetails.implementation_steps.length > 0) {
+          recommendation.implementationSteps = featureDetails.implementation_steps.map(s => ({
+            order: s.step_order,
+            title: s.step_title,
+            description: s.step_description,
+            estimatedHours: s.estimated_hours,
+            skillRequired: s.skill_required
+          }));
+        }
+      }
+
+      console.log(`[IntelligentEngine V2] ✅ Built recommendation for: ${feature.name}`);
+      return recommendation;
+
+    } catch (error) {
+      console.error(`[IntelligentEngine V2] ❌ Failed to build recommendation from feature ${feature.name}:`, error.message);
+      console.error(`[IntelligentEngine V2] Stack:`, error.stack);
+      return null;
+    }
+  }
+
+  /**
+   * Helper: Convert complexity weeks to label
+   */
+  getComplexityFromWeeks(weeks) {
+    if (!weeks) return 'Medium';
+    if (weeks <= 2) return 'Low';
+    if (weeks <= 4) return 'Medium';
+    if (weeks <= 8) return 'High';
+    return 'Very High';
+  }
+
+  /**
+   * 🚀 NEW: Build a next step from database feature data
+   */
+  async buildNextStepFromDatabase(feature, featureDetails) {
+    try {
+      // Determine the type of next step based on complexity
+      const complexity = featureDetails?.capabilities?.complexity || 'Medium';
+      let actionType = 'Workshop';
+      
+      if (complexity === 'Low') {
+        actionType = 'Quick Start Training';
+      } else if (complexity === 'Medium') {
+        actionType = 'Technical Workshop';
+      } else if (complexity === 'High' || complexity === 'Very High') {
+        actionType = 'Discovery Session + POC';
+      }
+
+      const duration = this.estimateDuration(complexity);
+      const stakeholders = this.getStakeholders(feature.category);
+      
+      // Return a formatted string that the frontend can display
+      const nextStepString = `${actionType} (${duration}) with ${stakeholders}: Implement ${feature.name} to address ${feature.category || 'technical'} challenges and maximize ROI`;
+
+      console.log(`[IntelligentEngine V2] ✅ Built next step for: ${feature.name} (${actionType})`);
+      return nextStepString;
+
+    } catch (error) {
+      console.error(`[IntelligentEngine V2] ❌ Failed to build next step from feature ${feature.name}:`, error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Helper: Get icon for category
+   */
+  getCategoryIcon(category) {
+    const iconMap = {
+      'Data Engineering': '⚙️',
+      'Analytics': '📊',
+      'Machine Learning': '🤖',
+      'Governance': '🔒',
+      'Platform': '🏗️',
+      'Operational Excellence': '🎯',
+      'MLOps': '🔄',
+      'Security': '🛡️',
+      'Performance': '⚡',
+      'Cost Optimization': '💰',
+      'Collaboration': '👥'
+    };
+    return iconMap[category] || '🚀';
+  }
+
+  /**
+   * Helper: Estimate duration based on complexity
+   */
+  estimateDuration(complexity) {
+    const durationMap = {
+      'Low': '1-2 weeks',
+      'Medium': '3-4 weeks',
+      'High': '6-8 weeks',
+      'Very High': '8-12 weeks'
+    };
+    return durationMap[complexity] || '4-6 weeks';
+  }
+
+  /**
+   * Helper: Get stakeholders based on category
+   */
+  getStakeholders(category) {
+    const stakeholderMap = {
+      'Data Engineering': ['Data Engineering Team', 'Platform Team', 'Data Architects'],
+      'Analytics': ['Analytics Team', 'Business Intelligence Team', 'Data Analysts'],
+      'Machine Learning': ['Data Science Team', 'ML Engineering Team', 'Product Team'],
+      'Governance': ['Security Team', 'Compliance Team', 'Data Governance Team'],
+      'Platform': ['Platform Engineering Team', 'DevOps Team', 'Infrastructure Team'],
+      'Operational Excellence': ['Engineering Leadership', 'DevOps Team', 'SRE Team'],
+      'MLOps': ['ML Engineering Team', 'Data Science Team', 'DevOps Team'],
+      'Security': ['Security Team', 'Compliance Team', 'Platform Team'],
+      'Performance': ['Engineering Team', 'Platform Team', 'Performance Team'],
+      'Cost Optimization': ['FinOps Team', 'Engineering Leadership', 'Platform Team'],
+      'Collaboration': ['All Technical Teams', 'Product Management', 'Engineering Leadership']
+    };
+    return stakeholderMap[category] || ['Engineering Team', 'Product Team', 'Technical Leadership'];
   }
   
   mapPainPointsToFeatures(painPoints, pillarId) {
@@ -741,22 +1115,35 @@ class IntelligentRecommendationEngine {
     );
     
     if (hasGovernanceChallenges) {
-      phase1Items.push('Implement Unity Catalog for centralized governance and access control');
+      phase1Items.push('Implement Unity Catalog for centralized governance - reducing compliance risk and manual access management');
     }
     
     // Phase 1: Critical priority pillars (gap >= 2)
     const criticalPillars = sorted.filter(p => p.gap >= 2);
+    
+    // Business outcome mapping for pillars
+    const businessOutcomes = {
+      'platform_governance': 'improving security posture and regulatory compliance',
+      'data_engineering': 'reducing data delivery time and improving data quality',
+      'analytics_bi': 'accelerating decision-making speed by 3-5×',
+      'machine_learning': 'reducing model deployment time by 60-70%',
+      'generative_ai': 'unlocking new AI-powered revenue streams',
+      'operational_excellence': 'reducing operational overhead by 20-30%'
+    };
+    
     criticalPillars.slice(0, 2).forEach(pillar => {
       const topChallenge = pillar.theBad?.[0] || `Maturity gap of ${pillar.gap} levels`;
       const topFeature = pillar.databricksFeatures?.[0]?.name || 'recommended features';
-      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${topChallenge.substring(0, 60)}...`);
+      const outcome = businessOutcomes[pillar.pillarId] || 'driving measurable business value';
+      const challengeShort = topChallenge.substring(0, 50);
+      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${challengeShort}... - ${outcome}`);
     });
     
     // Ensure we have at least 3 items in Phase 1
     if (phase1Items.length < 3 && sorted.length > 0) {
       const nextPillar = sorted.find(p => !criticalPillars.includes(p));
       if (nextPillar) {
-        phase1Items.push(`Establish ${nextPillar.pillarName} monitoring and baseline metrics`);
+        phase1Items.push(`Establish ${nextPillar.pillarName} monitoring and baseline metrics - enabling data-driven decision making`);
       }
     }
     
@@ -764,17 +1151,18 @@ class IntelligentRecommendationEngine {
     const highPriorityPillars = sorted.filter(p => p.gap === 1 || (p.gap >= 2 && !criticalPillars.slice(0, 2).includes(p)));
     highPriorityPillars.slice(0, 2).forEach(pillar => {
       const topFeature = pillar.databricksFeatures?.[1]?.name || pillar.databricksFeatures?.[0]?.name || 'capabilities';
-      phase2Items.push(`${pillar.pillarName}: Scale ${topFeature} across teams and use cases`);
+      const outcome = businessOutcomes[pillar.pillarId] || 'improving operational efficiency';
+      phase2Items.push(`${pillar.pillarName}: Scale ${topFeature} across teams and use cases - ${outcome}`);
     });
     
     // Add integration items for Phase 2
     if (sorted.length >= 3) {
-      phase2Items.push('Integrate monitoring dashboards across all pillars for visibility');
+      phase2Items.push('Integrate monitoring dashboards across all pillars - enabling proactive issue detection and reducing downtime');
     }
     
     // Ensure we have at least 3 items in Phase 2
     if (phase2Items.length < 3 && sorted.length > 0) {
-      phase2Items.push('Deploy second wave of capabilities based on Phase 1 learnings');
+      phase2Items.push('Deploy second wave of capabilities based on Phase 1 learnings - maximizing adoption and ROI');
     }
     
     // Phase 3: Optimization and remaining gaps
@@ -783,30 +1171,30 @@ class IntelligentRecommendationEngine {
     // Add MLOps/CI-CD if ML pillar exists
     const mlPillar = sorted.find(p => p.pillarId === 'machine_learning');
     if (mlPillar) {
-      phase3Items.push('Formalize MLOps CI/CD pipeline for automated model deployment');
+      phase3Items.push('Formalize MLOps CI/CD pipeline for automated model deployment - reducing time-to-production by 70%');
     }
     
     // Add GenAI if pillar exists
-    const genaiPillar = sorted.find(p => p.pillarId === 'genai');
+    const genaiPillar = sorted.find(p => p.pillarId === 'genai' || p.pillarId === 'generative_ai');
     if (genaiPillar) {
       const hasRAG = genaiPillar.theBad?.some(c => c.toLowerCase().includes('rag'));
       if (hasRAG) {
-        phase3Items.push('Expand GenAI use cases with RAG implementation and vector search');
+        phase3Items.push('Expand GenAI use cases with RAG implementation and vector search - unlocking new revenue opportunities');
       } else {
-        phase3Items.push('Deploy production GenAI applications with governance guardrails');
+        phase3Items.push('Deploy production GenAI applications with governance guardrails - creating competitive differentiation');
       }
     }
     
     // Add data mesh if multiple pillars are mature
     const maturePillars = sorted.filter(p => p.currentScore >= 4);
     if (maturePillars.length >= 3) {
-      phase3Items.push('Align data mesh principles with Unity Catalog for domain-oriented data ownership');
+      phase3Items.push('Align data mesh principles with Unity Catalog - enabling domain-oriented data ownership and reducing data silos');
     }
     
     // Ensure we have at least 3 items in Phase 3
     if (phase3Items.length < 3) {
-      phase3Items.push('Optimize and tune all deployed capabilities for maximum ROI');
-      phase3Items.push('Establish center of excellence for ongoing Databricks best practices');
+      phase3Items.push('Optimize and tune all deployed capabilities - maximizing ROI and reducing TCO by 15-25%');
+      phase3Items.push('Establish center of excellence - ensuring sustainable adoption and continuous improvement');
     }
     
     const roadmap = {
@@ -1040,43 +1428,90 @@ class IntelligentRecommendationEngine {
     const weakPillars = sorted.filter(p => p.currentScore <= 2).slice(0, 2);
     const criticalGaps = sorted.filter(p => p.gap >= 2).slice(0, 2);
     
-    // Current Maturity Description
+    // Current Maturity Description - Executive-friendly with business context
     let currentDescription = '';
     if (strongPillars.length > 0) {
       const strongNames = strongPillars.map(p => p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')).join(' and ');
-      currentDescription += `Strong ${strongNames}`;
       
-      // Add specific capabilities
-      const topFeature = strongPillars[0]?.databricksFeatures?.[0];
-      if (topFeature?.name) {
-        currentDescription += ` with ${topFeature.name} operational`;
-      }
+      // Map pillar to business capability (not technical feature)
+      const businessCapabilities = {
+        'platform_governance': 'enterprise governance framework',
+        'data_engineering': 'data pipeline automation',
+        'analytics_bi': 'analytics infrastructure',
+        'machine_learning': 'ML operations',
+        'generative_ai': 'AI capabilities',
+        'operational_excellence': 'platform optimization'
+      };
+      
+      const primaryPillar = strongPillars[0];
+      const capability = businessCapabilities[primaryPillar.pillarId] || 'operational capabilities';
+      currentDescription += `Strong ${strongNames} with ${capability} established`;
     }
     
     if (weakPillars.length > 0) {
       const weakNames = weakPillars.map(p => p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')).join(' and ');
       if (currentDescription) {
-        currentDescription += ', but ';
+        currentDescription += ', with opportunity to accelerate ';
+      } else {
+        currentDescription += 'Positioned to accelerate ';
       }
-      currentDescription += `${weakNames} ${weakPillars.length === 1 ? 'is' : 'are'} still in early stages with manual processes`;
+      currentDescription += `${weakNames} ${weakPillars.length === 1 ? 'capability' : 'capabilities'} through automation and modernization`;
     }
     
     if (!currentDescription) {
-      currentDescription = 'Balanced maturity across pillars with opportunities for automation and optimization';
+      currentDescription = 'Balanced capability maturity with clear opportunities to drive operational efficiency and innovation velocity';
     }
     
-    // Target Maturity Description
+    // Add business value context
+    const businessValuePhrases = {
+      'platform_governance': 'reducing risk and accelerating compliance',
+      'data_engineering': 'improving data quality and reducing time-to-insight',
+      'analytics_bi': 'enabling faster decision-making and business agility',
+      'machine_learning': 'accelerating model development and improving model ROI',
+      'generative_ai': 'unlocking new revenue streams and productivity gains',
+      'operational_excellence': 'reducing operational overhead and improving team efficiency'
+    };
+    
+    if (weakPillars.length > 0) {
+      const primaryWeak = weakPillars[0];
+      const businessValue = businessValuePhrases[primaryWeak.pillarId] || 'driving business transformation';
+      currentDescription += `, positioning for strategic investment in ${businessValue}`;
+    }
+    
+    // Add industry-specific business context
+    const industryROI = {
+      'Financial Services': 'to achieve competitive differentiation and regulatory efficiency',
+      'Healthcare': 'to improve patient outcomes while reducing operational costs',
+      'Retail': 'to increase revenue through personalized experiences and supply chain efficiency',
+      'Manufacturing': 'to reduce costs and improve quality through predictive analytics',
+      'Technology': 'to accelerate innovation and reduce time-to-market',
+      'Telecommunications': 'to optimize network performance and increase customer satisfaction',
+      'Energy': 'to improve operational efficiency and reduce compliance costs'
+    };
+    
+    if (industry && industryROI[industry] && !currentDescription.includes('to achieve') && !currentDescription.includes('to improve')) {
+      currentDescription += ` ${industryROI[industry]}`;
+    }
+    
+    // Target Maturity Description - Business value framed
     let targetDescription = '';
+    const targetBusinessOutcomes = {
+      'platform_governance': 'enterprise-grade compliance and security posture',
+      'data_engineering': 'real-time data pipelines driving faster insights',
+      'analytics_bi': 'self-service analytics accelerating decision velocity',
+      'machine_learning': 'production ML systems generating measurable ROI',
+      'generative_ai': 'GenAI applications creating competitive differentiation',
+      'operational_excellence': 'scalable operations reducing TCO'
+    };
+    
     if (criticalGaps.length > 0) {
       const improvements = criticalGaps.map(gap => {
         const pillarName = gap.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
-        const topFeature = gap.databricksFeatures?.[0]?.name;
-        if (topFeature) {
-          return `${pillarName} with ${topFeature}`;
-        }
-        return pillarName;
+        const businessOutcome = targetBusinessOutcomes[gap.pillarId] || 'operational excellence';
+        // Focus on business outcome, not technical feature name
+        return `${pillarName} ${businessOutcome}`;
       });
-      targetDescription = `Advanced automation in ${improvements.join(' and ')}`;
+      targetDescription = `Advanced capabilities in ${improvements.join(' and ')}`;
     }
     
     // Add governance if Platform is in focus
@@ -1084,30 +1519,40 @@ class IntelligentRecommendationEngine {
     if (platformPillar && platformPillar.gap >= 1) {
       const hasGovernance = targetDescription.toLowerCase().includes('platform');
       if (!hasGovernance) {
-        targetDescription += targetDescription ? ' with unified governance and security' : 'Unified governance and security across all pillars';
+        targetDescription += targetDescription ? ', with unified governance reducing compliance risk and operational costs' : 'Unified governance and security reducing compliance risk and operational costs';
       }
     }
     
     if (!targetDescription) {
-      targetDescription = 'Optimized, governed, and automated capabilities across all pillars';
+      targetDescription = 'Optimized, governed, and automated capabilities driving measurable business outcomes, cost savings, and competitive advantage across all pillars';
     }
     
-    // Improvement Potential Description
-    let improvementDescription = 'Deploy ';
-    const topGaps = sorted.filter(p => p.gap >= 1).slice(0, 3);
-    const deployments = topGaps.map(gap => {
-      const topFeature = gap.databricksFeatures?.[0]?.name;
-      const pillarName = gap.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
-      if (topFeature) {
-        return `${topFeature} for ${pillarName.toLowerCase()}`;
-      }
-      return `automation for ${pillarName.toLowerCase()}`;
-    });
+    // Add business value ROI statement
+    if (!targetDescription.includes('ROI') && !targetDescription.includes('revenue')) {
+      targetDescription += ', maximizing ROI through operational efficiency';
+    }
     
-    if (deployments.length > 0) {
-      improvementDescription += deployments.join(', ');
+    // Improvement Potential Description - Business capability focus
+    let improvementDescription = '';
+    const topGaps = sorted.filter(p => p.gap >= 1).slice(0, 3);
+    
+    if (topGaps.length > 0) {
+      const capabilities = topGaps.map(gap => {
+        const pillarName = gap.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
+        // Map to business capability improvements
+        const improvementAreas = {
+          'platform_governance': 'governance and compliance automation',
+          'data_engineering': 'data pipeline automation and quality controls',
+          'analytics_bi': 'self-service analytics and real-time insights',
+          'machine_learning': 'ML automation and lifecycle management',
+          'generative_ai': 'GenAI applications with enterprise controls',
+          'operational_excellence': 'operational automation and best practices'
+        };
+        return improvementAreas[gap.pillarId] || `${pillarName.toLowerCase()} automation`;
+      });
+      improvementDescription = `Implement ${capabilities.join(', ')} to achieve target maturity, reduce operational costs, and accelerate business transformation`;
     } else {
-      improvementDescription = 'Optimize existing capabilities and expand automation coverage';
+      improvementDescription = 'Optimize existing capabilities and expand automation coverage to drive continuous improvement and cost efficiency';
     }
     
     const maturitySummary = {
@@ -1149,55 +1594,69 @@ class IntelligentRecommendationEngine {
     const criticalGaps = prioritizedActions.filter(p => p.gap >= 2);
     const highPriority = prioritizedActions.filter(p => p.gap === 1);
     
-    let intro = 'This roadmap ';
+    // Strategic transformation framing
+    const industryContext = {
+      'Financial Services': 'competitive differentiation in a rapidly evolving market',
+      'Healthcare': 'improved patient outcomes and operational efficiency',
+      'Retail': 'personalized customer experiences and supply chain optimization',
+      'Manufacturing': 'operational excellence and predictive maintenance',
+      'Technology': 'faster innovation cycles and product differentiation',
+      'Telecommunications': 'network optimization and customer experience improvement',
+      'Energy': 'operational efficiency and regulatory compliance'
+    };
     
-    // Mention critical gaps
+    let intro = 'This strategic transformation roadmap ';
+    
+    // Mention critical gaps with business framing
     if (criticalGaps.length > 0) {
       const gapNames = criticalGaps.map(p => {
         const name = p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '');
         return `${name} (${p.gap} ${p.gap === 1 ? 'level' : 'levels'})`;
       });
-      intro += `addresses your critical gaps in ${gapNames.join(' and ')}, `;
+      intro += `accelerates your capabilities in ${gapNames.join(' and ')}, `;
     } else if (highPriority.length > 0) {
       const priorityNames = highPriority.slice(0, 2).map(p => 
         p.pillarName.replace(/^[🏛️🧱💾📊🤖✨⚙️]+\s*/, '')
       );
-      intro += `focuses on ${priorityNames.join(' and ')} optimization, `;
+      intro += `drives strategic improvements in ${priorityNames.join(' and ')}, `;
     } else {
       intro += 'optimizes your existing capabilities, ';
     }
     
-    // Mention focus areas
+    // Mention focus areas with business outcomes
     const hasGovernance = criticalGaps.some(p => p.pillarId === 'platform_governance');
     const hasAutomation = criticalGaps.some(p => p.pillarId === 'data_engineering');
     const hasML = criticalGaps.some(p => p.pillarId === 'machine_learning');
     const hasGenAI = criticalGaps.some(p => p.pillarId === 'generative_ai');
     
     const focuses = [];
-    if (hasGovernance) focuses.push('governance');
-    if (hasAutomation) focuses.push('automation');
-    if (hasML) focuses.push('MLOps');
-    if (hasGenAI) focuses.push('GenAI capabilities');
+    if (hasGovernance) focuses.push('governance and risk management');
+    if (hasAutomation) focuses.push('data pipeline automation');
+    if (hasML) focuses.push('ML-driven decision making');
+    if (hasGenAI) focuses.push('AI-powered innovation');
     
     if (focuses.length > 0) {
-      intro += `focusing on ${focuses.join(' and ')}. `;
+      intro += `prioritizing ${focuses.join(' and ')}`;
     } else {
-      intro += 'with balanced improvements across all pillars. ';
+      intro += 'enabling continuous improvement and competitive advantage';
     }
     
-    // Industry context
-    const industryContext = {
-      'Financial Services': 'Emphasis on compliance, security, and data governance',
-      'Healthcare': 'Focus on data privacy, compliance, and secure analytics',
-      'Retail': 'Prioritizing real-time analytics and customer insights',
-      'Manufacturing': 'Optimizing operational efficiency and predictive maintenance',
-      'Technology': 'Accelerating innovation and time-to-market',
-      'Telecommunications': 'Enhancing customer experience and network optimization',
-      'Energy': 'Improving operational efficiency and regulatory compliance'
+    // Add industry context with business outcome
+    const industryOutcomes = {
+      'Financial Services': ' to achieve competitive differentiation through reduced risk and accelerated compliance',
+      'Healthcare': ' to improve patient outcomes while maintaining strict privacy and security standards',
+      'Retail': ' to drive revenue growth through enhanced customer personalization and operational efficiency',
+      'Manufacturing': ' to reduce operational costs and improve product quality through predictive analytics',
+      'Technology': ' to accelerate time-to-market and enhance developer productivity',
+      'Telecommunications': ' to optimize network performance and improve customer satisfaction',
+      'Energy': ' to ensure operational safety and regulatory compliance while reducing operational costs'
     };
     
-    const context = industryContext[industry] || 'Tailored to your industry requirements';
-    intro += context + '.';
+    if (industry && industryOutcomes[industry]) {
+      intro += industryOutcomes[industry] + '.';
+    } else {
+      intro += ' to drive measurable business value and competitive advantage.';
+    }
     
     return intro;
   }

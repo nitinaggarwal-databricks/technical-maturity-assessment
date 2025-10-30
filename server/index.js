@@ -1,3 +1,6 @@
+// Load environment variables first
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -12,6 +15,7 @@ const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const DatabricksFeatureMapper = require('./services/databricksFeatureMapper');
 const ContextAwareRecommendationEngine = require('./services/contextAwareRecommendationEngine');
 const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine_v2');
+const featureDB = require('./services/databricksFeatureDatabase');
 const StorageAdapter = require('./utils/storageAdapter');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 
@@ -1091,7 +1095,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     // Enhance each pillar's prioritizedActions with intelligent, customer-specific recommendations
     if (recommendations.prioritizedActions && Array.isArray(recommendations.prioritizedActions)) {
-      recommendations.prioritizedActions = recommendations.prioritizedActions.map(action => {
+      recommendations.prioritizedActions = await Promise.all(recommendations.prioritizedActions.map(async (action) => {
         const pillarId = action.pillarId || action.area || action.pillar;
         const pillarMaturity = categoryDetails[pillarId]?.score || 3;
         
@@ -1100,8 +1104,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         // Get the pillar framework data to pass actual question IDs
         const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
         
-        // Generate intelligent, customer-specific recommendations
-        const intelligentRecs = intelligentEngine.generateRecommendations(
+        // Generate intelligent, customer-specific recommendations (NOW WITH DATABASE! 🚀)
+        const intelligentRecs = await intelligentEngine.generateRecommendations(
           assessment,
           pillarId,
           pillarFramework
@@ -1128,7 +1132,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
           _painPointsAnalyzed: intelligentRecs.theBad.length,
           _strengthsIdentified: intelligentRecs.theGood.length
         };
-      });
+      }));
       
       // 🗺️ GENERATE DYNAMIC STRATEGIC ROADMAP based on prioritized actions
       console.log('🗺️ Generating dynamic strategic roadmap...');
@@ -1292,7 +1296,7 @@ function calculateNPS(assessments) {
   const withFeedback = assessments.filter(a => a.npsFeedback && a.npsFeedback.score !== null && a.npsFeedback.score !== undefined);
   
   if (withFeedback.length === 0) {
-    return 'N/A'; // No feedback yet
+    return 'Awaiting feedback'; // No feedback yet
   }
   
   const promoters = withFeedback.filter(a => a.npsFeedback.score >= 9).length;
@@ -1309,7 +1313,7 @@ function calculateNPSTrend(allAssessments, recentAssessments, previousAssessment
   const recentNPS = calculateNPS(recentAssessments);
   const previousNPS = calculateNPS(previousAssessments);
   
-  if (recentNPS === 'N/A' || previousNPS === 'N/A') {
+  if (recentNPS === 'Awaiting feedback' || previousNPS === 'Awaiting feedback') {
     return '0.0';
   }
   
@@ -1606,7 +1610,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
           maturity: maturity > 0 ? maturity.toFixed(1) : '0.0',
           target: target > 0 ? target.toFixed(1) : '0.0',
           completion: completion,
-          keyGaps: keyGaps.length > 0 ? keyGaps : ['N/A'],
+          keyGaps: keyGaps.length > 0 ? keyGaps : ['Assessment in progress'],
           status: status
         };
       });
@@ -1703,6 +1707,41 @@ app.get('/api/health', async (req, res) => {
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
+});
+
+// Feature database health check endpoint
+app.get('/api/health/features-db', async (req, res) => {
+  try {
+    const health = await featureDB.healthCheck();
+    res.json({
+      success: true,
+      data: health
+    });
+  } catch (error) {
+    console.error('[API] Feature DB health check failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Get latest features from database
+app.get('/api/features/latest', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const features = await featureDB.getLatestFeatures(limit);
+    res.json({
+      success: true,
+      data: features
+    });
+  } catch (error) {
+    console.error('[API] Error fetching latest features:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Error handling middleware
@@ -1938,11 +1977,11 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       pillarResults.databricksFeatures = [];
     }
     
-    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable solutions
+    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable solutions (NOW WITH DATABASE! 🚀)
     console.log(`🧠 Generating intelligent recommendations for pillar ${pillarId}...`);
     try {
       const intelligentEngine = new IntelligentRecommendationEngine();
-      const intelligentRecs = intelligentEngine.generateRecommendations(
+      const intelligentRecs = await intelligentEngine.generateRecommendations(
         assessment,
         pillarId,
         pillar // Pass the pillar framework structure
