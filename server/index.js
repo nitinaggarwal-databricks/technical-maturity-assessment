@@ -2187,6 +2187,10 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
         id: sampleAssessment.id,
         assessmentName: sampleAssessment.assessmentName,
         organizationName: sampleAssessment.organizationName,
+        industry: sampleAssessment.industry,
+        contactEmail: sampleAssessment.contactEmail,
+        editorEmail: sampleAssessment.editorEmail,
+        assessmentDescription: sampleAssessment.assessmentDescription,
         status: sampleAssessment.status,
         completedCategories: sampleAssessment.completedCategories,
         responses: sampleAssessment.responses,  // Include responses for validation
