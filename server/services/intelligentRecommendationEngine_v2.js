@@ -671,9 +671,9 @@ class IntelligentRecommendationEngine {
       }
     }
     
-    // Extract strengths and challenges (pass pillarId and framework for context)
-    const theGood = this.extractStrengths(comments, painPoints, stateGaps, pillarId, pillarFramework);
-    const theBad = topPainPoints.slice(0, 5).map(pp => pp.label);
+    // 🎯 Generate context-aware strengths and challenges
+    const theGood = this.buildContextualStrengths(assessment, pillarId, painPoints, comments, stateGaps, pillarFramework);
+    const theBad = this.buildContextualChallenges(assessment, pillarId, topPainPoints, comments, stateGaps);
     
     // 🚀 BUILD DATABRICKS FEATURES from database
     let painPointFeatures;
@@ -691,6 +691,7 @@ class IntelligentRecommendationEngine {
     }
     
     console.log(`[IntelligentEngine V2] 📊 FINAL COUNTS: ${allRecommendations.length} recommendations, ${allNextSteps.length} next steps, ${painPointFeatures.length} features`);
+    console.log(`[IntelligentEngine V2] 📊 What's Working: ${theGood.length}, Key Challenges: ${theBad.length}`);
     
     return {
       theGood: theGood.slice(0, 5),
@@ -1893,6 +1894,193 @@ class IntelligentRecommendationEngine {
     return gaps.sort((a, b) => b.gap - a.gap);
   }
 
+  /**
+   * 🎯 Build context-aware "What's Working" based on assessment data
+   * Analyzes current state, comments, and selected pain points
+   */
+  buildContextualStrengths(assessment, pillarId, painPoints, comments, stateGaps, pillarFramework) {
+    const strengths = [];
+    
+    // Calculate average current score
+    const avgCurrent = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.current, 0) / stateGaps.length : 0;
+    
+    // Extract mentions from comments
+    const allComments = comments.map(c => c.text).join(' ').toLowerCase();
+    
+    // Pillar-specific strength strategies
+    const pillarStrengths = {
+      platform_governance: {
+        basic: [
+          allComments.includes('unity catalog') ? 'Unity Catalog deployed with centralized governance' : null,
+          allComments.includes('rbac') || allComments.includes('role-based') ? 'Role-based access control implemented' : null,
+          allComments.includes('sso') || allComments.includes('single sign') ? 'Single Sign-On (SSO) for unified authentication' : null,
+          (avgCurrent >= 2) ? 'Environment separation established (dev/staging/prod)' : null,
+          !painPoints.some(p => p.value.includes('audit')) ? 'Audit logging and compliance tracking active' : null
+        ],
+        advanced: [
+          allComments.includes('abac') || allComments.includes('attribute-based') ? 'Attribute-Based Access Control (ABAC) for dynamic permissions' : null,
+          allComments.includes('finops') || allComments.includes('cost attribution') ? 'FinOps practices with cost attribution and chargeback' : null,
+          allComments.includes('automation') ? 'Automated provisioning and infrastructure-as-code' : null
+        ]
+      },
+      data_engineering: {
+        basic: [
+          allComments.includes('delta') ? 'Delta Lake architecture for reliable data storage' : null,
+          allComments.includes('dlt') || allComments.includes('delta live tables') ? 'Delta Live Tables for declarative ETL' : null,
+          allComments.includes('streaming') ? 'Real-time streaming ingestion operational' : null,
+          (avgCurrent >= 2) ? 'Medallion architecture (Bronze/Silver/Gold) in place' : null,
+          !painPoints.some(p => p.value.includes('quality')) ? 'Data quality validation processes established' : null
+        ],
+        advanced: [
+          allComments.includes('expectations') ? 'DLT Expectations for automated quality checks' : null,
+          allComments.includes('auto loader') ? 'Auto Loader for incremental ingestion' : null,
+          allComments.includes('orchestration') ? 'Automated pipeline orchestration with dependencies' : null
+        ]
+      },
+      analytics_bi: {
+        basic: [
+          allComments.includes('dashboard') ? 'Self-service dashboards operational' : null,
+          allComments.includes('sql warehouse') || allComments.includes('serverless') ? 'Serverless SQL warehouses for elastic compute' : null,
+          (avgCurrent >= 2) ? 'Governed data access with certified datasets' : null,
+          !painPoints.some(p => p.value.includes('performance')) ? 'Query performance optimization in place' : null,
+          allComments.includes('tableau') || allComments.includes('power bi') ? 'Enterprise BI tool integration established' : null
+        ],
+        advanced: [
+          allComments.includes('delta sharing') ? 'Delta Sharing for secure data distribution' : null,
+          allComments.includes('genie') ? 'Genie AI Analyst for natural language queries' : null,
+          allComments.includes('federation') ? 'Query Federation for cross-platform analytics' : null
+        ]
+      },
+      machine_learning: {
+        basic: [
+          allComments.includes('mlflow') ? 'MLflow for experiment tracking and model registry' : null,
+          allComments.includes('model serving') ? 'Model Serving endpoints for production inference' : null,
+          (avgCurrent >= 2) ? 'Structured ML lifecycle with versioning' : null,
+          !painPoints.some(p => p.value.includes('deployment')) ? 'Established model deployment processes' : null,
+          allComments.includes('feature store') ? 'Feature Store for centralized feature management' : null
+        ],
+        advanced: [
+          allComments.includes('automl') ? 'AutoML for accelerated model development' : null,
+          allComments.includes('monitoring') ? 'Model monitoring for drift detection' : null,
+          allComments.includes('distributed training') ? 'Distributed training for large-scale models' : null
+        ]
+      },
+      generative_ai: {
+        basic: [
+          allComments.includes('vector search') ? 'Vector Search deployed for RAG applications' : null,
+          allComments.includes('ai gateway') ? 'AI Gateway for governed LLM access' : null,
+          (avgCurrent >= 2) ? 'GenAI experimentation framework established' : null,
+          allComments.includes('prompt') ? 'Prompt engineering practices in place' : null,
+          !painPoints.some(p => p.value.includes('safety')) ? 'LLM safety and guardrails implemented' : null
+        ],
+        advanced: [
+          allComments.includes('fine-tuning') || allComments.includes('fine tuning') ? 'Custom LLM fine-tuning capabilities' : null,
+          allComments.includes('multi-agent') ? 'Multi-agent systems for complex workflows' : null,
+          allComments.includes('evaluation') ? 'LLM evaluation framework operational' : null
+        ]
+      },
+      operational_excellence: {
+        basic: [
+          allComments.includes('system tables') ? 'System Tables for platform observability' : null,
+          allComments.includes('monitoring') ? 'Proactive monitoring and alerting' : null,
+          (avgCurrent >= 2) ? 'Cost tracking and budget management processes' : null,
+          !painPoints.some(p => p.value.includes('incident')) ? 'Incident management framework in place' : null,
+          allComments.includes('automation') ? 'Operational automation for common tasks' : null
+        ],
+        advanced: [
+          allComments.includes('predictive') ? 'Predictive optimization for automatic maintenance' : null,
+          allComments.includes('finops') ? 'FinOps practices with cost attribution' : null,
+          allComments.includes('sla') ? 'SLA monitoring and enforcement' : null
+        ]
+      }
+    };
+    
+    const pillarData = pillarStrengths[pillarId] || pillarStrengths.operational_excellence;
+    
+    // Add basic strengths
+    strengths.push(...pillarData.basic.filter(s => s !== null));
+    
+    // Add advanced if maturity is high enough
+    if (avgCurrent >= 3) {
+      strengths.push(...pillarData.advanced.filter(s => s !== null));
+    }
+    
+    // If still empty, add default strengths based on non-selected pain points
+    if (strengths.length === 0) {
+      const selectedPainValues = new Set(painPoints.map(p => p.value));
+      const defaultStrengths = {
+        platform_governance: [
+          !selectedPainValues.has('auth_complexity') ? 'Basic authentication and access control' : null,
+          !selectedPainValues.has('no_audit_logs') ? 'Audit logging capabilities available' : null,
+          !selectedPainValues.has('poor_isolation') ? 'Environment isolation in place' : null
+        ],
+        data_engineering: [
+          !selectedPainValues.has('manual_pipelines') ? 'Pipeline automation capabilities' : null,
+          !selectedPainValues.has('slow_pipelines') ? 'Acceptable pipeline performance' : null,
+          !selectedPainValues.has('data_quality_issues') ? 'Basic data quality processes' : null
+        ],
+        analytics_bi: [
+          !selectedPainValues.has('slow_queries') ? 'Acceptable query performance' : null,
+          !selectedPainValues.has('limited_adoption') ? 'Active analytics user base' : null,
+          !selectedPainValues.has('access_barriers') ? 'Data accessibility for analysts' : null
+        ],
+        machine_learning: [
+          !selectedPainValues.has('no_tracking') ? 'Experiment tracking capabilities' : null,
+          !selectedPainValues.has('manual_deployment') ? 'Model deployment processes' : null,
+          !selectedPainValues.has('no_monitoring') ? 'Basic model monitoring' : null
+        ],
+        generative_ai: [
+          !selectedPainValues.has('no_strategy') ? 'GenAI exploration and experimentation' : null,
+          !selectedPainValues.has('no_infrastructure') ? 'LLM infrastructure available' : null,
+          !selectedPainValues.has('no_guardrails') ? 'Safety considerations in place' : null
+        ],
+        operational_excellence: [
+          !selectedPainValues.has('no_monitoring') ? 'Platform monitoring capabilities' : null,
+          !selectedPainValues.has('manual_response') ? 'Incident response procedures' : null,
+          !selectedPainValues.has('high_costs') ? 'Cost management awareness' : null
+        ]
+      };
+      
+      const defaults = (defaultStrengths[pillarId] || defaultStrengths.operational_excellence).filter(s => s !== null);
+      strengths.push(...defaults.slice(0, 3));
+    }
+    
+    console.log(`[buildContextualStrengths] Generated ${strengths.length} strengths for ${pillarId}`);
+    return strengths.slice(0, 5);
+  }
+  
+  /**
+   * 🎯 Build context-aware "Key Challenges" based on pain points and assessment data
+   */
+  buildContextualChallenges(assessment, pillarId, topPainPoints, comments, stateGaps) {
+    const challenges = [];
+    
+    // Extract meaningful challenges from pain points with context
+    topPainPoints.slice(0, 5).forEach(pp => {
+      // Enrich pain point labels with context if available
+      const label = pp.label;
+      
+      // Find related comments for this pain point
+      const relatedComment = comments.find(c => 
+        c.text.toLowerCase().includes(pp.value.replace(/_/g, ' '))
+      );
+      
+      if (relatedComment) {
+        // Extract specific detail from comment
+        const detail = relatedComment.text.substring(0, 100);
+        challenges.push(`${label} — currently ${detail}...`);
+      } else {
+        challenges.push(label);
+      }
+    });
+    
+    console.log(`[buildContextualChallenges] Generated ${challenges.length} challenges for ${pillarId}`);
+    return challenges;
+  }
+
+  /**
+   * DEPRECATED: Use buildContextualStrengths instead
+   */
   extractStrengths(comments, painPoints, stateGaps, pillarId, pillarFramework) {
     const strengths = [];
     

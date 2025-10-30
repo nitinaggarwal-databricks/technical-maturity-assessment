@@ -2034,6 +2034,9 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       success: true,
       pillarDetails,
       summary: pillarResults.summary || '',
+      // 🎯 Context-aware strengths and challenges
+      theGood: pillarResults.theGood || [],
+      theBad: pillarResults.theBad || [],
       recommendations: pillarResults.recommendations || [],
       // NEW: Databricks-specific features
       databricksFeatures: pillarResults.databricksFeatures || [],
