@@ -242,6 +242,21 @@ export const cloneAssessment = async (assessmentId, organizationData = {}) => {
 };
 
 /**
+ * Delete all assessments
+ */
+export const deleteAllAssessments = async () => {
+  try {
+    console.log('[deleteAllAssessments] Deleting all assessments');
+    const response = await api.delete('/assessments/all');
+    console.log('[deleteAllAssessments] Response:', response);
+    return response;
+  } catch (error) {
+    console.error('[deleteAllAssessments] Error:', error);
+    throw error;
+  }
+};
+
+/**
  * Get dashboard statistics
  */
 export const getDashboardStats = async () => {

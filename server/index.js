@@ -1854,6 +1854,46 @@ app.post('/api/assessment/:id/clone', async (req, res) => {
 });
 
 // Delete an assessment
+// Delete all assessments
+app.delete('/api/assessments/all', async (req, res) => {
+  try {
+    console.log('🗑️  Deleting all assessments...');
+    
+    // Get all assessment IDs
+    const allAssessments = await assessments.getAll();
+    const assessmentIds = allAssessments.map(a => a.id);
+    
+    console.log(`Found ${assessmentIds.length} assessments to delete`);
+    
+    // Delete each assessment
+    let deletedCount = 0;
+    for (const id of assessmentIds) {
+      try {
+        await assessments.delete(id);
+        deletedCount++;
+      } catch (error) {
+        console.error(`Failed to delete assessment ${id}:`, error);
+      }
+    }
+    
+    console.log(`✅ Successfully deleted ${deletedCount} assessments`);
+
+    res.json({
+      success: true,
+      message: `Successfully deleted ${deletedCount} assessment(s)`,
+      deletedCount
+    });
+  } catch (error) {
+    console.error('Error deleting all assessments:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting all assessments',
+      error: error.message
+    });
+  }
+});
+
+// Delete individual assessment
 app.delete('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;

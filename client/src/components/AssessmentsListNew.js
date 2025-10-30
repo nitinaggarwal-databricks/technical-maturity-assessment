@@ -13,7 +13,8 @@ import {
   FiPlus,
   FiChevronDown,
   FiCopy,
-  FiTrash2
+  FiTrash2,
+  FiAlertTriangle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -617,6 +618,7 @@ const AssessmentsListNew = () => {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [industryFilter, setIndustryFilter] = useState('all');
   const [completionRangeFilter, setCompletionRangeFilter] = useState('all');
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
 
   useEffect(() => {
     fetchAssessments();
@@ -633,6 +635,22 @@ const AssessmentsListNew = () => {
       setAssessments([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      toast.loading('Deleting all assessments...', { id: 'delete-all' });
+      const result = await assessmentService.deleteAllAssessments();
+      
+      if (result && result.success) {
+        toast.success(`Successfully deleted ${result.deletedCount} assessment(s)`, { id: 'delete-all' });
+        setShowDeleteAllConfirm(false);
+        await fetchAssessments(); // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error deleting all assessments:', error);
+      toast.error('Failed to delete all assessments', { id: 'delete-all' });
     }
   };
 
@@ -830,7 +848,30 @@ const AssessmentsListNew = () => {
             <h1>Assessments</h1>
             <p>Browse, filter, and manage all maturity assessments in one place.</p>
           </div>
-          <div className="right">
+          <div className="right" style={{ display: 'flex', gap: '12px' }}>
+            {assessments.length > 0 && (
+              <button
+                onClick={() => setShowDeleteAllConfirm(true)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#dc2626'}
+                onMouseLeave={(e) => e.target.style.background = '#ef4444'}
+              >
+                <FiTrash2 size={16} />
+                Delete All
+              </button>
+            )}
             <PrimaryButton
               onClick={() => navigate('/start')}
               whileHover={{ scale: 1.02 }}
@@ -1125,6 +1166,82 @@ const AssessmentsListNew = () => {
           </AssessmentsGrid>
         )}
       </ContentContainer>
+
+      {/* Delete All Confirmation Modal */}
+      {showDeleteAllConfirm && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowDeleteAllConfirm(false)}
+        >
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '32px',
+              maxWidth: '500px',
+              width: '90%',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <FiAlertTriangle size={32} color="#ef4444" />
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>Delete All Assessments?</h2>
+            </div>
+            <p style={{ color: '#6b7280', marginBottom: '24px', lineHeight: '1.6' }}>
+              This will permanently delete <strong>all {assessments.length} assessment(s)</strong> and their data. 
+              This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowDeleteAllConfirm(false)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#f3f4f6',
+                  color: '#374151',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#e5e7eb'}
+                onMouseLeave={(e) => e.target.style.background = '#f3f4f6'}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                style={{
+                  padding: '10px 20px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#dc2626'}
+                onMouseLeave={(e) => e.target.style.background = '#ef4444'}
+              >
+                Yes, Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 };
