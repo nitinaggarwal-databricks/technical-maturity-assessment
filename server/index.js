@@ -1859,8 +1859,8 @@ app.delete('/api/assessments/all', async (req, res) => {
   try {
     console.log('🗑️  Deleting all assessments...');
     
-    // Get all assessment IDs
-    const allAssessments = await assessments.getAll();
+    // Get all assessments as array
+    const allAssessments = await assessments.values();
     const assessmentIds = allAssessments.map(a => a.id);
     
     console.log(`Found ${assessmentIds.length} assessments to delete`);
