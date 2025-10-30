@@ -627,19 +627,24 @@ class IntelligentRecommendationEngine {
             allRecommendations.push(recommendation);
           }
           
-          // Build next steps from database data
-          const nextStep = await this.buildNextStepFromDatabase(feature, featureDetails);
-          if (nextStep) {
-            allNextSteps.push(nextStep);
-          }
-          
           // Collect feature name
           featureSet.add(feature.name);
         }
       }
       
+      // 🎯 Generate contextual, non-repetitive next steps based on full assessment context
+      const contextualNextSteps = await this.buildContextualNextSteps(
+        assessment,
+        pillarId,
+        painPoints,
+        comments,
+        stateGaps,
+        dbFeatures
+      );
+      allNextSteps.push(...contextualNextSteps);
+      
       console.log(`[IntelligentEngine V2] ✅ Generated ${allRecommendations.length} recommendations from DATABASE`);
-      console.log(`[IntelligentEngine V2] ✅ Generated ${allNextSteps.length} next steps from DATABASE`);
+      console.log(`[IntelligentEngine V2] ✅ Generated ${contextualNextSteps.length} contextual next steps`);
       
     } else {
       console.log(`[IntelligentEngine V2] ⚠️ No database features, falling back to hardcoded solutionMap`);
@@ -691,7 +696,7 @@ class IntelligentRecommendationEngine {
       theGood: theGood.slice(0, 5),
       theBad: theBad,
       recommendations: allRecommendations.slice(0, 8),
-      nextSteps: allNextSteps.slice(0, 5),
+      nextSteps: allNextSteps,  // Return all contextual next steps (typically 5-7)
       databricksFeatures: painPointFeatures.slice(0, 4)
     };
   }
@@ -808,7 +813,131 @@ class IntelligentRecommendationEngine {
   }
 
   /**
-   * 🚀 NEW: Build a next step from database feature data
+   * 🎯 Build context-aware next steps based on assessment data
+   * Generates pillar-specific workshops, enablement, adoption, and partner engagement recommendations
+   */
+  async buildContextualNextSteps(assessment, pillarId, painPoints, comments, stateGaps, features) {
+    const nextSteps = [];
+    
+    // Calculate current and future average scores
+    const avgCurrent = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.current, 0) / stateGaps.length : 0;
+    const avgFuture = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.future, 0) / stateGaps.length : 0;
+    const avgGap = avgFuture - avgCurrent;
+    
+    // Extract what customer is doing today from comments
+    const currentPractices = comments.map(c => c.text).join(' ').toLowerCase();
+    
+    // Pillar-specific next step templates
+    const pillarStrategies = {
+      platform_governance: {
+        workshop: `Schedule Platform Governance Blueprint Workshop with Databricks SA to design Unity Catalog architecture, workspace hierarchy, and access control patterns tailored to your ${assessment.industry || 'organization'}`,
+        enablement: avgGap > 2 
+          ? `Provide hands-on training for platform admins on Unity Catalog, ABAC policies, data classification, and FinOps best practices`
+          : `Upskill platform team on advanced governance features including audit logs, system tables, and automated compliance reporting`,
+        adoption: currentPractices.includes('manual') || currentPractices.includes('spreadsheet')
+          ? `Migrate from manual access management to Unity Catalog self-service access requests - start with one high-compliance domain (e.g., Finance, PII data)`
+          : `Roll out governance incrementally - establish CoE to define catalog standards, ownership model, and data classification policies`,
+        assessment: `Conduct Governance Maturity & Compliance Readiness Assessment with Databricks Professional Services focusing on regulatory requirements and audit preparedness`,
+        kpis: `Track catalog coverage %, data ownership clarity, % of datasets under lineage tracking, cost visibility improvements`
+      },
+      data_engineering: {
+        workshop: `Host Delta Live Tables & LakeFlow Workshop to modernize ${currentPractices.includes('airflow') ? 'Airflow' : currentPractices.includes('glue') ? 'Glue' : 'legacy'} pipelines with declarative ETL and automated quality checks`,
+        enablement: avgGap > 2
+          ? `Train data engineers on DLT expectations, Auto Loader, and streaming ingestion patterns with hands-on labs`
+          : `Advanced enablement on pipeline optimization, liquid clustering, deletion vectors, and cost-efficient streaming`,
+        adoption: currentPractices.includes('manual') || currentPractices.includes('notebook')
+          ? `Migrate 2-3 critical pipelines to Delta Live Tables as "lighthouse projects" - demonstrate reliability, observability, and cost improvements`
+          : `Standardize all new pipelines on DLT/LakeFlow - establish pipeline templates and CI/CD patterns with Asset Bundles`,
+        assessment: `Run Pipeline Health & Cost Optimization Assessment analyzing ${painPoints.length} identified pain points including data quality, latency, and resource utilization`,
+        kpis: `Monitor pipeline reliability (SLA adherence), data freshness, ingestion cost per TB, DQ incident reduction`
+      },
+      analytics_bi: {
+        workshop: `Conduct Modern BI on Lakehouse Workshop showcasing Databricks SQL, serverless warehouses, and ${currentPractices.includes('tableau') ? 'Tableau' : currentPractices.includes('power bi') ? 'Power BI' : 'BI tool'} integration`,
+        enablement: avgGap > 2
+          ? `Enable business analysts on SQL Analytics, dashboard creation, query optimization, and Delta Sharing for governed data distribution`
+          : `Advanced training on Genie AI Analyst, query federation, and embedding analytics into operational applications`,
+        adoption: currentPractices.includes('legacy') || currentPractices.includes('slow')
+          ? `Identify top 10 business-critical dashboards for migration - certify datasets via Unity Catalog and measure query performance improvements`
+          : `Expand SQL Analytics adoption with self-service analytics program - create certified datasets and promote data democratization`,
+        assessment: `Perform BI Readiness & Performance Assessment evaluating dashboard latency, concurrency bottlenecks, and cost per query`,
+        kpis: `Track # of certified datasets, BI adoption rate, time-to-insight, dashboard latency reduction`
+      },
+      machine_learning: {
+        workshop: `Run MLOps Accelerator Workshop covering MLflow experiment tracking, model registry, Feature Store, and ${avgGap > 2 ? 'foundational' : 'advanced'} model serving patterns`,
+        enablement: avgGap > 2
+          ? `Train DS/ML teams on end-to-end ML lifecycle - experiment tracking, model versioning, feature engineering, and model monitoring`
+          : `Advanced MLOps training on AutoML, distributed training, online feature serving, and production-grade model governance`,
+        adoption: currentPractices.includes('notebook') || currentPractices.includes('manual')
+          ? `Deploy first production model using MLflow Model Serving - establish model approval workflow and monitoring framework`
+          : `Scale MLOps adoption - mandate MLflow for all models, implement feature store, and create reusable ML templates`,
+        assessment: `Conduct ML Readiness & Governance Assessment covering model lifecycle, bias evaluation, explainability, and compliance requirements`,
+        kpis: `Measure # of models in registry, model deployment frequency, approval SLAs, ROI from ML initiatives`
+      },
+      generative_ai: {
+        workshop: `Host GenAI & RAG Accelerator Workshop including Vector Search, AI Gateway, prompt engineering, and LLM evaluation frameworks tailored to ${assessment.industry || 'your'} use cases`,
+        enablement: avgGap > 2
+          ? `Enable teams on GenAI fundamentals - RAG architecture, prompt engineering, LLM safety, guardrails, and cost management`
+          : `Advanced GenAI training on multi-agent systems, fine-tuning, custom model serving, and production LLMOps`,
+        adoption: currentPractices.includes('exploring') || currentPractices.includes('pilot')
+          ? `Launch first GenAI POC with AI Gateway and Vector Search - focus on high-value use case with clear ROI (e.g., document Q&A, content generation)`
+          : `Scale GenAI adoption with governed AI Gateway - implement rate limits, cost tracking, and LLM evaluation pipelines`,
+        assessment: `Perform GenAI Maturity Assessment covering data readiness, infrastructure requirements, safety controls, and use case prioritization`,
+        kpis: `Track API usage, cost per request, user satisfaction, hallucination rate, and business value delivered`
+      },
+      operational_excellence: {
+        workshop: `Conduct Platform Ops & Observability Workshop covering system tables, cost attribution, alerting, and incident management best practices`,
+        enablement: avgGap > 2
+          ? `Train operations team on system tables, audit log analysis, budget alerts, and proactive monitoring dashboards`
+          : `Advanced ops training on predictive optimization, auto-scaling policies, custom metrics, and FinOps automation`,
+        adoption: currentPractices.includes('manual') || currentPractices.includes('reactive')
+          ? `Deploy centralized cost dashboards and SLA monitoring - establish monthly ops scorecards with platform health metrics`
+          : `Implement advanced observability - set up automated incident response, capacity planning, and cost optimization workflows`,
+        assessment: `Execute Operations Maturity Review analyzing ${painPoints.length} identified gaps in monitoring, incident response, and cost management`,
+        kpis: `Monitor downtime reduction, mean time to detect (MTTD), DBU cost trend, ticket resolution time`
+      }
+    };
+    
+    const strategy = pillarStrategies[pillarId] || pillarStrategies.operational_excellence;
+    
+    // Generate 5-6 contextual next steps
+    nextSteps.push(`📚 **Workshop**: ${strategy.workshop}`);
+    nextSteps.push(`🎓 **Enablement**: ${strategy.enablement}`);
+    nextSteps.push(`🚀 **Adoption**: ${strategy.adoption}`);
+    
+    // Add feature-specific implementation step if we have features
+    if (features && features.length > 0) {
+      const topFeature = features[0];
+      const implementationComplexity = topFeature.complexity_weeks || 2;
+      const timeframe = implementationComplexity > 4 ? '8-12 weeks' : implementationComplexity > 2 ? '4-6 weeks' : '2-3 weeks';
+      
+      nextSteps.push(`⚙️ **Implementation**: Deploy ${topFeature.name} (${timeframe}) - start with pilot in non-production environment, validate with key stakeholders, then roll out enterprise-wide`);
+    }
+    
+    nextSteps.push(`📊 **Assessment**: ${strategy.assessment}`);
+    
+    // Add partner engagement for complex scenarios
+    if (avgGap > 2 || painPoints.length > 8) {
+      const partnerTypes = {
+        platform_governance: 'SI partners specializing in governance (Deloitte, Accenture, Slalom)',
+        data_engineering: 'ETL modernization partners (Cognizant, Infosys, TCS)',
+        analytics_bi: 'BI specialists (Thorogood, Tredence)',
+        machine_learning: 'AI/ML partners (ZS, Capgemini)',
+        generative_ai: 'GenAI specialists (Databricks Labs, Field Engineering)',
+        operational_excellence: 'Managed services vendors (Persistent, Wipro)'
+      };
+      
+      nextSteps.push(`🤝 **Partner Engagement**: Consider engaging ${partnerTypes[pillarId] || 'system integration partners'} to accelerate implementation and provide specialized expertise`);
+    }
+    
+    // Add KPIs
+    nextSteps.push(`📈 **Success Metrics**: ${strategy.kpis}`);
+    
+    console.log(`[IntelligentEngine V2] ✅ Built ${nextSteps.length} contextual next steps for ${pillarId}`);
+    return nextSteps;
+  }
+
+  /**
+   * 🚀 NEW: Build a next step from database feature data (DEPRECATED - use buildContextualNextSteps)
    */
   async buildNextStepFromDatabase(feature, featureDetails) {
     try {
