@@ -916,11 +916,11 @@ class IntelligentRecommendationEngine {
     
     // 3. Include Enablement OR Assessment (capacity building)
     const enablement = pillarNextSteps.find(step => step.includes('**Enablement**'));
-    const assessment = pillarNextSteps.find(step => step.includes('**Assessment**'));
+    const assessmentStep = pillarNextSteps.find(step => step.includes('**Assessment**'));
     if (Math.random() > 0.5 && enablement) {
       selectedNextSteps.push(enablement);
-    } else if (assessment) {
-      selectedNextSteps.push(assessment);
+    } else if (assessmentStep) {
+      selectedNextSteps.push(assessmentStep);
     }
     
     // 4. Include Adoption (implementation focus)
