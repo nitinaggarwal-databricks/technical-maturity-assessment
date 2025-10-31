@@ -385,8 +385,8 @@ const GlobalNav = () => {
             allResponses[`${question.id}_current_state`] = currentState;
             allResponses[`${question.id}_future_state`] = futureState;
             
-            // Generate realistic customer comment (25 words)
-            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.name, currentState);
+            // Generate realistic customer comment specific to this question
+            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.id, question.id, currentState);
             
             // Randomly select technical pain points
             const technicalPainPerspective = question.perspectives?.find(p => p.id === 'technical_pain');
@@ -467,124 +467,155 @@ const GlobalNav = () => {
     }
   };
 
-  // Generate realistic customer comments based on pillar and maturity
-  const generateRealisticComment = (pillarId, dimensionName, currentState) => {
-    const comments = {
-      platform_governance: {
-        low: [
-          "We manually track data access via spreadsheets. Need automated RBAC with Unity Catalog for compliance audit trail visibility.",
-          "Currently using separate Hive metastore per workspace. Planning Unity Catalog migration to centralize governance and lineage tracking.",
-          "Security team reviews data access quarterly. Want real-time audit logs and automated policy enforcement through Unity Catalog."
-        ],
-        medium: [
-          "Unity Catalog deployed in 3 workspaces. Working on ABAC policies and row-level security. Need training on dynamic views.",
-          "Basic RBAC with Unity Catalog. Want to implement data classification tags and certification badges for trusted datasets and models.",
-          "Centralized metastore running. Need to enable Delta Sharing for external partners and implement fine-grained access controls on features."
-        ],
-        high: [
-          "Full Unity Catalog with ABAC policies. Testing Compliance for Vector Search and serverless SQL warehouse integration for production workloads.",
-          "Unity Catalog federated across regions. Implementing governed tags and certification system. Evaluating context-based ingress control for security.",
-          "Advanced Unity Catalog setup with row/column security. Working on cost attribution tags and budget policies for chargeback allocation."
-        ]
-      },
-      data_engineering: {
-        low: [
-          "Running batch Spark jobs via notebooks. No data quality checks. Looking at Delta Live Tables for automated expectations and monitoring.",
-          "Manual pipeline management through ADF. Want to migrate to Databricks workflows with Auto Loader for streaming ingestion and recovery.",
-          "Data quality issues found by downstream users. Need DLT expectations (expect_or_fail) and Lakehouse Monitoring for proactive alerting and validation."
-        ],
-        medium: [
-          "Using Delta Lake with manual quality checks. Piloting DLT pipelines for critical workflows. Want full observability and automated expectations.",
-          "Auto Loader deployed for S3 ingestion. Building DLT pipelines with expectations. Need to implement CDC with APPLY CHANGES and monitoring.",
-          "Delta tables with daily batch. Testing streaming with structured streaming API. Planning migration to DLT for unified batch and stream."
-        ],
-        high: [
-          "Full DLT pipelines with expectations and monitoring. Testing Lakeflow Connect Zerobus connector. Want performance mode for production SLAs.",
-          "Streaming ingestion with Auto Loader. DLT expectations catching 95% of issues. Implementing Lakehouse Monitoring for data quality dashboards.",
-          "Advanced DLT with CDC processing. Auto Loader with schema evolution. Evaluating serverless jobs performance mode for cost optimization."
-        ]
-      },
-      analytics_bi: {
-        low: [
-          "Analysts write complex SQL in notebooks. No self-service. Looking at Databricks SQL serverless warehouses for business user access.",
-          "Data accessed via Python notebooks. Want SQL endpoint for business users. Considering AI/BI and Genie for natural language queries.",
-          "BI team waits for data engineer support. Need serverless SQL warehouse with query history and Photon acceleration for performance."
-        ],
-        medium: [
-          "Databricks SQL deployed with classic clusters. Testing serverless warehouses. Want AI/BI dashboards and Genie for NL query access.",
-          "Serverless SQL warehouse for analysts. Working on dashboard library. Evaluating Photon performance gains and query caching strategies for optimization.",
-          "SQL endpoints with basic dashboards. Testing AI/BI features. Need better query optimization and materialized views for common aggregations."
-        ],
-        high: [
-          "Full serverless SQL with Photon. AI/BI dashboards deployed. Testing Genie for business users. Working on query optimization and caching.",
-          "Advanced SQL analytics with Photon acceleration. AI/BI in production. Implementing federation for external data sources and partner integration.",
-          "Serverless warehouses scaled to 200 users. Genie adoption at 40%. Working on semantic layer and metric definitions for consistency."
-        ]
-      },
-      machine_learning: {
-        low: [
-          "ML notebooks with manual versioning. No experiment tracking. Looking at MLflow for model registry and feature store for reuse.",
-          "Models trained in notebooks. Manual deployment to endpoints. Want MLflow Model Serving and automated retraining pipelines for production.",
-          "Feature engineering duplicated across teams. Need Feature Store for consistency. Planning MLflow for experiment tracking and model governance."
-        ],
-        medium: [
-          "MLflow tracking deployed. Working on Feature Store implementation. Want Model Serving for real-time inference and model monitoring setup.",
-          "Feature Store with 50 features. MLflow registry for 10 models. Testing Model Serving serverless endpoints and monitoring for drift.",
-          "Automated retraining pipelines with MLflow. Implementing Feature Store lookups. Need model monitoring and drift detection for production models."
-        ],
-        high: [
-          "Advanced MLflow with 100+ models tracked. Feature Store with 200 features. Model Serving at scale. Implementing AutoML and monitoring.",
-          "Full MLOps with MLflow and Feature Store. Testing Mosaic AI for LLM fine-tuning. Want AI playground for experimentation.",
-          "Production ML platform with automated pipelines. Feature Store lineage tracking. Evaluating Lakehouse Monitoring for model quality and performance."
-        ]
-      },
-      generative_ai: {
-        low: [
-          "No GenAI capability. Data team interested in RAG use cases. Looking at Mosaic AI and Vector Search infrastructure.",
-          "Experimenting with OpenAI API externally. Want Databricks Foundation Models and Vector Search for internal knowledge base RAG applications.",
-          "Business asking for GenAI features. Need Vector Search for document retrieval. Evaluating Mosaic AI Model Serving for governance."
-        ],
-        medium: [
-          "Vector Search POC running. Testing RAG with Databricks Foundation Models. Want prompt engineering best practices and monitoring framework.",
-          "Mosaic AI deployed for 2 use cases. Vector Search indexes for documentation. Working on LLM evaluation metrics and guardrails.",
-          "Foundation Models accessible via API. Building RAG application. Need governance for prompts and output quality monitoring for compliance."
-        ],
-        high: [
-          "Production RAG app with Vector Search. Fine-tuning Llama models. Testing multimodal capabilities. Want AI playground for experimentation.",
-          "Advanced GenAI platform with Model Serving. Vector Search scaled to 1M vectors. Working on evaluation framework and guardrails.",
-          "Multiple GenAI apps in production. Vector Search with hybrid search. Testing Claude Opus 4.1 and function calling for agentic workflows."
-        ]
-      },
-      operational_excellence: {
-        low: [
-          "Ad-hoc platform usage. No CoE structure. Want training programs and adoption metrics to track ROI and user satisfaction.",
-          "Limited documentation. Engineers discover features accidentally. Need best practices repository and onboarding program for new users and teams.",
-          "Platform investment unclear. No usage tracking. Looking at system tables for cost attribution and chargeback to business units."
-        ],
-        medium: [
-          "CoE established with 3 members. Monthly training sessions. Tracking usage with system tables. Want better ROI metrics.",
-          "Documentation site with 50 articles. Quarterly enablement workshops. System tables for cost tracking. Need automated reporting and dashboards.",
-          "Active Slack community with 200 members. Best practices shared. Working on chargeback model and budget policies for teams."
-        ],
-        high: [
-          "Mature CoE with dedicated team. 90% user adoption. Full cost attribution with tags. Advanced training with certification program.",
-          "Comprehensive enablement platform. Usage dashboards in production. Automated chargeback. Working on ML for cost optimization recommendations.",
-          "Platform adoption at 95% with 300 active users. ROI tracked quarterly. Advanced monitoring with system tables and custom metrics."
-        ]
-      }
+  // Generate UNIQUE, question-specific customer comments
+  const generateRealisticComment = (pillarId, dimensionId, questionId, currentState) => {
+    // Comprehensive dimension-specific comment library (low maturity = 1-2)
+    const dimensionComments = {
+      // PLATFORM & GOVERNANCE
+      'environment_architecture': [
+        "Single workspace for all teams. No isolation between dev/prod. Need multi-workspace strategy with Unity Catalog for governance.",
+        "Workspaces created ad-hoc. Inconsistent naming. Want standardized workspace provisioning with Terraform and tagging for cost tracking."
+      ],
+      'security_access_control': [
+        "Manual user provisioning via Azure AD. No SCIM. Want automated sync and group-based Unity Catalog permissions with audit logs.",
+        "Admin rights granted liberally. No principle of least privilege. Need RBAC with Unity Catalog and secrets management with Databricks Secrets."
+      ],
+      'governance_compliance': [
+        "No centralized data catalog. Users don't know what data exists. Want Unity Catalog for discovery and lineage with PII tagging.",
+        "Compliance team manually reviews code quarterly. Need automated scans for PII/PHI and Unity Catalog data classification tags with certifications."
+      ],
+      'observability_monitoring': [
+        "No visibility into cluster usage. Surprises in cloud bills. Want cluster event logs and system tables for usage attribution by team.",
+        "Jobs fail silently. Alerts reactive. Need Databricks workflows with email alerts and integration with PagerDuty for production pipelines."
+      ],
+      'cost_management': [
+        "Cloud costs ballooning. No understanding of spend drivers. Want budget alerts and system tables for chargeback to business units with tags.",
+        "Teams oversize clusters by default. No right-sizing. Need automated recommendations and spot instance policies for non-critical workloads to reduce costs."
+      ],
+      
+      // DATA ENGINEERING
+      'ingestion_strategy': [
+        "Manual SFTP transfers nightly. Batch loads via notebooks. Want Auto Loader for real-time streaming ingestion with schema evolution and checkpoints.",
+        "Data engineers write custom Python scripts per source. No reusability. Need standardized connectors and Auto Loader templates for common sources like S3."
+      ],
+      'lakehouse_architecture': [
+        "Parquet files in S3 with no ACID guarantees. Delete operations problematic. Want Delta Lake for ACID transactions and time travel for audits.",
+        "Raw zone, curated zone managed manually. No clear medallion architecture. Need Delta Lake with Bronze/Silver/Gold layers and DLT pipelines for automation."
+      ],
+      'pipeline_orchestration': [
+        "Airflow orchestrates Spark submits. Complex dependencies hard to manage. Want Databricks Workflows with native integration and task dependencies for observability.",
+        "Notebooks run manually or via cron. No visibility into failures. Need Databricks Jobs with retries, alerting, and lineage tracking for production pipelines."
+      ],
+      'data_quality': [
+        "No data quality checks. Issues found by analysts downstream. Want DLT expectations (expect_or_fail, expect_or_drop) to catch issues early at ingestion.",
+        "Manual SQL checks in notebooks. Inconsistent across teams. Need Lakehouse Monitoring for automated data quality metrics and anomaly detection dashboards."
+      ],
+      'performance_scalability': [
+        "Pipelines take 6+ hours. Business wants hourly refreshes. Need Photon acceleration and partition tuning with Z-ordering for query performance improvement.",
+        "Clusters manually sized. Either over-provisioned or run out of memory. Want auto-scaling clusters and serverless compute for cost efficiency and elasticity."
+      ],
+      
+      // ANALYTICS & BI
+      'query_performance': [
+        "Analysts wait 5+ minutes per query. Frustration growing. Want serverless SQL warehouses with Photon for sub-second queries and query caching for reusability.",
+        "Same aggregations re-computed hourly. Inefficient. Need materialized views and query result caching to reduce compute costs and improve response times."
+      ],
+      'data_modeling': [
+        "Fact tables have 200+ columns. Star schema unclear. Want dimensional modeling best practices and slowly changing dimension (SCD) patterns for historical accuracy.",
+        "Every team creates own metrics. Inconsistent revenue numbers. Need centralized semantic layer with Unity Catalog and SQL UDFs for metric standardization and governance."
+      ],
+      'visualization_reporting': [
+        "Analysts export to Excel then pivot. No real-time dashboards. Want Databricks SQL dashboards with auto-refresh and embedding for business stakeholders.",
+        "PowerBI connects to raw tables. Slow and fragile. Need Databricks SQL endpoint with Photon and aggregation tables for fast BI integration and reliability."
+      ],
+      'self_service_enablement': [
+        "Analysts wait on data engineers for every query. Bottleneck. Want Databricks SQL with saved queries and Genie for natural language ad-hoc analysis.",
+        "Business users can't explore data independently. No access control. Need Unity Catalog row/column security and Databricks SQL permissions for safe self-service access."
+      ],
+      'collaboration_sharing': [
+        "Notebooks emailed as HTML. No version control. Want Databricks Repos with Git integration and notebook versioning for collaboration and reproducibility.",
+        "Each analyst has own copy of queries. Duplication and drift. Need shared queries library in Databricks SQL and comments for institutional knowledge sharing."
+      ],
+      
+      // MACHINE LEARNING
+      'ml_lifecycle': [
+        "ML experiments tracked in spreadsheets. Can't reproduce results. Want MLflow for experiment tracking with hyperparameter logging and model versioning for reproducibility.",
+        "Model artifacts stored in S3 with manual naming. No lineage. Need MLflow Model Registry for version control and model lineage with Unity Catalog integration."
+      ],
+      'model_deployment': [
+        "Models deployed via Flask on EC2. Manual scaling. Want MLflow Model Serving with autoscaling endpoints and A/B testing for production inference workloads.",
+        "Data scientists retrain models monthly via notebook runs. No automation. Need Databricks Jobs with model retraining pipelines and trigger-based deployment for MLOps."
+      ],
+      'feature_engineering': [
+        "Feature engineering code duplicated in notebooks. Inconsistency across models. Want Databricks Feature Store for centralized feature definitions and online/offline serving.",
+        "Training features differ from inference. Causes model drift. Need Feature Store with point-in-time lookups for training-serving skew prevention and consistency."
+      ],
+      'ml_governance': [
+        "No model approval process. Models deployed to prod ad-hoc. Want MLflow Model Registry with stage transitions and approval workflows for governance compliance.",
+        "Can't explain model decisions. Regulatory concern. Need model monitoring dashboards and SHAP integration for explainability audits and regulatory compliance reporting."
+      ],
+      'ml_scale': [
+        "Single-node scikit-learn. Datasets growing beyond memory. Want distributed training with Spark MLlib or PyTorch Distributed for large-scale model training on big data.",
+        "Hyperparameter tuning takes days. Blocking experimentation. Need Hyperopt with MLflow integration and parallel trials for faster experimentation cycles and model optimization."
+      ],
+      
+      // GENERATIVE AI
+      'genai_strategy': [
+        "No GenAI initiative. CIO asking for roadmap. Want Mosaic AI assessment workshop to identify high-impact use cases like RAG for knowledge base search.",
+        "Experimenting with ChatGPT for customer support. Security concerns. Need Databricks Foundation Models for on-platform LLM inference with data residency and guardrails."
+      ],
+      'genai_data_readiness': [
+        "Documentation scattered in Confluence and SharePoint. No vector embeddings. Want Vector Search index for semantic retrieval and RAG application on internal knowledge base.",
+        "PDFs and Word docs not searchable semantically. Need chunking strategy and Vector Search with hybrid search (keyword + semantic) for enterprise document retrieval."
+      ],
+      'genai_development': [
+        "Prompt engineering in Python notebooks. No reusability. Want Databricks AI Playground for prompt iteration and versioning with evaluation metrics and comparison views.",
+        "Calling OpenAI API directly. Cost and latency concerns. Need Databricks Model Serving with provisioned throughput for Foundation Models and reduced latency for production apps."
+      ],
+      'genai_evaluation': [
+        "No way to measure RAG quality. Anecdotal feedback only. Want MLflow with LLM evaluation metrics (retrieval precision, answer relevance, faithfulness) for systematic assessment.",
+        "Prompt changes break production. No regression testing. Need automated LLM evaluation pipelines in Databricks Jobs with golden test sets for continuous quality monitoring."
+      ],
+      'genai_responsible_ai': [
+        "No guardrails on LLM outputs. Risk of hallucinations. Want Databricks Lakehouse Monitoring for LLM toxicity detection and output filtering with guardrail policies.",
+        "Concerns about bias in GenAI responses. Need bias testing framework and evaluation metrics for fairness audits and responsible AI governance with stakeholder review."
+      ],
+      
+      // OPERATIONAL EXCELLENCE
+      'platform_adoption': [
+        "15% of data team uses Databricks. Most still on legacy tools. Want onboarding program and success metrics to track adoption velocity with executive dashboard.",
+        "New hires take 3 weeks to become productive. No training. Need Databricks Academy subscriptions and internal bootcamp curriculum with certification tracking for faster ramp-up."
+      ],
+      'enablement_training': [
+        "Tribal knowledge. Key engineers are single point of failure. Want documentation site with runbooks and best practices repository for platform patterns and troubleshooting.",
+        "Teams reinvent the wheel. No code reuse. Need curated template library for common patterns (DLT, MLOps, security) with example implementations and GitHub integration."
+      ],
+      'center_of_excellence': [
+        "No central team. Every project figures out Databricks independently. Want CoE with office hours and Slack channel for support escalation and best practices sharing.",
+        "Platform capabilities unknown. Marketing team doesn't know about Vector Search for personalization. Need quarterly showcase and use case library for internal evangelism."
+      ],
+      'monitoring_usage': [
+        "No visibility into platform usage. Can't show ROI. Want system tables dashboard for active users, job success rates, and cost per business unit with executive reporting.",
+        "Clusters idle overnight. Wasted spend. Need automated cluster termination policies and usage alerts with recommendations for cost optimization and chargebacks."
+      ],
+      'value_realization': [
+        "CFO asks for Databricks ROI. No answer. Want business impact tracking with metrics for time-to-insight reduction and data quality improvement with quarterly business reviews.",
+        "Platform costs growing without clear business value. Need use case prioritization framework and value scorecards with stakeholder interviews for portfolio optimization."
+      ]
     };
     
-    const pillarComments = comments[pillarId] || comments.platform_governance;
-    // More varied level distribution
-    const levelKey = currentState <= 2 ? 'low' : currentState === 3 ? 'medium' : 'high';
-    const options = pillarComments[levelKey];
+    // Get comments for this specific dimension
+    const comments = dimensionComments[dimensionId] || [
+      "Currently using manual processes. Need automation and best practices implementation with Databricks platform capabilities for operational efficiency.",
+      "Early stage adoption. Looking to scale with Databricks features and proper governance for enterprise-grade data and AI workloads."
+    ];
     
-    // Use crypto random for better randomness if available
+    // Pick a random comment for variety
     const randomIndex = typeof window !== 'undefined' && window.crypto?.getRandomValues
-      ? window.crypto.getRandomValues(new Uint32Array(1))[0] % options.length
-      : Math.floor(Math.random() * options.length);
+      ? window.crypto.getRandomValues(new Uint32Array(1))[0] % comments.length
+      : Math.floor(Math.random() * comments.length);
     
-    return options[randomIndex];
+    return comments[randomIndex];
   };
 
   return (
