@@ -2829,6 +2829,113 @@ const AssessmentResultsNew = () => {
                             </div>
                           )}
                           )}
+                          
+                          {/* Render newly added features */}
+                          {customizations.newFeatures[pillar.id] && customizations.newFeatures[pillar.id].map((newFeature, idx) => (
+                            <div key={`new-${idx}`} style={{ 
+                              background: 'white',
+                              border: '1px solid #bfdbfe',
+                              borderRadius: '12px',
+                              padding: '16px',
+                              transition: 'all 0.2s ease'
+                            }}>
+                              <div style={{ 
+                                fontWeight: 700, 
+                                color: '#1e40af', 
+                                marginBottom: '6px',
+                                fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                              }}>
+                                <span style={{ fontSize: '1.1rem' }}>📦</span> {newFeature.name}
+                              </div>
+                              {newFeature.description && (
+                                <div style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.4' }}>
+                                  {newFeature.description}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          
+                          {/* Form for adding new feature */}
+                          {addingFeature === pillar.id && (
+                            <div style={{ 
+                              background: 'white',
+                              border: '2px solid #3b82f6',
+                              borderRadius: '12px',
+                              padding: '16px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px'
+                            }}>
+                              <input
+                                value={editedContent[`new-feature-${pillar.id}-name`] || ''}
+                                onChange={(e) => setEditedContent({
+                                  ...editedContent,
+                                  [`new-feature-${pillar.id}-name`]: e.target.value
+                                })}
+                                placeholder="Feature name (e.g., Unity Catalog)"
+                                style={{
+                                  fontWeight: 700,
+                                  fontSize: '0.95rem',
+                                  padding: '8px',
+                                  border: '1px solid #3b82f6',
+                                  borderRadius: '6px',
+                                  fontFamily: 'inherit'
+                                }}
+                                autoFocus
+                              />
+                              <textarea
+                                value={editedContent[`new-feature-${pillar.id}-desc`] || ''}
+                                onChange={(e) => setEditedContent({
+                                  ...editedContent,
+                                  [`new-feature-${pillar.id}-desc`]: e.target.value
+                                })}
+                                placeholder="Feature description (optional)"
+                                style={{
+                                  fontSize: '0.85rem',
+                                  padding: '8px',
+                                  border: '1px solid #3b82f6',
+                                  borderRadius: '6px',
+                                  resize: 'vertical',
+                                  minHeight: '60px',
+                                  fontFamily: 'inherit'
+                                }}
+                              />
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => handleSaveNewFeature(pillar.id)}
+                                  style={{
+                                    padding: '6px 14px',
+                                    fontSize: '0.8rem',
+                                    background: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 600
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setAddingFeature(null)}
+                                  style={{
+                                    padding: '6px 14px',
+                                    fontSize: '0.8rem',
+                                    background: '#9ca3af',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         
                         {/* Detailed Technical Recommendations */}
@@ -2911,7 +3018,7 @@ const AssessmentResultsNew = () => {
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
-                          gap: '8px',
+                          justifyContent: 'space-between',
                           marginBottom: '16px',
                           color: '#92400e',
                           fontSize: '0.95rem',
@@ -2919,8 +3026,31 @@ const AssessmentResultsNew = () => {
                           textTransform: 'uppercase',
                           letterSpacing: '0.05em'
                         }}>
-                          <span style={{ fontSize: '1.2rem' }}>🎯</span>
-                          Next Steps
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '1.2rem' }}>🎯</span>
+                            Next Steps
+                          </div>
+                          <button
+                            onClick={() => handleAddNextStep(pillar.id)}
+                            style={{
+                              background: '#f59e0b',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              lineHeight: '1'
+                            }}
+                            title="Add new next step"
+                          >
+                            +
+                          </button>
                         </div>
                         <div style={{ 
                           display: 'flex',
@@ -3080,6 +3210,96 @@ const AssessmentResultsNew = () => {
                               </div>
                             </div>
                           )}
+                          )}
+                          
+                          {/* Render newly added next steps */}
+                          {customizations.newNextSteps[pillar.id] && customizations.newNextSteps[pillar.id].map((newStep, idx) => (
+                            <div key={`new-${idx}`} style={{ 
+                              background: 'white',
+                              border: '1px solid #fcd34d',
+                              borderRadius: '10px',
+                              padding: '14px 16px',
+                              fontSize: '0.87rem',
+                              color: '#78350f',
+                              lineHeight: '1.6',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '12px'
+                            }}>
+                              <span style={{ 
+                                color: '#f59e0b', 
+                                fontWeight: 700,
+                                fontSize: '1.3rem',
+                                lineHeight: '1',
+                                flexShrink: 0,
+                                marginTop: '-2px'
+                              }}>→</span>
+                              <span style={{ flex: 1 }}>{newStep}</span>
+                            </div>
+                          ))}
+                          
+                          {/* Form for adding new next step */}
+                          {addingNextStep === pillar.id && (
+                            <div style={{ 
+                              background: 'white',
+                              border: '2px solid #f59e0b',
+                              borderRadius: '10px',
+                              padding: '14px 16px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '10px'
+                            }}>
+                              <textarea
+                                value={editedContent[`new-nextstep-${pillar.id}`] || ''}
+                                onChange={(e) => setEditedContent({
+                                  ...editedContent,
+                                  [`new-nextstep-${pillar.id}`]: e.target.value
+                                })}
+                                placeholder="Enter a next step or action item..."
+                                style={{
+                                  border: '1px solid #f59e0b',
+                                  borderRadius: '6px',
+                                  padding: '8px',
+                                  fontSize: '0.87rem',
+                                  fontFamily: 'inherit',
+                                  resize: 'vertical',
+                                  minHeight: '60px',
+                                  color: '#78350f'
+                                }}
+                                autoFocus
+                              />
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => handleSaveNewNextStep(pillar.id)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#f59e0b',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 600
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setAddingNextStep(null)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#9ca3af',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
                           )}
                         </div>
                       </div>
