@@ -912,6 +912,9 @@ const AssessmentResultsNew = () => {
   const [addingBadItem, setAddingBadItem] = useState(null); // Track which pillar is adding a new "Key Challenge" item
   const [addingFeature, setAddingFeature] = useState(null); // Track which pillar is adding a new feature
   const [addingNextStep, setAddingNextStep] = useState(null); // Track which pillar is adding a new next step
+  const [addingPhaseItem, setAddingPhaseItem] = useState(null); // Track which phase is adding a new item
+  const [addingImpactMetric, setAddingImpactMetric] = useState(false); // Track if adding a new impact metric
+  const [editingImpactMetric, setEditingImpactMetric] = useState(null); // Track which impact metric is being edited
   const [editedContent, setEditedContent] = useState({});
   const [customizations, setCustomizations] = useState({
     title: '',
@@ -925,7 +928,10 @@ const AssessmentResultsNew = () => {
     newGoodItems: {}, // { pillarId: [array of new items] }
     newBadItems: {}, // { pillarId: [array of new items] }
     newFeatures: {}, // { pillarId: [array of new features] }
-    newNextSteps: {} // { pillarId: [array of new next steps] }
+    newNextSteps: {}, // { pillarId: [array of new next steps] }
+    newPhaseItems: {}, // { phaseId: [array of new items] }
+    newImpactMetrics: [], // Array of new impact metrics
+    impactMetrics: {} // { metricKey: { value, label, drivers } }
   });
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
@@ -1196,6 +1202,103 @@ const AssessmentResultsNew = () => {
     newCustomizations.nextSteps[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
     toast.success('Next step deleted!');
+  };
+
+  // Add handlers for phase items
+  const handleAddPhaseItem = (phaseId) => {
+    setAddingPhaseItem(phaseId);
+    setEditedContent({
+      ...editedContent,
+      [`new-phase-${phaseId}`]: ''
+    });
+  };
+
+  const handleSaveNewPhaseItem = (phaseId) => {
+    const newText = editedContent[`new-phase-${phaseId}`];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newPhaseItems[phaseId]) {
+      newCustomizations.newPhaseItems[phaseId] = [];
+    }
+    newCustomizations.newPhaseItems[phaseId].push(newText.trim());
+    setCustomizations(newCustomizations);
+    setAddingPhaseItem(null);
+    toast.success('Item added!');
+  };
+
+  // Add handlers for impact metrics
+  const handleAddImpactMetric = () => {
+    setAddingImpactMetric(true);
+    setEditedContent({
+      ...editedContent,
+      'new-metric-value': '',
+      'new-metric-label': '',
+      'new-metric-drivers': ''
+    });
+  };
+
+  const handleSaveNewImpactMetric = () => {
+    const newValue = editedContent['new-metric-value'];
+    const newLabel = editedContent['new-metric-label'];
+    const newDrivers = editedContent['new-metric-drivers'];
+    
+    if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
+      toast.error('Please enter both metric value and label');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newImpactMetrics) {
+      newCustomizations.newImpactMetrics = [];
+    }
+    newCustomizations.newImpactMetrics.push({
+      value: newValue.trim(),
+      label: newLabel.trim(),
+      drivers: newDrivers ? newDrivers.split(',').map(d => d.trim()).filter(d => d) : []
+    });
+    setCustomizations(newCustomizations);
+    setAddingImpactMetric(false);
+    toast.success('Metric added!');
+  };
+
+  // Edit handlers for impact metrics
+  const handleEditImpactMetric = (metricKey, metric) => {
+    setEditingImpactMetric(metricKey);
+    setEditedContent({
+      ...editedContent,
+      [`${metricKey}-value`]: metric.value,
+      [`${metricKey}-label`]: metric.label,
+      [`${metricKey}-drivers`]: metric.drivers ? metric.drivers.join(', ') : ''
+    });
+  };
+
+  const handleSaveImpactMetric = (metricKey) => {
+    const newValue = editedContent[`${metricKey}-value`];
+    const newLabel = editedContent[`${metricKey}-label`];
+    const newDrivers = editedContent[`${metricKey}-drivers`];
+    
+    if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
+      toast.error('Please enter both metric value and label');
+      return;
+    }
+    
+    setCustomizations({
+      ...customizations,
+      impactMetrics: {
+        ...customizations.impactMetrics,
+        [metricKey]: {
+          value: newValue.trim(),
+          label: newLabel.trim(),
+          drivers: newDrivers ? newDrivers.split(',').map(d => d.trim()).filter(d => d) : []
+        }
+      }
+    });
+    setEditingImpactMetric(null);
+    toast.success('Metric updated!');
   };
 
   // Add handlers for new items
@@ -3312,7 +3415,9 @@ const AssessmentResultsNew = () => {
 
           {/* Strategic Roadmap */}
           <RoadmapSection>
-            <SectionTitle>Strategic Roadmap & Next Steps</SectionTitle>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <SectionTitle style={{ marginBottom: 0 }}>Strategic Roadmap & Next Steps</SectionTitle>
+            </div>
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
               {resultsData?.maturitySummary?.roadmapIntro || 
                'This roadmap outlines short-, mid-, and long-term priorities across each pillar to achieve targeted maturity improvements.'}
@@ -3392,64 +3497,484 @@ const AssessmentResultsNew = () => {
 
           {/* Expected Business Impact */}
           <ImpactSection>
-            <SectionTitle>Expected Business Impact</SectionTitle>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <SectionTitle style={{ marginBottom: 0 }}>Expected Business Impact</SectionTitle>
+              <button
+                onClick={handleAddImpactMetric}
+                style={{
+                  background: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '1.3rem',
+                  fontWeight: 'bold',
+                  lineHeight: '1'
+                }}
+                title="Add new impact metric"
+              >
+                +
+              </button>
+            </div>
             <ImpactMetrics>
-              <MetricCard
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="metric-value">
-                  {resultsData?.businessImpact?.decisionSpeed?.value || '2.8×'}
-                </div>
-                <div className="metric-label">
-                  {resultsData?.businessImpact?.decisionSpeed?.label || 'Increase in analytics-driven decision-making speed'}
-                </div>
-                {resultsData?.businessImpact?.decisionSpeed?.drivers && resultsData.businessImpact.decisionSpeed.drivers.length > 0 && (
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                    Key drivers: {resultsData.businessImpact.decisionSpeed.drivers.join(', ')}
-                  </div>
-                )}
-              </MetricCard>
+              {/* Metric 1: Decision Speed */}
+              {(() => {
+                const metricKey = 'decisionSpeed';
+                const isEditing = editingImpactMetric === metricKey;
+                const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.decisionSpeed || { value: '2.8×', label: 'Increase in analytics-driven decision-making speed', drivers: [] };
+                
+                return (
+                  <MetricCard
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4 }}
+                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
+                  >
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <input
+                          value={editedContent[`${metricKey}-value`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                          placeholder="Value (e.g., 2.8× or 15%)"
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <textarea
+                          value={editedContent[`${metricKey}-label`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                          placeholder="Label/Description"
+                          style={{
+                            fontSize: '0.9rem',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            resize: 'vertical',
+                            minHeight: '60px',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <input
+                          value={editedContent[`${metricKey}-drivers`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                          placeholder="Key drivers (comma-separated)"
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '6px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleSaveImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingImpactMetric(null)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#9ca3af',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleEditImpactMetric(metricKey, metric)}
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            padding: '6px 12px',
+                            fontSize: '0.75rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <div className="metric-value">{metric.value}</div>
+                        <div className="metric-label">{metric.label}</div>
+                        {metric.drivers && metric.drivers.length > 0 && (
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                            Key drivers: {metric.drivers.join(', ')}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </MetricCard>
+                );
+              })()}
 
-              <MetricCard
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <div className="metric-value">
-                  {resultsData?.businessImpact?.costOptimization?.value || '6%'}
-                </div>
-                <div className="metric-label">
-                  {resultsData?.businessImpact?.costOptimization?.label || 'Average cost optimization through platform automation'}
-                </div>
-                {resultsData?.businessImpact?.costOptimization?.drivers && resultsData.businessImpact.costOptimization.drivers.length > 0 && (
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                    Key drivers: {resultsData.businessImpact.costOptimization.drivers.slice(0, 2).join(', ')}
-                  </div>
-                )}
-              </MetricCard>
+              {/* Metric 2: Cost Optimization */}
+              {(() => {
+                const metricKey = 'costOptimization';
+                const isEditing = editingImpactMetric === metricKey;
+                const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.costOptimization || { value: '6%', label: 'Average cost optimization through platform automation', drivers: [] };
+                
+                return (
+                  <MetricCard
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
+                  >
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <input
+                          value={editedContent[`${metricKey}-value`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                          placeholder="Value (e.g., 2.8× or 15%)"
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <textarea
+                          value={editedContent[`${metricKey}-label`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                          placeholder="Label/Description"
+                          style={{
+                            fontSize: '0.9rem',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            resize: 'vertical',
+                            minHeight: '60px',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <input
+                          value={editedContent[`${metricKey}-drivers`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                          placeholder="Key drivers (comma-separated)"
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '6px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleSaveImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingImpactMetric(null)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#9ca3af',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleEditImpactMetric(metricKey, metric)}
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            padding: '6px 12px',
+                            fontSize: '0.75rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <div className="metric-value">{metric.value}</div>
+                        <div className="metric-label">{metric.label}</div>
+                        {metric.drivers && metric.drivers.length > 0 && (
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                            Key drivers: {metric.drivers.slice(0, 2).join(', ')}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </MetricCard>
+                );
+              })()}
 
-              <MetricCard
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                <div className="metric-value">
-                  {resultsData?.businessImpact?.manualOverhead?.value || '30%'}
-                </div>
-                <div className="metric-label">
-                  {resultsData?.businessImpact?.manualOverhead?.label || 'Reduction in manual operational overhead'}
-                </div>
-                {resultsData?.businessImpact?.manualOverhead?.drivers && resultsData.businessImpact.manualOverhead.drivers.length > 0 && (
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                    Key drivers: {resultsData.businessImpact.manualOverhead.drivers.slice(0, 2).join(', ')}
+              {/* Metric 3: Manual Overhead */}
+              {(() => {
+                const metricKey = 'manualOverhead';
+                const isEditing = editingImpactMetric === metricKey;
+                const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.manualOverhead || { value: '30%', label: 'Reduction in manual operational overhead', drivers: [] };
+                
+                return (
+                  <MetricCard
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
+                  >
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <input
+                          value={editedContent[`${metricKey}-value`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                          placeholder="Value (e.g., 2.8× or 15%)"
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <textarea
+                          value={editedContent[`${metricKey}-label`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                          placeholder="Label/Description"
+                          style={{
+                            fontSize: '0.9rem',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            resize: 'vertical',
+                            minHeight: '60px',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <input
+                          value={editedContent[`${metricKey}-drivers`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                          placeholder="Key drivers (comma-separated)"
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '6px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleSaveImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingImpactMetric(null)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#9ca3af',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleEditImpactMetric(metricKey, metric)}
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            padding: '6px 12px',
+                            fontSize: '0.75rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <div className="metric-value">{metric.value}</div>
+                        <div className="metric-label">{metric.label}</div>
+                        {metric.drivers && metric.drivers.length > 0 && (
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                            Key drivers: {metric.drivers.slice(0, 2).join(', ')}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </MetricCard>
+                );
+              })()}
+              
+              {/* Render newly added metrics */}
+              {customizations.newImpactMetrics && customizations.newImpactMetrics.map((newMetric, idx) => (
+                <MetricCard
+                  key={`new-${idx}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
+                  style={{ position: 'relative' }}
+                >
+                  <div className="metric-value">{newMetric.value}</div>
+                  <div className="metric-label">{newMetric.label}</div>
+                  {newMetric.drivers && newMetric.drivers.length > 0 && (
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                      Key drivers: {newMetric.drivers.join(', ')}
+                    </div>
+                  )}
+                </MetricCard>
+              ))}
+              
+              {/* Form for adding new metric */}
+              {addingImpactMetric && (
+                <MetricCard
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  style={{ border: '2px solid #3b82f6' }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <input
+                      value={editedContent['new-metric-value'] || ''}
+                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-value': e.target.value })}
+                      placeholder="Value (e.g., 2.8× or 15%)"
+                      style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 'bold',
+                        padding: '8px',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '6px'
+                      }}
+                      autoFocus
+                    />
+                    <textarea
+                      value={editedContent['new-metric-label'] || ''}
+                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-label': e.target.value })}
+                      placeholder="Label/Description"
+                      style={{
+                        fontSize: '0.9rem',
+                        padding: '8px',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '6px',
+                        resize: 'vertical',
+                        minHeight: '60px',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                    <input
+                      value={editedContent['new-metric-drivers'] || ''}
+                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-drivers': e.target.value })}
+                      placeholder="Key drivers (comma-separated, optional)"
+                      style={{
+                        fontSize: '0.75rem',
+                        padding: '6px',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '6px'
+                      }}
+                    />
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                      <button
+                        onClick={handleSaveNewImpactMetric}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: '0.8rem',
+                          background: '#3b82f6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 600
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setAddingImpactMetric(false)}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: '0.8rem',
+                          background: '#9ca3af',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                )}
-              </MetricCard>
+                </MetricCard>
+              )}
             </ImpactMetrics>
           </ImpactSection>
         </ReportBody>
