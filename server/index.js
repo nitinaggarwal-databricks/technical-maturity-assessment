@@ -717,6 +717,56 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
   }
 });
 
+// Submit assessment (mark as submitted to enable results viewing)
+app.post('/api/assessment/:id/submit', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessment = await assessments.get(id);
+
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    // Check if at least one pillar is completed
+    if (!assessment.completedCategories || assessment.completedCategories.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please complete at least one pillar before submitting'
+      });
+    }
+
+    // Update status to submitted
+    assessment.status = 'submitted';
+    assessment.submittedAt = new Date().toISOString();
+    assessment.updatedAt = new Date().toISOString();
+
+    await assessments.set(id, assessment);
+
+    console.log(`✅ Assessment ${id} submitted successfully`);
+
+    res.json({
+      success: true,
+      message: 'Assessment submitted successfully',
+      assessment: {
+        id: assessment.id,
+        status: assessment.status,
+        submittedAt: assessment.submittedAt,
+        completedCategories: assessment.completedCategories
+      }
+    });
+  } catch (error) {
+    console.error('Error submitting assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error submitting assessment',
+      error: error.message
+    });
+  }
+});
+
 // Generate adaptive assessment results (NEW - uses all inputs)
 app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   try {
@@ -949,13 +999,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
             console.log(`🔧 Enhancing pillar ${pillarId} (level ${Math.round(maturityLevel)}) with ${databricksRecs.currentMaturity?.features?.length || 0} features`);
             
             // Enhance action with actual Databricks features
+            // NOTE: specificRecommendations (Next Steps) will be set by IntelligentRecommendationEngine later
             return {
               ...action,
               databricksFeatures: databricksRecs.currentMaturity?.features || [],
               nextLevelFeatures: databricksRecs.nextLevel?.features || [],
               quickWins: databricksRecs.quickWins || [],
               strategicMoves: databricksRecs.strategicMoves || [],
-              specificRecommendations: databricksRecs.quickWins || [], // Use quickWins for "Next Steps" (customer engagement)
+              // DO NOT SET specificRecommendations here - let intelligent engine handle it
               _source: 'Databricks Release Notes - October 2025',
               _docsUrl: 'https://docs.databricks.com/aws/en/release-notes/product/'
             };
@@ -1113,6 +1164,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         
         console.log(`✅ Found ${intelligentRecs.recommendations.length} intelligent recommendations for ${pillarId}`);
         console.log(`✅ Found ${intelligentRecs.nextSteps.length} customer-specific next steps for ${pillarId}`);
+        console.log(`🔍 DEBUG - intelligentRecs.nextSteps for ${pillarId}:`, JSON.stringify(intelligentRecs.nextSteps.slice(0, 2), null, 2));
         
         // DEBUG: Log intelligent recommendations
         if (intelligentRecs.recommendations.length > 0) {
@@ -1120,21 +1172,24 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         }
         
         // Replace generic recommendations with intelligent, customer-specific ones
+        // ALWAYS use intelligent engine results, never fall back to old action data
         return {
           ...action,
           // Override with intelligent recommendations based on actual pain points and comments
-          theGood: intelligentRecs.theGood.length > 0 ? intelligentRecs.theGood : action.theGood,
-          theBad: intelligentRecs.theBad.length > 0 ? intelligentRecs.theBad : action.theBad,
-          recommendations: intelligentRecs.recommendations.length > 0 ? intelligentRecs.recommendations : action.recommendations,
-          specificRecommendations: intelligentRecs.nextSteps.length > 0 ? intelligentRecs.nextSteps : action.specificRecommendations,
-          databricksFeatures: intelligentRecs.databricksFeatures.length > 0 ? intelligentRecs.databricksFeatures : action.databricksFeatures,
+          theGood: intelligentRecs.theGood || [],
+          theBad: intelligentRecs.theBad || [],
+          recommendations: intelligentRecs.recommendations || [],
+          specificRecommendations: intelligentRecs.nextSteps || [], // ALWAYS use intelligent engine next steps
+          databricksFeatures: intelligentRecs.databricksFeatures || [],
           _intelligentEngine: true,
-          _painPointsAnalyzed: intelligentRecs.theBad.length,
-          _strengthsIdentified: intelligentRecs.theGood.length,
+          _painPointsAnalyzed: intelligentRecs.theBad?.length || 0,
+          _strengthsIdentified: intelligentRecs.theGood?.length || 0,
           _debugNextSteps: {
-            count: intelligentRecs.nextSteps.length,
-            first: intelligentRecs.nextSteps[0],
-            source: 'intelligentEngine.generateRecommendations'
+            count: intelligentRecs.nextSteps?.length || 0,
+            first: intelligentRecs.nextSteps?.[0] || null,
+            second: intelligentRecs.nextSteps?.[1] || null,
+            source: 'intelligentEngine.generateRecommendations',
+            wasEmpty: !intelligentRecs.nextSteps || intelligentRecs.nextSteps.length === 0
           }
         };
       }));

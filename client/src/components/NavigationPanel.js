@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { 
   FiChevronDown, 
   FiChevronRight, 
@@ -10,9 +11,11 @@ import {
   FiTarget,
   FiBarChart2,
   FiPlay,
-  FiEdit3
+  FiEdit3,
+  FiSend
 } from 'react-icons/fi';
 import EditAssessmentModal from './EditAssessmentModal';
+import * as assessmentService from '../services/assessmentService';
 
 const NavigationContainer = styled.div`
   width: 350px;
@@ -355,11 +358,48 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
     navigate(`/results/${assessmentId}`);
   };
 
+  const handleSubmitAssessment = async () => {
+    if (!assessmentId) {
+      toast.error('No assessment ID available');
+      return;
+    }
+
+    if (!hasAnyCompletedPillars) {
+      toast.error('Please complete at least one pillar before submitting');
+      return;
+    }
+
+    try {
+      toast.loading('Submitting assessment...', { id: 'submit-assessment' });
+      
+      // Call API to mark assessment as submitted
+      await assessmentService.submitAssessment(assessmentId);
+      
+      toast.success('Assessment submitted successfully! You can now view results.', { 
+        id: 'submit-assessment',
+        duration: 4000
+      });
+      
+      // Refresh assessment status to update the UI
+      if (onAssessmentUpdate) {
+        const updatedAssessment = await assessmentService.getAssessmentStatus(assessmentId);
+        onAssessmentUpdate(updatedAssessment);
+      } else {
+        // Force page reload to update currentAssessment
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      toast.error('Failed to submit assessment. Please try again.', { id: 'submit-assessment' });
+    }
+  };
+
   if (!framework) {
     return null;
   }
 
   const hasAnyCompletedPillars = currentAssessment?.completedCategories?.length > 0;
+  const isSubmitted = currentAssessment?.status === 'submitted';
 
   return (
     <NavigationContainer>
@@ -483,6 +523,35 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       </PillarList>
 
       <ActionButtonsContainer>
+        {/* Submit Assessment Button */}
+        {hasAnyCompletedPillars && !isSubmitted && (
+          <ResultsSection style={{ marginBottom: '16px' }}>
+            <ResultsSectionTitle>
+              <FiSend size={14} />
+              Ready to Submit?
+            </ResultsSectionTitle>
+            <ActionButton
+              variant="accent"
+              onClick={handleSubmitAssessment}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiSend size={18} />
+              <span style={{ flex: 1, textAlign: 'left' }}>Submit Assessment</span>
+            </ActionButton>
+            <div style={{ 
+              fontSize: '12px', 
+              color: '#6b7280', 
+              marginTop: '8px',
+              textAlign: 'center',
+              lineHeight: '1.4'
+            }}>
+              Submit to generate your results report
+            </div>
+          </ResultsSection>
+        )}
+
+        {/* Overall Results Button */}
         <ResultsSection>
           <ResultsSectionTitle>
             <FiBarChart2 size={14} />
@@ -491,21 +560,23 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           <ActionButton
             variant="primary"
             onClick={navigateToOverallResults}
-            disabled={!hasAnyCompletedPillars}
-            whileHover={{ scale: hasAnyCompletedPillars ? 1.05 : 1 }}
-            whileTap={{ scale: hasAnyCompletedPillars ? 0.95 : 1 }}
+            disabled={!isSubmitted}
+            whileHover={{ scale: isSubmitted ? 1.05 : 1 }}
+            whileTap={{ scale: isSubmitted ? 0.95 : 1 }}
           >
             <FiBarChart2 size={18} />
             <span style={{ flex: 1, textAlign: 'left' }}>Overall Assessment Results</span>
           </ActionButton>
-          {!hasAnyCompletedPillars && (
+          {!isSubmitted && (
             <div style={{ 
               fontSize: '12px', 
               color: '#9ca3af', 
               marginTop: '8px',
               textAlign: 'center'
             }}>
-              Complete at least one pillar to view results
+              {hasAnyCompletedPillars 
+                ? 'Submit assessment to view results' 
+                : 'Complete at least one pillar to submit'}
             </div>
           )}
         </ResultsSection>

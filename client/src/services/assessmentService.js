@@ -332,6 +332,21 @@ export const generateSampleAssessment = async (completionLevel = 'full', specifi
 };
 
 /**
+ * Submit assessment for final results
+ */
+export const submitAssessment = async (assessmentId) => {
+  try {
+    console.log('[submitAssessment] Submitting assessment:', assessmentId);
+    const data = await api.post(`/assessment/${assessmentId}/submit`);
+    console.log('[submitAssessment] Response:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Failed to submit assessment:', error);
+    throw error;
+  }
+};
+
+/**
  * Health check
  */
 export const healthCheck = async () => {
