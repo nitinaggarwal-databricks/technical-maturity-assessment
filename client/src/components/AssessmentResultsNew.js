@@ -15,16 +15,55 @@ import {
   FiRefreshCw,
   FiSave,
   FiTrash2,
-  FiX
+  FiX,
+  FiPrinter
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
-import { generateProfessionalReport } from '../services/pdfExportService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
 
 // =======================
 // STYLED COMPONENTS
 // =======================
+
+// Global print styles
+const PrintStyles = styled.div`
+  @media print {
+    /* Enable background graphics */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    
+    /* Hide navigation and action buttons */
+    nav, button:not(.print-visible), .no-print {
+      display: none !important;
+    }
+    
+    /* Optimize page breaks */
+    * {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Full width for print */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Ensure backgrounds and borders print */
+    div, section {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    
+    /* Page margins for headers/footers */
+    @page {
+      margin: 0.75in 0.5in;
+      size: letter;
+    }
+  }
+`;
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -35,6 +74,12 @@ const PageContainer = styled.div`
   @media (max-width: 768px) {
     padding: 24px 16px;
     padding-top: 92px; /* 68px GlobalNav + 24px top padding */
+  }
+  
+  @media print {
+    padding: 0;
+    background: white;
+    min-height: auto;
   }
 `;
 
@@ -856,12 +901,19 @@ const AssessmentResultsNew = () => {
   const [framework, setFramework] = useState(null);
   
   // Edit state management
+  const [editMode, setEditMode] = useState(false); // Global edit mode toggle
   const [editingPillar, setEditingPillar] = useState(null);
   const [editingPhase, setEditingPhase] = useState(null);
+  const [editingFeature, setEditingFeature] = useState(null); // Track which feature is being edited
+  const [editingNextStep, setEditingNextStep] = useState(null); // Track which next step is being edited
   const [editedContent, setEditedContent] = useState({});
   const [customizations, setCustomizations] = useState({
+    title: '',
+    summary: '',
     pillars: {},
-    phases: {}
+    phases: {},
+    features: {},
+    nextSteps: {}
   });
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
@@ -1032,30 +1084,13 @@ const AssessmentResultsNew = () => {
     toast.success('Customization removed, showing original content');
   };
 
-  const handleExportPDF = async () => {
-    try {
-      setExporting(true);
-      toast.loading('Generating PDF report...', { id: 'pdf-export' });
-      
-      const resultsData = results?.data || results;
-      const assessmentInfo = resultsData?.assessmentInfo || {
-        assessmentName: 'Assessment Report',
-        organizationName: 'Organization'
-      };
-      
-      const result = generateProfessionalReport(resultsData, assessmentInfo);
-      
-      if (result.success) {
-        toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
-      } else {
-        throw new Error(result.error || 'Failed to generate PDF');
-      }
-    } catch (error) {
-      console.error('Error exporting PDF:', error);
-      toast.error(`Failed to export PDF: ${error.message}`, { id: 'pdf-export' });
-    } finally {
-      setExporting(false);
-    }
+  const handlePrint = () => {
+    toast.success('Opening print dialog... Enable "Background graphics" in print settings for best results!', { duration: 4000 });
+    
+    // Small delay to let toast show
+    setTimeout(() => {
+      window.print();
+    }, 500);
   };
 
   const handleExportExcel = async () => {
@@ -1074,6 +1109,74 @@ const AssessmentResultsNew = () => {
       toast.error('Failed to export Excel', { id: 'excel-export' });
     } finally {
       setExporting(false);
+    }
+  };
+
+  // Edit handlers for features and next steps
+  const handleEditFeature = (pillarId, featureIndex, feature) => {
+    const key = `${pillarId}-${featureIndex}`;
+    setEditingFeature(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: {
+        name: feature.name,
+        description: feature.description,
+        releaseDate: feature.releaseDate || '',
+        docs: feature.docs || ''
+      }
+    });
+  };
+
+  const handleSaveFeature = (pillarId, featureIndex) => {
+    const key = `${pillarId}-${featureIndex}`;
+    setCustomizations({
+      ...customizations,
+      features: {
+        ...customizations.features,
+        [key]: editedContent[key]
+      }
+    });
+    setEditingFeature(null);
+    toast.success('Feature updated!');
+  };
+
+  const handleEditNextStep = (pillarId, stepIndex, step) => {
+    const key = `${pillarId}-${stepIndex}`;
+    setEditingNextStep(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: step
+    });
+  };
+
+  const handleSaveNextStep = (pillarId, stepIndex) => {
+    const key = `${pillarId}-${stepIndex}`;
+    setCustomizations({
+      ...customizations,
+      nextSteps: {
+        ...customizations.nextSteps,
+        [key]: editedContent[key]
+      }
+    });
+    setEditingNextStep(null);
+    toast.success('Next step updated!');
+  };
+
+  const handleEditTitle = (title) => {
+    setEditedContent({ ...editedContent, title });
+  };
+
+  const handleSaveTitle = () => {
+    setCustomizations({ ...customizations, title: editedContent.title });
+    toast.success('Title updated!');
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    if (editMode) {
+      toast.success('Edit mode disabled');
+    } else {
+      toast.success('Edit mode enabled - Click edit buttons to modify content');
     }
   };
 
@@ -1432,13 +1535,12 @@ const AssessmentResultsNew = () => {
                 Edit Assessment
               </ActionButton>
               <ActionButton
-                onClick={handleExportPDF}
-                disabled={exporting}
+                onClick={handlePrint}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <FiDownload size={16} />
-                Export PDF
+                <FiPrinter size={16} />
+                Print Report
               </ActionButton>
               <ActionButton
                 onClick={handleExportExcel}
