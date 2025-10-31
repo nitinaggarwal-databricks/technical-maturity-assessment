@@ -980,10 +980,22 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
+      // Go to previous question in current pillar
       setCurrentQuestionIndex(prev => prev - 1);
     } else {
-      // Navigate to previous area or start page
-      navigate('/start');
+      // On first question - navigate to previous pillar's last question
+      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      
+      if (currentPillarIndex > 0) {
+        // Go to previous pillar
+        const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
+        navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
+        toast.info(`Navigating back to ${previousPillar.name}...`);
+      } else {
+        // First question of first pillar - go to assessment list
+        navigate('/assessments');
+        toast.info('Returning to assessments list...');
+      }
     }
   };
 
