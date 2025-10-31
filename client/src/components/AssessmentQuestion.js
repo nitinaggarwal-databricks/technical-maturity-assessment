@@ -918,9 +918,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       
       toast.success('Pillar completed successfully! View your results.');
       
-      // NEW FLOW: After completing a pillar, show THAT pillar's results
-      // User can then continue to next pillar from the results page
-      navigate(`/pillar-results/${assessmentId}/${categoryId}`);
+      // Navigate to overall assessment results page
+      // User can view all completed pillars and continue to next pillar from there
+      navigate(`/results/${assessmentId}`);
       
       // Update assessment status (non-blocking - don't let this fail the whole operation)
       if (onUpdateStatus) {
