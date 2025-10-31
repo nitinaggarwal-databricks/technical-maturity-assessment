@@ -176,3 +176,4 @@ BEGIN
   RAISE NOTICE '✅ Quick test mappings complete: % total mappings', mapping_count;
 END $$;
 
+

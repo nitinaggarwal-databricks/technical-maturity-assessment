@@ -138,3 +138,4 @@ console.log(`✅ Written to: ${migrationFile}`);
 console.log(`\n🚀 Run this migration to map all 442 pain points!`);
 console.log(`   node -r dotenv/config -e "const {Pool}=require('pg'); const fs=require('fs'); (async()=>{const pool=new Pool({connectionString:process.env.DATABASE_URL}); await pool.query(fs.readFileSync('./server/migrations/007_smart_all_mappings.sql','utf8')); await pool.end(); process.exit(0);})()"`);
 
+

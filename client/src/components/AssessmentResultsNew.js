@@ -1154,6 +1154,42 @@ const AssessmentResultsNew = () => {
     toast.success('Item saved!');
   };
 
+  // Delete handlers for Good Items
+  const handleDeleteGoodItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-${itemIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.goodItems[key] = null; // Mark as deleted
+    setCustomizations(newCustomizations);
+    toast.success('Item deleted!');
+  };
+
+  // Delete handlers for Bad Items
+  const handleDeleteBadItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-${itemIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.badItems[key] = null; // Mark as deleted
+    setCustomizations(newCustomizations);
+    toast.success('Item deleted!');
+  };
+
+  // Delete handlers for Features
+  const handleDeleteFeature = (pillarId, featureIndex) => {
+    const key = `${pillarId}-feature-${featureIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.features[key] = null; // Mark as deleted
+    setCustomizations(newCustomizations);
+    toast.success('Feature deleted!');
+  };
+
+  // Delete handlers for Next Steps
+  const handleDeleteNextStep = (pillarId, stepIndex) => {
+    const key = `${pillarId}-${stepIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.nextSteps[key] = null; // Mark as deleted
+    setCustomizations(newCustomizations);
+    toast.success('Next step deleted!');
+  };
+
   // Edit handlers for features and next steps
   const handleEditFeature = (pillarId, featureIndex, feature) => {
     const key = `${pillarId}-${featureIndex}`;
@@ -1907,7 +1943,14 @@ const AssessmentResultsNew = () => {
                             data.theGood.slice(0, 4).map((item, idx) => {
                               const itemKey = `${pillar.id}-${idx}`;
                               const isEditing = editingGoodItem === itemKey;
-                              const displayText = customizations.goodItems[itemKey] || item;
+                              const displayText = customizations.goodItems[itemKey] !== undefined 
+                                ? customizations.goodItems[itemKey] 
+                                : item;
+                              
+                              // Skip deleted items
+                              if (customizations.goodItems[itemKey] === null) {
+                                return null;
+                              }
                               
                               return (
                               <div key={idx} style={{ 
@@ -1997,20 +2040,36 @@ const AssessmentResultsNew = () => {
                                       </button>
                                     </>
                                   ) : (
-                                    <button
-                                      onClick={() => handleEditGoodItem(pillar.id, idx, displayText)}
-                                      style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
-                                        background: '#3b82f6',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                      }}
-                                    >
-                                      Edit
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() => handleEditGoodItem(pillar.id, idx, displayText)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#3b82f6',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteGoodItem(pillar.id, idx)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#ef4444',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Delete
+                                      </button>
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -2054,7 +2113,14 @@ const AssessmentResultsNew = () => {
                             data.theBad.slice(0, 4).map((item, idx) => {
                               const itemKey = `${pillar.id}-${idx}`;
                               const isEditing = editingBadItem === itemKey;
-                              const displayText = customizations.badItems[itemKey] || item;
+                              const displayText = customizations.badItems[itemKey] !== undefined 
+                                ? customizations.badItems[itemKey] 
+                                : item;
+                              
+                              // Skip deleted items
+                              if (customizations.badItems[itemKey] === null) {
+                                return null;
+                              }
                               
                               return (
                               <div key={idx} style={{ 
@@ -2144,20 +2210,36 @@ const AssessmentResultsNew = () => {
                                       </button>
                                     </>
                                   ) : (
-                                    <button
-                                      onClick={() => handleEditBadItem(pillar.id, idx, displayText)}
-                                      style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
-                                        background: '#3b82f6',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                      }}
-                                    >
-                                      Edit
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() => handleEditBadItem(pillar.id, idx, displayText)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#3b82f6',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteBadItem(pillar.id, idx)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#ef4444',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Delete
+                                      </button>
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -2192,56 +2274,197 @@ const AssessmentResultsNew = () => {
                           gap: '16px',
                           marginBottom: '20px'
                         }}>
-                          {data.databricksFeatures.slice(0, 4).map((feature, idx) => (
+                          {data.databricksFeatures.slice(0, 4).map((feature, idx) => {
+                            const featureKey = `${pillar.id}-feature-${idx}`;
+                            const isEditing = editingFeature === featureKey;
+                            const displayFeature = customizations.features[featureKey] !== undefined 
+                              ? customizations.features[featureKey] 
+                              : feature;
+                            
+                            // Skip deleted items
+                            if (customizations.features[featureKey] === null) {
+                              return null;
+                            }
+                            
+                            return (
                             <div key={idx} style={{ 
                               background: 'white',
-                              border: '1px solid #bfdbfe',
+                              border: `1px solid ${isEditing ? '#3b82f6' : '#bfdbfe'}`,
                               borderRadius: '12px',
                               padding: '16px',
                               transition: 'all 0.2s ease',
-                              cursor: 'pointer'
+                              cursor: isEditing ? 'default' : 'pointer'
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.15)';
-                              e.currentTarget.style.borderColor = '#3b82f6';
+                              if (!isEditing) {
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.15)';
+                                e.currentTarget.style.borderColor = '#3b82f6';
+                              }
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.boxShadow = 'none';
-                              e.currentTarget.style.borderColor = '#bfdbfe';
+                              if (!isEditing) {
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.borderColor = '#bfdbfe';
+                              }
                             }}>
-                              <div style={{ 
-                                fontWeight: 700, 
-                                color: '#1e40af', 
-                                marginBottom: '6px',
-                                fontSize: '0.95rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                              }}>
-                                <span style={{ fontSize: '1.1rem' }}>📦</span> {feature.name}
-                              </div>
-                              <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.4' }}>
-                                {feature.description}
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
-                                {feature.releaseDate && (
-                                  <span style={{ color: '#10b981', fontWeight: 600 }}>
-                                    {feature.releaseDate}
-                                  </span>
-                                )}
-                                {feature.docs && (
-                                  <a 
-                                    href={feature.docs} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}
-                                  >
-                                    📚 Docs →
-                                  </a>
-                                )}
-                              </div>
+                              {isEditing ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                  <input
+                                    value={editedContent[`${featureKey}-name`] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [`${featureKey}-name`]: e.target.value
+                                    })}
+                                    placeholder="Feature name"
+                                    style={{
+                                      fontWeight: 700,
+                                      fontSize: '0.95rem',
+                                      padding: '6px',
+                                      border: '1px solid #3b82f6',
+                                      borderRadius: '4px'
+                                    }}
+                                  />
+                                  <textarea
+                                    value={editedContent[`${featureKey}-desc`] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [`${featureKey}-desc`]: e.target.value
+                                    })}
+                                    placeholder="Description"
+                                    style={{
+                                      fontSize: '0.8rem',
+                                      padding: '6px',
+                                      border: '1px solid #3b82f6',
+                                      borderRadius: '4px',
+                                      resize: 'vertical',
+                                      minHeight: '60px',
+                                      fontFamily: 'inherit'
+                                    }}
+                                  />
+                                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                    <button
+                                      onClick={() => {
+                                        setCustomizations({
+                                          ...customizations,
+                                          features: {
+                                            ...customizations.features,
+                                            [featureKey]: {
+                                              name: editedContent[`${featureKey}-name`],
+                                              description: editedContent[`${featureKey}-desc`],
+                                              releaseDate: feature.releaseDate,
+                                              docs: feature.docs
+                                            }
+                                          }
+                                        });
+                                        setEditingFeature(null);
+                                        toast.success('Feature saved!');
+                                      }}
+                                      style={{
+                                        padding: '4px 12px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingFeature(null)}
+                                      style={{
+                                        padding: '4px 12px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <div style={{ 
+                                    fontWeight: 700, 
+                                    color: '#1e40af', 
+                                    marginBottom: '6px',
+                                    fontSize: '0.95rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '6px'
+                                  }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <span style={{ fontSize: '1.1rem' }}>📦</span> {displayFeature.name}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                      <button
+                                        onClick={() => {
+                                          setEditingFeature(featureKey);
+                                          setEditedContent({
+                                            ...editedContent,
+                                            [`${featureKey}-name`]: displayFeature.name,
+                                            [`${featureKey}-desc`]: displayFeature.description
+                                          });
+                                        }}
+                                        style={{
+                                          padding: '3px 8px',
+                                          fontSize: '0.7rem',
+                                          background: '#3b82f6',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteFeature(pillar.id, idx)}
+                                        style={{
+                                          padding: '3px 8px',
+                                          fontSize: '0.7rem',
+                                          background: '#ef4444',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.4' }}>
+                                    {displayFeature.description}
+                                  </div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                                    {displayFeature.releaseDate && (
+                                      <span style={{ color: '#10b981', fontWeight: 600 }}>
+                                        {displayFeature.releaseDate}
+                                      </span>
+                                    )}
+                                    {displayFeature.docs && (
+                                      <a 
+                                        href={displayFeature.docs} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}
+                                      >
+                                        📚 Docs →
+                                      </a>
+                                    )}
+                                  </div>
+                                </>
+                              )}
                             </div>
-                          ))}
+                          )}
+                          )}
                         </div>
                         
                         {/* Detailed Technical Recommendations */}
@@ -2340,10 +2563,22 @@ const AssessmentResultsNew = () => {
                           flexDirection: 'column',
                           gap: '12px'
                         }}>
-                          {data.specificRecommendations.slice(0, 4).map((rec, idx) => (
+                          {data.specificRecommendations.slice(0, 4).map((rec, idx) => {
+                            const stepKey = `${pillar.id}-${idx}`;
+                            const isEditing = editingNextStep === stepKey;
+                            const displayStep = customizations.nextSteps[stepKey] !== undefined 
+                              ? customizations.nextSteps[stepKey] 
+                              : rec;
+                            
+                            // Skip deleted items
+                            if (customizations.nextSteps[stepKey] === null) {
+                              return null;
+                            }
+                            
+                            return (
                             <div key={idx} style={{ 
                               background: 'white',
-                              border: '1px solid #fcd34d',
+                              border: `1px solid ${isEditing ? '#f59e0b' : '#fcd34d'}`,
                               borderRadius: '10px',
                               padding: '14px 16px',
                               fontSize: '0.87rem',
@@ -2355,14 +2590,18 @@ const AssessmentResultsNew = () => {
                               transition: 'all 0.2s ease'
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.boxShadow = '0 2px 8px rgba(251, 191, 36, 0.2)';
-                              e.currentTarget.style.borderColor = '#fbbf24';
-                              e.currentTarget.style.transform = 'translateX(4px)';
+                              if (!isEditing) {
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(251, 191, 36, 0.2)';
+                                e.currentTarget.style.borderColor = '#fbbf24';
+                                e.currentTarget.style.transform = 'translateX(4px)';
+                              }
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.boxShadow = 'none';
-                              e.currentTarget.style.borderColor = '#fcd34d';
-                              e.currentTarget.style.transform = 'translateX(0)';
+                              if (!isEditing) {
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.borderColor = '#fcd34d';
+                                e.currentTarget.style.transform = 'translateX(0)';
+                              }
                             }}>
                               <span style={{ 
                                 color: '#f59e0b', 
@@ -2372,9 +2611,112 @@ const AssessmentResultsNew = () => {
                                 flexShrink: 0,
                                 marginTop: '-2px'
                               }}>→</span>
-                              <span style={{ flex: 1 }}>{rec}</span>
+                              {isEditing ? (
+                                <textarea
+                                  value={editedContent[stepKey] || ''}
+                                  onChange={(e) => setEditedContent({
+                                    ...editedContent,
+                                    [stepKey]: e.target.value
+                                  })}
+                                  style={{
+                                    flex: 1,
+                                    border: '1px solid #f59e0b',
+                                    borderRadius: '6px',
+                                    padding: '8px',
+                                    fontSize: '0.87rem',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical',
+                                    minHeight: '60px',
+                                    color: '#78350f'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ flex: 1 }}>{displayStep}</span>
+                              )}
+                              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto', flexShrink: 0 }}>
+                                {isEditing ? (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setCustomizations({
+                                          ...customizations,
+                                          nextSteps: {
+                                            ...customizations.nextSteps,
+                                            [stepKey]: editedContent[stepKey]
+                                          }
+                                        });
+                                        setEditingNextStep(null);
+                                        toast.success('Next step saved!');
+                                      }}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#f59e0b',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingNextStep(null)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setEditingNextStep(stepKey);
+                                        setEditedContent({
+                                          ...editedContent,
+                                          [stepKey]: displayStep
+                                        });
+                                      }}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteNextStep(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          ))}
+                          )}
+                          )}
                         </div>
                       </div>
                     )}

@@ -97,3 +97,4 @@ console.log(`✅ Written to: ${migrationFile}`);
 console.log(`\n🚀 Run this migration to fix the identical reports bug!`);
 console.log(`   node server/scripts/setupDatabase.js`);
 
+

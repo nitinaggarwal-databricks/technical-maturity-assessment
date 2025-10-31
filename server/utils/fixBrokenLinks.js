@@ -68,3 +68,4 @@ for (const [broken, fixed] of Object.entries(brokenLinks)) {
 fs.writeFileSync(filePath, content, 'utf8');
 console.log(`\n🎉 Fixed ${replacements} broken documentation links!`);
 
+
