@@ -1301,6 +1301,27 @@ const AssessmentResultsNew = () => {
     toast.success('Metric updated!');
   };
 
+  const handleDeleteImpactMetric = (metricKey) => {
+    setCustomizations({
+      ...customizations,
+      impactMetrics: {
+        ...customizations.impactMetrics,
+        [metricKey]: null // Mark as deleted
+      }
+    });
+    toast.success('Metric deleted!');
+  };
+
+  const handleDeleteNewImpactMetric = (index) => {
+    const newMetrics = [...customizations.newImpactMetrics];
+    newMetrics.splice(index, 1);
+    setCustomizations({
+      ...customizations,
+      newImpactMetrics: newMetrics
+    });
+    toast.success('Metric deleted!');
+  };
+
   // Add handlers for new items
   const handleAddGoodItem = (pillarId) => {
     setAddingGoodItem(pillarId);
@@ -3417,6 +3438,27 @@ const AssessmentResultsNew = () => {
           <RoadmapSection>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <SectionTitle style={{ marginBottom: 0 }}>Strategic Roadmap & Next Steps</SectionTitle>
+              <button
+                onClick={() => alert('Add new phase functionality - coming soon! Each phase already has individual edit buttons.')}
+                style={{
+                  background: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '1.3rem',
+                  fontWeight: 'bold',
+                  lineHeight: '1'
+                }}
+                title="Add new phase"
+              >
+                +
+              </button>
             </div>
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
               {resultsData?.maturitySummary?.roadmapIntro || 
@@ -3528,6 +3570,11 @@ const AssessmentResultsNew = () => {
                 const isEditing = editingImpactMetric === metricKey;
                 const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.decisionSpeed || { value: '2.8×', label: 'Increase in analytics-driven decision-making speed', drivers: [] };
                 
+                // Skip if deleted
+                if (customizations.impactMetrics[metricKey] === null) {
+                  return null;
+                }
+                
                 return (
                   <MetricCard
                     initial={{ opacity: 0, y: 20 }}
@@ -3609,23 +3656,36 @@ const AssessmentResultsNew = () => {
                       </div>
                     ) : (
                       <>
-                        <button
-                          onClick={() => handleEditImpactMetric(metricKey, metric)}
-                          style={{
-                            position: 'absolute',
-                            top: '12px',
-                            right: '12px',
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleEditImpactMetric(metricKey, metric)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                         <div className="metric-value">{metric.value}</div>
                         <div className="metric-label">{metric.label}</div>
                         {metric.drivers && metric.drivers.length > 0 && (
@@ -3644,6 +3704,11 @@ const AssessmentResultsNew = () => {
                 const metricKey = 'costOptimization';
                 const isEditing = editingImpactMetric === metricKey;
                 const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.costOptimization || { value: '6%', label: 'Average cost optimization through platform automation', drivers: [] };
+                
+                // Skip if deleted
+                if (customizations.impactMetrics[metricKey] === null) {
+                  return null;
+                }
                 
                 return (
                   <MetricCard
@@ -3726,23 +3791,36 @@ const AssessmentResultsNew = () => {
                       </div>
                     ) : (
                       <>
-                        <button
-                          onClick={() => handleEditImpactMetric(metricKey, metric)}
-                          style={{
-                            position: 'absolute',
-                            top: '12px',
-                            right: '12px',
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleEditImpactMetric(metricKey, metric)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                         <div className="metric-value">{metric.value}</div>
                         <div className="metric-label">{metric.label}</div>
                         {metric.drivers && metric.drivers.length > 0 && (
@@ -3761,6 +3839,11 @@ const AssessmentResultsNew = () => {
                 const metricKey = 'manualOverhead';
                 const isEditing = editingImpactMetric === metricKey;
                 const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.manualOverhead || { value: '30%', label: 'Reduction in manual operational overhead', drivers: [] };
+                
+                // Skip if deleted
+                if (customizations.impactMetrics[metricKey] === null) {
+                  return null;
+                }
                 
                 return (
                   <MetricCard
@@ -3843,23 +3926,36 @@ const AssessmentResultsNew = () => {
                       </div>
                     ) : (
                       <>
-                        <button
-                          onClick={() => handleEditImpactMetric(metricKey, metric)}
-                          style={{
-                            position: 'absolute',
-                            top: '12px',
-                            right: '12px',
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleEditImpactMetric(metricKey, metric)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                         <div className="metric-value">{metric.value}</div>
                         <div className="metric-label">{metric.label}</div>
                         {metric.drivers && metric.drivers.length > 0 && (
@@ -3883,6 +3979,23 @@ const AssessmentResultsNew = () => {
                   transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
                   style={{ position: 'relative' }}
                 >
+                  <button
+                    onClick={() => handleDeleteNewImpactMetric(idx)}
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      padding: '6px 12px',
+                      fontSize: '0.75rem',
+                      background: '#ef4444',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Delete
+                  </button>
                   <div className="metric-value">{newMetric.value}</div>
                   <div className="metric-label">{newMetric.label}</div>
                   {newMetric.drivers && newMetric.drivers.length > 0 && (
