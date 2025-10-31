@@ -32,11 +32,12 @@ const AssessmentContainer = styled.div`
 const ContentWrapper = styled.div`
   flex: 1;
   margin-left: 350px;
-  height: 100%;
+  height: calc(100vh - 68px);
   max-width: calc(100vw - 370px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 `;
 
 const ScrollableContent = styled.div`
@@ -353,6 +354,10 @@ const NavigationSection = styled.div`
   border-top: 2px solid #e5e7eb;
   flex-shrink: 0;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  margin-top: auto;
 `;
 
 const NavButton = styled(motion.button)`
