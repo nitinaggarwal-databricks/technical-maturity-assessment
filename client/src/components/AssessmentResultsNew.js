@@ -906,6 +906,8 @@ const AssessmentResultsNew = () => {
   const [editingPhase, setEditingPhase] = useState(null);
   const [editingFeature, setEditingFeature] = useState(null); // Track which feature is being edited
   const [editingNextStep, setEditingNextStep] = useState(null); // Track which next step is being edited
+  const [editingGoodItem, setEditingGoodItem] = useState(null); // Track which "What's Working" item is being edited
+  const [editingBadItem, setEditingBadItem] = useState(null); // Track which "Key Challenge" item is being edited
   const [editedContent, setEditedContent] = useState({});
   const [customizations, setCustomizations] = useState({
     title: '',
@@ -913,7 +915,9 @@ const AssessmentResultsNew = () => {
     pillars: {},
     phases: {},
     features: {},
-    nextSteps: {}
+    nextSteps: {},
+    goodItems: {}, // { pillarId_index: text }
+    badItems: {} // { pillarId_index: text }
   });
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
@@ -1110,6 +1114,44 @@ const AssessmentResultsNew = () => {
     } finally {
       setExporting(false);
     }
+  };
+
+  // Edit handlers for Good Items ("What's Working")
+  const handleEditGoodItem = (pillarId, itemIndex, text) => {
+    const key = `${pillarId}-${itemIndex}`;
+    setEditingGoodItem(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: text
+    });
+  };
+
+  const handleSaveGoodItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-${itemIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.goodItems[key] = editedContent[key];
+    setCustomizations(newCustomizations);
+    setEditingGoodItem(null);
+    toast.success('Item saved!');
+  };
+
+  // Edit handlers for Bad Items ("Key Challenges")
+  const handleEditBadItem = (pillarId, itemIndex, text) => {
+    const key = `${pillarId}-${itemIndex}`;
+    setEditingBadItem(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: text
+    });
+  };
+
+  const handleSaveBadItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-${itemIndex}`;
+    const newCustomizations = { ...customizations };
+    newCustomizations.badItems[key] = editedContent[key];
+    setCustomizations(newCustomizations);
+    setEditingBadItem(null);
+    toast.success('Item saved!');
   };
 
   // Edit handlers for features and next steps
@@ -1862,10 +1904,15 @@ const AssessmentResultsNew = () => {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theGood.length > 0 ? (
-                            data.theGood.slice(0, 4).map((item, idx) => (
+                            data.theGood.slice(0, 4).map((item, idx) => {
+                              const itemKey = `${pillar.id}-${idx}`;
+                              const isEditing = editingGoodItem === itemKey;
+                              const displayText = customizations.goodItems[itemKey] || item;
+                              
+                              return (
                               <div key={idx} style={{ 
                                 background: 'white',
-                                border: '1px solid #bbf7d0',
+                                border: `1px solid ${isEditing ? '#22c55e' : '#bbf7d0'}`,
                                 borderRadius: '10px',
                                 padding: '12px 14px',
                                 fontSize: '0.88rem',
@@ -1877,12 +1924,16 @@ const AssessmentResultsNew = () => {
                                 transition: 'all 0.2s ease'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(34, 197, 94, 0.15)';
-                                e.currentTarget.style.borderColor = '#22c55e';
+                                if (!isEditing) {
+                                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(34, 197, 94, 0.15)';
+                                  e.currentTarget.style.borderColor = '#22c55e';
+                                }
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.borderColor = '#bbf7d0';
+                                if (!isEditing) {
+                                  e.currentTarget.style.boxShadow = 'none';
+                                  e.currentTarget.style.borderColor = '#bbf7d0';
+                                }
                               }}>
                                 <span style={{ 
                                   color: '#22c55e', 
@@ -1892,9 +1943,78 @@ const AssessmentResultsNew = () => {
                                   flexShrink: 0,
                                   marginTop: '2px'
                                 }}>✓</span>
-                                <span style={{ flex: 1 }}>{item}</span>
+                                {isEditing ? (
+                                  <textarea
+                                    value={editedContent[itemKey] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [itemKey]: e.target.value
+                                    })}
+                                    style={{
+                                      flex: 1,
+                                      border: '1px solid #22c55e',
+                                      borderRadius: '6px',
+                                      padding: '8px',
+                                      fontSize: '0.88rem',
+                                      fontFamily: 'inherit',
+                                      resize: 'vertical',
+                                      minHeight: '60px'
+                                    }}
+                                  />
+                                ) : (
+                                  <span style={{ flex: 1 }}>{displayText}</span>
+                                )}
+                                <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                                  {isEditing ? (
+                                    <>
+                                      <button
+                                        onClick={() => handleSaveGoodItem(pillar.id, idx)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#22c55e',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingGoodItem(null)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#9ca3af',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      onClick={() => handleEditGoodItem(pillar.id, idx, displayText)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                            ))
+                            )})
                           ) : (
                             <div style={{ 
                               padding: '12px', 
@@ -1931,10 +2051,15 @@ const AssessmentResultsNew = () => {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theBad.length > 0 ? (
-                            data.theBad.slice(0, 4).map((item, idx) => (
+                            data.theBad.slice(0, 4).map((item, idx) => {
+                              const itemKey = `${pillar.id}-${idx}`;
+                              const isEditing = editingBadItem === itemKey;
+                              const displayText = customizations.badItems[itemKey] || item;
+                              
+                              return (
                               <div key={idx} style={{ 
                                 background: 'white',
-                                border: '1px solid #fecaca',
+                                border: `1px solid ${isEditing ? '#ef4444' : '#fecaca'}`,
                                 borderRadius: '10px',
                                 padding: '12px 14px',
                                 fontSize: '0.88rem',
@@ -1946,12 +2071,16 @@ const AssessmentResultsNew = () => {
                                 transition: 'all 0.2s ease'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.15)';
-                                e.currentTarget.style.borderColor = '#ef4444';
+                                if (!isEditing) {
+                                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.15)';
+                                  e.currentTarget.style.borderColor = '#ef4444';
+                                }
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.borderColor = '#fecaca';
+                                if (!isEditing) {
+                                  e.currentTarget.style.boxShadow = 'none';
+                                  e.currentTarget.style.borderColor = '#fecaca';
+                                }
                               }}>
                                 <span style={{ 
                                   color: '#ef4444', 
@@ -1961,9 +2090,78 @@ const AssessmentResultsNew = () => {
                                   flexShrink: 0,
                                   marginTop: '2px'
                                 }}>⚠</span>
-                                <span style={{ flex: 1 }}>{item}</span>
+                                {isEditing ? (
+                                  <textarea
+                                    value={editedContent[itemKey] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [itemKey]: e.target.value
+                                    })}
+                                    style={{
+                                      flex: 1,
+                                      border: '1px solid #ef4444',
+                                      borderRadius: '6px',
+                                      padding: '8px',
+                                      fontSize: '0.88rem',
+                                      fontFamily: 'inherit',
+                                      resize: 'vertical',
+                                      minHeight: '60px'
+                                    }}
+                                  />
+                                ) : (
+                                  <span style={{ flex: 1 }}>{displayText}</span>
+                                )}
+                                <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                                  {isEditing ? (
+                                    <>
+                                      <button
+                                        onClick={() => handleSaveBadItem(pillar.id, idx)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#ef4444',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingBadItem(null)}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontSize: '0.75rem',
+                                          background: '#9ca3af',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      onClick={() => handleEditBadItem(pillar.id, idx, displayText)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                            ))
+                            )})
                           ) : (
                             <div style={{ 
                               padding: '12px', 
