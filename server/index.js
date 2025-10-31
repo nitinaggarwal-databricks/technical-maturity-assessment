@@ -1079,8 +1079,38 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     areasWithResponses.forEach(area => {
       const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
       console.log(`🔍 DEBUG: Area ${area.id} - areaScore from recommendations:`, areaScore);
-      const currentScore = areaScore.current || 0;
-      const futureScore = areaScore.future || 0;
+      
+      // 🔥 FIX: Calculate scores from ACTUAL responses if OpenAI didn't provide them
+      let currentScore = areaScore.current || 0;
+      let futureScore = areaScore.future || 0;
+      
+      // If OpenAI scores are 0/missing, calculate from actual responses
+      if (currentScore === 0 && futureScore === 0) {
+        console.log(`⚠️ OpenAI scores missing for ${area.id}, calculating from responses...`);
+        let currentSum = 0;
+        let futureSum = 0;
+        let questionCount = 0;
+        
+        area.dimensions.forEach(dimension => {
+          dimension.questions.forEach(question => {
+            const currentKey = `${question.id}_current_state`;
+            const futureKey = `${question.id}_future_state`;
+            
+            if (assessment.responses[currentKey] !== undefined) {
+              currentSum += assessment.responses[currentKey];
+              futureSum += assessment.responses[futureKey] || assessment.responses[currentKey];
+              questionCount++;
+            }
+          });
+        });
+        
+        if (questionCount > 0) {
+          currentScore = currentSum / questionCount;
+          futureScore = futureSum / questionCount;
+          console.log(`✅ Calculated scores for ${area.id}: current=${currentScore.toFixed(2)}, future=${futureScore.toFixed(2)}`);
+        }
+      }
+      
       const isCompleted = assessment.completedCategories.includes(area.id);
       
       // Calculate questions answered for this pillar AND dimension-level scores
