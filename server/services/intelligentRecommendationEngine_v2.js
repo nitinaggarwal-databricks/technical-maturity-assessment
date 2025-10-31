@@ -375,29 +375,15 @@ class IntelligentRecommendationEngine {
     
     // Use the first (most relevant) keyword match
     const keywordData = this.keywordMap[keywords[0]];
-    const primaryFeature = keywordData.features[0];
-    const secondaryFeature = keywordData.features[1] || keywordData.features[0];
-    
-    // Generate API-level technical recommendations
-    const apiRecommendations = this.generateTechnicalImplementation(primaryFeature, secondaryFeature, painPoint.label, keywordData.category);
     
     return {
       problem: painPoint.label,
-      solution: `${keywordData.solution} — Implementation requires Databricks API expertise, infrastructure-as-code patterns, and production deployment experience.`,
+      solution: `${keywordData.solution}`,
       recommendations: [
-        `**Technical Implementation for ${painPoint.label}**:`,
-        ...apiRecommendations.steps,
-        `**Complexity**: ${apiRecommendations.complexity}`,
-        `**Prerequisites**: ${apiRecommendations.prerequisites}`
+        `Recommended Databricks products/features: ${keywordData.features.join(', ')}`
       ],
-      databricks_features: keywordData.features,
-      next_steps: [
-        `Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate approach and integration points`,
-        `API Configuration: Implement ${primaryFeature} using REST API \`/api/2.1/...\` with OAuth 2.0 service principals and RBAC (1-2 weeks)`,
-        `Infrastructure-as-Code: Deploy via Databricks Asset Bundles or Terraform provider with CI/CD pipeline integration (2-3 weeks)`,
-        `Testing & Validation: Load testing, security scanning, compliance validation in non-prod environment (1 week)`,
-        `Production Deployment: Blue-green deployment with monitoring, alerting, and runbooks (1 week + ongoing support)`
-      ]
+      databricks_features: keywordData.features
+      // Note: High-level Next Steps are handled by buildContextualNextSteps() using nextStepsLibrary
     };
   }
   
@@ -566,19 +552,9 @@ class IntelligentRecommendationEngine {
       recommendations: [
         `**Technical Architecture for ${painPoint.label}**:`,
         ...defaults.apiEndpoints,
-        ``,
-        `**Implementation Complexity**: ${defaults.complexity}`,
-        `**Latest Features**: ${defaults.latestFeature}`,
-        `**Deliverables**: Architecture design docs, Terraform/DAB configs, CI/CD pipelines, runbooks, team training`
       ],
-      databricks_features: defaults.features,
-      next_steps: [
-        `Architecture Workshop: 4-hour design session with Databricks Solutions Architect + Cloud Architect to validate approach`,
-        `API Integration: Implement core APIs using OAuth 2.0 service principals, with error handling and retry logic (2-3 weeks)`,
-        `Infrastructure-as-Code: Deploy via Databricks Asset Bundles or Terraform with dev/staging/prod environments (2-3 weeks)`,
-        `CI/CD Pipeline: GitHub Actions or GitLab CI with automated testing, security scans, and blue-green deployment (1-2 weeks)`,
-        `Production Deployment: Load testing (>1000 req/sec), monitoring setup (PagerDuty/DataDog), runbook creation (1 week)`
-      ]
+      databricks_features: defaults.features
+      // Note: High-level Next Steps are handled by buildContextualNextSteps() using nextStepsLibrary
     };
   }
   
