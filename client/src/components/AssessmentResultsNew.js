@@ -908,6 +908,10 @@ const AssessmentResultsNew = () => {
   const [editingNextStep, setEditingNextStep] = useState(null); // Track which next step is being edited
   const [editingGoodItem, setEditingGoodItem] = useState(null); // Track which "What's Working" item is being edited
   const [editingBadItem, setEditingBadItem] = useState(null); // Track which "Key Challenge" item is being edited
+  const [addingGoodItem, setAddingGoodItem] = useState(null); // Track which pillar is adding a new "What's Working" item
+  const [addingBadItem, setAddingBadItem] = useState(null); // Track which pillar is adding a new "Key Challenge" item
+  const [addingFeature, setAddingFeature] = useState(null); // Track which pillar is adding a new feature
+  const [addingNextStep, setAddingNextStep] = useState(null); // Track which pillar is adding a new next step
   const [editedContent, setEditedContent] = useState({});
   const [customizations, setCustomizations] = useState({
     title: '',
@@ -917,7 +921,11 @@ const AssessmentResultsNew = () => {
     features: {},
     nextSteps: {},
     goodItems: {}, // { pillarId_index: text }
-    badItems: {} // { pillarId_index: text }
+    badItems: {}, // { pillarId_index: text }
+    newGoodItems: {}, // { pillarId: [array of new items] }
+    newBadItems: {}, // { pillarId: [array of new items] }
+    newFeatures: {}, // { pillarId: [array of new features] }
+    newNextSteps: {} // { pillarId: [array of new next steps] }
   });
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
@@ -1188,6 +1196,115 @@ const AssessmentResultsNew = () => {
     newCustomizations.nextSteps[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
     toast.success('Next step deleted!');
+  };
+
+  // Add handlers for new items
+  const handleAddGoodItem = (pillarId) => {
+    setAddingGoodItem(pillarId);
+    setEditedContent({
+      ...editedContent,
+      [`new-good-${pillarId}`]: ''
+    });
+  };
+
+  const handleSaveNewGoodItem = (pillarId) => {
+    const newText = editedContent[`new-good-${pillarId}`];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newGoodItems[pillarId]) {
+      newCustomizations.newGoodItems[pillarId] = [];
+    }
+    newCustomizations.newGoodItems[pillarId].push(newText.trim());
+    setCustomizations(newCustomizations);
+    setAddingGoodItem(null);
+    toast.success('Item added!');
+  };
+
+  const handleAddBadItem = (pillarId) => {
+    setAddingBadItem(pillarId);
+    setEditedContent({
+      ...editedContent,
+      [`new-bad-${pillarId}`]: ''
+    });
+  };
+
+  const handleSaveNewBadItem = (pillarId) => {
+    const newText = editedContent[`new-bad-${pillarId}`];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newBadItems[pillarId]) {
+      newCustomizations.newBadItems[pillarId] = [];
+    }
+    newCustomizations.newBadItems[pillarId].push(newText.trim());
+    setCustomizations(newCustomizations);
+    setAddingBadItem(null);
+    toast.success('Challenge added!');
+  };
+
+  const handleAddFeature = (pillarId) => {
+    setAddingFeature(pillarId);
+    setEditedContent({
+      ...editedContent,
+      [`new-feature-${pillarId}-name`]: '',
+      [`new-feature-${pillarId}-desc`]: ''
+    });
+  };
+
+  const handleSaveNewFeature = (pillarId) => {
+    const newName = editedContent[`new-feature-${pillarId}-name`];
+    const newDesc = editedContent[`new-feature-${pillarId}-desc`];
+    
+    if (!newName || !newName.trim()) {
+      toast.error('Please enter a feature name');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newFeatures[pillarId]) {
+      newCustomizations.newFeatures[pillarId] = [];
+    }
+    newCustomizations.newFeatures[pillarId].push({
+      name: newName.trim(),
+      description: newDesc?.trim() || '',
+      releaseDate: null,
+      docs: null
+    });
+    setCustomizations(newCustomizations);
+    setAddingFeature(null);
+    toast.success('Feature added!');
+  };
+
+  const handleAddNextStep = (pillarId) => {
+    setAddingNextStep(pillarId);
+    setEditedContent({
+      ...editedContent,
+      [`new-nextstep-${pillarId}`]: ''
+    });
+  };
+
+  const handleSaveNewNextStep = (pillarId) => {
+    const newText = editedContent[`new-nextstep-${pillarId}`];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    if (!newCustomizations.newNextSteps[pillarId]) {
+      newCustomizations.newNextSteps[pillarId] = [];
+    }
+    newCustomizations.newNextSteps[pillarId].push(newText.trim());
+    setCustomizations(newCustomizations);
+    setAddingNextStep(null);
+    toast.success('Next step added!');
   };
 
   // Edit handlers for features and next steps
@@ -1927,7 +2044,7 @@ const AssessmentResultsNew = () => {
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
-                          gap: '8px',
+                          justifyContent: 'space-between',
                           marginBottom: '16px',
                           color: '#166534',
                           fontSize: '0.95rem',
@@ -1935,8 +2052,31 @@ const AssessmentResultsNew = () => {
                           textTransform: 'uppercase',
                           letterSpacing: '0.05em'
                         }}>
-                          <FiCheckCircle size={20} />
-                          What's Working
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FiCheckCircle size={20} />
+                            What's Working
+                          </div>
+                          <button
+                            onClick={() => handleAddGoodItem(pillar.id)}
+                            style={{
+                              background: '#22c55e',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              lineHeight: '1'
+                            }}
+                            title="Add new item"
+                          >
+                            +
+                          </button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theGood.length > 0 ? (
@@ -2084,6 +2224,95 @@ const AssessmentResultsNew = () => {
                               Complete assessment to see strengths
                             </div>
                           )}
+                          
+                          {/* Render newly added items */}
+                          {customizations.newGoodItems[pillar.id] && customizations.newGoodItems[pillar.id].map((newItem, idx) => (
+                            <div key={`new-${idx}`} style={{ 
+                              background: 'white',
+                              border: '1px solid #bbf7d0',
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              fontSize: '0.88rem',
+                              color: '#15803d',
+                              lineHeight: '1.6',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '10px'
+                            }}>
+                              <span style={{ 
+                                color: '#22c55e', 
+                                fontWeight: 700,
+                                fontSize: '1.1rem',
+                                lineHeight: '1',
+                                flexShrink: 0,
+                                marginTop: '2px'
+                              }}>✓</span>
+                              <span style={{ flex: 1 }}>{newItem}</span>
+                            </div>
+                          ))}
+                          
+                          {/* Form for adding new item */}
+                          {addingGoodItem === pillar.id && (
+                            <div style={{ 
+                              background: 'white',
+                              border: '2px solid #22c55e',
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '10px'
+                            }}>
+                              <textarea
+                                value={editedContent[`new-good-${pillar.id}`] || ''}
+                                onChange={(e) => setEditedContent({
+                                  ...editedContent,
+                                  [`new-good-${pillar.id}`]: e.target.value
+                                })}
+                                placeholder="Enter what's working well..."
+                                style={{
+                                  border: '1px solid #22c55e',
+                                  borderRadius: '6px',
+                                  padding: '8px',
+                                  fontSize: '0.88rem',
+                                  fontFamily: 'inherit',
+                                  resize: 'vertical',
+                                  minHeight: '60px'
+                                }}
+                                autoFocus
+                              />
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => handleSaveNewGoodItem(pillar.id)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#22c55e',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 600
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setAddingGoodItem(null)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#9ca3af',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -2097,7 +2326,7 @@ const AssessmentResultsNew = () => {
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
-                          gap: '8px',
+                          justifyContent: 'space-between',
                           marginBottom: '16px',
                           color: '#991b1b',
                           fontSize: '0.95rem',
@@ -2105,8 +2334,31 @@ const AssessmentResultsNew = () => {
                           textTransform: 'uppercase',
                           letterSpacing: '0.05em'
                         }}>
-                          <FiAlertTriangle size={20} />
-                          KEY CHALLENGES
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FiAlertTriangle size={20} />
+                            KEY CHALLENGES
+                          </div>
+                          <button
+                            onClick={() => handleAddBadItem(pillar.id)}
+                            style={{
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              lineHeight: '1'
+                            }}
+                            title="Add new challenge"
+                          >
+                            +
+                          </button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theBad.length > 0 ? (
@@ -2254,6 +2506,95 @@ const AssessmentResultsNew = () => {
                               Complete assessment to see gaps
                             </div>
                           )}
+                          
+                          {/* Render newly added items */}
+                          {customizations.newBadItems[pillar.id] && customizations.newBadItems[pillar.id].map((newItem, idx) => (
+                            <div key={`new-${idx}`} style={{ 
+                              background: 'white',
+                              border: '1px solid #fecaca',
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              fontSize: '0.88rem',
+                              color: '#991b1b',
+                              lineHeight: '1.6',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '10px'
+                            }}>
+                              <span style={{ 
+                                color: '#ef4444', 
+                                fontWeight: 700,
+                                fontSize: '1.1rem',
+                                lineHeight: '1',
+                                flexShrink: 0,
+                                marginTop: '2px'
+                              }}>⚠</span>
+                              <span style={{ flex: 1 }}>{newItem}</span>
+                            </div>
+                          ))}
+                          
+                          {/* Form for adding new item */}
+                          {addingBadItem === pillar.id && (
+                            <div style={{ 
+                              background: 'white',
+                              border: '2px solid #ef4444',
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '10px'
+                            }}>
+                              <textarea
+                                value={editedContent[`new-bad-${pillar.id}`] || ''}
+                                onChange={(e) => setEditedContent({
+                                  ...editedContent,
+                                  [`new-bad-${pillar.id}`]: e.target.value
+                                })}
+                                placeholder="Enter a key challenge or gap..."
+                                style={{
+                                  border: '1px solid #ef4444',
+                                  borderRadius: '6px',
+                                  padding: '8px',
+                                  fontSize: '0.88rem',
+                                  fontFamily: 'inherit',
+                                  resize: 'vertical',
+                                  minHeight: '60px'
+                                }}
+                                autoFocus
+                              />
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => handleSaveNewBadItem(pillar.id)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 600
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setAddingBadItem(null)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    background: '#9ca3af',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </PillarTopRow>
@@ -2261,9 +2602,32 @@ const AssessmentResultsNew = () => {
                     {/* Full Width: Databricks Recommendations */}
                     <PillarFullWidth>
                   <PillarColumn $color="#3b82f6">
-                    <div className="column-title">
-                      <FiInfo />
-                      {data.databricksFeatures && data.databricksFeatures.length > 0 ? 'Databricks Recommendations' : 'Recommendations'}
+                    <div className="column-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FiInfo />
+                        {data.databricksFeatures && data.databricksFeatures.length > 0 ? 'Databricks Recommendations' : 'Recommendations'}
+                      </div>
+                      <button
+                        onClick={() => handleAddFeature(pillar.id)}
+                        style={{
+                          background: '#3b82f6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: '1.2rem',
+                          fontWeight: 'bold',
+                          lineHeight: '1'
+                        }}
+                        title="Add new feature"
+                      >
+                        +
+                      </button>
                     </div>
                     {data.databricksFeatures && data.databricksFeatures.length > 0 ? (
                       <div>
