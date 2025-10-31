@@ -1326,6 +1326,44 @@ const AssessmentResultsNew = () => {
     toast.success('Metric deleted!');
   };
 
+  const handleEditNewImpactMetric = (metricIndex, metric) => {
+    const key = `new-metric-${metricIndex}`;
+    setEditingImpactMetric(key);
+    setEditedContent({
+      ...editedContent,
+      [`${key}-value`]: metric.value,
+      [`${key}-label`]: metric.label,
+      [`${key}-drivers`]: metric.drivers?.join(', ') || ''
+    });
+  };
+
+  const handleSaveNewImpactMetric = (metricIndex) => {
+    const key = `new-metric-${metricIndex}`;
+    const newValue = editedContent[`${key}-value`];
+    const newLabel = editedContent[`${key}-label`];
+    const newDrivers = editedContent[`${key}-drivers`];
+    
+    if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
+      toast.error('Please enter metric value and label');
+      return;
+    }
+    
+    const driversArray = newDrivers ? newDrivers.split(',').map(d => d.trim()).filter(d => d) : [];
+    const newMetrics = [...customizations.newImpactMetrics];
+    newMetrics[metricIndex] = {
+      value: newValue.trim(),
+      label: newLabel.trim(),
+      drivers: driversArray
+    };
+    
+    setCustomizations({
+      ...customizations,
+      newImpactMetrics: newMetrics
+    });
+    setEditingImpactMetric(null);
+    toast.success('Metric updated!');
+  };
+
   // Edit handlers for newly added items
   const handleEditNewGoodItem = (pillarId, itemIndex, text) => {
     const key = `${pillarId}-new-${itemIndex}`;
@@ -3272,32 +3310,141 @@ const AssessmentResultsNew = () => {
                           )}
                           
                           {/* Render newly added features */}
-                          {customizations.newFeatures[pillar.id] && customizations.newFeatures[pillar.id].map((newFeature, idx) => (
+                          {customizations.newFeatures[pillar.id] && customizations.newFeatures[pillar.id].map((newFeature, idx) => {
+                            const featureKey = `${pillar.id}-new-feature-${idx}`;
+                            const isEditing = editingNewFeature === featureKey;
+                            
+                            return (
                             <div key={`new-${idx}`} style={{ 
                               background: 'white',
-                              border: '1px solid #bfdbfe',
+                              border: `2px solid ${isEditing ? '#3b82f6' : '#bfdbfe'}`,
                               borderRadius: '12px',
                               padding: '16px',
                               transition: 'all 0.2s ease'
                             }}>
-                              <div style={{ 
-                                fontWeight: 700, 
-                                color: '#1e40af', 
-                                marginBottom: '6px',
-                                fontSize: '0.95rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                              }}>
-                                <span style={{ fontSize: '1.1rem' }}>📦</span> {newFeature.name}
-                              </div>
-                              {newFeature.description && (
-                                <div style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.4' }}>
-                                  {newFeature.description}
+                              {isEditing ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                  <input
+                                    value={editedContent[`${featureKey}-name`] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [`${featureKey}-name`]: e.target.value
+                                    })}
+                                    placeholder="Feature name"
+                                    style={{
+                                      fontWeight: 700,
+                                      fontSize: '0.95rem',
+                                      padding: '8px',
+                                      border: '1px solid #3b82f6',
+                                      borderRadius: '6px',
+                                      fontFamily: 'inherit'
+                                    }}
+                                  />
+                                  <textarea
+                                    value={editedContent[`${featureKey}-desc`] || ''}
+                                    onChange={(e) => setEditedContent({
+                                      ...editedContent,
+                                      [`${featureKey}-desc`]: e.target.value
+                                    })}
+                                    placeholder="Feature description"
+                                    style={{
+                                      fontSize: '0.85rem',
+                                      padding: '8px',
+                                      border: '1px solid #3b82f6',
+                                      borderRadius: '6px',
+                                      resize: 'vertical',
+                                      minHeight: '60px',
+                                      fontFamily: 'inherit'
+                                    }}
+                                  />
+                                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                    <button
+                                      onClick={() => handleSaveNewFeature(pillar.id, idx)}
+                                      style={{
+                                        padding: '6px 14px',
+                                        fontSize: '0.8rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontWeight: 600
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingNewFeature(null)}
+                                      style={{
+                                        padding: '6px 14px',
+                                        fontSize: '0.8rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
                                 </div>
+                              ) : (
+                                <>
+                                  <div style={{ 
+                                    fontWeight: 700, 
+                                    color: '#1e40af', 
+                                    marginBottom: '6px',
+                                    fontSize: '0.95rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '6px'
+                                  }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <span style={{ fontSize: '1.1rem' }}>📦</span> {newFeature.name}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                      <button
+                                        onClick={() => handleEditNewFeature(pillar.id, idx, newFeature)}
+                                        style={{
+                                          padding: '3px 8px',
+                                          fontSize: '0.7rem',
+                                          background: '#3b82f6',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteNewFeature(pillar.id, idx)}
+                                        style={{
+                                          padding: '3px 8px',
+                                          fontSize: '0.7rem',
+                                          background: '#ef4444',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {newFeature.description && (
+                                    <div style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.4' }}>
+                                      {newFeature.description}
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
-                          ))}
+                          )}
+                          )}
                           
                           {/* Form for adding new feature */}
                           {addingFeature === pillar.id && (
@@ -3654,10 +3801,14 @@ const AssessmentResultsNew = () => {
                           )}
                           
                           {/* Render newly added next steps */}
-                          {customizations.newNextSteps[pillar.id] && customizations.newNextSteps[pillar.id].map((newStep, idx) => (
+                          {customizations.newNextSteps[pillar.id] && customizations.newNextSteps[pillar.id].map((newStep, idx) => {
+                            const stepKey = `${pillar.id}-new-step-${idx}`;
+                            const isEditing = editingNewNextStep === stepKey;
+                            
+                            return (
                             <div key={`new-${idx}`} style={{ 
                               background: 'white',
-                              border: '1px solid #fcd34d',
+                              border: `2px solid ${isEditing ? '#f59e0b' : '#fcd34d'}`,
                               borderRadius: '10px',
                               padding: '14px 16px',
                               fontSize: '0.87rem',
@@ -3675,9 +3826,96 @@ const AssessmentResultsNew = () => {
                                 flexShrink: 0,
                                 marginTop: '-2px'
                               }}>→</span>
-                              <span style={{ flex: 1 }}>{newStep}</span>
+                              {isEditing ? (
+                                <textarea
+                                  value={editedContent[stepKey] || ''}
+                                  onChange={(e) => setEditedContent({
+                                    ...editedContent,
+                                    [stepKey]: e.target.value
+                                  })}
+                                  style={{
+                                    flex: 1,
+                                    border: '1px solid #f59e0b',
+                                    borderRadius: '6px',
+                                    padding: '8px',
+                                    fontSize: '0.87rem',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical',
+                                    minHeight: '60px'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ flex: 1 }}>{newStep}</span>
+                              )}
+                              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                                {isEditing ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleSaveNewNextStep(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#f59e0b',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontWeight: 600
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingNewNextStep(null)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditNewNextStep(pillar.id, idx, newStep)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteNewNextStep(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          ))}
+                          )}
+                          )}
                           
                           {/* Form for adding new next step */}
                           {addingNextStep === pillar.id && (
@@ -4287,41 +4525,134 @@ const AssessmentResultsNew = () => {
               })()}
               
               {/* Render newly added metrics */}
-              {customizations.newImpactMetrics && customizations.newImpactMetrics.map((newMetric, idx) => (
+              {customizations.newImpactMetrics && customizations.newImpactMetrics.map((newMetric, idx) => {
+                const metricKey = `new-metric-${idx}`;
+                const isEditing = editingImpactMetric === metricKey;
+                
+                return (
                 <MetricCard
                   key={`new-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
-                  style={{ position: 'relative' }}
+                  style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
                 >
-                  <button
-                    onClick={() => handleDeleteNewImpactMetric(idx)}
-                    style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      padding: '6px 12px',
-                      fontSize: '0.75rem',
-                      background: '#ef4444',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Delete
-                  </button>
-                  <div className="metric-value">{newMetric.value}</div>
-                  <div className="metric-label">{newMetric.label}</div>
-                  {newMetric.drivers && newMetric.drivers.length > 0 && (
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                      Key drivers: {newMetric.drivers.join(', ')}
+                  {isEditing ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <input
+                        value={editedContent[`${metricKey}-value`] || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                        placeholder="Value (e.g., 2.8× or 15%)"
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 'bold',
+                          padding: '8px',
+                          border: '1px solid #3b82f6',
+                          borderRadius: '6px'
+                        }}
+                      />
+                      <textarea
+                        value={editedContent[`${metricKey}-label`] || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                        placeholder="Label/Description"
+                        style={{
+                          fontSize: '0.9rem',
+                          padding: '8px',
+                          border: '1px solid #3b82f6',
+                          borderRadius: '6px',
+                          resize: 'vertical',
+                          minHeight: '60px',
+                          fontFamily: 'inherit'
+                        }}
+                      />
+                      <input
+                        value={editedContent[`${metricKey}-drivers`] || ''}
+                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                        placeholder="Key drivers (comma-separated)"
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '6px',
+                          border: '1px solid #3b82f6',
+                          borderRadius: '6px'
+                        }}
+                      />
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <button
+                          onClick={() => handleSaveNewImpactMetric(idx)}
+                          style={{
+                            padding: '6px 14px',
+                            fontSize: '0.8rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingImpactMetric(null)}
+                          style={{
+                            padding: '6px 14px',
+                            fontSize: '0.8rem',
+                            background: '#9ca3af',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                        <button
+                          onClick={() => handleEditNewImpactMetric(idx, newMetric)}
+                          style={{
+                            padding: '6px 12px',
+                            fontSize: '0.75rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNewImpactMetric(idx)}
+                          style={{
+                            padding: '6px 12px',
+                            fontSize: '0.75rem',
+                            background: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      <div className="metric-value">{newMetric.value}</div>
+                      <div className="metric-label">{newMetric.label}</div>
+                      {newMetric.drivers && newMetric.drivers.length > 0 && (
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                          Key drivers: {newMetric.drivers.join(', ')}
+                        </div>
+                      )}
+                    </>
                   )}
                 </MetricCard>
-              ))}
+              )}
+              )}
               
               {/* Form for adding new metric */}
               {addingImpactMetric && (
