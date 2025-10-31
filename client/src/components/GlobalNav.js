@@ -476,7 +476,7 @@ const GlobalNav = () => {
         "Single workspace for all teams. No isolation between dev/prod. Need multi-workspace strategy with Unity Catalog for governance.",
         "Workspaces created ad-hoc. Inconsistent naming. Want standardized workspace provisioning with Terraform and tagging for cost tracking."
       ],
-      'security_access_control': [
+      'identity_security': [
         "Manual user provisioning via Azure AD. No SCIM. Want automated sync and group-based Unity Catalog permissions with audit logs.",
         "Admin rights granted liberally. No principle of least privilege. Need RBAC with Unity Catalog and secrets management with Databricks Secrets."
       ],
@@ -516,23 +516,23 @@ const GlobalNav = () => {
       ],
       
       // ANALYTICS & BI
-      'query_performance': [
+      'analytic_performance': [
         "Analysts wait 5+ minutes per query. Frustration growing. Want serverless SQL warehouses with Photon for sub-second queries and query caching for reusability.",
         "Same aggregations re-computed hourly. Inefficient. Need materialized views and query result caching to reduce compute costs and improve response times."
       ],
-      'data_modeling': [
+      'semantic_layer': [
         "Fact tables have 200+ columns. Star schema unclear. Want dimensional modeling best practices and slowly changing dimension (SCD) patterns for historical accuracy.",
         "Every team creates own metrics. Inconsistent revenue numbers. Need centralized semantic layer with Unity Catalog and SQL UDFs for metric standardization and governance."
       ],
-      'visualization_reporting': [
+      'bi_reporting': [
         "Analysts export to Excel then pivot. No real-time dashboards. Want Databricks SQL dashboards with auto-refresh and embedding for business stakeholders.",
         "PowerBI connects to raw tables. Slow and fragile. Need Databricks SQL endpoint with Photon and aggregation tables for fast BI integration and reliability."
       ],
-      'self_service_enablement': [
+      'self_service_analytics': [
         "Analysts wait on data engineers for every query. Bottleneck. Want Databricks SQL with saved queries and Genie for natural language ad-hoc analysis.",
         "Business users can't explore data independently. No access control. Need Unity Catalog row/column security and Databricks SQL permissions for safe self-service access."
       ],
-      'collaboration_sharing': [
+      'data_sharing': [
         "Notebooks emailed as HTML. No version control. Want Databricks Repos with Git integration and notebook versioning for collaboration and reproducibility.",
         "Each analyst has own copy of queries. Duplication and drift. Need shared queries library in Databricks SQL and comments for institutional knowledge sharing."
       ],
@@ -542,7 +542,7 @@ const GlobalNav = () => {
         "ML experiments tracked in spreadsheets. Can't reproduce results. Want MLflow for experiment tracking with hyperparameter logging and model versioning for reproducibility.",
         "Model artifacts stored in S3 with manual naming. No lineage. Need MLflow Model Registry for version control and model lineage with Unity Catalog integration."
       ],
-      'model_deployment': [
+      'ml_deployment': [
         "Models deployed via Flask on EC2. Manual scaling. Want MLflow Model Serving with autoscaling endpoints and A/B testing for production inference workloads.",
         "Data scientists retrain models monthly via notebook runs. No automation. Need Databricks Jobs with model retraining pipelines and trigger-based deployment for MLOps."
       ],
@@ -564,43 +564,43 @@ const GlobalNav = () => {
         "No GenAI initiative. CIO asking for roadmap. Want Mosaic AI assessment workshop to identify high-impact use cases like RAG for knowledge base search.",
         "Experimenting with ChatGPT for customer support. Security concerns. Need Databricks Foundation Models for on-platform LLM inference with data residency and guardrails."
       ],
-      'genai_data_readiness': [
+      'data_readiness': [
         "Documentation scattered in Confluence and SharePoint. No vector embeddings. Want Vector Search index for semantic retrieval and RAG application on internal knowledge base.",
         "PDFs and Word docs not searchable semantically. Need chunking strategy and Vector Search with hybrid search (keyword + semantic) for enterprise document retrieval."
       ],
-      'genai_development': [
+      'genai_architecture': [
         "Prompt engineering in Python notebooks. No reusability. Want Databricks AI Playground for prompt iteration and versioning with evaluation metrics and comparison views.",
         "Calling OpenAI API directly. Cost and latency concerns. Need Databricks Model Serving with provisioned throughput for Foundation Models and reduced latency for production apps."
       ],
-      'genai_evaluation': [
+      'genai_quality': [
         "No way to measure RAG quality. Anecdotal feedback only. Want MLflow with LLM evaluation metrics (retrieval precision, answer relevance, faithfulness) for systematic assessment.",
         "Prompt changes break production. No regression testing. Need automated LLM evaluation pipelines in Databricks Jobs with golden test sets for continuous quality monitoring."
       ],
-      'genai_responsible_ai': [
+      'genai_governance': [
         "No guardrails on LLM outputs. Risk of hallucinations. Want Databricks Lakehouse Monitoring for LLM toxicity detection and output filtering with guardrail policies.",
         "Concerns about bias in GenAI responses. Need bias testing framework and evaluation metrics for fairness audits and responsible AI governance with stakeholder review."
       ],
       
       // OPERATIONAL EXCELLENCE
-      'platform_adoption': [
-        "15% of data team uses Databricks. Most still on legacy tools. Want onboarding program and success metrics to track adoption velocity with executive dashboard.",
-        "New hires take 3 weeks to become productive. No training. Need Databricks Academy subscriptions and internal bootcamp curriculum with certification tracking for faster ramp-up."
+      'center_of_excellence': [
+        "No central team. Every project figures out Databricks independently. Want CoE with office hours and Slack channel for support escalation and best practices sharing.",
+        "Platform capabilities unknown. Marketing team doesn't know about Vector Search for personalization. Need quarterly showcase and use case library for internal evangelism."
+      ],
+      'collaboration_culture': [
+        "Teams work in silos. Notebooks not shared. Want Databricks Repos with Git integration and shared workspace folders for knowledge sharing and collaboration.",
+        "Best practices lost when engineers leave. Need documentation wiki and community Slack channels for institutional knowledge and peer support."
       ],
       'enablement_training': [
         "Tribal knowledge. Key engineers are single point of failure. Want documentation site with runbooks and best practices repository for platform patterns and troubleshooting.",
         "Teams reinvent the wheel. No code reuse. Need curated template library for common patterns (DLT, MLOps, security) with example implementations and GitHub integration."
       ],
-      'center_of_excellence': [
-        "No central team. Every project figures out Databricks independently. Want CoE with office hours and Slack channel for support escalation and best practices sharing.",
-        "Platform capabilities unknown. Marketing team doesn't know about Vector Search for personalization. Need quarterly showcase and use case library for internal evangelism."
+      'cost_value': [
+        "No visibility into platform usage or ROI. CFO asks for justification. Want system tables dashboard for active users, cost per business unit, and business impact metrics.",
+        "Clusters idle overnight. Wasted spend. Need automated cluster termination policies, chargeback model, and usage alerts with recommendations for cost optimization."
       ],
-      'monitoring_usage': [
-        "No visibility into platform usage. Can't show ROI. Want system tables dashboard for active users, job success rates, and cost per business unit with executive reporting.",
-        "Clusters idle overnight. Wasted spend. Need automated cluster termination policies and usage alerts with recommendations for cost optimization and chargebacks."
-      ],
-      'value_realization': [
-        "CFO asks for Databricks ROI. No answer. Want business impact tracking with metrics for time-to-insight reduction and data quality improvement with quarterly business reviews.",
-        "Platform costs growing without clear business value. Need use case prioritization framework and value scorecards with stakeholder interviews for portfolio optimization."
+      'innovation_culture': [
+        "15% of data team uses Databricks. Most still on legacy tools. Want onboarding program and success metrics to track adoption velocity with executive dashboard.",
+        "New hires take 3 weeks to become productive. No training. Need Databricks Academy subscriptions and internal bootcamp curriculum with certification tracking for faster ramp-up."
       ]
     };
     
