@@ -1013,11 +1013,16 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       // Use the updated completed categories list (after this pillar was added)
       const completedCategories = updatedAssessment?.completedCategories || currentAssessment?.completedCategories || [];
       
-      // Find the next incomplete pillar
+      // Find the next pillar in sequence (regardless of completion status)
       const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
-      const nextPillar = framework.assessmentAreas
-        .slice(currentPillarIndex + 1)
-        .find(area => !completedCategories.includes(area.id));
+      const nextPillar = framework.assessmentAreas[currentPillarIndex + 1]; // Get next pillar in sequence
+      
+      // Show appropriate message if all pillars completed
+      if (!nextPillar && completedCategories.length === framework.assessmentAreas.length) {
+        toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
+          duration: 5000
+        });
+      }
       
       // Always show dialog to let user choose
       setNextPillarInfo(nextPillar); // Will be null if no more pillars
@@ -1355,8 +1360,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             <DialogMessage>
               {nextPillarInfo ? (
                 <>
-                  Great progress! Would you like to continue to the next pillar ({nextPillarInfo.name}) 
-                  or view the results for this pillar?
+                  Great progress! Would you like to review the next pillar ({nextPillarInfo.name}) 
+                  or view your overall assessment results?
                 </>
               ) : (
                 <>
@@ -1381,7 +1386,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Continue to Next Pillar →
+                  Review {nextPillarInfo.name} →
                 </DialogButton>
               )}
             </DialogButtons>
@@ -1393,3 +1398,4 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 };
 
 export default AssessmentQuestion;
+
