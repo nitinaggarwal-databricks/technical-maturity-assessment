@@ -915,6 +915,10 @@ const AssessmentResultsNew = () => {
   const [addingPhaseItem, setAddingPhaseItem] = useState(null); // Track which phase is adding a new item
   const [addingImpactMetric, setAddingImpactMetric] = useState(false); // Track if adding a new impact metric
   const [editingImpactMetric, setEditingImpactMetric] = useState(null); // Track which impact metric is being edited
+  const [editingNewGoodItem, setEditingNewGoodItem] = useState(null); // Track which new "What's Working" item is being edited
+  const [editingNewBadItem, setEditingNewBadItem] = useState(null); // Track which new "Key Challenge" item is being edited
+  const [editingNewFeature, setEditingNewFeature] = useState(null); // Track which new feature is being edited
+  const [editingNewNextStep, setEditingNewNextStep] = useState(null); // Track which new next step is being edited
   const [editedContent, setEditedContent] = useState({});
   const [customizations, setCustomizations] = useState({
     title: '',
@@ -1320,6 +1324,139 @@ const AssessmentResultsNew = () => {
       newImpactMetrics: newMetrics
     });
     toast.success('Metric deleted!');
+  };
+
+  // Edit handlers for newly added items
+  const handleEditNewGoodItem = (pillarId, itemIndex, text) => {
+    const key = `${pillarId}-new-${itemIndex}`;
+    setEditingNewGoodItem(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: text
+    });
+  };
+
+  const handleSaveNewGoodItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-new-${itemIndex}`;
+    const newText = editedContent[key];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    newCustomizations.newGoodItems[pillarId][itemIndex] = newText.trim();
+    setCustomizations(newCustomizations);
+    setEditingNewGoodItem(null);
+    toast.success('Item updated!');
+  };
+
+  const handleDeleteNewGoodItem = (pillarId, itemIndex) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.newGoodItems[pillarId].splice(itemIndex, 1);
+    setCustomizations(newCustomizations);
+    toast.success('Item deleted!');
+  };
+
+  const handleEditNewBadItem = (pillarId, itemIndex, text) => {
+    const key = `${pillarId}-new-${itemIndex}`;
+    setEditingNewBadItem(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: text
+    });
+  };
+
+  const handleSaveNewBadItem = (pillarId, itemIndex) => {
+    const key = `${pillarId}-new-${itemIndex}`;
+    const newText = editedContent[key];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    newCustomizations.newBadItems[pillarId][itemIndex] = newText.trim();
+    setCustomizations(newCustomizations);
+    setEditingNewBadItem(null);
+    toast.success('Challenge updated!');
+  };
+
+  const handleDeleteNewBadItem = (pillarId, itemIndex) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.newBadItems[pillarId].splice(itemIndex, 1);
+    setCustomizations(newCustomizations);
+    toast.success('Challenge deleted!');
+  };
+
+  const handleEditNewFeature = (pillarId, featureIndex, feature) => {
+    const key = `${pillarId}-new-feature-${featureIndex}`;
+    setEditingNewFeature(key);
+    setEditedContent({
+      ...editedContent,
+      [`${key}-name`]: feature.name,
+      [`${key}-desc`]: feature.description
+    });
+  };
+
+  const handleSaveNewFeature = (pillarId, featureIndex) => {
+    const key = `${pillarId}-new-feature-${featureIndex}`;
+    const newName = editedContent[`${key}-name`];
+    const newDesc = editedContent[`${key}-desc`];
+    
+    if (!newName || !newName.trim()) {
+      toast.error('Please enter a feature name');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    newCustomizations.newFeatures[pillarId][featureIndex] = {
+      name: newName.trim(),
+      description: newDesc?.trim() || '',
+      releaseDate: null,
+      docs: null
+    };
+    setCustomizations(newCustomizations);
+    setEditingNewFeature(null);
+    toast.success('Feature updated!');
+  };
+
+  const handleDeleteNewFeature = (pillarId, featureIndex) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.newFeatures[pillarId].splice(featureIndex, 1);
+    setCustomizations(newCustomizations);
+    toast.success('Feature deleted!');
+  };
+
+  const handleEditNewNextStep = (pillarId, stepIndex, step) => {
+    const key = `${pillarId}-new-step-${stepIndex}`;
+    setEditingNewNextStep(key);
+    setEditedContent({
+      ...editedContent,
+      [key]: step
+    });
+  };
+
+  const handleSaveNewNextStep = (pillarId, stepIndex) => {
+    const key = `${pillarId}-new-step-${stepIndex}`;
+    const newText = editedContent[key];
+    if (!newText || !newText.trim()) {
+      toast.error('Please enter some text');
+      return;
+    }
+    
+    const newCustomizations = { ...customizations };
+    newCustomizations.newNextSteps[pillarId][stepIndex] = newText.trim();
+    setCustomizations(newCustomizations);
+    setEditingNewNextStep(null);
+    toast.success('Next step updated!');
+  };
+
+  const handleDeleteNewNextStep = (pillarId, stepIndex) => {
+    const newCustomizations = { ...customizations };
+    newCustomizations.newNextSteps[pillarId].splice(stepIndex, 1);
+    setCustomizations(newCustomizations);
+    toast.success('Next step deleted!');
   };
 
   // Add handlers for new items
@@ -2350,10 +2487,14 @@ const AssessmentResultsNew = () => {
                           )}
                           
                           {/* Render newly added items */}
-                          {customizations.newGoodItems[pillar.id] && customizations.newGoodItems[pillar.id].map((newItem, idx) => (
+                          {customizations.newGoodItems[pillar.id] && customizations.newGoodItems[pillar.id].map((newItem, idx) => {
+                            const itemKey = `${pillar.id}-new-${idx}`;
+                            const isEditing = editingNewGoodItem === itemKey;
+                            
+                            return (
                             <div key={`new-${idx}`} style={{ 
                               background: 'white',
-                              border: '1px solid #bbf7d0',
+                              border: `1px solid ${isEditing ? '#22c55e' : '#bbf7d0'}`,
                               borderRadius: '10px',
                               padding: '12px 14px',
                               fontSize: '0.88rem',
@@ -2371,9 +2512,95 @@ const AssessmentResultsNew = () => {
                                 flexShrink: 0,
                                 marginTop: '2px'
                               }}>✓</span>
-                              <span style={{ flex: 1 }}>{newItem}</span>
+                              {isEditing ? (
+                                <textarea
+                                  value={editedContent[itemKey] || ''}
+                                  onChange={(e) => setEditedContent({
+                                    ...editedContent,
+                                    [itemKey]: e.target.value
+                                  })}
+                                  style={{
+                                    flex: 1,
+                                    border: '1px solid #22c55e',
+                                    borderRadius: '6px',
+                                    padding: '8px',
+                                    fontSize: '0.88rem',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical',
+                                    minHeight: '60px'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ flex: 1 }}>{newItem}</span>
+                              )}
+                              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                                {isEditing ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleSaveNewGoodItem(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#22c55e',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingNewGoodItem(null)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditNewGoodItem(pillar.id, idx, newItem)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteNewGoodItem(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          ))}
+                          )}
+                          )}
                           
                           {/* Form for adding new item */}
                           {addingGoodItem === pillar.id && (
@@ -2632,10 +2859,14 @@ const AssessmentResultsNew = () => {
                           )}
                           
                           {/* Render newly added items */}
-                          {customizations.newBadItems[pillar.id] && customizations.newBadItems[pillar.id].map((newItem, idx) => (
+                          {customizations.newBadItems[pillar.id] && customizations.newBadItems[pillar.id].map((newItem, idx) => {
+                            const itemKey = `${pillar.id}-new-${idx}`;
+                            const isEditing = editingNewBadItem === itemKey;
+                            
+                            return (
                             <div key={`new-${idx}`} style={{ 
                               background: 'white',
-                              border: '1px solid #fecaca',
+                              border: `1px solid ${isEditing ? '#ef4444' : '#fecaca'}`,
                               borderRadius: '10px',
                               padding: '12px 14px',
                               fontSize: '0.88rem',
@@ -2653,9 +2884,95 @@ const AssessmentResultsNew = () => {
                                 flexShrink: 0,
                                 marginTop: '2px'
                               }}>⚠</span>
-                              <span style={{ flex: 1 }}>{newItem}</span>
+                              {isEditing ? (
+                                <textarea
+                                  value={editedContent[itemKey] || ''}
+                                  onChange={(e) => setEditedContent({
+                                    ...editedContent,
+                                    [itemKey]: e.target.value
+                                  })}
+                                  style={{
+                                    flex: 1,
+                                    border: '1px solid #ef4444',
+                                    borderRadius: '6px',
+                                    padding: '8px',
+                                    fontSize: '0.88rem',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical',
+                                    minHeight: '60px'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ flex: 1 }}>{newItem}</span>
+                              )}
+                              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                                {isEditing ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleSaveNewBadItem(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingNewBadItem(null)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditNewBadItem(pillar.id, idx, newItem)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteNewBadItem(pillar.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          ))}
+                          )}
+                          )}
                           
                           {/* Form for adding new item */}
                           {addingBadItem === pillar.id && (
