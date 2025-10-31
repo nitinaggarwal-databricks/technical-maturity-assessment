@@ -1493,14 +1493,122 @@ class IntelligentRecommendationEngine {
     overheadReduction = Math.min(overheadReduction * multipliers.overhead, 65);
     const manualOverhead = Math.round(overheadReduction) + '%';
     
+    // 4. TIME TO MARKET / INNOVATION VELOCITY (based on ML + Gen AI maturity)
+    const genAIPillar = prioritizedActions.find(p => p.pillarId === 'generative_ai');
+    
+    let timeToMarket = 0;
+    if (mlPillar) {
+      const mlImprovement = mlPillar.gap || 0;
+      timeToMarket += mlImprovement * 15; // 15% per level
+      
+      // Bonus for Feature Store (speeds up model development)
+      const hasFeatureStore = mlPillar.databricksFeatures?.some(f => 
+        f.name && f.name.includes('Feature Store')
+      );
+      if (hasFeatureStore) {
+        timeToMarket += 20; // +20% from Feature Store
+      }
+    }
+    
+    if (genAIPillar) {
+      const genAIImprovement = genAIPillar.gap || 0;
+      timeToMarket += genAIImprovement * 12; // 12% per level
+      
+      // Bonus for pre-built LLMs
+      const hasLLMs = genAIPillar.databricksFeatures?.some(f => 
+        f.name && (f.name.includes('DBRX') || f.name.includes('Foundation Model'))
+      );
+      if (hasLLMs) {
+        timeToMarket += 25; // +25% from foundation models
+      }
+    }
+    
+    // Cap at 70%
+    timeToMarket = Math.min(timeToMarket, 70);
+    const timeToMarketValue = Math.round(timeToMarket) + '%';
+    
+    // 5. DATA QUALITY & TRUST (based on Data Engineering + Platform Governance)
+    let dataQuality = 0;
+    if (dataEngPillar) {
+      const dataImprovement = dataEngPillar.gap || 0;
+      dataQuality += dataImprovement * 10; // 10% per level
+      
+      // Bonus for Delta Lake (ACID compliance)
+      const hasDelta = dataEngPillar.databricksFeatures?.some(f => 
+        f.name && f.name.includes('Delta')
+      );
+      if (hasDelta) {
+        dataQuality += 15; // +15% from Delta Lake
+      }
+      
+      // Bonus for Data Quality features
+      const hasDQ = dataEngPillar.databricksFeatures?.some(f => 
+        f.name && (f.name.includes('Quality') || f.name.includes('Expectations'))
+      );
+      if (hasDQ) {
+        dataQuality += 12; // +12% from DQ tools
+      }
+    }
+    
+    if (platformPillar) {
+      const platformImprovement = platformPillar.gap || 0;
+      dataQuality += platformImprovement * 8; // 8% per level
+      
+      // Bonus for Unity Catalog (lineage + governance)
+      const hasUnityCatalog = platformPillar.databricksFeatures?.some(f => 
+        f.name && f.name.includes('Unity Catalog')
+      );
+      if (hasUnityCatalog) {
+        dataQuality += 18; // +18% from Unity Catalog
+      }
+    }
+    
+    // Cap at 60%
+    dataQuality = Math.min(dataQuality, 60);
+    const dataQualityValue = Math.round(dataQuality) + '%';
+    
+    // 6. TEAM PRODUCTIVITY / DEVELOPER EFFICIENCY (based on all pillars)
+    let productivity = 0;
+    
+    // Calculate weighted average improvement
+    prioritizedActions.forEach(pillar => {
+      const improvement = pillar.gap || 0;
+      productivity += improvement * 8; // 8% per level per pillar
+    });
+    
+    // Bonus for collaborative features
+    if (analyticsPillar) {
+      const hasNotebooks = analyticsPillar.databricksFeatures?.some(f => 
+        f.name && f.name.includes('Notebook')
+      );
+      if (hasNotebooks) {
+        productivity += 12; // +12% from collaborative notebooks
+      }
+    }
+    
+    // Bonus for automation
+    if (opExPillar) {
+      const hasWorkflows = opExPillar.databricksFeatures?.some(f => 
+        f.name && f.name.includes('Workflow')
+      );
+      if (hasWorkflows) {
+        productivity += 15; // +15% from workflow automation
+      }
+    }
+    
+    // Cap at 55%
+    productivity = Math.min(productivity, 55);
+    const productivityValue = Math.round(productivity) + '%';
+    
     const impact = {
       decisionSpeed: {
         value: decisionSpeed,
         label: 'Increase in analytics-driven decision-making speed',
         drivers: [
           analyticsPillar ? `${analyticsPillar.pillarName} improvement (${analyticsPillar.gap} levels)` : null,
-          dataEngPillar ? `${dataEngPillar.pillarName} automation` : null
-        ].filter(Boolean)
+          dataEngPillar ? `${dataEngPillar.pillarName} automation` : null,
+          'Real-time analytics and query acceleration'
+        ].filter(Boolean).slice(0, 2)
       },
       costOptimization: {
         value: costOptimization,
@@ -1509,7 +1617,7 @@ class IntelligentRecommendationEngine {
           platformPillar ? `${platformPillar.pillarName} improvements` : null,
           'Serverless compute and auto-scaling',
           'Budget controls and monitoring'
-        ].filter(Boolean)
+        ].filter(Boolean).slice(0, 2)
       },
       manualOverhead: {
         value: manualOverhead,
@@ -1518,11 +1626,38 @@ class IntelligentRecommendationEngine {
           dataEngPillar ? 'Data pipeline automation' : null,
           mlPillar ? 'MLOps automation' : null,
           platformPillar ? 'Governance automation (Unity Catalog)' : null
-        ].filter(Boolean)
+        ].filter(Boolean).slice(0, 2)
+      },
+      timeToMarket: {
+        value: timeToMarketValue,
+        label: 'Faster time-to-market for AI/ML initiatives',
+        drivers: [
+          mlPillar ? `${mlPillar.pillarName} acceleration` : null,
+          genAIPillar ? `${genAIPillar.pillarName} with foundation models` : null,
+          'Pre-trained models and feature engineering'
+        ].filter(Boolean).slice(0, 2)
+      },
+      dataQuality: {
+        value: dataQualityValue,
+        label: 'Improvement in data quality and stakeholder trust',
+        drivers: [
+          dataEngPillar ? 'Delta Lake ACID compliance' : null,
+          platformPillar ? 'Unity Catalog governance & lineage' : null,
+          'Automated data quality monitoring'
+        ].filter(Boolean).slice(0, 2)
+      },
+      teamProductivity: {
+        value: productivityValue,
+        label: 'Increase in data & engineering team productivity',
+        drivers: [
+          'Collaborative workspace and notebooks',
+          opExPillar ? 'Workflow automation and orchestration' : null,
+          'Reduced context switching and tool fragmentation'
+        ].filter(Boolean).slice(0, 2)
       }
     };
     
-    console.log('[calculateBusinessImpact] Calculated impact:', JSON.stringify(impact, null, 2));
+    console.log('[calculateBusinessImpact] Calculated 6 impact metrics:', JSON.stringify(impact, null, 2));
     return impact;
   }
   

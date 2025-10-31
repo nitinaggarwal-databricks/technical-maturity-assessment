@@ -4255,6 +4255,263 @@ const AssessmentResultsNew = () => {
               })}
               
               {/* All metrics now dynamically generated from businessImpact data */}
+                  <MetricCard
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
+                  >
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <input
+                          value={editedContent[`${metricKey}-value`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                          placeholder="Value (e.g., 2.8× or 15%)"
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <textarea
+                          value={editedContent[`${metricKey}-label`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                          placeholder="Label/Description"
+                          style={{
+                            fontSize: '0.9rem',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            resize: 'vertical',
+                            minHeight: '60px',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <input
+                          value={editedContent[`${metricKey}-drivers`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                          placeholder="Key drivers (comma-separated)"
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '6px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleSaveImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingImpactMetric(null)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#9ca3af',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleEditImpactMetric(metricKey, metric)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <div className="metric-value">{metric.value}</div>
+                        <div className="metric-label">{metric.label}</div>
+                        {metric.drivers && metric.drivers.length > 0 && (
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                            Key drivers: {metric.drivers.slice(0, 2).join(', ')}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </MetricCard>
+                );
+              })()}
+
+              {/* Metric 3: Manual Overhead */}
+              {(() => {
+                const metricKey = 'manualOverhead';
+                const isEditing = editingImpactMetric === metricKey;
+                const metric = customizations.impactMetrics[metricKey] || resultsData?.businessImpact?.manualOverhead || { value: '30%', label: 'Reduction in manual operational overhead', drivers: [] };
+                
+                // Skip if deleted
+                if (customizations.impactMetrics[metricKey] === null) {
+                  return null;
+                }
+                
+                return (
+                  <MetricCard
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
+                  >
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <input
+                          value={editedContent[`${metricKey}-value`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
+                          placeholder="Value (e.g., 2.8× or 15%)"
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <textarea
+                          value={editedContent[`${metricKey}-label`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
+                          placeholder="Label/Description"
+                          style={{
+                            fontSize: '0.9rem',
+                            padding: '8px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            resize: 'vertical',
+                            minHeight: '60px',
+                            fontFamily: 'inherit'
+                          }}
+                        />
+                        <input
+                          value={editedContent[`${metricKey}-drivers`] || ''}
+                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
+                          placeholder="Key drivers (comma-separated)"
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '6px',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleSaveImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingImpactMetric(null)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.8rem',
+                              background: '#9ca3af',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleEditImpactMetric(metricKey, metric)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImpactMetric(metricKey)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '0.75rem',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <div className="metric-value">{metric.value}</div>
+                        <div className="metric-label">{metric.label}</div>
+                        {metric.drivers && metric.drivers.length > 0 && (
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
+                            Key drivers: {metric.drivers.slice(0, 2).join(', ')}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </MetricCard>
+                );
+              })()}
               
               {/* Render newly added metrics */}
               {customizations.newImpactMetrics && customizations.newImpactMetrics.map((newMetric, idx) => {
