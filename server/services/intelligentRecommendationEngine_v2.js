@@ -826,130 +826,124 @@ class IntelligentRecommendationEngine {
     const avgCurrent = stateGaps.length > 0 ? stateGaps.reduce((sum, g) => sum + g.current, 0) / stateGaps.length : 0;
     const avgGap = stateGaps.length > 0 ? (stateGaps.reduce((sum, g) => sum + g.future, 0) / stateGaps.length) - avgCurrent : 0;
     
-    // Comprehensive next steps library by pillar
+    // Comprehensive next steps library by pillar - Simplified format with arrows
     const nextStepsLibrary = {
       platform_governance: [
-        '🤝 **Executive Alignment**: Secure leadership endorsement for a unified governance model (Unity Catalog, cross-workspace governance)',
-        '📚 **Workshop**: Schedule Platform Governance Blueprint Workshop with Databricks SA + Governance SME (1–2 weeks)',
-        '🎓 **Enablement**: Train platform admins on workspace hierarchy, catalog design, FinOps, and access control patterns',
-        '🚀 **Adoption**: Roll out governance incrementally — start with one domain (e.g., Finance or Clinical Data) before full enterprise rollout',
-        '📊 **Industry Benchmarking**: Review governance maturity benchmarks vs. peers (e.g., GxP, HIPAA, HITRUST adoption trends)',
-        '🤝 **Partner Engagement**: Engage SI partners specializing in platform setup (e.g., Wipro, Deloitte, TCS, Slalom) for scalable implementation',
-        '📈 **KPIs**: Catalog coverage %, data ownership clarity, % of datasets under lineage tracking, cost visibility improvements'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate governance approach and Unity Catalog implementation',
+        'Executive Alignment: Secure leadership endorsement for unified governance model with Unity Catalog rollout plan (1 week)',
+        'Platform Assessment: Conduct workspace hierarchy and security audit with Databricks Professional Services (1-2 weeks)',
+        'Governance Workshop: Schedule Platform Governance Blueprint Workshop with Databricks SA and governance SME (2-3 days)',
+        'Partner Engagement: Engage SI partners specializing in platform setup (Wipro, Deloitte, TCS, Slalom) for scalable implementation (2-4 weeks)',
+        'Training & Enablement: Train platform admins on workspace management, catalog design, and access control patterns (1 week)',
+        'Pilot Implementation: Roll out Unity Catalog to one business domain before full enterprise deployment (3-4 weeks)'
       ],
       data_engineering: [
-        '📚 **Workshop**: Conduct LakeFlow & DLT Workshop to align ingestion patterns (batch, streaming, CDC)',
-        '🎓 **Enablement**: Provide hands-on DLT / Auto Loader / LakeFlow Connect enablement for engineers',
-        '🚀 **Adoption**: Migrate 1–2 high-impact pipelines (e.g., Claims, Provider, EHR) to Delta architecture as "lighthouse projects"',
-        '📊 **Assessment**: Run a Pipeline Health & Cost Optimization Assessment with Databricks PS or partner',
-        '💡 **Industry Outlook**: Emphasize trends like near real-time ingestion for patient 360, interoperability (FHIR, HL7)',
-        '🤝 **Partner Engagement**: Identify ETL modernization partners (Accenture, Cognizant, Infosys) for migration planning',
-        '📈 **KPIs**: Pipeline reliability (SLA adherence), data freshness, ingestion cost per TB, DQ incident reduction'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate data pipeline architecture and Delta Lake optimization',
+        'Pipeline Assessment: Conduct pipeline health check and cost optimization review with Databricks team (1-2 weeks)',
+        'DLT Workshop: Schedule Delta Live Tables and Auto Loader enablement workshop for engineering teams (2 days)',
+        'Partner Engagement: Identify ETL modernization partners (Accenture, Cognizant, Infosys) for migration planning (2-3 weeks)',
+        'Lighthouse Project: Migrate 1-2 high-impact pipelines to Delta Lake architecture as proof of value (4-6 weeks)',
+        'Training & Enablement: Provide hands-on DLT, Auto Loader, and streaming enablement for data engineers (1 week)',
+        'Performance Testing: Load testing, data quality validation, and pipeline monitoring setup (1-2 weeks)'
       ],
       analytics_bi: [
-        '📚 **Workshop**: Host DBSQL Analytics Workshop or "Modern BI on Lakehouse" session with Databricks + Power BI integration demo',
-        '🎓 **Enablement**: Train business analysts on Databricks SQL, Delta Sharing, and certified datasets',
-        '🚀 **Adoption**: Identify top dashboards to migrate from legacy BI platforms; certify datasets via Unity Catalog',
-        '💡 **Industry Outlook**: Showcase payer/provider success stories (e.g., care analytics, cost optimization)',
-        '🤝 **Partner Engagement**: Collaborate with SI/ISV BI specialists (e.g., Thorogood, Tredence) to streamline dashboard migration',
-        '📊 **Assessment**: Conduct BI Readiness & Performance Assessment to identify latency and concurrency issues',
-        '📈 **KPIs**: # of certified datasets, BI adoption rate, time-to-insight, dashboard latency reduction'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate BI architecture and SQL warehouse configuration',
+        'BI Assessment: Conduct analytics readiness assessment to identify migration priorities and performance bottlenecks (1-2 weeks)',
+        'DBSQL Workshop: Host Databricks SQL Analytics Workshop with Power BI/Tableau integration demo (1-2 days)',
+        'Partner Engagement: Collaborate with BI specialists (Thorogood, Tredence) to streamline dashboard migration (2-4 weeks)',
+        'Dataset Certification: Identify and certify top 10-20 datasets via Unity Catalog for self-service analytics (2-3 weeks)',
+        'Training & Enablement: Train business analysts on Databricks SQL, Delta Sharing, and semantic layer patterns (1 week)',
+        'Dashboard Migration: Migrate priority dashboards from legacy BI platforms with performance validation (4-6 weeks)'
       ],
       machine_learning: [
-        '📚 **Workshop**: Run MLflow + Model Serving Enablement Workshop and GenAI/RAG Accelerator sessions',
-        '🎓 **Enablement**: Train DS/ML teams on experiment tracking, model registry, and GenAI evaluation',
-        '🚀 **Adoption**: Deploy first model in Model Serving or AI Gateway; demonstrate end-to-end MLOps',
-        '📊 **Assessment**: Conduct ML Readiness & Governance Assessment for model lifecycle and bias evaluation',
-        '💡 **Industry Outlook**: Present trends — e.g., healthcare GenAI agents for prior auth, patient summarization, and LLMOps best practices',
-        '🤝 **Partner Engagement**: Engage domain-specific AI partners (e.g., ZS, IQVIA, Deloitte) for solution acceleration',
-        '📈 **KPIs**: # of models in registry, model deployment frequency, approval SLAs, ROI from GenAI pilots'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate MLOps architecture and model deployment strategy',
+        'ML Assessment: Conduct ML readiness and governance assessment for model lifecycle management (1-2 weeks)',
+        'MLOps Workshop: Schedule MLflow, Model Serving, and Feature Store enablement workshop (2-3 days)',
+        'Partner Engagement: Engage domain-specific AI partners (ZS, IQVIA, Deloitte) for solution acceleration (2-4 weeks)',
+        'Model Deployment: Deploy first model to production using Model Serving or AI Gateway (3-4 weeks)',
+        'Training & Enablement: Train data science teams on experiment tracking, model registry, and deployment patterns (1 week)',
+        'Governance Setup: Implement model governance framework with approval workflows and monitoring (2-3 weeks)'
       ],
       generative_ai: [
-        '📚 **Workshop**: Run MLflow + Model Serving Enablement Workshop and GenAI/RAG Accelerator sessions',
-        '🎓 **Enablement**: Train DS/ML teams on experiment tracking, model registry, and GenAI evaluation',
-        '🚀 **Adoption**: Deploy first model in Model Serving or AI Gateway; demonstrate end-to-end MLOps',
-        '📊 **Assessment**: Conduct ML Readiness & Governance Assessment for model lifecycle and bias evaluation',
-        '💡 **Industry Outlook**: Present trends — e.g., healthcare GenAI agents for prior auth, patient summarization, and LLMOps best practices',
-        '🤝 **Partner Engagement**: Engage domain-specific AI partners (e.g., ZS, IQVIA, Deloitte) for solution acceleration',
-        '📈 **KPIs**: # of models in registry, model deployment frequency, approval SLAs, ROI from GenAI pilots'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate GenAI architecture and RAG implementation',
+        'GenAI Assessment: Conduct AI readiness assessment and identify high-value GenAI use cases (1-2 weeks)',
+        'GenAI Workshop: Schedule RAG, LLM evaluation, and AI Gateway workshop with Databricks Labs (2-3 days)',
+        'Partner Engagement: Engage AI consulting partners for GenAI solution design and implementation (3-4 weeks)',
+        'POC Development: Build proof-of-concept for top priority GenAI use case with Databricks support (4-6 weeks)',
+        'Training & Enablement: Train teams on prompt engineering, RAG patterns, and GenAI evaluation frameworks (1 week)',
+        'Security & Compliance: Implement AI governance controls, PII protection, and audit logging (2-3 weeks)'
       ],
       operational_excellence: [
-        '📚 **Workshop**: Conduct Ops Observability & Cost Optimization Workshop (system tables, audit logs, FinOps)',
-        '🎓 **Enablement**: Train admin teams on system tables, alerting, and proactive monitoring',
-        '🚀 **Adoption**: Deploy central cost dashboards and SLA metrics; create monthly Ops scorecards',
-        '📊 **Assessment**: Perform Ops Maturity Review focusing on incident management and autoscaling policies',
-        '💡 **Industry Outlook**: Benchmark cost per user, DBU per workload against peer institutions',
-        '🤝 **Partner Engagement**: Use managed services vendors (e.g., Persistent, Capgemini) for ops automation or 24x7 monitoring',
-        '📈 **KPIs**: Downtime reduction, mean time to detect (MTTD), DBU cost trend, ticket resolution time'
+        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate monitoring and cost optimization approach',
+        'Operations Assessment: Conduct ops maturity review focusing on observability, cost management, and incident response (1-2 weeks)',
+        'Observability Workshop: Schedule system tables, monitoring, and FinOps enablement workshop (2 days)',
+        'Partner Engagement: Engage managed services partners (Persistent, Capgemini) for operational automation (2-4 weeks)',
+        'Monitoring Setup: Deploy centralized cost dashboards, SLA metrics, and alerting systems (2-3 weeks)',
+        'Training & Enablement: Train admin teams on system tables, proactive monitoring, and troubleshooting (1 week)',
+        'Cost Optimization: Implement auto-scaling policies, instance optimization, and budget alerts (3-4 weeks)'
       ]
     };
-    
-    // Common next steps (applicable to all pillars)
-    const commonNextSteps = [
-      '🎓 **Training Pathways**: Launch Databricks Academy learning paths for Admins, Data Engineers, Data Scientists, and BI Analysts',
-      '🏆 **Certification Plan**: Set a goal: 30% of practitioners certified within 6 months',
-      '👥 **Community of Practice**: Formalize monthly CoP sessions — invite Databricks SMEs to present platform features or new releases',
-      '📊 **Leadership Briefings**: Conduct quarterly Executive Readouts on maturity progress and business value realization',
-      '📈 **Adoption Metrics**: Track active users, workspace usage, and # of certified datasets',
-      '🎉 **Culture Enablement**: Run "Data Day" or "AI Hackathon" events to engage broader teams',
-      '🤝 **SI/Vendor Engagement**: Identify top-tier partners by workstream (platform setup, data eng, BI, ML/AI)',
-      '🗺️ **Joint Roadmap Planning**: Align Databricks AE, SA, and SI partner on quarterly goals and delivery accountability',
-      '🚀 **Accelerators**: Leverage Industry Solutions (e.g., Digital Pathology, Patient 360, Prior Auth Optimization)',
-      '💡 **Co-Innovation**: Explore GenAI Proofs-of-Concept (POCs) co-developed with Databricks Labs or Field Engineering',
-      '🔧 **Vendor Rationalization**: Evaluate overlapping tools and consolidate into the Databricks ecosystem',
-      '📋 **Roadmap Governance**: Establish a PMO to oversee pillar-wise execution',
-      '📊 **Quarterly Business Reviews**: Review KPIs, risks, and blockers with Databricks leadership',
-      '🔄 **Maturity Re-Assessment**: Re-evaluate progress every 6–12 months using the same scoring framework',
-      '💰 **Funding & Budgeting**: Allocate resources for enablement, partner services, and platform expansion',
-      '📈 **Executive Scorecard**: Create visual dashboards showing maturity delta and value realized per quarter'
-    ];
     
     // Get pillar-specific next steps
     const pillarNextSteps = nextStepsLibrary[pillarId] || nextStepsLibrary.operational_excellence;
     
-    // Select up to 6 unique, high-impact, collaborative next steps
+    // Select up to 4 most relevant, actionable next steps in priority order
     const selectedNextSteps = [];
     
-    // 1. Always include Workshop (involves Databricks SA/SME)
-    const workshop = pillarNextSteps.find(step => step.includes('**Workshop**'));
-    if (workshop) selectedNextSteps.push(workshop);
+    // 1. Always start with Architecture Review (quick engagement with Databricks)
+    const archReview = pillarNextSteps.find(step => step.includes('Architecture Review:'));
+    if (archReview) selectedNextSteps.push(archReview);
     
-    // 2. Always include Partner Engagement (involves SI vendors)
-    const partner = pillarNextSteps.find(step => step.includes('**Partner Engagement**'));
-    if (partner) selectedNextSteps.push(partner);
-    
-    // 3. Include Enablement OR Assessment (capacity building)
-    const enablement = pillarNextSteps.find(step => step.includes('**Enablement**'));
-    const assessmentStep = pillarNextSteps.find(step => step.includes('**Assessment**'));
-    if (Math.random() > 0.5 && enablement) {
-      selectedNextSteps.push(enablement);
-    } else if (assessmentStep) {
-      selectedNextSteps.push(assessmentStep);
+    // 2. Include Assessment if maturity gap is significant (gap > 2)
+    if (avgGap > 2) {
+      const assessment = pillarNextSteps.find(step => step.includes('Assessment:'));
+      if (assessment) selectedNextSteps.push(assessment);
     }
     
-    // 4. Include Adoption (implementation focus)
-    const adoption = pillarNextSteps.find(step => step.includes('**Adoption**'));
-    if (adoption) selectedNextSteps.push(adoption);
+    // 3. Include Workshop or Training (capacity building)
+    const workshop = pillarNextSteps.find(step => step.includes('Workshop:'));
+    const training = pillarNextSteps.find(step => step.includes('Training & Enablement:'));
+    if (workshop) {
+      selectedNextSteps.push(workshop);
+    } else if (training) {
+      selectedNextSteps.push(training);
+    }
     
-    // 5-6. Add 2 high-impact common next steps that promote collaboration
-    const highImpactCommon = [
-      '🗺️ **Joint Roadmap Planning**: Align Databricks AE, SA, and SI partner on quarterly goals and delivery accountability',
-      '📊 **Quarterly Business Reviews**: Review KPIs, risks, and blockers with Databricks leadership',
-      '👥 **Community of Practice**: Formalize monthly CoP sessions — invite Databricks SMEs to present platform features or new releases',
-      '🚀 **Accelerators**: Leverage Industry Solutions (e.g., Digital Pathology, Patient 360, Prior Auth Optimization)',
-      '💡 **Co-Innovation**: Explore GenAI Proofs-of-Concept (POCs) co-developed with Databricks Labs or Field Engineering',
-      '📊 **Leadership Briefings**: Conduct quarterly Executive Readouts on maturity progress and business value realization'
-    ];
+    // 4. Include Partner Engagement or Implementation step
+    const partner = pillarNextSteps.find(step => step.includes('Partner Engagement:'));
+    const implementation = pillarNextSteps.find(step => 
+      step.includes('Implementation:') || 
+      step.includes('Deployment:') || 
+      step.includes('Migration:') ||
+      step.includes('Setup:') ||
+      step.includes('Project:') ||
+      step.includes('POC Development:') ||
+      step.includes('Pilot Implementation:') ||
+      step.includes('Lighthouse Project:') ||
+      step.includes('Model Deployment:') ||
+      step.includes('Dashboard Migration:')
+    );
     
-    // Randomly select 2 high-impact collaborative steps
-    const shuffledHighImpact = highImpactCommon.sort(() => Math.random() - 0.5);
-    const remainingSlots = 6 - selectedNextSteps.length;
-    selectedNextSteps.push(...shuffledHighImpact.slice(0, remainingSlots));
+    if (selectedNextSteps.length < 4) {
+      if (partner && !selectedNextSteps.includes(partner)) {
+        selectedNextSteps.push(partner);
+      }
+      if (implementation && !selectedNextSteps.includes(implementation) && selectedNextSteps.length < 4) {
+        selectedNextSteps.push(implementation);
+      }
+    }
     
-    // Ensure uniqueness and limit to 6
-    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, 6);
+    // Fill remaining slots with other relevant steps
+    const remainingSlots = 4 - selectedNextSteps.length;
+    if (remainingSlots > 0) {
+      const otherSteps = pillarNextSteps.filter(step => !selectedNextSteps.includes(step));
+      selectedNextSteps.push(...otherSteps.slice(0, remainingSlots));
+    }
     
-    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} high-impact collaborative next steps for ${pillarId}`);
+    // Ensure uniqueness and limit to 4
+    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, 4);
+    
+    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} actionable next steps for ${pillarId}`);
     return uniqueNextSteps;
   }
 
