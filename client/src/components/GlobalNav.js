@@ -373,13 +373,14 @@ const GlobalNav = () => {
         
         area.dimensions.forEach((dimension, dimIdx) => {
           dimension.questions.forEach((question, qIdx) => {
-            // More varied random current state with better distribution (1-5)
-            const baseRandom = Math.random();
-            const currentState = Math.floor(baseRandom * 5) + 1; // 1-5 for more variety
+            // Current state: Only 1 or 2 (early maturity stages)
+            const currentState = Math.random() < 0.5 ? 1 : 2;
             
-            // Future state always greater than current or same if already at 5
-            const gap = Math.floor(Math.random() * 3) + 1; // Gap of 1-3
-            const futureState = Math.min(currentState + gap, 5);
+            // Future state: At least current + 1, can be higher (up to 5)
+            // This gives a range of possible future states: currentState+1 to 5
+            const minFuture = currentState + 1; // Minimum is +1
+            const maxFuture = 5;
+            const futureState = Math.floor(Math.random() * (maxFuture - minFuture + 1)) + minFuture;
             
             allResponses[`${question.id}_current_state`] = currentState;
             allResponses[`${question.id}_future_state`] = futureState;
