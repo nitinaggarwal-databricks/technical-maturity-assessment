@@ -397,6 +397,81 @@ const NextButton = styled(NavButton)`
   }
 `;
 
+const DialogOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+`;
+
+const DialogBox = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const DialogTitle = styled.h2`
+  margin: 0 0 12px 0;
+  font-size: 1.75rem;
+  color: #1f2937;
+  font-weight: 700;
+`;
+
+const DialogMessage = styled.p`
+  margin: 0 0 32px 0;
+  font-size: 1.1rem;
+  color: #6b7280;
+  line-height: 1.6;
+`;
+
+const DialogButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+`;
+
+const DialogButton = styled(motion.button)`
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  
+  ${props => props.variant === 'primary' && `
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+  `}
+  
+  ${props => props.variant === 'secondary' && `
+    background: #f3f4f6;
+    color: #4b5563;
+    
+    &:hover {
+      background: #e5e7eb;
+    }
+  `}
+`;
+
 const LoadingSpinner = styled.div`
   display: flex;
   align-items: center;
@@ -480,6 +555,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [editorEmail, setEditorEmail] = useState(null);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [nextPillarInfo, setNextPillarInfo] = useState(null);
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all', 'completed', 'not_started', 'without_notes'
 
   // Get dimension from query parameter
@@ -921,6 +998,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
+      toast.success(`${currentArea.name} completed!`);
+      
       // Update assessment status and get the latest state
       let updatedAssessment = currentAssessment;
       if (onUpdateStatus) {
@@ -940,28 +1019,33 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         .slice(currentPillarIndex + 1)
         .find(area => !completedCategories.includes(area.id));
       
-      if (nextPillar) {
-        // Navigate to next incomplete pillar
-        toast.success(`${currentArea.name} completed! Moving to next pillar...`);
-        setTimeout(() => {
-          navigate(`/assessment/${assessmentId}/${nextPillar.id}`);
-        }, 1000);
-      } else {
-        // All pillars completed
-        toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
-          duration: 5000
-        });
-        // Navigate to home/dashboard where they can click "Overall Assessment Results"
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
-      }
+      // Always show dialog to let user choose
+      setNextPillarInfo(nextPillar); // Will be null if no more pillars
+      setShowCompletionDialog(true);
     } catch (error) {
       console.error('Error submitting area responses:', error);
       toast.error('Failed to submit responses. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleContinueToNextPillar = () => {
+    setShowCompletionDialog(false);
+    if (nextPillarInfo) {
+      toast.success(`Moving to ${nextPillarInfo.name}...`);
+      setTimeout(() => {
+        navigate(`/assessment/${assessmentId}/${nextPillarInfo.id}`);
+      }, 500);
+    }
+  };
+
+  const handleViewResults = () => {
+    console.log('[AssessmentQuestion] Navigating to results:', assessmentId);
+    setShowCompletionDialog(false);
+    setTimeout(() => {
+      navigate(`/results/${assessmentId}`);
+    }, 300);
   };
 
   if (loading) {
@@ -1256,6 +1340,53 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             setShowEmailPrompt(false);
           }}
         />
+      )}
+
+      {/* Completion Dialog */}
+      {showCompletionDialog && (
+        <DialogOverlay onClick={() => setShowCompletionDialog(false)}>
+          <DialogBox
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DialogTitle>🎉 {currentArea?.name || 'Pillar'} Completed!</DialogTitle>
+            <DialogMessage>
+              {nextPillarInfo ? (
+                <>
+                  Great progress! Would you like to continue to the next pillar ({nextPillarInfo.name}) 
+                  or view the results for this pillar?
+                </>
+              ) : (
+                <>
+                  Congratulations! You've completed all pillars. 
+                  View your comprehensive assessment results now.
+                </>
+              )}
+            </DialogMessage>
+            <DialogButtons>
+              <DialogButton
+                variant="secondary"
+                onClick={handleViewResults}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                View Results
+              </DialogButton>
+              {nextPillarInfo && (
+                <DialogButton
+                  variant="primary"
+                  onClick={handleContinueToNextPillar}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Continue to Next Pillar →
+                </DialogButton>
+              )}
+            </DialogButtons>
+          </DialogBox>
+        </DialogOverlay>
       )}
     </AssessmentContainer>
   );

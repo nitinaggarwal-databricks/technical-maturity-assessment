@@ -829,58 +829,64 @@ class IntelligentRecommendationEngine {
     // Comprehensive next steps library by pillar - Simplified format with arrows
     const nextStepsLibrary = {
       platform_governance: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate governance approach and Unity Catalog implementation',
-        'Executive Alignment: Secure leadership endorsement for unified governance model with Unity Catalog rollout plan (1 week)',
-        'Platform Assessment: Conduct workspace hierarchy and security audit with Databricks Professional Services (1-2 weeks)',
-        'Governance Workshop: Schedule Platform Governance Blueprint Workshop with Databricks SA and governance SME (2-3 days)',
-        'Partner Engagement: Engage SI partners specializing in platform setup (Wipro, Deloitte, TCS, Slalom) for scalable implementation (2-4 weeks)',
-        'Training & Enablement: Train platform admins on workspace management, catalog design, and access control patterns (1 week)',
-        'Pilot Implementation: Roll out Unity Catalog to one business domain before full enterprise deployment (3-4 weeks)'
+        'Executive Alignment: Present governance vision to leadership; secure funding and sponsorship for cross-domain rollout',
+        'Workshop: Conduct a Platform Governance & Unity Catalog Workshop with Databricks SMEs to align architecture, access models, and catalog strategy',
+        'Enablement & Training: Role-based sessions for platform admins and data stewards on workspace hierarchy, permissions, lineage, and FinOps tagging',
+        'Adoption Strategy: Start with one business domain as a pilot (e.g., Finance, Clinical, or Claims), then scale horizontally',
+        'Assessment: Run a Security, Compliance & Governance Assessment to benchmark against HIPAA, HITRUST, and GxP best practices',
+        'Industry Outlook: Review emerging regulations (e.g., AI Act, Data Privacy) and benchmark governance models across healthcare peers',
+        'Partner / SI Engagement: Engage SI partners (e.g., Deloitte, Slalom, Accenture) for governance rollout and cross-workspace architecture design',
+        'Change Management: Create a governance council; publish policies, catalog taxonomy, and data ownership matrix'
       ],
       data_engineering: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate data pipeline architecture and Delta Lake optimization',
-        'Pipeline Assessment: Conduct pipeline health check and cost optimization review with Databricks team (1-2 weeks)',
-        'DLT Workshop: Schedule Delta Live Tables and Auto Loader enablement workshop for engineering teams (2 days)',
-        'Partner Engagement: Identify ETL modernization partners (Accenture, Cognizant, Infosys) for migration planning (2-3 weeks)',
-        'Lighthouse Project: Migrate 1-2 high-impact pipelines to Delta Lake architecture as proof of value (4-6 weeks)',
-        'Training & Enablement: Provide hands-on DLT, Auto Loader, and streaming enablement for data engineers (1 week)',
-        'Performance Testing: Load testing, data quality validation, and pipeline monitoring setup (1-2 weeks)'
+        'Workshop: Host a LakeFlow / Delta Live Tables Ingestion Strategy Workshop to align on ingestion patterns, SLAs, and DQ policies',
+        'Enablement: Train engineers and analysts on medallion architecture principles, CDC integration, and cost-efficient job scheduling',
+        'Adoption & Pilot: Identify 1-2 high-value pipelines for modernization (e.g., Claims ETL or Member 360 ingestion) as lighthouse examples',
+        'Assessment: Conduct a Pipeline Reliability & Cost Optimization Assessment to quantify gains from migration',
+        'Industry Outlook: Highlight interoperability trends — FHIR, HL7, and real-time event streaming for healthcare analytics',
+        'Partner / SI Engagement: Leverage ETL modernization partners (e.g., TCS, Cognizant, Wipro) for workload migration support',
+        'Governance Alignment: Define data ownership and stewardship roles per pipeline domain',
+        'Change Management: Create documentation and reusable templates for new pipelines; standardize intake and approval workflows'
       ],
       analytics_bi: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate BI architecture and SQL warehouse configuration',
-        'BI Assessment: Conduct analytics readiness assessment to identify migration priorities and performance bottlenecks (1-2 weeks)',
-        'DBSQL Workshop: Host Databricks SQL Analytics Workshop with Power BI/Tableau integration demo (1-2 days)',
-        'Partner Engagement: Collaborate with BI specialists (Thorogood, Tredence) to streamline dashboard migration (2-4 weeks)',
-        'Dataset Certification: Identify and certify top 10-20 datasets via Unity Catalog for self-service analytics (2-3 weeks)',
-        'Training & Enablement: Train business analysts on Databricks SQL, Delta Sharing, and semantic layer patterns (1 week)',
-        'Dashboard Migration: Migrate priority dashboards from legacy BI platforms with performance validation (4-6 weeks)'
+        'Workshop: Run a Modern BI on Lakehouse Workshop (Databricks SQL + Power BI) to align dashboard strategy',
+        'Enablement: Train business users on dataset discovery via Unity Catalog and certified data usage',
+        'Adoption: Identify top 5 dashboards to migrate; ensure alignment with governed datasets and performance SLAs',
+        'Assessment: Execute a BI Performance & Adoption Assessment to evaluate latency, concurrency, and usability',
+        'Industry Outlook: Share BI modernization success stories (payer/provider data democratization)',
+        'Partner / SI Engagement: Collaborate with BI accelerators (e.g., Thorogood, Tredence, Aimpoint Digital) for dashboard modernization',
+        'Change Management: Establish "Data Champions" in each department to drive adoption and training',
+        'Success Metrics: Measure report refresh frequency, active dashboard usage, and time-to-insight KPIs'
       ],
       machine_learning: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate MLOps architecture and model deployment strategy',
-        'ML Assessment: Conduct ML readiness and governance assessment for model lifecycle management (1-2 weeks)',
-        'MLOps Workshop: Schedule MLflow, Model Serving, and Feature Store enablement workshop (2-3 days)',
-        'Partner Engagement: Engage domain-specific AI partners (ZS, IQVIA, Deloitte) for solution acceleration (2-4 weeks)',
-        'Model Deployment: Deploy first model to production using Model Serving or AI Gateway (3-4 weeks)',
-        'Training & Enablement: Train data science teams on experiment tracking, model registry, and deployment patterns (1 week)',
-        'Governance Setup: Implement model governance framework with approval workflows and monitoring (2-3 weeks)'
+        'Workshop: Conduct a Model Lifecycle Management Workshop covering MLflow, Model Registry, and MLOps governance',
+        'Enablement: Provide training for DS/ML teams on model versioning, experiment tracking, and deployment workflows',
+        'Adoption: Select one business use case (e.g., fraud detection, churn prediction, or risk scoring) for MLflow deployment pilot',
+        'Assessment: Perform an ML Governance & Readiness Assessment focusing on model lineage, explainability, and audit',
+        'Industry Outlook: Review state of MLOps adoption and regulated AI compliance in healthcare and life sciences',
+        'Partner / SI Engagement: Engage AI partners (ZS, IQVIA, Deloitte AI) for co-development or validation support',
+        'Change Management: Form an internal "Model Review Board" to standardize approval and transition criteria',
+        'Measurement: Track metrics like model re-training frequency, deployment cycle time, and business ROI'
       ],
       generative_ai: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate GenAI architecture and RAG implementation',
-        'GenAI Assessment: Conduct AI readiness assessment and identify high-value GenAI use cases (1-2 weeks)',
-        'GenAI Workshop: Schedule RAG, LLM evaluation, and AI Gateway workshop with Databricks Labs (2-3 days)',
-        'Partner Engagement: Engage AI consulting partners for GenAI solution design and implementation (3-4 weeks)',
-        'POC Development: Build proof-of-concept for top priority GenAI use case with Databricks support (4-6 weeks)',
-        'Training & Enablement: Train teams on prompt engineering, RAG patterns, and GenAI evaluation frameworks (1 week)',
-        'Security & Compliance: Implement AI governance controls, PII protection, and audit logging (2-3 weeks)'
+        'Workshop: Schedule a GenAI Strategy & AI Gateway Workshop to define architecture, security, and governance approach',
+        'Enablement: Conduct enablement sessions for developers and product owners on RAG, prompt engineering, and evaluation frameworks',
+        'Adoption: Identify 2–3 lighthouse GenAI use cases (e.g., Prior Auth Optimization, Intelligent Documentation, Customer Support Copilot)',
+        'Assessment: Perform a GenAI Readiness & Risk Assessment (focus: privacy, bias, and model auditability)',
+        'Industry Outlook: Present evolving trends — GenAI copilots, regulated model governance, fine-tuning ethics, and AI act implications',
+        'Partner / SI Engagement: Collaborate with GenAI implementation partners (Quantiphi, Databricks PS, or industry ISVs)',
+        'Change Management: Define a responsible-AI policy; involve legal, compliance, and data ethics teams early',
+        'Measurement: Track adoption metrics: user satisfaction, productivity gains, task automation rates'
       ],
       operational_excellence: [
-        'Architecture Review: Design session with Databricks Solutions Architect (2 hours) to validate monitoring and cost optimization approach',
-        'Operations Assessment: Conduct ops maturity review focusing on observability, cost management, and incident response (1-2 weeks)',
-        'Observability Workshop: Schedule system tables, monitoring, and FinOps enablement workshop (2 days)',
-        'Partner Engagement: Engage managed services partners (Persistent, Capgemini) for operational automation (2-4 weeks)',
-        'Monitoring Setup: Deploy centralized cost dashboards, SLA metrics, and alerting systems (2-3 weeks)',
-        'Training & Enablement: Train admin teams on system tables, proactive monitoring, and troubleshooting (1 week)',
-        'Cost Optimization: Implement auto-scaling policies, instance optimization, and budget alerts (3-4 weeks)'
+        'Workshop: Conduct Ops & FinOps Workshop — focus on system tables, cost optimization, audit logs, and SLA reporting',
+        'Enablement: Train administrators and PMs on monitoring, alerting, tagging, and usage governance',
+        'Adoption: Standardize ops dashboards and monthly business reviews (MBRs) to track system health and cost',
+        'Assessment: Run an Operational Maturity Assessment on incident management, SLAs, and observability',
+        'Industry Outlook: Benchmark operational cost, uptime, and governance KPIs vs. peers',
+        'Partner / SI Engagement: Collaborate with managed service providers (e.g., Persistent, Capgemini, HCL) for 24×7 support',
+        'Change Management: Define escalation paths, ticket SLAs, and accountability models for teams',
+        'Measurement: KPIs — uptime %, mean time to detect (MTTD), cost reduction %, and automation coverage'
       ]
     };
     
@@ -890,9 +896,9 @@ class IntelligentRecommendationEngine {
     // Select up to 4 most relevant, actionable next steps in priority order
     const selectedNextSteps = [];
     
-    // 1. Always start with Architecture Review (quick engagement with Databricks)
-    const archReview = pillarNextSteps.find(step => step.includes('Architecture Review:'));
-    if (archReview) selectedNextSteps.push(archReview);
+    // 1. Always start with Workshop (technical engagement with Databricks)
+    const workshop = pillarNextSteps.find(step => step.includes('Workshop:'));
+    if (workshop) selectedNextSteps.push(workshop);
     
     // 2. Include Assessment if maturity gap is significant (gap > 2)
     if (avgGap > 2) {
@@ -900,40 +906,29 @@ class IntelligentRecommendationEngine {
       if (assessment) selectedNextSteps.push(assessment);
     }
     
-    // 3. Include Workshop or Training (capacity building)
-    const workshop = pillarNextSteps.find(step => step.includes('Workshop:'));
-    const training = pillarNextSteps.find(step => step.includes('Training & Enablement:'));
-    if (workshop) {
-      selectedNextSteps.push(workshop);
-    } else if (training) {
-      selectedNextSteps.push(training);
+    // 3. Include Enablement/Training (capacity building)
+    const enablement = pillarNextSteps.find(step => 
+      step.includes('Enablement:') || 
+      step.includes('Enablement &') ||
+      step.includes('Training:')
+    );
+    if (enablement && selectedNextSteps.length < 4) {
+      selectedNextSteps.push(enablement);
     }
     
-    // 4. Include Partner Engagement or Implementation step
-    const partner = pillarNextSteps.find(step => step.includes('Partner Engagement:'));
-    const implementation = pillarNextSteps.find(step => 
-      step.includes('Implementation:') || 
-      step.includes('Deployment:') || 
-      step.includes('Migration:') ||
-      step.includes('Setup:') ||
-      step.includes('Project:') ||
-      step.includes('POC Development:') ||
-      step.includes('Pilot Implementation:') ||
-      step.includes('Lighthouse Project:') ||
-      step.includes('Model Deployment:') ||
-      step.includes('Dashboard Migration:')
+    // 4. Include Adoption/Pilot (practical implementation)
+    const adoption = pillarNextSteps.find(step => 
+      step.includes('Adoption:') || 
+      step.includes('Adoption &') || 
+      step.includes('Adoption Strategy:') ||
+      step.includes('Pilot:')
     );
     
-    if (selectedNextSteps.length < 4) {
-      if (partner && !selectedNextSteps.includes(partner)) {
-        selectedNextSteps.push(partner);
-      }
-      if (implementation && !selectedNextSteps.includes(implementation) && selectedNextSteps.length < 4) {
-        selectedNextSteps.push(implementation);
-      }
+    if (adoption && !selectedNextSteps.includes(adoption) && selectedNextSteps.length < 4) {
+      selectedNextSteps.push(adoption);
     }
     
-    // Fill remaining slots with other relevant steps
+    // Fill remaining slots with other relevant steps (Partner Engagement, Change Management, etc.)
     const remainingSlots = 4 - selectedNextSteps.length;
     if (remainingSlots > 0) {
       const otherSteps = pillarNextSteps.filter(step => !selectedNextSteps.includes(step));

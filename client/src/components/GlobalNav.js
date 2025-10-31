@@ -364,11 +364,13 @@ const GlobalNav = () => {
       const completedCategories = [];
       let firstCategoryId = null;
       
+      // Populate ALL pillars with realistic sample data for full demo experience
       framework.assessmentAreas.forEach((area, areaIdx) => {
         // Capture first category for navigation
         if (areaIdx === 0) {
           firstCategoryId = area.id;
         }
+        
         area.dimensions.forEach((dimension, dimIdx) => {
           dimension.questions.forEach((question, qIdx) => {
             // More varied random current state with better distribution (1-5)
