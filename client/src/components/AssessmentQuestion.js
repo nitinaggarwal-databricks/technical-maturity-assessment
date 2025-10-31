@@ -916,20 +916,24 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      // Update assessment status
+      // Update assessment status and get the latest state
+      let updatedAssessment = currentAssessment;
       if (onUpdateStatus) {
         try {
-          await onUpdateStatus(assessmentId);
+          updatedAssessment = await onUpdateStatus(assessmentId);
         } catch (statusError) {
           console.warn('Failed to update status, but submission succeeded:', statusError);
         }
       }
       
+      // Use the updated completed categories list (after this pillar was added)
+      const completedCategories = updatedAssessment?.completedCategories || currentAssessment?.completedCategories || [];
+      
       // Find the next incomplete pillar
       const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
       const nextPillar = framework.assessmentAreas
         .slice(currentPillarIndex + 1)
-        .find(area => !currentAssessment?.completedCategories?.includes(area.id));
+        .find(area => !completedCategories.includes(area.id));
       
       if (nextPillar) {
         // Navigate to next incomplete pillar
