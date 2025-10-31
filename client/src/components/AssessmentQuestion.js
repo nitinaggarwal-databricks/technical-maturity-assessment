@@ -916,20 +916,36 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      toast.success('Pillar completed successfully! View your results.');
-      
-      // Navigate to overall assessment results page
-      // User can view all completed pillars and continue to next pillar from there
-      navigate(`/results/${assessmentId}`);
-      
-      // Update assessment status (non-blocking - don't let this fail the whole operation)
+      // Update assessment status
       if (onUpdateStatus) {
         try {
           await onUpdateStatus(assessmentId);
         } catch (statusError) {
           console.warn('Failed to update status, but submission succeeded:', statusError);
-          // Don't show error toast since the main operation succeeded
         }
+      }
+      
+      // Find the next incomplete pillar
+      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      const nextPillar = framework.assessmentAreas
+        .slice(currentPillarIndex + 1)
+        .find(area => !currentAssessment?.completedCategories?.includes(area.id));
+      
+      if (nextPillar) {
+        // Navigate to next incomplete pillar
+        toast.success(`${currentArea.name} completed! Moving to next pillar...`);
+        setTimeout(() => {
+          navigate(`/assessment/${assessmentId}/${nextPillar.id}`);
+        }, 1000);
+      } else {
+        // All pillars completed
+        toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
+          duration: 5000
+        });
+        // Navigate to home/dashboard where they can click "Overall Assessment Results"
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       }
     } catch (error) {
       console.error('Error submitting area responses:', error);
