@@ -1506,7 +1506,7 @@ const AssessmentResultsNew = () => {
     });
   };
 
-  const handleSaveNewGoodItem = (pillarId) => {
+  const handleSaveAddedGoodItem = (pillarId) => {
     const newText = editedContent[`new-good-${pillarId}`];
     if (!newText || !newText.trim()) {
       toast.error('Please enter some text');
@@ -1531,7 +1531,7 @@ const AssessmentResultsNew = () => {
     });
   };
 
-  const handleSaveNewBadItem = (pillarId) => {
+  const handleSaveAddedBadItem = (pillarId) => {
     const newText = editedContent[`new-bad-${pillarId}`];
     if (!newText || !newText.trim()) {
       toast.error('Please enter some text');
@@ -2671,7 +2671,7 @@ const AssessmentResultsNew = () => {
                               />
                               <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                 <button
-                                  onClick={() => handleSaveNewGoodItem(pillar.id)}
+                                  onClick={() => handleSaveAddedGoodItem(pillar.id)}
                                   style={{
                                     padding: '6px 12px',
                                     fontSize: '0.8rem',

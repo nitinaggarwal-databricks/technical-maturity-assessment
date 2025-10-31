@@ -1827,13 +1827,13 @@ class IntelligentRecommendationEngine {
   getMaturityLevelName(score) {
     const roundedScore = Math.round(score);
     const levels = {
-      1: 'Initial',
-      2: 'Repeatable',
-      3: 'Defined',
-      4: 'Managed',
-      5: 'Optimizing'
+      1: 'Explore',
+      2: 'Experiment',
+      3: 'Formalize',
+      4: 'Optimize',
+      5: 'Transform'
     };
-    return levels[roundedScore] || 'Defined';
+    return levels[roundedScore] || 'Formalize';
   }
   
   generateRoadmapIntro(prioritizedActions, industry) {
