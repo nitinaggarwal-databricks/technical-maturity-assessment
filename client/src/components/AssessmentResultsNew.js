@@ -1698,7 +1698,13 @@ const AssessmentResultsNew = () => {
               if (dimensions.length === 0) {
                 dimensions = dimensionKeys.map(dimId => ({
                   id: dimId,
-                  title: dimId.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+                  title: dimId.split('_').map(word => {
+                    // Keep ML and AI in uppercase
+                    if (word.toLowerCase() === 'ml' || word.toLowerCase() === 'ai') {
+                      return word.toUpperCase();
+                    }
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                  }).join(' ')
                 }));
               }
             }
