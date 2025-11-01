@@ -2269,32 +2269,32 @@ const AssessmentResultsNew = () => {
                         <EditActionButton 
                           $variant="success"
                           onClick={() => handleSavePillar(pillar.id)}
+                          title="Save"
                         >
                           <FiSave size={14} />
-                          Save
                         </EditActionButton>
                         <EditActionButton 
                           onClick={handleCancelPillarEdit}
+                          title="Cancel"
                         >
                           <FiX size={14} />
-                          Cancel
                         </EditActionButton>
                       </>
                     ) : (
                       <>
                         <EditActionButton 
                           onClick={() => handleEditPillar(pillar.id, data)}
+                          title="Edit"
                         >
                           <FiEdit3 size={14} />
-                          Edit
                         </EditActionButton>
                         {customizations.pillars[pillar.id] && (
                           <EditActionButton 
                             $variant="danger"
                             onClick={() => handleRemovePillarCustomization(pillar.id)}
+                            title="Remove customization"
                           >
                             <FiTrash2 size={14} />
-                            Remove
                           </EditActionButton>
                         )}
                       </>
