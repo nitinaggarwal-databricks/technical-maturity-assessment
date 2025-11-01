@@ -1514,25 +1514,36 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       />
       <ContentWrapper>
         <ProgressSection>
-          <ProgressInfo>
-            <AreaTitle>
+          {/* 🆕 SINGLE COMPACT LINE: Everything in one row */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            gap: '12px',
+            flexWrap: 'wrap',
+            marginBottom: '12px'
+          }}>
+            {/* Left side: Title */}
+            <AreaTitle style={{ margin: 0, fontSize: '1.5rem', flexShrink: 0 }}>
               <div>{currentArea.name}</div>
               {currentDimension && (
-                <DimensionSubtitle>{currentDimension.name}</DimensionSubtitle>
+                <DimensionSubtitle style={{ fontSize: '0.85rem' }}>{currentDimension.name}</DimensionSubtitle>
               )}
             </AreaTitle>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+            
+            {/* Right side: Status indicators */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <AutoSaveStatus status={autoSaveStatus}>
                 {autoSaveStatus === 'saving' && (
                   <>
-                    <FiSave size={18} />
-                    <span>Saving...</span>
+                    <FiSave size={16} />
+                    <span style={{ fontSize: '0.85rem' }}>Saving...</span>
                   </>
                 )}
                 {autoSaveStatus === 'saved' && (
                   <>
-                    <FiCheckCircle size={18} className="save-icon" />
-                    <span>
+                    <FiCheckCircle size={16} className="save-icon" />
+                    <span style={{ fontSize: '0.85rem' }}>
                       All changes saved
                       <LastSavedText>
                         {getLastSavedText() && ` • ${getLastSavedText()}`}
@@ -1542,17 +1553,17 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 )}
                 {autoSaveStatus === 'error' && (
                   <>
-                    <FiWifiOff size={18} />
-                    <span>Save failed - click Save Progress below</span>
+                    <FiWifiOff size={16} />
+                    <span style={{ fontSize: '0.85rem' }}>Save failed</span>
                   </>
                 )}
               </AutoSaveStatus>
-              <ProgressText>
+              <ProgressText style={{ fontSize: '0.85rem' }}>
                 Question {currentQuestionIndex + 1} of {questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
                 {questionFilter !== 'all' && <span style={{ color: '#ff6b35', fontWeight: 600 }}> (Filtered)</span>}
               </ProgressText>
               
-              {/* 🆕 Skip Checkbox - Moved to header */}
+              {/* Skip Checkbox - Compact */}
               {currentQuestion && (
                 <label 
                   style={{ 
@@ -1560,115 +1571,116 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                     alignItems: 'center', 
                     gap: '6px', 
                     cursor: 'pointer',
-                    fontSize: '0.9rem',
+                    fontSize: '0.85rem',
                     fontWeight: 600,
                     color: skippedQuestions[currentQuestion?.id] ? '#f59e0b' : '#6b7280',
                     padding: '4px 8px',
                     background: skippedQuestions[currentQuestion?.id] ? '#fef3c7' : '#f8f9fa',
                     borderRadius: '6px',
                     border: `2px solid ${skippedQuestions[currentQuestion?.id] ? '#fbbf24' : '#e5e7eb'}`,
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    flexShrink: 0
                   }}
                 >
                   <input
                     type="checkbox"
                     checked={skippedQuestions[currentQuestion?.id] || false}
                     onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
-                    style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                    style={{ width: '14px', height: '14px', cursor: 'pointer' }}
                   />
                   Skip
                 </label>
               )}
             </div>
-          </ProgressInfo>
-          <ProgressBar>
+          </div>
+          
+          {/* Progress Bar */}
+          <ProgressBar style={{ marginBottom: '12px' }}>
             <ProgressFill progress={progress} />
           </ProgressBar>
           
-          {/* 🆕 COMPACT SINGLE-LINE: Filters + Question Numbers (moved to top) */}
-          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
-            <FilterSection style={{ marginBottom: 0 }}>
-              {/* Filter Buttons (no label) */}
-              <FilterButton 
-                active={questionFilter === 'all'} 
-                onClick={() => setQuestionFilter('all')}
-              >
-                All
-                <FilterBadge active={questionFilter === 'all'}>
-                  {filterStats.total}
-                </FilterBadge>
-              </FilterButton>
-              <FilterButton 
-                active={questionFilter === 'completed'} 
-                onClick={() => setQuestionFilter('completed')}
-              >
-                Completed
-                <FilterBadge active={questionFilter === 'completed'}>
-                  {filterStats.completed}
-                </FilterBadge>
-              </FilterButton>
-              <FilterButton 
-                active={questionFilter === 'not_started'} 
-                onClick={() => setQuestionFilter('not_started')}
-              >
-                Not Started
-                <FilterBadge active={questionFilter === 'not_started'}>
-                  {filterStats.notStarted}
-                </FilterBadge>
-              </FilterButton>
-              <FilterButton 
-                active={questionFilter === 'without_notes'} 
-                onClick={() => setQuestionFilter('without_notes')}
-              >
-                Completed Without Notes
-                <FilterBadge active={questionFilter === 'without_notes'}>
-                  {filterStats.withoutNotes}
-                </FilterBadge>
-              </FilterButton>
+          {/* Filters + Question Numbers */}
+          <FilterSection style={{ marginBottom: 0 }}>
+            {/* Filter Buttons */}
+            <FilterButton 
+              active={questionFilter === 'all'} 
+              onClick={() => setQuestionFilter('all')}
+            >
+              All
+              <FilterBadge active={questionFilter === 'all'}>
+                {filterStats.total}
+              </FilterBadge>
+            </FilterButton>
+            <FilterButton 
+              active={questionFilter === 'completed'} 
+              onClick={() => setQuestionFilter('completed')}
+            >
+              Completed
+              <FilterBadge active={questionFilter === 'completed'}>
+                {filterStats.completed}
+              </FilterBadge>
+            </FilterButton>
+            <FilterButton 
+              active={questionFilter === 'not_started'} 
+              onClick={() => setQuestionFilter('not_started')}
+            >
+              Not Started
+              <FilterBadge active={questionFilter === 'not_started'}>
+                {filterStats.notStarted}
+              </FilterBadge>
+            </FilterButton>
+            <FilterButton 
+              active={questionFilter === 'without_notes'} 
+              onClick={() => setQuestionFilter('without_notes')}
+            >
+              Completed Without Notes
+              <FilterBadge active={questionFilter === 'without_notes'}>
+                {filterStats.withoutNotes}
+              </FilterBadge>
+            </FilterButton>
 
-              {/* Separator */}
-              <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
+            {/* Separator */}
+            <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
 
-              {/* Question Numbers (no label, show numbers instead of checkmarks) */}
-              {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
-                const isComplete = isQuestionCompleted(q);
-                const hasComment = hasNotes(q);
-                const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
-                const isCurrent = idx === currentQuestionIndex;
-                
-                return (
-                  <MiniMapDot
-                    key={q.id}
-                    isComplete={isComplete}
-                    isPartial={isPartial}
-                    isCurrent={isCurrent}
-                    onClick={() => handleJumpToQuestion(idx)}
-                    title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
-                  >
-                    {idx + 1}
-                  </MiniMapDot>
-                );
-              })}
+            {/* Question Numbers */}
+            {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
+              const isComplete = isQuestionCompleted(q);
+              const hasComment = hasNotes(q);
+              const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+              const isCurrent = idx === currentQuestionIndex;
+              
+              return (
+                <MiniMapDot
+                  key={q.id}
+                  isComplete={isComplete}
+                  isPartial={isPartial}
+                  isCurrent={isCurrent}
+                  onClick={() => handleJumpToQuestion(idx)}
+                  title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
+                >
+                  {idx + 1}
+                </MiniMapDot>
+              );
+            })}
 
-              {/* Hide Map Button (now toggles visibility) */}
-              <button
-                onClick={() => setShowMiniMap(!showMiniMap)}
-                style={{
-                  marginLeft: 'auto',
-                  padding: '6px 12px',
-                  background: '#f3f4f6',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '0.85rem',
-                  color: '#666',
-                  fontWeight: '500'
-                }}
-              >
-                {showMiniMap ? 'Hide Map' : 'Show Map'}
-              </button>
-            </FilterSection>
-          </div>
+            {/* Hide Map Button */}
+            <button
+              onClick={() => setShowMiniMap(!showMiniMap)}
+              style={{
+                marginLeft: 'auto',
+                padding: '6px 12px',
+                background: '#f3f4f6',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                color: '#666',
+                fontWeight: '500'
+              }}
+            >
+              {showMiniMap ? 'Hide Map' : 'Show Map'}
+            </button>
+          </FilterSection>
         </ProgressSection>
 
         {/* 🆕 BULK ACTIONS BAR */}
