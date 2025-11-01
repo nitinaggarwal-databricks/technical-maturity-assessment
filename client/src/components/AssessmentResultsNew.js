@@ -1145,12 +1145,17 @@ const AssessmentResultsNew = () => {
   };
 
   const handlePrint = () => {
-    toast.success('Opening print dialog... Enable "Background graphics" in print settings for best results!', { duration: 4000 });
+    // Show brief toast
+    const toastId = toast.success('Opening print dialog... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
     
-    // Small delay to let toast show
+    // Dismiss the toast and open print dialog
     setTimeout(() => {
-      window.print();
-    }, 500);
+      toast.dismiss(toastId); // Dismiss the specific toast
+      toast.dismiss(); // Dismiss all toasts to be safe
+      setTimeout(() => {
+        window.print();
+      }, 100); // Small delay to ensure toast is gone
+    }, 1000);
   };
 
   const handleExportExcel = async () => {
@@ -3299,30 +3304,36 @@ const AssessmentResultsNew = () => {
                                           });
                                         }}
                                         style={{
-                                          padding: '3px 8px',
-                                          fontSize: '0.7rem',
+                                          padding: '6px',
                                           background: '#3b82f6',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
-                                          cursor: 'pointer'
+                                          cursor: 'pointer',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center'
                                         }}
+                                        title="Edit"
                                       >
-                                        Edit
+                                        <FiEdit3 size={14} />
                                       </button>
                                       <button
                                         onClick={() => handleDeleteFeature(pillar.id, idx)}
                                         style={{
-                                          padding: '3px 8px',
-                                          fontSize: '0.7rem',
+                                          padding: '6px',
                                           background: '#ef4444',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
-                                          cursor: 'pointer'
+                                          cursor: 'pointer',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center'
                                         }}
+                                        title="Delete"
                                       >
-                                        Delete
+                                        <FiTrash2 size={14} />
                                       </button>
                                     </div>
                                   </div>
