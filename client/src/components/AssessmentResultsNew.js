@@ -3595,7 +3595,7 @@ const AssessmentResultsNew = () => {
                     </PillarFullWidth>
                     
                     {/* Next Steps - Separate Card Below Recommendations */}
-                    {data.specificRecommendations && data.specificRecommendations.length > 0 && (
+                    {((data.nextSteps && data.nextSteps.length > 0) || (data.specificRecommendations && data.specificRecommendations.length > 0)) && (
                       <div style={{ 
                         marginTop: '16px',
                         background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
@@ -3645,7 +3645,7 @@ const AssessmentResultsNew = () => {
                           flexDirection: 'column',
                           gap: '12px'
                         }}>
-                          {data.specificRecommendations.slice(0, 4).map((rec, idx) => {
+                          {(data.nextSteps || data.specificRecommendations || []).slice(0, 4).map((rec, idx) => {
                             const stepKey = `${pillar.id}-${idx}`;
                             const isEditing = editingNextStep === stepKey;
                             const displayStep = customizations.nextSteps[stepKey] !== undefined 
