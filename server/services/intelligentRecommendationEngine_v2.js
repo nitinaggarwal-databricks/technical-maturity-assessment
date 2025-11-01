@@ -714,12 +714,32 @@ class IntelligentRecommendationEngine {
     console.log(`[IntelligentEngine V2] 📊 What's Working: ${theGood.length}, Key Challenges: ${theBad.length}`);
     console.log(`[IntelligentEngine V2] 🔍 First 2 next steps for ${pillarId}:`, allNextSteps.slice(0, 2));
     
+    // 🎯 DYNAMIC FEATURE COUNT: More features for larger gaps
+    // Calculate average gap for this pillar
+    const avgCurrent = stateGaps.reduce((sum, g) => sum + (g.current || 0), 0) / Math.max(stateGaps.length, 1);
+    const avgFuture = stateGaps.reduce((sum, g) => sum + (g.future || 0), 0) / Math.max(stateGaps.length, 1);
+    const avgGap = avgFuture - avgCurrent;
+    
+    // Determine feature count based on gap size
+    let maxFeatures = 4; // Default
+    if (avgGap >= 3) {
+      maxFeatures = 8; // Large gap = more features needed
+    } else if (avgGap >= 2) {
+      maxFeatures = 6; // Medium gap = moderate features
+    } else if (avgGap >= 1) {
+      maxFeatures = 4; // Small gap = fewer features
+    } else {
+      maxFeatures = 3; // No gap or small improvement = minimal features
+    }
+    
+    console.log(`[IntelligentEngine V2] 🎯 Maturity gap: ${avgGap.toFixed(1)} → showing ${maxFeatures} features (from ${painPointFeatures.length} available)`);
+    
     return {
       theGood: theGood.slice(0, 5),
       theBad: theBad,
       recommendations: allRecommendations.slice(0, 8),
       nextSteps: allNextSteps,  // Return all contextual next steps (typically 5-7)
-      databricksFeatures: painPointFeatures.slice(0, 4)
+      databricksFeatures: painPointFeatures.slice(0, maxFeatures) // 🎯 DYNAMIC based on gap
     };
   }
 
