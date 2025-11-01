@@ -1373,7 +1373,7 @@ class IntelligentRecommendationEngine {
     }
     
     // Phase 1: Critical priority pillars (gap >= 2)
-    const criticalPillars = sorted.filter(p => p.gap >= 2);
+    const phase1CriticalPillars = sorted.filter(p => p.gap >= 2); // 🔥 RENAMED to avoid duplicate
     
     // Business outcome mapping for pillars
     const businessOutcomes = {
@@ -1385,7 +1385,7 @@ class IntelligentRecommendationEngine {
       'operational_excellence': 'reducing operational overhead by 20-30%'
     };
     
-    criticalPillars.slice(0, 2).forEach(pillar => {
+    phase1CriticalPillars.slice(0, 2).forEach(pillar => {
       const topChallenge = pillar.theBad?.[0] || `Maturity gap of ${pillar.gap} levels`;
       const topFeature = pillar.databricksFeatures?.[0]?.name || 'recommended features';
       const outcome = businessOutcomes[pillar.pillarId] || 'driving measurable business value';
@@ -1395,7 +1395,7 @@ class IntelligentRecommendationEngine {
     
     // Ensure we have at least 3 items in Phase 1
     if (phase1Items.length < 3 && sorted.length > 0) {
-      const nextPillar = sorted.find(p => !criticalPillars.includes(p));
+      const nextPillar = sorted.find(p => !phase1CriticalPillars.includes(p));
       if (nextPillar) {
         phase1Items.push(`Establish ${nextPillar.pillarName} monitoring and baseline metrics - enabling data-driven decision making`);
       }
