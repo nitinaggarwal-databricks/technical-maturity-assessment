@@ -672,12 +672,47 @@ class IntelligentRecommendationEngine {
     let painPointFeatures;
     if (dbFeatures.length > 0) {
       console.log(`[IntelligentEngine V2] ✅ Building ${dbFeatures.length} Databricks Features from DATABASE`);
-      painPointFeatures = dbFeatures.map(f => ({
-        name: f.name,
-        description: f.description || f.short_description,
-        benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
-        docsLink: f.docs || f.documentation_url
-      }));
+      
+      // 🔥 ADD "WHY" TO EACH FEATURE based on user pain points and comments
+      painPointFeatures = dbFeatures.map(f => {
+        // Find the pain point this feature addresses
+        const matchingPainPoint = topPainPoints.find(pp => {
+          const ppLabel = pp.label?.toLowerCase() || pp.value?.toLowerCase() || '';
+          const featureName = f.name.toLowerCase();
+          const featureDesc = (f.description || f.short_description || '').toLowerCase();
+          return featureDesc.includes(ppLabel) || ppLabel.includes(featureName.split(' ')[0]);
+        });
+        
+        // Find user comment that mentions this issue
+        const relatedComment = comments.find(c => {
+          const commentText = (c.comment || '').toLowerCase();
+          const painPointLabel = matchingPainPoint?.label?.toLowerCase() || matchingPainPoint?.value?.toLowerCase() || '';
+          return commentText.includes(painPointLabel) || 
+                 commentText.includes('manual') || 
+                 commentText.includes('slow') ||
+                 commentText.includes('difficult');
+        });
+        
+        // 🎯 BUILD THE "WHY" - specific reason based on user input
+        let reason = '';
+        if (relatedComment && relatedComment.comment) {
+          // Extract first 100 chars of user comment
+          const userIssue = relatedComment.comment.substring(0, 100);
+          reason = `Addresses your challenge: "${userIssue}${relatedComment.comment.length > 100 ? '...' : ''}"`;
+        } else if (matchingPainPoint) {
+          reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
+        } else {
+          reason = `Recommended based on your maturity gap and pain points`;
+        }
+        
+        return {
+          name: f.name,
+          description: f.description || f.short_description,
+          benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
+          docsLink: f.docs || f.documentation_url,
+          reason: reason // 🔥 NEW: WHY this feature is recommended
+        };
+      });
       
       // 🎯 FILTER OUT CROSS-PILLAR CONTAMINATION
       // Remove features that don't belong to this pillar
@@ -714,32 +749,15 @@ class IntelligentRecommendationEngine {
     console.log(`[IntelligentEngine V2] 📊 What's Working: ${theGood.length}, Key Challenges: ${theBad.length}`);
     console.log(`[IntelligentEngine V2] 🔍 First 2 next steps for ${pillarId}:`, allNextSteps.slice(0, 2));
     
-    // 🎯 DYNAMIC FEATURE COUNT: More features for larger gaps
-    // Calculate average gap for this pillar
-    const avgCurrent = stateGaps.reduce((sum, g) => sum + (g.current || 0), 0) / Math.max(stateGaps.length, 1);
-    const avgFuture = stateGaps.reduce((sum, g) => sum + (g.future || 0), 0) / Math.max(stateGaps.length, 1);
-    const avgGap = avgFuture - avgCurrent;
-    
-    // Determine feature count based on gap size
-    let maxFeatures = 4; // Default
-    if (avgGap >= 3) {
-      maxFeatures = 8; // Large gap = more features needed
-    } else if (avgGap >= 2) {
-      maxFeatures = 6; // Medium gap = moderate features
-    } else if (avgGap >= 1) {
-      maxFeatures = 4; // Small gap = fewer features
-    } else {
-      maxFeatures = 3; // No gap or small improvement = minimal features
-    }
-    
-    console.log(`[IntelligentEngine V2] 🎯 Maturity gap: ${avgGap.toFixed(1)} → showing ${maxFeatures} features (from ${painPointFeatures.length} available)`);
+    // 🔥 USER REQUIREMENT: ALWAYS show up to 8 features and 6 next steps
+    // Each feature MUST include WHY it's recommended based on user input
     
     return {
       theGood: theGood.slice(0, 5),
       theBad: theBad,
       recommendations: allRecommendations.slice(0, 8),
-      nextSteps: allNextSteps,  // Return all contextual next steps (typically 5-7)
-      databricksFeatures: painPointFeatures.slice(0, maxFeatures) // 🎯 DYNAMIC based on gap
+      nextSteps: allNextSteps.slice(0, 6),  // 🔥 FIXED: Max 6 next steps as requested
+      databricksFeatures: painPointFeatures.slice(0, 8) // 🔥 FIXED: Max 8 features as requested
     };
   }
 

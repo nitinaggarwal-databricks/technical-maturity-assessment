@@ -3160,7 +3160,7 @@ const AssessmentResultsNew = () => {
                           gap: '16px',
                           marginBottom: '20px'
                         }}>
-                          {data.databricksFeatures.slice(0, 4).map((feature, idx) => {
+                          {data.databricksFeatures.slice(0, 8).map((feature, idx) => {
                             const featureKey = `${pillar.id}-feature-${idx}`;
                             const isEditing = editingFeature === featureKey;
                             const displayFeature = customizations.features[featureKey] !== undefined 
@@ -3329,6 +3329,21 @@ const AssessmentResultsNew = () => {
                                   <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.4' }}>
                                     {displayFeature.description}
                                   </div>
+                                  {/* 🔥 NEW: Show WHY this feature is recommended */}
+                                  {displayFeature.reason && (
+                                    <div style={{ 
+                                      fontSize: '0.75rem', 
+                                      color: '#f59e0b', 
+                                      background: '#fef3c7',
+                                      padding: '8px 12px',
+                                      borderRadius: '6px',
+                                      marginBottom: '8px',
+                                      fontStyle: 'italic',
+                                      borderLeft: '3px solid #f59e0b'
+                                    }}>
+                                      <strong>Why recommended:</strong> {displayFeature.reason}
+                                    </div>
+                                  )}
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
                                     {displayFeature.releaseDate && (
                                       <span style={{ color: '#10b981', fontWeight: 600 }}>
