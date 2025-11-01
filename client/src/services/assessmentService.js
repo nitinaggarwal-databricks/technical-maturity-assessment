@@ -159,8 +159,9 @@ export const getAssessmentResults = async (assessmentId, forceRefresh = false) =
     const response = await api.get(`/assessment/${assessmentId}/results?_refresh=${forceRefresh ? 'true' : 'false'}&_=${cacheBuster}`, {
       headers
     });
-    // Backend returns data directly for results endpoint
-    return response.data;
+    // API interceptor already extracts response.data, so we get the actual data directly
+    // Backend returns { success: true, data: { ... } }
+    return response; // Return the full response (already has .data extracted by interceptor)
   } catch (error) {
     console.error('Error fetching assessment results:', error);
     throw error;
