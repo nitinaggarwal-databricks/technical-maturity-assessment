@@ -513,7 +513,7 @@ const LoadingSpinner = styled.div`
 const FilterSection = styled.div`
   background: white;
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 12px 20px;
   margin-bottom: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   display: flex;
@@ -560,9 +560,9 @@ const FilterBadge = styled.span`
 // 🆕 SMART NAVIGATION COMPONENTS
 const QuestionMiniMap = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  padding: 16px;
+  padding: 12px;
   background: white;
   border-radius: 12px;
   margin-bottom: 16px;
@@ -570,14 +570,14 @@ const QuestionMiniMap = styled.div`
   overflow-x: auto;
   
   @media (max-width: 768px) {
-    padding: 12px;
-    gap: 6px;
+    padding: 10px;
+    gap: 5px;
   }
 `;
 
 const MiniMapDot = styled.button`
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 2px solid ${props => 
     props.isComplete ? '#10b981' : 
@@ -587,24 +587,25 @@ const MiniMapDot = styled.button`
     props.isComplete ? '#10b981' : 
     props.isPartial ? '#fef3c7' :
     props.isCurrent ? '#ff6b35' : 'white'};
-  color: ${props => props.isComplete || props.isCurrent ? 'white' : '#666'};
+  color: ${props => props.isComplete || props.isCurrent ? 'white' : props.isPartial ? '#92400e' : '#9ca3af'};
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  flex-shrink: 0;
   
   &:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
   
   @media (max-width: 768px) {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     font-size: 0.7rem;
   }
 `;
@@ -1557,8 +1558,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           </ProgressBar>
         </ProgressSection>
 
+        {/* 🆕 COMPACT SINGLE-LINE: Filters + Question Numbers */}
         <FilterSection>
-          <FilterLabel>Filter Questions:</FilterLabel>
+          {/* Filter Buttons (no label) */}
           <FilterButton 
             active={questionFilter === 'all'} 
             onClick={() => setQuestionFilter('all')}
@@ -1595,83 +1597,49 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               {filterStats.withoutNotes}
             </FilterBadge>
           </FilterButton>
-        </FilterSection>
 
-        {/* 🆕 SMART NAVIGATION: Question Mini-Map */}
-        {showMiniMap && currentArea?.questions && (
-          <QuestionMiniMap>
-            <MiniMapLabel>Quick Jump:</MiniMapLabel>
-            {(currentArea.questions || []).map((q, idx) => {
-              const isComplete = isQuestionCompleted(q);
-              const hasComment = hasNotes(q);
-              const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
-              const isCurrent = idx === currentQuestionIndex;
-              
-              return (
-                <MiniMapDot
-                  key={q.id}
-                  isComplete={isComplete}
-                  isPartial={isPartial}
-                  isCurrent={isCurrent}
-                  onClick={() => handleJumpToQuestion(idx)}
-                  title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
-                >
-                  {isComplete ? '✓' : idx + 1}
-                </MiniMapDot>
-              );
-            })}
-            <button
-              onClick={() => setShowMiniMap(false)}
-              style={{
-                marginLeft: 'auto',
-                padding: '6px 12px',
-                background: '#f3f4f6',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                color: '#666'
-              }}
-            >
-              Hide Map
-            </button>
-          </QuestionMiniMap>
-        )}
+          {/* Separator */}
+          <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
 
-        {/* 🆕 DIMENSION PROGRESS CARD */}
-        {currentDimension && (
-          <DimensionProgressCard>
-            <DimensionInfo>
-              <DimensionTitle>{currentDimension.name}</DimensionTitle>
-              <DimensionProgress>
-                <ProgressBarSmall progress={(currentDimension.completedQuestions / currentDimension.totalQuestions) * 100}>
-                  <div />
-                </ProgressBarSmall>
-                <ProgressLabel>
-                  {currentDimension.completedQuestions}/{currentDimension.totalQuestions} Complete
-                </ProgressLabel>
-              </DimensionProgress>
-            </DimensionInfo>
-            {!showMiniMap && (
-              <button
-                onClick={() => setShowMiniMap(true)}
-                style={{
-                  padding: '8px 16px',
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                  whiteSpace: 'nowrap'
-                }}
+          {/* Question Numbers (no label, show numbers instead of checkmarks) */}
+          {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
+            const isComplete = isQuestionCompleted(q);
+            const hasComment = hasNotes(q);
+            const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+            const isCurrent = idx === currentQuestionIndex;
+            
+            return (
+              <MiniMapDot
+                key={q.id}
+                isComplete={isComplete}
+                isPartial={isPartial}
+                isCurrent={isCurrent}
+                onClick={() => handleJumpToQuestion(idx)}
+                title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
               >
-                Show Map
-              </button>
-            )}
-          </DimensionProgressCard>
-        )}
+                {idx + 1}
+              </MiniMapDot>
+            );
+          })}
+
+          {/* Hide Map Button (now toggles visibility) */}
+          <button
+            onClick={() => setShowMiniMap(!showMiniMap)}
+            style={{
+              marginLeft: 'auto',
+              padding: '6px 12px',
+              background: '#f3f4f6',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              color: '#666',
+              fontWeight: '500'
+            }}
+          >
+            {showMiniMap ? 'Hide Map' : 'Show Map'}
+          </button>
+        </FilterSection>
 
         {/* 🆕 BULK ACTIONS BAR */}
         {showBulkActions && (
