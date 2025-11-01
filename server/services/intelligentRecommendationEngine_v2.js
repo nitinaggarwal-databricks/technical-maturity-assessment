@@ -1513,61 +1513,61 @@ class IntelligentRecommendationEngine {
     
     const multipliers = industryMultipliers[industry] || industryMultipliers['default'];
     
-    // Base impact calculations using industry benchmarks
+    // Base impact calculations using realistic industry benchmarks
     
     // 1. ANALYTICS SPEED (based on Analytics/BI and Data Engineering maturity improvements)
     const analyticsPillar = prioritizedActions.find(p => p.pillarId === 'analytics_bi');
     const dataEngPillar = prioritizedActions.find(p => p.pillarId === 'data_engineering');
     
-    // Base: 1.5x per maturity level improvement (industry average)
-    // Photon/Serverless SQL can provide 3-5x speedup
+    // Base: Conservative 30% per maturity level improvement (realistic)
+    // Photon/Serverless SQL can provide 2-3x speedup in best cases
     let speedMultiplier = 1.0;
     if (analyticsPillar) {
       const analyticsImprovement = analyticsPillar.gap || 0;
-      speedMultiplier += analyticsImprovement * 0.6; // +60% per level
+      speedMultiplier += analyticsImprovement * 0.3; // +30% per level (was 60%)
       
       // Bonus if deploying Photon/Serverless
       const hasPhoton = analyticsPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Photon') || f.name.includes('Serverless'))
       );
       if (hasPhoton) {
-        speedMultiplier += 0.8; // +80% boost from Photon
+        speedMultiplier += 0.4; // +40% boost from Photon (was 80%)
       }
     }
     
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      speedMultiplier += dataImprovement * 0.4; // +40% per level
+      speedMultiplier += dataImprovement * 0.2; // +20% per level (was 40%)
       
       // Bonus for DLT automation
       const hasDLT = dataEngPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Delta Live Tables')
       );
       if (hasDLT) {
-        speedMultiplier += 0.5; // +50% boost from DLT
+        speedMultiplier += 0.3; // +30% boost from DLT (was 50%)
       }
     }
     
-    // Apply industry multiplier and cap at reasonable maximum
-    speedMultiplier = Math.min(speedMultiplier * multipliers.speed, 5.0);
+    // Apply industry multiplier and cap at realistic maximum
+    speedMultiplier = Math.min(speedMultiplier * multipliers.speed, 3.0); // Cap at 3× (was 5×)
     const decisionSpeed = speedMultiplier.toFixed(1) + '×';
     
     // 2. COST OPTIMIZATION (based on Platform Governance + automation level)
     const platformPillar = prioritizedActions.find(p => p.pillarId === 'platform_governance');
     const opExPillar = prioritizedActions.find(p => p.pillarId === 'operational_excellence');
     
-    // Base: 3-5% per maturity level
+    // Base: 2-3% per maturity level (realistic)
     let costSavings = 0;
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      costSavings += platformImprovement * 4; // 4% per level
+      costSavings += platformImprovement * 2.5; // 2.5% per level (was 4%)
       
       // Bonus for serverless/auto-scaling
       const hasServerless = platformPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Serverless') || f.name.includes('Auto Scaling'))
       );
       if (hasServerless) {
-        costSavings += 8; // +8% from serverless
+        costSavings += 5; // +5% from serverless (was 8%)
       }
       
       // Bonus for budget controls
@@ -1575,17 +1575,17 @@ class IntelligentRecommendationEngine {
         f.name && (f.name.includes('Budget') || f.name.includes('Cost'))
       );
       if (hasBudgets) {
-        costSavings += 5; // +5% from budget controls
+        costSavings += 3; // +3% from budget controls (was 5%)
       }
     }
     
     if (opExPillar) {
       const opExImprovement = opExPillar.gap || 0;
-      costSavings += opExImprovement * 3; // 3% per level
+      costSavings += opExImprovement * 2; // 2% per level (was 3%)
     }
     
-    // Apply industry multiplier and cap at 40%
-    costSavings = Math.min(costSavings * multipliers.cost, 40);
+    // Apply industry multiplier and cap at 25% (was 40%)
+    costSavings = Math.min(costSavings * multipliers.cost, 25);
     const costOptimization = Math.round(costSavings) + '%';
     
     // 3. OPERATIONAL OVERHEAD REDUCTION (based on automation maturity)
@@ -1594,14 +1594,14 @@ class IntelligentRecommendationEngine {
     // Data Engineering automation
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      overheadReduction += dataImprovement * 12; // 12% per level
+      overheadReduction += dataImprovement * 6; // 6% per level (was 12%)
       
       // Bonus for automation features
       const hasAutomation = dataEngPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Auto Loader') || f.name.includes('DLT') || f.name.includes('Workflow'))
       );
       if (hasAutomation) {
-        overheadReduction += 15; // +15% from automation
+        overheadReduction += 8; // +8% from automation (was 15%)
       }
     }
     
@@ -1609,33 +1609,33 @@ class IntelligentRecommendationEngine {
     const mlPillar = prioritizedActions.find(p => p.pillarId === 'machine_learning');
     if (mlPillar) {
       const mlImprovement = mlPillar.gap || 0;
-      overheadReduction += mlImprovement * 8; // 8% per level
+      overheadReduction += mlImprovement * 5; // 5% per level (was 8%)
       
       // Bonus for MLOps automation
       const hasMLOps = mlPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('MLflow') || f.name.includes('Model Serving'))
       );
       if (hasMLOps) {
-        overheadReduction += 10; // +10% from MLOps
+        overheadReduction += 6; // +6% from MLOps (was 10%)
       }
     }
     
     // Governance automation
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      overheadReduction += platformImprovement * 6; // 6% per level
+      overheadReduction += platformImprovement * 4; // 4% per level (was 6%)
       
       // Bonus for Unity Catalog (reduces manual access management)
       const hasUnityCatalog = platformPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Unity Catalog')
       );
       if (hasUnityCatalog) {
-        overheadReduction += 12; // +12% from Unity Catalog
+        overheadReduction += 7; // +7% from Unity Catalog (was 12%)
       }
     }
     
-    // Apply industry multiplier and cap at 65%
-    overheadReduction = Math.min(overheadReduction * multipliers.overhead, 65);
+    // Apply industry multiplier and cap at 40% (was 65%)
+    overheadReduction = Math.min(overheadReduction * multipliers.overhead, 40);
     const manualOverhead = Math.round(overheadReduction) + '%';
     
     // 4. TIME TO MARKET / INNOVATION VELOCITY (based on ML + Gen AI maturity)
@@ -1644,46 +1644,46 @@ class IntelligentRecommendationEngine {
     let timeToMarket = 0;
     if (mlPillar) {
       const mlImprovement = mlPillar.gap || 0;
-      timeToMarket += mlImprovement * 15; // 15% per level
+      timeToMarket += mlImprovement * 8; // 8% per level (was 15%)
       
       // Bonus for Feature Store (speeds up model development)
       const hasFeatureStore = mlPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Feature Store')
       );
       if (hasFeatureStore) {
-        timeToMarket += 20; // +20% from Feature Store
+        timeToMarket += 10; // +10% from Feature Store (was 20%)
       }
     }
     
     if (genAIPillar) {
       const genAIImprovement = genAIPillar.gap || 0;
-      timeToMarket += genAIImprovement * 12; // 12% per level
+      timeToMarket += genAIImprovement * 7; // 7% per level (was 12%)
       
       // Bonus for pre-built LLMs
       const hasLLMs = genAIPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('DBRX') || f.name.includes('Foundation Model'))
       );
       if (hasLLMs) {
-        timeToMarket += 25; // +25% from foundation models
+        timeToMarket += 12; // +12% from foundation models (was 25%)
       }
     }
     
-    // Cap at 70%
-    timeToMarket = Math.min(timeToMarket, 70);
+    // Cap at 40% (was 70%)
+    timeToMarket = Math.min(timeToMarket, 40);
     const timeToMarketValue = Math.round(timeToMarket) + '%';
     
     // 5. DATA QUALITY & TRUST (based on Data Engineering + Platform Governance)
     let dataQuality = 0;
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      dataQuality += dataImprovement * 10; // 10% per level
+      dataQuality += dataImprovement * 6; // 6% per level (was 10%)
       
       // Bonus for Delta Lake (ACID compliance)
       const hasDelta = dataEngPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Delta')
       );
       if (hasDelta) {
-        dataQuality += 15; // +15% from Delta Lake
+        dataQuality += 8; // +8% from Delta Lake (was 15%)
       }
       
       // Bonus for Data Quality features
@@ -1691,25 +1691,25 @@ class IntelligentRecommendationEngine {
         f.name && (f.name.includes('Quality') || f.name.includes('Expectations'))
       );
       if (hasDQ) {
-        dataQuality += 12; // +12% from DQ tools
+        dataQuality += 6; // +6% from DQ tools (was 12%)
       }
     }
     
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      dataQuality += platformImprovement * 8; // 8% per level
+      dataQuality += platformImprovement * 5; // 5% per level (was 8%)
       
       // Bonus for Unity Catalog (lineage + governance)
       const hasUnityCatalog = platformPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Unity Catalog')
       );
       if (hasUnityCatalog) {
-        dataQuality += 18; // +18% from Unity Catalog
+        dataQuality += 10; // +10% from Unity Catalog (was 18%)
       }
     }
     
-    // Cap at 60%
-    dataQuality = Math.min(dataQuality, 60);
+    // Cap at 35% (was 60%)
+    dataQuality = Math.min(dataQuality, 35);
     const dataQualityValue = Math.round(dataQuality) + '%';
     
     // 6. TEAM PRODUCTIVITY / DEVELOPER EFFICIENCY (based on all pillars)
@@ -1718,7 +1718,7 @@ class IntelligentRecommendationEngine {
     // Calculate weighted average improvement
     prioritizedActions.forEach(pillar => {
       const improvement = pillar.gap || 0;
-      productivity += improvement * 8; // 8% per level per pillar
+      productivity += improvement * 4; // 4% per level per pillar (was 8%)
     });
     
     // Bonus for collaborative features
@@ -1727,7 +1727,7 @@ class IntelligentRecommendationEngine {
         f.name && f.name.includes('Notebook')
       );
       if (hasNotebooks) {
-        productivity += 12; // +12% from collaborative notebooks
+        productivity += 6; // +6% from collaborative notebooks (was 12%)
       }
     }
     
@@ -1737,12 +1737,12 @@ class IntelligentRecommendationEngine {
         f.name && f.name.includes('Workflow')
       );
       if (hasWorkflows) {
-        productivity += 15; // +15% from workflow automation
+        productivity += 8; // +8% from workflow automation (was 15%)
       }
     }
     
-    // Cap at 55%
-    productivity = Math.min(productivity, 55);
+    // Cap at 30% (was 55%)
+    productivity = Math.min(productivity, 30);
     const productivityValue = Math.round(productivity) + '%';
     
     const impact = {
