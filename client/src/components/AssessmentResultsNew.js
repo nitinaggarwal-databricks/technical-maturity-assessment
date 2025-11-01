@@ -904,6 +904,7 @@ const AssessmentResultsNew = () => {
   const [editMode, setEditMode] = useState(false); // Global edit mode toggle
   const [editingPillar, setEditingPillar] = useState(null);
   const [editingPhase, setEditingPhase] = useState(null);
+  const [editingPhaseItem, setEditingPhaseItem] = useState(null); // Track which phase item is being edited
   const [editingFeature, setEditingFeature] = useState(null); // Track which feature is being edited
   const [editingNextStep, setEditingNextStep] = useState(null); // Track which next step is being edited
   const [editingGoodItem, setEditingGoodItem] = useState(null); // Track which "What's Working" item is being edited
@@ -1104,6 +1105,43 @@ const AssessmentResultsNew = () => {
     delete newCustomizations.phases[phaseId];
     setCustomizations(newCustomizations);
     toast.success('Customization removed, showing original content');
+  };
+
+  // Edit handlers for individual phase items
+  const handleEditPhaseItem = (phaseId, itemIndex, itemText) => {
+    setEditingPhaseItem(`${phaseId}-item-${itemIndex}`);
+    setEditedContent({ itemText });
+  };
+
+  const handleSavePhaseItem = (phaseId, itemIndex) => {
+    const newCustomizations = { ...customizations };
+    
+    // Get current phase items (either customized or original)
+    const currentPhase = roadmapPhases.find(p => p.id === phaseId);
+    if (!currentPhase) return;
+    
+    const updatedItems = [...currentPhase.items];
+    updatedItems[itemIndex] = editedContent.itemText;
+    
+    newCustomizations.phases[phaseId] = updatedItems;
+    setCustomizations(newCustomizations);
+    setEditingPhaseItem(null);
+    toast.success('Phase item updated!');
+  };
+
+  const handleDeletePhaseItem = (phaseId, itemIndex) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    
+    const newCustomizations = { ...customizations };
+    
+    // Get current phase items
+    const currentPhase = roadmapPhases.find(p => p.id === phaseId);
+    if (!currentPhase) return;
+    
+    const updatedItems = currentPhase.items.filter((_, idx) => idx !== itemIndex);
+    newCustomizations.phases[phaseId] = updatedItems;
+    setCustomizations(newCustomizations);
+    toast.success('Phase item deleted!');
   };
 
   const handlePrint = () => {
@@ -4081,9 +4119,104 @@ const AssessmentResultsNew = () => {
                       />
                     ) : (
                       <ul>
-                        {phase.items.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
+                        {phase.items.map((item, idx) => {
+                          const itemKey = `${phase.id}-item-${idx}`;
+                          const isEditingItem = editingPhaseItem === itemKey;
+                          
+                          return (
+                            <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                              <div style={{ flex: 1 }}>
+                                {isEditingItem ? (
+                                  <textarea
+                                    value={editedContent.itemText || ''}
+                                    onChange={(e) => setEditedContent({ itemText: e.target.value })}
+                                    style={{
+                                      width: '100%',
+                                      padding: '8px',
+                                      border: '2px solid #3b82f6',
+                                      borderRadius: '6px',
+                                      resize: 'vertical',
+                                      minHeight: '60px',
+                                      fontFamily: 'inherit',
+                                      fontSize: '0.95rem'
+                                    }}
+                                    autoFocus
+                                  />
+                                ) : (
+                                  item
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                                {isEditingItem ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleSavePhaseItem(phase.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#10b981',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontWeight: 600
+                                      }}
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingPhaseItem(null)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#9ca3af',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditPhaseItem(phase.id, idx, item)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                      title="Edit item"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeletePhaseItem(phase.id, idx)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        fontSize: '0.75rem',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                      }}
+                                      title="Delete item"
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </PhaseCard>
