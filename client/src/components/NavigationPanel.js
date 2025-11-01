@@ -12,7 +12,8 @@ import {
   FiBarChart2,
   FiPlay,
   FiEdit3,
-  FiSend
+  FiSend,
+  FiLoader
 } from 'react-icons/fi';
 import EditAssessmentModal from './EditAssessmentModal';
 import * as assessmentService from '../services/assessmentService';
@@ -290,6 +291,117 @@ const PillarResultButton = styled(motion.button)`
   }
 `;
 
+// Dialog and Progress Bar Styled Components
+const DialogOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+`;
+
+const DialogBox = styled(motion.div)`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const DialogTitle = styled.h2`
+  margin: 0 0 12px 0;
+  color: #1f2937;
+  font-size: 24px;
+  font-weight: 700;
+`;
+
+const DialogMessage = styled.p`
+  margin: 0 0 24px 0;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.5;
+`;
+
+const DialogButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+`;
+
+const DialogButton = styled.button`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  ${props => props.$primary ? `
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    }
+  ` : `
+    background: #f3f4f6;
+    color: #6b7280;
+    &:hover {
+      background: #e5e7eb;
+    }
+  `}
+`;
+
+const ProgressContainer = styled.div`
+  margin-top: 24px;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+`;
+
+const ProgressFill = styled(motion.div)`
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+`;
+
+const ProgressText = styled.div`
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  svg {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
 const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) => {
   const navigate = useNavigate();
   const { categoryId, assessmentId: routeAssessmentId } = useParams();
@@ -298,6 +410,10 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
   const [expandedPillars, setExpandedPillars] = useState(new Set());
   const [pillarProgress, setPillarProgress] = useState({});
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionProgress, setSubmissionProgress] = useState(0);
+  const [submissionMessage, setSubmissionMessage] = useState('');
 
   // Initialize expanded state and progress
   useEffect(() => {
@@ -369,28 +485,44 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       return;
     }
 
+    // Show confirmation dialog
+    setShowSubmitDialog(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowSubmitDialog(false);
+    setIsSubmitting(true);
+    setSubmissionProgress(0);
+    
+    // Authentic progress messages
+    const progressSteps = [
+      { progress: 10, message: 'Analyzing assessment responses...' },
+      { progress: 25, message: 'Calculating maturity scores...' },
+      { progress: 40, message: 'Generating recommendations...' },
+      { progress: 55, message: 'Identifying Databricks features...' },
+      { progress: 70, message: 'Building strategic roadmap...' },
+      { progress: 85, message: 'Calculating business impact...' },
+      { progress: 95, message: 'Finalizing report...' },
+      { progress: 100, message: 'Assessment complete!' }
+    ];
+
     try {
-      toast.loading('Submitting assessment...', { id: 'submit-assessment' });
-      
-      // Call API to mark assessment as submitted
+      // Submit assessment to API
       await assessmentService.submitAssessment(assessmentId);
       
-      toast.success('Assessment submitted successfully! You can now view results.', { 
-        id: 'submit-assessment',
-        duration: 4000
-      });
-      
-      // Refresh assessment status to update the UI
-      if (onAssessmentUpdate) {
-        const updatedAssessment = await assessmentService.getAssessmentStatus(assessmentId);
-        onAssessmentUpdate(updatedAssessment);
-      } else {
-        // Force page reload to update currentAssessment
-        window.location.reload();
+      // Animate through progress steps
+      for (const step of progressSteps) {
+        setSubmissionProgress(step.progress);
+        setSubmissionMessage(step.message);
+        await new Promise(resolve => setTimeout(resolve, 1250)); // 10 seconds total / 8 steps
       }
+      
+      // Navigate to results
+      navigate(`/results/${assessmentId}`);
     } catch (error) {
       console.error('Error submitting assessment:', error);
-      toast.error('Failed to submit assessment. Please try again.', { id: 'submit-assessment' });
+      setIsSubmitting(false);
+      toast.error('Failed to submit assessment. Please try again.');
     }
   };
 
@@ -611,6 +743,82 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           <span style={{ flex: 1, textAlign: 'left' }}>View Report</span>
         </ActionButton>
       </ActionButtonsContainer>
+
+      {/* Confirmation Dialog */}
+      <AnimatePresence>
+        {showSubmitDialog && (
+          <DialogOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSubmitDialog(false)}
+          >
+            <DialogBox
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DialogTitle>🎯 Ready to Submit Assessment?</DialogTitle>
+              <DialogMessage>
+                We'll analyze your responses and generate a comprehensive report with:
+                <ul style={{ marginTop: '12px', paddingLeft: '20px', color: '#4b5563' }}>
+                  <li>Maturity scores and gap analysis</li>
+                  <li>Personalized Databricks recommendations</li>
+                  <li>Strategic roadmap and next steps</li>
+                  <li>Expected business impact metrics</li>
+                </ul>
+              </DialogMessage>
+              <DialogButtons>
+                <DialogButton onClick={() => setShowSubmitDialog(false)}>
+                  Cancel
+                </DialogButton>
+                <DialogButton $primary onClick={confirmSubmit}>
+                  Submit Assessment
+                </DialogButton>
+              </DialogButtons>
+            </DialogBox>
+          </DialogOverlay>
+        )}
+      </AnimatePresence>
+
+      {/* Progress Dialog */}
+      <AnimatePresence>
+        {isSubmitting && (
+          <DialogOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <DialogBox
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <DialogTitle>✨ Generating Your Report</DialogTitle>
+              <DialogMessage>
+                Please wait while we analyze your assessment and create personalized recommendations...
+              </DialogMessage>
+              <ProgressContainer>
+                <ProgressBar>
+                  <ProgressFill
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${submissionProgress}%` }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  />
+                </ProgressBar>
+                <ProgressText>
+                  <FiLoader size={16} />
+                  {submissionMessage}
+                  <span style={{ marginLeft: 'auto', fontWeight: 600, color: '#ff6b35' }}>
+                    {submissionProgress}%
+                  </span>
+                </ProgressText>
+              </ProgressContainer>
+            </DialogBox>
+          </DialogOverlay>
+        )}
+      </AnimatePresence>
     </NavigationContainer>
   );
 };
