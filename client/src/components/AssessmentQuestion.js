@@ -1735,6 +1735,51 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               <QuestionContent>
                 <QuestionTopic>{currentQuestion?.topic}</QuestionTopic>
                 <QuestionText>{currentQuestion?.question}</QuestionText>
+                {/* 🆕 Load Sample Answer Button */}
+                <button
+                  onClick={() => {
+                    // Generate sample answer for this question
+                    const randomCurrent = Math.floor(Math.random() * 2) + 1; // 1 or 2
+                    const randomFuture = randomCurrent + Math.floor(Math.random() * 2) + 1; // at least +1
+                    
+                    handlePerspectiveResponse(currentQuestion.id, 'current_state', randomCurrent);
+                    handlePerspectiveResponse(currentQuestion.id, 'future_state', Math.min(randomFuture, 5));
+                    
+                    // Add a sample comment
+                    const sampleComments = [
+                      "Currently using manual processes, looking to standardize.",
+                      "Have basic implementation in place, need to scale across teams.",
+                      "Working towards enterprise-wide adoption with documented standards.",
+                      "Optimizing current processes and exploring advanced capabilities.",
+                      "Leading-edge implementation with continuous improvement focus."
+                    ];
+                    const comment = sampleComments[randomCurrent - 1] || sampleComments[0];
+                    handleCommentChange(currentQuestion.id, comment);
+                    
+                    toast.success('Sample answer loaded!', { duration: 1500, icon: '✨' });
+                  }}
+                  style={{
+                    marginTop: '12px',
+                    padding: '8px 16px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
+                  }}
+                  onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                >
+                  <span>✨</span>
+                  <span>Load Sample Answer</span>
+                </button>
               </QuestionContent>
               
               <SkipToggleContainer isSkipped={skippedQuestions[currentQuestion?.id]}>
