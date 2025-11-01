@@ -678,6 +678,33 @@ class IntelligentRecommendationEngine {
         benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
         docsLink: f.docs || f.documentation_url
       }));
+      
+      // 🎯 FILTER OUT CROSS-PILLAR CONTAMINATION
+      // Remove features that don't belong to this pillar
+      const genAIFeatures = ['AI Gateway', 'Vector Search', 'Mosaic AI', 'Foundation Model', 'AI Playground', 'DBRX', 'AI Functions', 'Agent Framework'];
+      const mlFeatures = ['MLflow', 'Feature Store', 'Model Registry', 'Model Serving', 'AutoML'];
+      
+      if (pillarId === 'data_engineering') {
+        // Data Engineering should NOT have GenAI or ML features
+        painPointFeatures = painPointFeatures.filter(f => 
+          !genAIFeatures.some(genAI => f.name.includes(genAI)) &&
+          !mlFeatures.some(ml => f.name.includes(ml))
+        );
+        console.log(`[IntelligentEngine V2] 🧹 Filtered out GenAI/ML features, ${painPointFeatures.length} features remaining for ${pillarId}`);
+      } else if (pillarId === 'analytics_bi') {
+        // Analytics should NOT have GenAI features
+        painPointFeatures = painPointFeatures.filter(f => 
+          !genAIFeatures.some(genAI => f.name.includes(genAI))
+        );
+        console.log(`[IntelligentEngine V2] 🧹 Filtered out GenAI features, ${painPointFeatures.length} features remaining for ${pillarId}`);
+      } else if (pillarId === 'platform_governance') {
+        // Platform should NOT have GenAI-specific features (but can have Unity Catalog, Audit Logs, etc.)
+        const genAIOnlyFeatures = ['AI Gateway', 'Vector Search', 'Mosaic AI', 'Foundation Model', 'AI Playground', 'DBRX', 'AI Functions', 'Agent Framework'];
+        painPointFeatures = painPointFeatures.filter(f => 
+          !genAIOnlyFeatures.some(genAI => f.name.includes(genAI))
+        );
+        console.log(`[IntelligentEngine V2] 🧹 Filtered out GenAI-only features, ${painPointFeatures.length} features remaining for ${pillarId}`);
+      }
     } else {
       console.log(`[IntelligentEngine V2] ⚠️ No database features, using hardcoded feature mapping`);
       painPointFeatures = this.mapPainPointsToFeatures(topPainPoints, pillarId);
