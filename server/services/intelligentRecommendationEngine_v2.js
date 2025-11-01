@@ -1389,8 +1389,9 @@ class IntelligentRecommendationEngine {
       const topChallenge = pillar.theBad?.[0] || `Maturity gap of ${pillar.gap} levels`;
       const topFeature = pillar.databricksFeatures?.[0]?.name || 'recommended features';
       const outcome = businessOutcomes[pillar.pillarId] || 'driving measurable business value';
-      const challengeShort = topChallenge.substring(0, 50);
-      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${challengeShort}... - ${outcome}`);
+      // Use reasonable truncation for roadmap items (150 chars) to keep them concise but complete
+      const challengeShort = topChallenge.length > 150 ? topChallenge.substring(0, 150) + '...' : topChallenge;
+      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${challengeShort} - ${outcome}`);
     });
     
     // Ensure we have at least 3 items in Phase 1
@@ -2326,9 +2327,9 @@ class IntelligentRecommendationEngine {
       );
       
       if (relatedComment) {
-        // Extract specific detail from comment
-        const detail = relatedComment.text.substring(0, 100);
-        challenges.push(`${label} — currently ${detail}...`);
+        // Use full comment text (no truncation)
+        const detail = relatedComment.text;
+        challenges.push(`${label} — currently ${detail}`);
       } else {
         challenges.push(label);
       }
