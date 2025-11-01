@@ -193,6 +193,11 @@ export const saveProgress = async (assessmentId, questionId, perspectiveId, valu
 };
 
 /**
+ * Save individual question response (alias for saveProgress)
+ */
+export const saveQuestionResponse = saveProgress;
+
+/**
  * Get all assessments for management
  */
 export const getAllAssessments = async () => {
