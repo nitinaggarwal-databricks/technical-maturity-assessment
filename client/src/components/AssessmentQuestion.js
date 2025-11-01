@@ -1767,22 +1767,6 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             </PerspectivesGrid>
           </QuestionCard>
 
-          {/* 🆕 MATURITY LEVEL REFERENCE CARD */}
-          <div style={{ marginTop: '16px', background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
-            <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', fontWeight: 700, color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>📘</span>
-              <span>Maturity Level Reference</span>
-            </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {[1, 2, 3, 4, 5].map(level => (
-                <MaturityLevelInfo key={level}>
-                  <strong>{maturityLevelHelp[level].name}</strong>
-                  <div>{maturityLevelHelp[level].description}</div>
-                </MaturityLevelInfo>
-              ))}
-            </div>
-          </div>
-
         </AnimatePresence>
         </ScrollableContent>
 
