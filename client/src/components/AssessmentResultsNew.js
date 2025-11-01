@@ -1557,7 +1557,7 @@ const AssessmentResultsNew = () => {
     });
   };
 
-  const handleSaveNewFeature = (pillarId) => {
+  const handleSaveAddedFeature = (pillarId) => {
     const newName = editedContent[`new-feature-${pillarId}-name`];
     const newDesc = editedContent[`new-feature-${pillarId}-desc`];
     
@@ -1589,7 +1589,7 @@ const AssessmentResultsNew = () => {
     });
   };
 
-  const handleSaveNewNextStep = (pillarId) => {
+  const handleSaveAddedNextStep = (pillarId) => {
     const newText = editedContent[`new-nextstep-${pillarId}`];
     if (!newText || !newText.trim()) {
       toast.error('Please enter some text');
@@ -3493,7 +3493,7 @@ const AssessmentResultsNew = () => {
                               />
                               <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                 <button
-                                  onClick={() => handleSaveNewFeature(pillar.id)}
+                                  onClick={() => handleSaveAddedFeature(pillar.id)}
                                   style={{
                                     padding: '6px 14px',
                                     fontSize: '0.8rem',
@@ -3949,7 +3949,7 @@ const AssessmentResultsNew = () => {
                               />
                               <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                 <button
-                                  onClick={() => handleSaveNewNextStep(pillar.id)}
+                                  onClick={() => handleSaveAddedNextStep(pillar.id)}
                                   style={{
                                     padding: '6px 12px',
                                     fontSize: '0.8rem',
