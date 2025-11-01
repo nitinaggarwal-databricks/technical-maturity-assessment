@@ -1265,6 +1265,7 @@ class IntelligentRecommendationEngine {
     if (!prioritizedActions || prioritizedActions.length === 0) {
       console.log('[generateStrategicRoadmap] No pillar data - returning empty roadmap');
       return {
+        roadmapIntro: 'Complete at least one assessment pillar to see your personalized strategic roadmap.',
         phases: [
           {
             id: 'phase1',
@@ -1284,6 +1285,25 @@ class IntelligentRecommendationEngine {
         ]
       };
     }
+    
+    // 🆕 DYNAMIC ROADMAP INTRO: Generate based on actual assessment data
+    const totalGap = prioritizedActions.reduce((sum, p) => sum + (p.gap || 0), 0);
+    const avgGap = totalGap / prioritizedActions.length;
+    const criticalPillars = prioritizedActions.filter(p => p.gap >= 2);
+    const pillarNames = prioritizedActions.map(p => p.pillarName).join(', ');
+    
+    // Get specific focus areas based on gaps
+    const focusAreas = [];
+    prioritizedActions.forEach(p => {
+      if (p.gap >= 2) {
+        const pillarShort = p.pillarName.split(' ')[0]; // Get first word (Platform, Data, Analytics, etc.)
+        focusAreas.push(`${pillarShort} (${p.gap} level${p.gap > 1 ? 's' : ''})`);
+      }
+    });
+    
+    const roadmapIntro = focusAreas.length > 0
+      ? `This transformation roadmap accelerates your maturity across ${focusAreas.join(', ')}, addressing ${criticalPillars.length} critical gap${criticalPillars.length !== 1 ? 's' : ''} to achieve measurable business outcomes through governance, automation, and AI-powered innovation.`
+      : `This roadmap prioritizes targeted improvements across ${pillarNames}, focusing on quick wins and foundational capabilities to accelerate time-to-value.`;
     
     // Sort by priority and gap
     const sorted = [...prioritizedActions].sort((a, b) => {
@@ -1394,6 +1414,7 @@ class IntelligentRecommendationEngine {
     }
     
     const roadmap = {
+      roadmapIntro, // 🆕 Dynamic introduction
       phases: [
         {
           id: 'phase1',

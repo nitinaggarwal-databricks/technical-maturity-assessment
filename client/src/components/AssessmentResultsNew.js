@@ -4059,7 +4059,8 @@ const AssessmentResultsNew = () => {
               </button>
             </div>
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
-              {resultsData?.maturitySummary?.roadmapIntro || 
+              {resultsData?.roadmap?.roadmapIntro || 
+               resultsData?.maturitySummary?.roadmapIntro || 
                'This roadmap outlines short-, mid-, and long-term priorities across each pillar to achieve targeted maturity improvements.'}
             </p>
 
