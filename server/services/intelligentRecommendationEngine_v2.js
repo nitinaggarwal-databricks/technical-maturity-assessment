@@ -924,53 +924,59 @@ class IntelligentRecommendationEngine {
     
     console.log(`[IntelligentEngine V2] 📊 Maturity gap: ${avgGap.toFixed(1)}, showing ${maxNextSteps} next steps for ${pillarId}`);
     
-    // Select most relevant, actionable next steps in priority order
-    const selectedNextSteps = [];
+    // 🔥 DYNAMIC SELECTION: Score each next step based on context
+    const scoredSteps = pillarNextSteps.map(step => {
+      let score = 0;
+      const stepLower = step.toLowerCase();
+      
+      // 1. Base priority by type
+      if (stepLower.includes('workshop:')) score += 100; // Always valuable
+      if (stepLower.includes('assessment:') && avgGap > 2) score += 90; // Critical for large gaps
+      if (stepLower.includes('enablement:') || stepLower.includes('training:')) score += 80; // Build capacity
+      if (stepLower.includes('adoption:') || stepLower.includes('pilot:')) score += 75; // Practical implementation
+      if (stepLower.includes('partner') || stepLower.includes('si engagement:')) score += 70; // External help
+      if (stepLower.includes('change management:')) score += 65; // Organizational alignment
+      if (stepLower.includes('industry outlook:')) score += 60; // Strategic context
+      if (stepLower.includes('measurement:') || stepLower.includes('success metrics:')) score += 55; // Track progress
+      
+      // 2. Boost based on pain point themes
+      if (painPoints.length > 0) {
+        const hasSecurity = painPoints.some(p => p.label && p.label.toLowerCase().includes('security'));
+        const hasCompliance = painPoints.some(p => p.label && p.label.toLowerCase().includes('compliance'));
+        const hasPerformance = painPoints.some(p => p.label && p.label.toLowerCase().includes('performance'));
+        const hasCost = painPoints.some(p => p.label && p.label.toLowerCase().includes('cost'));
+        
+        if ((hasSecurity || hasCompliance) && stepLower.includes('assessment')) score += 20;
+        if (hasPerformance && (stepLower.includes('enablement') || stepLower.includes('workshop'))) score += 15;
+        if (hasCost && (stepLower.includes('partner') || stepLower.includes('assessment'))) score += 15;
+      }
+      
+      // 3. Boost based on comments mentioning specific needs
+      if (comments.length > 0) {
+        const commentText = comments.map(c => c.comment?.toLowerCase() || '').join(' ');
+        if (commentText.includes('partner') && stepLower.includes('partner')) score += 20;
+        if (commentText.includes('training') && stepLower.includes('enablement')) score += 20;
+        if (commentText.includes('workshop') && stepLower.includes('workshop')) score += 15;
+      }
+      
+      // 4. Boost Change Management for large transformations
+      if (avgGap > 2.5 && stepLower.includes('change management')) score += 25;
+      
+      // 5. Boost Measurement for mature organizations (already at level 2+)
+      if (avgCurrent >= 2 && (stepLower.includes('measurement') || stepLower.includes('success metrics'))) score += 20;
+      
+      return { step, score };
+    });
     
-    // 1. Always start with Workshop (technical engagement with Databricks)
-    const workshop = pillarNextSteps.find(step => step.includes('Workshop:'));
-    if (workshop) selectedNextSteps.push(workshop);
+    // Sort by score (highest first) and take top maxNextSteps
+    const selectedNextSteps = scoredSteps
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxNextSteps)
+      .map(s => s.step);
     
-    // 2. Include Assessment if maturity gap is significant (gap > 2)
-    if (avgGap > 2) {
-      const assessment = pillarNextSteps.find(step => step.includes('Assessment:'));
-      if (assessment) selectedNextSteps.push(assessment);
-    }
-    
-    // 3. Include Enablement/Training (capacity building)
-    const enablement = pillarNextSteps.find(step => 
-      step.includes('Enablement:') || 
-      step.includes('Enablement &') ||
-      step.includes('Training:')
-    );
-    if (enablement && selectedNextSteps.length < maxNextSteps) {
-      selectedNextSteps.push(enablement);
-    }
-    
-    // 4. Include Adoption/Pilot (practical implementation)
-    const adoption = pillarNextSteps.find(step => 
-      step.includes('Adoption:') || 
-      step.includes('Adoption &') || 
-      step.includes('Adoption Strategy:') ||
-      step.includes('Pilot:')
-    );
-    
-    if (adoption && !selectedNextSteps.includes(adoption) && selectedNextSteps.length < maxNextSteps) {
-      selectedNextSteps.push(adoption);
-    }
-    
-    // 5. Fill remaining slots with other relevant steps (Partner Engagement, Change Management, Industry Outlook, Measurement)
-    const remainingSlots = maxNextSteps - selectedNextSteps.length;
-    if (remainingSlots > 0) {
-      const otherSteps = pillarNextSteps.filter(step => !selectedNextSteps.includes(step));
-      selectedNextSteps.push(...otherSteps.slice(0, remainingSlots));
-    }
-    
-    // Ensure uniqueness and respect dynamic limit
-    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, maxNextSteps);
-    
-    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} actionable next steps for ${pillarId} (max: ${maxNextSteps})`);
-    return uniqueNextSteps;
+    console.log(`[IntelligentEngine V2] ✅ Built ${selectedNextSteps.length} dynamically scored next steps for ${pillarId} (max: ${maxNextSteps})`);
+    console.log(`[IntelligentEngine V2] 🎯 Top 3 scores:`, scoredSteps.sort((a, b) => b.score - a.score).slice(0, 3).map(s => ({ step: s.step.substring(0, 40), score: s.score })));
+    return selectedNextSteps;
   }
 
   /**
