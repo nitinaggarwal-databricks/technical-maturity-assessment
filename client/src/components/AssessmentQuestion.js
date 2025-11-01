@@ -511,11 +511,11 @@ const LoadingSpinner = styled.div`
 `;
 
 const FilterSection = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 12px 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 0;
+  box-shadow: none;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1556,90 +1556,92 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           <ProgressBar>
             <ProgressFill progress={progress} />
           </ProgressBar>
-        </ProgressSection>
-
-        {/* 🆕 COMPACT SINGLE-LINE: Filters + Question Numbers */}
-        <FilterSection>
-          {/* Filter Buttons (no label) */}
-          <FilterButton 
-            active={questionFilter === 'all'} 
-            onClick={() => setQuestionFilter('all')}
-          >
-            All
-            <FilterBadge active={questionFilter === 'all'}>
-              {filterStats.total}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'completed'} 
-            onClick={() => setQuestionFilter('completed')}
-          >
-            Completed
-            <FilterBadge active={questionFilter === 'completed'}>
-              {filterStats.completed}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'not_started'} 
-            onClick={() => setQuestionFilter('not_started')}
-          >
-            Not Started
-            <FilterBadge active={questionFilter === 'not_started'}>
-              {filterStats.notStarted}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'without_notes'} 
-            onClick={() => setQuestionFilter('without_notes')}
-          >
-            Completed Without Notes
-            <FilterBadge active={questionFilter === 'without_notes'}>
-              {filterStats.withoutNotes}
-            </FilterBadge>
-          </FilterButton>
-
-          {/* Separator */}
-          <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
-
-          {/* Question Numbers (no label, show numbers instead of checkmarks) */}
-          {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
-            const isComplete = isQuestionCompleted(q);
-            const hasComment = hasNotes(q);
-            const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
-            const isCurrent = idx === currentQuestionIndex;
-            
-            return (
-              <MiniMapDot
-                key={q.id}
-                isComplete={isComplete}
-                isPartial={isPartial}
-                isCurrent={isCurrent}
-                onClick={() => handleJumpToQuestion(idx)}
-                title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
+          
+          {/* 🆕 COMPACT SINGLE-LINE: Filters + Question Numbers (moved to top) */}
+          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
+            <FilterSection style={{ marginBottom: 0 }}>
+              {/* Filter Buttons (no label) */}
+              <FilterButton 
+                active={questionFilter === 'all'} 
+                onClick={() => setQuestionFilter('all')}
               >
-                {idx + 1}
-              </MiniMapDot>
-            );
-          })}
+                All
+                <FilterBadge active={questionFilter === 'all'}>
+                  {filterStats.total}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                active={questionFilter === 'completed'} 
+                onClick={() => setQuestionFilter('completed')}
+              >
+                Completed
+                <FilterBadge active={questionFilter === 'completed'}>
+                  {filterStats.completed}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                active={questionFilter === 'not_started'} 
+                onClick={() => setQuestionFilter('not_started')}
+              >
+                Not Started
+                <FilterBadge active={questionFilter === 'not_started'}>
+                  {filterStats.notStarted}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                active={questionFilter === 'without_notes'} 
+                onClick={() => setQuestionFilter('without_notes')}
+              >
+                Completed Without Notes
+                <FilterBadge active={questionFilter === 'without_notes'}>
+                  {filterStats.withoutNotes}
+                </FilterBadge>
+              </FilterButton>
 
-          {/* Hide Map Button (now toggles visibility) */}
-          <button
-            onClick={() => setShowMiniMap(!showMiniMap)}
-            style={{
-              marginLeft: 'auto',
-              padding: '6px 12px',
-              background: '#f3f4f6',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              color: '#666',
-              fontWeight: '500'
-            }}
-          >
-            {showMiniMap ? 'Hide Map' : 'Show Map'}
-          </button>
-        </FilterSection>
+              {/* Separator */}
+              <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
+
+              {/* Question Numbers (no label, show numbers instead of checkmarks) */}
+              {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
+                const isComplete = isQuestionCompleted(q);
+                const hasComment = hasNotes(q);
+                const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+                const isCurrent = idx === currentQuestionIndex;
+                
+                return (
+                  <MiniMapDot
+                    key={q.id}
+                    isComplete={isComplete}
+                    isPartial={isPartial}
+                    isCurrent={isCurrent}
+                    onClick={() => handleJumpToQuestion(idx)}
+                    title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
+                  >
+                    {idx + 1}
+                  </MiniMapDot>
+                );
+              })}
+
+              {/* Hide Map Button (now toggles visibility) */}
+              <button
+                onClick={() => setShowMiniMap(!showMiniMap)}
+                style={{
+                  marginLeft: 'auto',
+                  padding: '6px 12px',
+                  background: '#f3f4f6',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  color: '#666',
+                  fontWeight: '500'
+                }}
+              >
+                {showMiniMap ? 'Hide Map' : 'Show Map'}
+              </button>
+            </FilterSection>
+          </div>
+        </ProgressSection>
 
         {/* 🆕 BULK ACTIONS BAR */}
         {showBulkActions && (
