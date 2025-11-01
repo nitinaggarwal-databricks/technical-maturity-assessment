@@ -883,7 +883,21 @@ class IntelligentRecommendationEngine {
     // Get pillar-specific next steps
     const pillarNextSteps = nextStepsLibrary[pillarId] || nextStepsLibrary.operational_excellence;
     
-    // Select up to 4 most relevant, actionable next steps in priority order
+    // 🎯 DYNAMIC: Determine how many next steps to show based on maturity gap
+    // Larger gaps = more complex transformation = more next steps needed
+    let maxNextSteps = 4; // Default for small gaps (gap <= 1)
+    
+    if (avgGap > 3) {
+      maxNextSteps = 8; // Show ALL steps for very large gaps (major transformation)
+    } else if (avgGap > 2) {
+      maxNextSteps = 6; // Show most steps for large gaps (significant effort)
+    } else if (avgGap > 1) {
+      maxNextSteps = 5; // Show extra steps for medium gaps
+    }
+    
+    console.log(`[IntelligentEngine V2] 📊 Maturity gap: ${avgGap.toFixed(1)}, showing ${maxNextSteps} next steps for ${pillarId}`);
+    
+    // Select most relevant, actionable next steps in priority order
     const selectedNextSteps = [];
     
     // 1. Always start with Workshop (technical engagement with Databricks)
@@ -902,7 +916,7 @@ class IntelligentRecommendationEngine {
       step.includes('Enablement &') ||
       step.includes('Training:')
     );
-    if (enablement && selectedNextSteps.length < 4) {
+    if (enablement && selectedNextSteps.length < maxNextSteps) {
       selectedNextSteps.push(enablement);
     }
     
@@ -914,21 +928,21 @@ class IntelligentRecommendationEngine {
       step.includes('Pilot:')
     );
     
-    if (adoption && !selectedNextSteps.includes(adoption) && selectedNextSteps.length < 4) {
+    if (adoption && !selectedNextSteps.includes(adoption) && selectedNextSteps.length < maxNextSteps) {
       selectedNextSteps.push(adoption);
     }
     
-    // Fill remaining slots with other relevant steps (Partner Engagement, Change Management, etc.)
-    const remainingSlots = 4 - selectedNextSteps.length;
+    // 5. Fill remaining slots with other relevant steps (Partner Engagement, Change Management, Industry Outlook, Measurement)
+    const remainingSlots = maxNextSteps - selectedNextSteps.length;
     if (remainingSlots > 0) {
       const otherSteps = pillarNextSteps.filter(step => !selectedNextSteps.includes(step));
       selectedNextSteps.push(...otherSteps.slice(0, remainingSlots));
     }
     
-    // Ensure uniqueness and limit to 4
-    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, 4);
+    // Ensure uniqueness and respect dynamic limit
+    const uniqueNextSteps = [...new Set(selectedNextSteps)].slice(0, maxNextSteps);
     
-    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} actionable next steps for ${pillarId}`);
+    console.log(`[IntelligentEngine V2] ✅ Built ${uniqueNextSteps.length} actionable next steps for ${pillarId} (max: ${maxNextSteps})`);
     return uniqueNextSteps;
   }
 
