@@ -2531,7 +2531,7 @@ const AssessmentResultsNew = () => {
                                       <button
                                         onClick={() => handleEditGoodItem(pillar.id, idx, displayText)}
                                         style={{
-                                          padding: '4px 8px',
+                                          padding: '6px',
                                           fontSize: '0.75rem',
                                           background: '#3b82f6',
                                           color: 'white',
@@ -2540,12 +2540,12 @@ const AssessmentResultsNew = () => {
                                           cursor: 'pointer'
                                         }}
                                       >
-                                        Edit
+                                      <FiEdit3 size={14} />
                                       </button>
                                       <button
                                         onClick={() => handleDeleteGoodItem(pillar.id, idx)}
                                         style={{
-                                          padding: '4px 8px',
+                                          padding: '6px',
                                           fontSize: '0.75rem',
                                           background: '#ef4444',
                                           color: 'white',
@@ -2554,7 +2554,7 @@ const AssessmentResultsNew = () => {
                                           cursor: 'pointer'
                                         }}
                                       >
-                                        Delete
+                                      <FiTrash2 size={14} />
                                       </button>
                                     </>
                                   )}
@@ -2656,7 +2656,7 @@ const AssessmentResultsNew = () => {
                                     <button
                                       onClick={() => handleEditNewGoodItem(pillar.id, idx, newItem)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#3b82f6',
                                         color: 'white',
@@ -2665,12 +2665,12 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Edit
+                                      <FiEdit3 size={14} />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteNewGoodItem(pillar.id, idx)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#ef4444',
                                         color: 'white',
@@ -2679,7 +2679,7 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Delete
+                                      <FiTrash2 size={14} />
                                     </button>
                                   </>
                                 )}
@@ -3034,7 +3034,7 @@ const AssessmentResultsNew = () => {
                                     <button
                                       onClick={() => handleEditNewBadItem(pillar.id, idx, newItem)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#3b82f6',
                                         color: 'white',
@@ -3043,12 +3043,12 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Edit
+                                      <FiEdit3 size={14} />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteNewBadItem(pillar.id, idx)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#ef4444',
                                         color: 'white',
@@ -3057,7 +3057,7 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Delete
+                                      <FiTrash2 size={14} />
                                     </button>
                                   </>
                                 )}
@@ -3492,7 +3492,7 @@ const AssessmentResultsNew = () => {
                                           cursor: 'pointer'
                                         }}
                                       >
-                                        Edit
+                                      <FiEdit3 size={14} />
                                       </button>
                                       <button
                                         onClick={() => handleDeleteNewFeature(pillar.id, idx)}
@@ -3506,7 +3506,7 @@ const AssessmentResultsNew = () => {
                                           cursor: 'pointer'
                                         }}
                                       >
-                                        Delete
+                                      <FiTrash2 size={14} />
                                       </button>
                                     </div>
                                   </div>
@@ -3843,30 +3843,36 @@ const AssessmentResultsNew = () => {
                                         });
                                       }}
                                       style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
+                                        padding: '6px',
                                         background: '#3b82f6',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
                                       }}
+                                      title="Edit"
                                     >
-                                      Edit
+                                      <FiEdit3 size={14} />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteNextStep(pillar.id, idx)}
                                       style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
+                                        padding: '6px',
                                         background: '#ef4444',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
                                       }}
+                                      title="Delete"
                                     >
-                                      Delete
+                                      <FiTrash2 size={14} />
                                     </button>
                                   </>
                                 )}
@@ -3960,7 +3966,7 @@ const AssessmentResultsNew = () => {
                                     <button
                                       onClick={() => handleEditNewNextStep(pillar.id, idx, newStep)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#3b82f6',
                                         color: 'white',
@@ -3969,12 +3975,12 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Edit
+                                      <FiEdit3 size={14} />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteNewNextStep(pillar.id, idx)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#ef4444',
                                         color: 'white',
@@ -3983,7 +3989,7 @@ const AssessmentResultsNew = () => {
                                         cursor: 'pointer'
                                       }}
                                     >
-                                      Delete
+                                      <FiTrash2 size={14} />
                                     </button>
                                   </>
                                 )}
@@ -4222,7 +4228,7 @@ const AssessmentResultsNew = () => {
                                     <button
                                       onClick={() => handleEditPhaseItem(phase.id, idx, item)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#3b82f6',
                                         color: 'white',
@@ -4232,12 +4238,12 @@ const AssessmentResultsNew = () => {
                                       }}
                                       title="Edit item"
                                     >
-                                      Edit
+                                      <FiEdit3 size={14} />
                                     </button>
                                     <button
                                       onClick={() => handleDeletePhaseItem(phase.id, idx)}
                                       style={{
-                                        padding: '4px 8px',
+                                        padding: '6px',
                                         fontSize: '0.75rem',
                                         background: '#ef4444',
                                         color: 'white',
@@ -4247,7 +4253,7 @@ const AssessmentResultsNew = () => {
                                       }}
                                       title="Delete item"
                                     >
-                                      Delete
+                                      <FiTrash2 size={14} />
                                     </button>
                                   </>
                                 )}
@@ -4395,7 +4401,7 @@ const AssessmentResultsNew = () => {
                               cursor: 'pointer'
                             }}
                           >
-                            Edit
+                                      <FiEdit3 size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteImpactMetric(metricKey)}
@@ -4409,7 +4415,7 @@ const AssessmentResultsNew = () => {
                               cursor: 'pointer'
                             }}
                           >
-                            Delete
+                                      <FiTrash2 size={14} />
                           </button>
                         </div>
                         <div className="metric-value">{metric.value}</div>
@@ -4527,7 +4533,7 @@ const AssessmentResultsNew = () => {
                             cursor: 'pointer'
                           }}
                         >
-                          Edit
+                                      <FiEdit3 size={14} />
                         </button>
                         <button
                           onClick={() => handleDeleteNewImpactMetric(idx)}
@@ -4541,7 +4547,7 @@ const AssessmentResultsNew = () => {
                             cursor: 'pointer'
                           }}
                         >
-                          Delete
+                                      <FiTrash2 size={14} />
                         </button>
                       </div>
                       <div className="metric-value">{newMetric.value}</div>
