@@ -1551,6 +1551,34 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 Question {currentQuestionIndex + 1} of {questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
                 {questionFilter !== 'all' && <span style={{ color: '#ff6b35', fontWeight: 600 }}> (Filtered)</span>}
               </ProgressText>
+              
+              {/* 🆕 Skip Checkbox - Moved to header */}
+              {currentQuestion && (
+                <label 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '6px', 
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: skippedQuestions[currentQuestion?.id] ? '#f59e0b' : '#6b7280',
+                    padding: '4px 8px',
+                    background: skippedQuestions[currentQuestion?.id] ? '#fef3c7' : '#f8f9fa',
+                    borderRadius: '6px',
+                    border: `2px solid ${skippedQuestions[currentQuestion?.id] ? '#fbbf24' : '#e5e7eb'}`,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={skippedQuestions[currentQuestion?.id] || false}
+                    onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
+                    style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                  />
+                  Skip
+                </label>
+              )}
             </div>
           </ProgressInfo>
           <ProgressBar>
@@ -1751,22 +1779,6 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                   <span>Load Sample Answer</span>
                 </button>
               </QuestionContent>
-              
-              <SkipToggleContainer isSkipped={skippedQuestions[currentQuestion?.id]}>
-                <SkipToggle isSkipped={skippedQuestions[currentQuestion?.id]}>
-                  <input
-                    type="checkbox"
-                    checked={skippedQuestions[currentQuestion?.id] || false}
-                    onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
-                  />
-                  Skip this question
-                </SkipToggle>
-                {skippedQuestions[currentQuestion?.id] && (
-                  <SkipMessage>
-                    Excluded from calculations
-                  </SkipMessage>
-                )}
-              </SkipToggleContainer>
             </QuestionHeader>
 
             <PerspectivesGrid style={{ 
