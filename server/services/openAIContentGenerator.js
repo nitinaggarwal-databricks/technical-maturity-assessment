@@ -40,10 +40,16 @@ class OpenAIContentGenerator {
 
     try {
       console.log(`🤖 Generating ${pillarId ? 'pillar' : 'overall'} content for assessment ${assessment.id}`);
+      console.log(`   Organization: ${assessment.organizationName}`);
+      console.log(`   Industry: ${assessment.industry}`);
+      console.log(`   Total responses: ${Object.keys(assessment.responses || {}).length}`);
       
       const prompt = pillarId 
         ? this.buildPillarPrompt(assessment, pillarId)
         : this.buildOverallPrompt(assessment);
+      
+      console.log(`📝 Prompt length: ${prompt.length} characters`);
+      console.log(`🔑 Assessment ID in prompt: ${assessment.id}`);
       
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
@@ -57,13 +63,16 @@ class OpenAIContentGenerator {
             content: prompt
           }
         ],
-        temperature: 0.7,
+        temperature: 0.9, // 🔥 INCREASED: Generate more varied, unique content for each assessment
         max_tokens: 4000,
         response_format: { type: 'json_object' }
       });
 
       const content = JSON.parse(response.choices[0].message.content);
       console.log('✅ OpenAI content generated successfully');
+      console.log(`   Executive Summary length: ${content.executiveSummary?.length || 0} chars`);
+      console.log(`   Recommendations count: ${content.recommendations?.length || 0}`);
+      console.log(`   First 100 chars of summary: ${(content.executiveSummary || '').substring(0, 100)}...`);
       
       return pillarId 
         ? this.formatPillarResults(content, assessment, pillarId)
@@ -159,9 +168,16 @@ Return ONLY valid JSON with the exact structure requested.`;
     return `# Databricks Platform Maturity Assessment Analysis
 
 ## Organization Context
+- **Assessment ID:** ${assessment.id}
 - **Organization:** ${assessment.organizationName || 'Not provided'}
 - **Industry:** ${assessment.industry || 'Not provided'}
 - **Assessment Name:** ${assessment.assessmentName || 'Unnamed Assessment'}
+- **Timestamp:** ${new Date().toISOString()}
+
+⚠️ CRITICAL: Generate UNIQUE content for this specific assessment (ID: ${assessment.id}).
+⚠️ Do NOT reuse generic templates or previous responses.
+⚠️ Every assessment has different responses, pain points, and context.
+⚠️ Your analysis MUST reflect THIS assessment's specific data, organization, and industry context.
 
 ## Assessment Data by Pillar
 
@@ -280,8 +296,15 @@ Return JSON with this structure:
     return `# ${area.name} Pillar Assessment Analysis
 
 ## Organization Context
+- **Assessment ID:** ${assessment.id}
 - **Organization:** ${assessment.organizationName || 'Not provided'}
 - **Industry:** ${assessment.industry || 'Not provided'}
+- **Pillar:** ${area.name}
+- **Timestamp:** ${new Date().toISOString()}
+
+⚠️ CRITICAL: Generate UNIQUE content for this specific assessment (ID: ${assessment.id}) and pillar (${area.name}).
+⚠️ Do NOT reuse generic templates or previous responses.
+⚠️ This organization's ${area.name} responses are UNIQUE - analyze THEIR specific data.
 
 ## ${area.name} Questions (${filledQuestions.length} answered)
 
