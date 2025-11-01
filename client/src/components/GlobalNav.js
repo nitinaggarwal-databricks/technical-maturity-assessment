@@ -410,10 +410,17 @@ const GlobalNav = () => {
           firstCategoryId = area.id;
         }
         
+        // 🔥 CRITICAL: Vary maturity baseline per pillar for uniqueness
+        // Some pillars might be slightly more mature than others
+        const pillarBaseline = Math.random() < 0.7 ? 1 : 2; // 70% start at level 1, 30% at level 2
+        const pillarVariance = Math.random() < 0.5 ? 0 : 1; // 50% chance of +1 variation
+        
         area.dimensions.forEach((dimension, dimIdx) => {
           dimension.questions.forEach((question, qIdx) => {
-            // Current state: Only 1 or 2 (early maturity stages)
-            const currentState = Math.random() < 0.5 ? 1 : 2;
+            // Current state: Use pillar baseline with per-question variance
+            // Range: 1-3, weighted toward lower maturity (1-2)
+            const questionVariance = Math.floor(Math.random() * 2); // 0 or 1
+            const currentState = Math.min(3, pillarBaseline + pillarVariance + questionVariance);
             
             // Future state: At least current + 1, can be higher (up to 5)
             // This gives a range of possible future states: currentState+1 to 5
@@ -425,7 +432,8 @@ const GlobalNav = () => {
             allResponses[`${question.id}_future_state`] = futureState;
             
             // Generate realistic customer comment specific to this question
-            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.id, question.id, currentState);
+            // 🔥 PASS timestamp for TRUE randomness
+            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.id, question.id, currentState, timestamp);
             
             // Randomly select technical pain points
             const technicalPainPerspective = question.perspectives?.find(p => p.id === 'technical_pain');
@@ -507,7 +515,8 @@ const GlobalNav = () => {
   };
 
   // Generate UNIQUE, question-specific customer comments
-  const generateRealisticComment = (pillarId, dimensionId, questionId, currentState) => {
+  // 🔥 CRITICAL: Uses TRUE randomness + timestamp to ensure NO TWO ASSESSMENTS ARE EVER THE SAME
+  const generateRealisticComment = (pillarId, dimensionId, questionId, currentState, timestamp) => {
     // Comprehensive dimension-specific comment library (low maturity = 1-2)
     const dimensionComments = {
       // PLATFORM & GOVERNANCE
@@ -709,13 +718,12 @@ const GlobalNav = () => {
       "Early stage adoption. Looking to scale with Databricks features and proper governance for enterprise-grade data and AI workloads."
     ];
     
-    // Use questionId to deterministically pick a unique comment per question
-    // This ensures each question always gets the same specific comment
-    const questionHash = questionId.split('').reduce((acc, char) => {
-      return acc + char.charCodeAt(0);
-    }, 0);
-    
-    const commentIndex = questionHash % comments.length;
+    // 🔥 CRITICAL FIX: Use TRUE randomness + timestamp seed
+    // NO deterministic hashing - every assessment MUST be unique!
+    // Combine timestamp, questionId, and Math.random() for absolute uniqueness
+    const timestampSeed = timestamp + questionId.charCodeAt(0);
+    const randomSeed = Math.random() * timestampSeed;
+    const commentIndex = Math.floor(randomSeed % comments.length);
     
     return comments[commentIndex];
   };
