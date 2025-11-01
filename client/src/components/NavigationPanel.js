@@ -599,35 +599,17 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           </ResultsSection>
         )}
 
-        {/* Overall Results Button */}
-        <ResultsSection>
-          <ResultsSectionTitle>
-            <FiBarChart2 size={14} />
-            Overall Results
-          </ResultsSectionTitle>
-          <ActionButton
-            variant="primary"
-            onClick={navigateToOverallResults}
-            disabled={!isSubmitted}
-            whileHover={{ scale: isSubmitted ? 1.05 : 1 }}
-            whileTap={{ scale: isSubmitted ? 0.95 : 1 }}
-          >
-            <FiBarChart2 size={18} />
-            <span style={{ flex: 1, textAlign: 'left' }}>Overall Assessment Results</span>
-          </ActionButton>
-          {!isSubmitted && (
-            <div style={{ 
-              fontSize: '12px', 
-              color: '#9ca3af', 
-              marginTop: '8px',
-              textAlign: 'center'
-            }}>
-              {hasAnyCompletedPillars 
-                ? 'Submit assessment to view results' 
-                : 'Complete at least one pillar to submit'}
-            </div>
-          )}
-        </ResultsSection>
+        {/* View Report Button - Only enabled after submission */}
+        <ActionButton
+          variant="primary"
+          onClick={navigateToOverallResults}
+          disabled={!isSubmitted}
+          whileHover={{ scale: isSubmitted ? 1.05 : 1 }}
+          whileTap={{ scale: isSubmitted ? 0.95 : 1 }}
+        >
+          <FiBarChart2 size={18} />
+          <span style={{ flex: 1, textAlign: 'left' }}>View Report</span>
+        </ActionButton>
       </ActionButtonsContainer>
     </NavigationContainer>
   );
