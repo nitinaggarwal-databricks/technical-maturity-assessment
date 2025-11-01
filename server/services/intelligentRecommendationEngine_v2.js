@@ -648,6 +648,20 @@ class IntelligentRecommendationEngine {
           }
         }
       }
+      
+      // 🎯 ALWAYS generate contextual next steps from nextStepsLibrary (even without database features)
+      console.log(`[IntelligentEngine V2] 🎯 Calling buildContextualNextSteps for ${pillarId} (fallback path)...`);
+      const contextualNextSteps = await this.buildContextualNextSteps(
+        assessment,
+        pillarId,
+        painPoints,
+        comments,
+        stateGaps,
+        [] // No database features, but we still have the nextStepsLibrary
+      );
+      console.log(`[IntelligentEngine V2] 📦 buildContextualNextSteps returned:`, contextualNextSteps);
+      allNextSteps.push(...contextualNextSteps);
+      console.log(`[IntelligentEngine V2] ✅ Generated ${contextualNextSteps.length} contextual next steps (fallback path)`);
     }
     
     // 🎯 Generate context-aware strengths and challenges
