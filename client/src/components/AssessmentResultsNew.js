@@ -1838,7 +1838,7 @@ const AssessmentResultsNew = () => {
   const hasAnyResponses = resultsData?.assessmentInfo?.questionsAnswered > 0;
   const currentMaturity = hasAnyResponses ? (resultsData?.overall?.currentScore || 1) : 1;
   const targetMaturity = hasAnyResponses ? (resultsData?.overall?.futureScore || 1) : 1;
-  const improvementLevel = targetMaturity - currentMaturity;
+  const improvementLevel = parseFloat((targetMaturity - currentMaturity).toFixed(1)); // 🔥 Round to 1 decimal place
 
   // Pillar data with icons
   const pillars = [
@@ -2131,7 +2131,7 @@ const AssessmentResultsNew = () => {
               </div>
               <div className="label">Improvement Potential</div>
               <div className="value">
-                +{improvementLevel} Level ({resultsData?.maturitySummary?.improvement?.timeline || '6–12 months'})
+                +{improvementLevel} Level
               </div>
               <div className="description">
                 {resultsData?.maturitySummary?.improvement?.description || 
