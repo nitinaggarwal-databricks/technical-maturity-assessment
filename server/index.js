@@ -1209,7 +1209,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
           theGood: intelligentRecs.theGood || [],
           theBad: intelligentRecs.theBad || [],
           recommendations: intelligentRecs.recommendations || [],
-          specificRecommendations: intelligentRecs.nextSteps || [], // ALWAYS use intelligent engine next steps
+          nextSteps: intelligentRecs.nextSteps || [], // ✅ FIX: Use nextSteps (not specificRecommendations)
+          specificRecommendations: intelligentRecs.nextSteps || [], // Keep for backward compatibility
           databricksFeatures: intelligentRecs.databricksFeatures || [],
           _intelligentEngine: true,
           _painPointsAnalyzed: intelligentRecs.theBad?.length || 0,
