@@ -442,6 +442,28 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           const isActive = categoryId === pillar.id;
           const isCompleted = pillarProgress[pillar.id]?.completed || false;
           
+          // 🆕 Calculate pillar progress percentage
+          const totalDimensions = pillar.dimensions?.length || 0;
+          const answeredDimensions = pillar.dimensions?.filter(dim => {
+            // Check if any question in this dimension has been answered
+            return dim.questions?.some(q => {
+              const responses = currentAssessment?.responses || {};
+              return responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`];
+            });
+          }).length || 0;
+          const progressPercent = totalDimensions > 0 ? Math.round((answeredDimensions / totalDimensions) * 100) : 0;
+          
+          // 🆕 Pillar icons
+          const pillarIcons = {
+            'platform_governance': '🧱',
+            'data_engineering': '💾',
+            'analytics_bi': '📊',
+            'machine_learning': '🤖',
+            'generative_ai': '✨',
+            'operational_excellence': '⚡'
+          };
+          const pillarIcon = pillarIcons[pillar.id] || '📋';
+          
           return (
             <PillarItem key={pillar.id}>
               <PillarHeader
@@ -460,9 +482,35 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
                 </PillarIcon>
                 
                 <PillarInfo>
-                  <PillarName>{pillar.name}</PillarName>
+                  <PillarName>
+                    <span style={{ marginRight: '8px', fontSize: '1.1rem' }}>{pillarIcon}</span>
+                    {pillar.name}
+                  </PillarName>
                   <PillarProgress>
-                    {pillar.dimensions?.length || 0} dimensions
+                    {/* 🆕 Progress circles */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: '4px',
+                        fontSize: '0.7rem'
+                      }}>
+                        {Array.from({ length: totalDimensions }, (_, idx) => (
+                          <span 
+                            key={idx}
+                            style={{ 
+                              width: '8px', 
+                              height: '8px', 
+                              borderRadius: '50%',
+                              background: idx < answeredDimensions ? '#10b981' : '#e5e7eb',
+                              display: 'inline-block'
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 600 }}>
+                        {answeredDimensions}/{totalDimensions} {progressPercent}%
+                      </span>
+                    </div>
                   </PillarProgress>
                 </PillarInfo>
                 

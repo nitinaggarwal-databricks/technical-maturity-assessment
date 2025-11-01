@@ -76,6 +76,23 @@ const AutoSaveStatus = styled.div`
       default: return '#666';
     }
   }};
+  font-weight: 600;
+  
+  .save-icon {
+    animation: ${props => props.status === 'saved' ? 'checkmarkBounce 0.6s ease' : 'none'};
+  }
+  
+  @keyframes checkmarkBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+`;
+
+const LastSavedText = styled.span`
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 400;
+  margin-left: 4px;
 `;
 
 const AreaTitle = styled.h1`
@@ -540,6 +557,267 @@ const FilterBadge = styled.span`
   font-weight: 600;
 `;
 
+// 🆕 SMART NAVIGATION COMPONENTS
+const QuestionMiniMap = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+  
+  @media (max-width: 768px) {
+    padding: 12px;
+    gap: 6px;
+  }
+`;
+
+const MiniMapDot = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid ${props => 
+    props.isComplete ? '#10b981' : 
+    props.isPartial ? '#fbbf24' : 
+    props.isCurrent ? '#ff6b35' : '#e5e7eb'};
+  background: ${props => 
+    props.isComplete ? '#10b981' : 
+    props.isPartial ? '#fef3c7' :
+    props.isCurrent ? '#ff6b35' : 'white'};
+  color: ${props => props.isComplete || props.isCurrent ? 'white' : '#666'};
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+`;
+
+const MiniMapLabel = styled.div`
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+// 🆕 CONTEXTUAL HELP COMPONENTS
+const TooltipContainer = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const TooltipTrigger = styled.span`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 6px;
+  flex-shrink: 0;
+  
+  &:hover + div {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+`;
+
+const TooltipContent = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #1f2937;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  width: max-content;
+  max-width: 300px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+  
+  @media (max-width: 768px) {
+    max-width: 250px;
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+`;
+
+const MaturityLevelInfo = styled.div`
+  background: #f8f9fa;
+  border-left: 4px solid #3b82f6;
+  padding: 12px 16px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  
+  strong {
+    color: #3b82f6;
+    display: block;
+    margin-bottom: 4px;
+  }
+`;
+
+// 🆕 BULK ACTIONS COMPONENTS
+const BulkActionsBar = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  
+  @media (max-width: 968px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const BulkActionsTitle = styled.div`
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const BulkActionsButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const BulkActionButton = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    flex: 1;
+    padding: 10px 12px;
+  }
+`;
+
+// 🆕 DIMENSION PROGRESS CARD
+const DimensionProgressCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const DimensionInfo = styled.div`
+  flex: 1;
+`;
+
+const DimensionTitle = styled.h3`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+`;
+
+const DimensionProgress = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ProgressBarSmall = styled.div`
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  
+  div {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    width: ${props => props.progress}%;
+    transition: width 0.5s ease;
+  }
+`;
+
+const ProgressLabel = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #10b981;
+  white-space: nowrap;
+`;
+
 const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) => {
   const { assessmentId, categoryId } = useParams();
   const [searchParams] = useSearchParams();
@@ -558,6 +836,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [nextPillarInfo, setNextPillarInfo] = useState(null);
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all', 'completed', 'not_started', 'without_notes'
+  const [showBulkActions, setShowBulkActions] = useState(false); // 🆕 Bulk actions toggle
+  const [showMiniMap, setShowMiniMap] = useState(true); // 🆕 Mini-map toggle
 
   // Get dimension from query parameter
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
@@ -783,7 +1063,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     ? currentArea?.questions?.[currentQuestionIndex]
     : filteredQuestions[currentQuestionIndex >= filteredQuestions.length ? 0 : currentQuestionIndex];
 
-  // Get current dimension for display
+  // Get current dimension for display with completion stats
   const getCurrentDimension = () => {
     if (!currentArea?.dimensions || !currentQuestion) return null;
     
@@ -791,7 +1071,16 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     for (const dimension of currentArea.dimensions) {
       const dimensionQuestionCount = dimension.questions?.length || 0;
       if (currentQuestionIndex < questionCount + dimensionQuestionCount) {
-        return dimension;
+        // Calculate completion stats for this dimension
+        const completedCount = (dimension.questions || []).filter(q => 
+          isQuestionCompleted(q)
+        ).length;
+        
+        return {
+          ...dimension,
+          completedQuestions: completedCount,
+          totalQuestions: dimensionQuestionCount
+        };
       }
       questionCount += dimensionQuestionCount;
     }
@@ -799,6 +1088,38 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   };
 
   const currentDimension = getCurrentDimension();
+
+  // 🆕 MATURITY LEVEL EXPLANATIONS
+  const maturityLevelHelp = {
+    1: {
+      name: "Level 1: Explore",
+      description: "Manual processes, ad-hoc implementations, no standardization. You're just beginning your journey."
+    },
+    2: {
+      name: "Level 2: Experiment",
+      description: "Basic implementation in place, some repeatability. Early adoption with limited scale."
+    },
+    3: {
+      name: "Level 3: Formalize",
+      description: "Documented processes, consistent practices across teams. Enterprise-wide standards emerging."
+    },
+    4: {
+      name: "Level 4: Optimize",
+      description: "Fully automated, optimized processes. Advanced capabilities deployed at scale."
+    },
+    5: {
+      name: "Level 5: Transform",
+      description: "Industry-leading maturity, continuous innovation, AI-driven optimization across all operations."
+    }
+  };
+
+  // Helper component for tooltips
+  const renderTooltip = (content) => (
+    <TooltipContainer>
+      <TooltipTrigger>?</TooltipTrigger>
+      <TooltipContent>{content}</TooltipContent>
+    </TooltipContainer>
+  );
 
   // Auto-save function with debouncing
   const autoSave = async (questionId, perspectiveId, value, comment, isSkipped) => {
@@ -839,6 +1160,72 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     }, 1000),
     [assessmentId, editorEmail]
   );
+
+  // 🆕 BULK ACTIONS HANDLERS
+  const handleBulkSetCurrentState = async (level) => {
+    if (!window.confirm(`Set ALL questions' Current State to Level ${level}?`)) return;
+    
+    const updatedResponses = { ...responses };
+    currentArea?.questions?.forEach(question => {
+      const currentStateKey = `${question.id}_current_state`;
+      updatedResponses[currentStateKey] = level;
+    });
+    
+    setResponses(updatedResponses);
+    toast.success(`All Current States set to Level ${level}`, { duration: 2000 });
+    setAutoSaveStatus('saving');
+    
+    // Save all changes
+    try {
+      for (const question of (currentArea?.questions || [])) {
+        await assessmentService.saveQuestionResponse(
+          assessmentId, 
+          question.id, 
+          'current_state', 
+          level, 
+          responses[`${question.id}_comment`] || '',
+          skippedQuestions[question.id] || false,
+          editorEmail
+        );
+      }
+      setAutoSaveStatus('saved');
+      setLastSaved(new Date());
+    } catch (error) {
+      setAutoSaveStatus('error');
+      toast.error('Failed to save bulk changes');
+    }
+  };
+
+  const handleSkipToNextUnanswered = () => {
+    const unansweredIndex = (currentArea?.questions || []).findIndex((q, idx) => {
+      if (idx <= currentQuestionIndex) return false;
+      return !isQuestionCompleted(q);
+    });
+    
+    if (unansweredIndex !== -1) {
+      setCurrentQuestionIndex(unansweredIndex);
+      toast.success('Jumped to next unanswered question', { duration: 1500 });
+    } else {
+      toast('All questions answered! 🎉', { icon: '✅', duration: 2000 });
+    }
+  };
+
+  const handleJumpToQuestion = (index) => {
+    setCurrentQuestionIndex(index);
+  };
+
+  // Format last saved time
+  const getLastSavedText = () => {
+    if (!lastSaved) return null;
+    
+    const now = new Date();
+    const diff = Math.floor((now - new Date(lastSaved)) / 1000); // seconds
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return new Date(lastSaved).toLocaleTimeString();
+  };
 
   const handlePerspectiveResponse = (questionId, perspectiveId, value, isMultiple = false) => {
     const responseKey = `${questionId}_${perspectiveId}`;
@@ -1133,30 +1520,28 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 <DimensionSubtitle>{currentDimension.name}</DimensionSubtitle>
               )}
             </AreaTitle>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
               <AutoSaveStatus status={autoSaveStatus}>
                 {autoSaveStatus === 'saving' && (
                   <>
-                    <FiSave size={16} />
+                    <FiSave size={18} />
                     <span>Saving...</span>
                   </>
                 )}
                 {autoSaveStatus === 'saved' && (
                   <>
-                    <FiWifi size={16} />
+                    <FiCheckCircle size={18} className="save-icon" />
                     <span>
-                      Saved
-                      {lastSaved && (
-                        <span style={{ marginLeft: '4px', opacity: 0.8 }}>
-                          {new Date(lastSaved).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      )}
+                      All changes saved
+                      <LastSavedText>
+                        {getLastSavedText() && ` • ${getLastSavedText()}`}
+                      </LastSavedText>
                     </span>
                   </>
                 )}
                 {autoSaveStatus === 'error' && (
                   <>
-                    <FiWifiOff size={16} />
+                    <FiWifiOff size={18} />
                     <span>Save failed - click Save Progress below</span>
                   </>
                 )}
@@ -1212,6 +1597,131 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           </FilterButton>
         </FilterSection>
 
+        {/* 🆕 SMART NAVIGATION: Question Mini-Map */}
+        {showMiniMap && currentArea?.questions && (
+          <QuestionMiniMap>
+            <MiniMapLabel>Quick Jump:</MiniMapLabel>
+            {(currentArea.questions || []).map((q, idx) => {
+              const isComplete = isQuestionCompleted(q);
+              const hasComment = hasNotes(q);
+              const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+              const isCurrent = idx === currentQuestionIndex;
+              
+              return (
+                <MiniMapDot
+                  key={q.id}
+                  isComplete={isComplete}
+                  isPartial={isPartial}
+                  isCurrent={isCurrent}
+                  onClick={() => handleJumpToQuestion(idx)}
+                  title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
+                >
+                  {isComplete ? '✓' : idx + 1}
+                </MiniMapDot>
+              );
+            })}
+            <button
+              onClick={() => setShowMiniMap(false)}
+              style={{
+                marginLeft: 'auto',
+                padding: '6px 12px',
+                background: '#f3f4f6',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                color: '#666'
+              }}
+            >
+              Hide Map
+            </button>
+          </QuestionMiniMap>
+        )}
+
+        {/* 🆕 DIMENSION PROGRESS CARD */}
+        {currentDimension && (
+          <DimensionProgressCard>
+            <DimensionInfo>
+              <DimensionTitle>{currentDimension.name}</DimensionTitle>
+              <DimensionProgress>
+                <ProgressBarSmall progress={(currentDimension.completedQuestions / currentDimension.totalQuestions) * 100}>
+                  <div />
+                </ProgressBarSmall>
+                <ProgressLabel>
+                  {currentDimension.completedQuestions}/{currentDimension.totalQuestions} Complete
+                </ProgressLabel>
+              </DimensionProgress>
+            </DimensionInfo>
+            {!showMiniMap && (
+              <button
+                onClick={() => setShowMiniMap(true)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Show Map
+              </button>
+            )}
+          </DimensionProgressCard>
+        )}
+
+        {/* 🆕 BULK ACTIONS BAR */}
+        {showBulkActions && (
+          <BulkActionsBar>
+            <BulkActionsTitle>
+              <span>⚡</span>
+              <span>Power User Actions</span>
+            </BulkActionsTitle>
+            <BulkActionsButtons>
+              <BulkActionButton onClick={() => handleBulkSetCurrentState(1)}>
+                Set All Current → L1
+              </BulkActionButton>
+              <BulkActionButton onClick={() => handleBulkSetCurrentState(2)}>
+                Set All Current → L2
+              </BulkActionButton>
+              <BulkActionButton onClick={() => handleBulkSetCurrentState(3)}>
+                Set All Current → L3
+              </BulkActionButton>
+              <BulkActionButton onClick={handleSkipToNextUnanswered}>
+                Skip to Next Unanswered
+              </BulkActionButton>
+              <BulkActionButton onClick={() => setShowBulkActions(false)}>
+                Hide
+              </BulkActionButton>
+            </BulkActionsButtons>
+          </BulkActionsBar>
+        )}
+
+        {/* Toggle Bulk Actions Button */}
+        {!showBulkActions && (
+          <div style={{ marginBottom: '16px', textAlign: 'center' }}>
+            <button
+              onClick={() => setShowBulkActions(true)}
+              style={{
+                padding: '10px 20px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
+              }}
+            >
+              ⚡ Show Power User Actions
+            </button>
+          </div>
+        )}
+
         <ScrollableContent>
           <AnimatePresence mode="wait">
             <QuestionCard
@@ -1250,7 +1760,16 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             }}>
               {currentQuestion?.perspectives?.map((perspective) => (
                 <PerspectiveColumn key={perspective.id}>
-                  <PerspectiveHeader>{perspective.label}</PerspectiveHeader>
+                  <PerspectiveHeader>
+                    {perspective.label}
+                    {/* 🆕 Add tooltips for state perspectives */}
+                    {perspective.id === 'current_state' && renderTooltip(
+                      "Rate your organization's current maturity level for this capability"
+                    )}
+                    {perspective.id === 'future_state' && renderTooltip(
+                      "What maturity level do you aspire to achieve? (Must be ≥ Current State)"
+                    )}
+                  </PerspectiveHeader>
                   <OptionGroup>
                     {perspective.type === 'single_choice' ? (
                       perspective.options.map((option) => {
@@ -1319,6 +1838,23 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               </CommentSection>
             </PerspectivesGrid>
           </QuestionCard>
+
+          {/* 🆕 MATURITY LEVEL REFERENCE CARD */}
+          <div style={{ marginTop: '16px', background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
+            <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', fontWeight: 700, color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>📘</span>
+              <span>Maturity Level Reference</span>
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+              {[1, 2, 3, 4, 5].map(level => (
+                <MaturityLevelInfo key={level}>
+                  <strong>{maturityLevelHelp[level].name}</strong>
+                  <div>{maturityLevelHelp[level].description}</div>
+                </MaturityLevelInfo>
+              ))}
+            </div>
+          </div>
+
         </AnimatePresence>
         </ScrollableContent>
 
