@@ -1825,9 +1825,11 @@ const AssessmentResultsNew = () => {
     );
   }
 
-  // Calculate maturity levels (you'll need to adjust this based on your actual data structure)
-  const currentMaturity = 3; // Example: Get from results.overall?.currentMaturity
-  const targetMaturity = 4; // Example: Get from results.overall?.targetMaturity
+  // Calculate maturity levels from actual results data
+  // 🔥 FIX: Default to Level 1 (Explore) if no responses, not Level 3!
+  const hasAnyResponses = resultsData?.assessmentInfo?.questionsAnswered > 0;
+  const currentMaturity = hasAnyResponses ? (resultsData?.overall?.currentScore || 1) : 1;
+  const targetMaturity = hasAnyResponses ? (resultsData?.overall?.futureScore || 1) : 1;
   const improvementLevel = targetMaturity - currentMaturity;
 
   // Pillar data with icons

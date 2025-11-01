@@ -1261,6 +1261,30 @@ class IntelligentRecommendationEngine {
   generateStrategicRoadmap(prioritizedActions) {
     console.log('[generateStrategicRoadmap] Generating roadmap from', prioritizedActions.length, 'pillars');
     
+    // 🔥 FIX: If no pillar data, return empty roadmap (assessment not started)
+    if (!prioritizedActions || prioritizedActions.length === 0) {
+      console.log('[generateStrategicRoadmap] No pillar data - returning empty roadmap');
+      return {
+        phases: [
+          {
+            id: 'phase1',
+            title: 'Phase 1: Foundation (0–3 months)',
+            items: ['Complete at least one assessment pillar to see your personalized strategic roadmap']
+          },
+          {
+            id: 'phase2',
+            title: 'Phase 2: Scale (3–6 months)',
+            items: []
+          },
+          {
+            id: 'phase3',
+            title: 'Phase 3: Optimize (6–12 months)',
+            items: []
+          }
+        ]
+      };
+    }
+    
     // Sort by priority and gap
     const sorted = [...prioritizedActions].sort((a, b) => {
       // Critical first, then high, then medium/low

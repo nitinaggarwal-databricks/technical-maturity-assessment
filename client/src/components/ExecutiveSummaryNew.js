@@ -846,8 +846,9 @@ const ExecutiveSummaryNew = () => {
   const isIncomplete = !hasResponses || resultsData?.assessmentInfo?.completionPercentage < 10;
 
   // Calculate maturity levels from results
-  const currentMaturity = resultsData?.overall?.currentScore || 3;
-  const targetMaturity = resultsData?.overall?.futureScore || 4;
+  // 🔥 FIX: Default to Level 1 (Explore) if no responses, not Level 3!
+  const currentMaturity = hasResponses ? (resultsData?.overall?.currentScore || 1) : 1;
+  const targetMaturity = hasResponses ? (resultsData?.overall?.futureScore || 1) : 1;
   const improvementScope = targetMaturity - currentMaturity;
 
   // Get actual pillars data from results (dynamically generated)
