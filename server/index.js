@@ -142,7 +142,7 @@ app.get('/api/assessment/framework', async (req, res) => {
 // Start new assessment
 app.post('/api/assessment/start', async (req, res) => {
   try {
-    const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
+    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
     
     if (!contactEmail) {
       return res.status(400).json({
@@ -163,10 +163,14 @@ app.post('/api/assessment/start', async (req, res) => {
       id: assessmentId,
       organizationName: organizationName || 'Not specified',
       contactEmail,
+      contactName: contactName || '',
+      contactRole: contactRole || '',
       industry: industry || 'Not specified',
       assessmentName,
       assessmentDescription: assessmentDescription || '',
       startedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       status: 'in_progress',
       responses: {},
       completedCategories: [],
@@ -250,12 +254,16 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         assessmentDescription: assessment.assessmentDescription || '',
         organizationName: assessment.organizationName,
         contactEmail: assessment.contactEmail,
+        contactName: assessment.contactName || '',
+        contactRole: assessment.contactRole || '',
         industry: assessment.industry,
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
         completedCategories: assessment.completedCategories,
         startedAt: assessment.startedAt,
+        createdAt: assessment.createdAt || assessment.startedAt,
+        updatedAt: assessment.updatedAt || assessment.startedAt,
         responses: assessment.responses // Include responses for progress calculation
       }
     });
@@ -433,6 +441,7 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
 
     // Update assessment metadata for tracking
     assessment.lastModified = new Date().toISOString();
+    assessment.updatedAt = new Date().toISOString();
 
     await assessments.set(id, assessment);
 
@@ -487,6 +496,7 @@ app.post('/api/assessment/:id/bulk-submit', async (req, res) => {
 
     // Update assessment metadata
     assessment.lastModified = new Date().toISOString();
+    assessment.updatedAt = new Date().toISOString();
 
     await assessments.set(id, assessment);
 
@@ -1853,11 +1863,15 @@ app.get('/api/assessments', async (req, res) => {
       id: assessment.id,
       organizationName: assessment.organizationName,
       contactEmail: assessment.contactEmail,
+      contactName: assessment.contactName || '',
+      contactRole: assessment.contactRole || '',
       industry: assessment.industry,
       assessmentName: assessment.assessmentName || 'Untitled Assessment',
       assessmentDescription: assessment.assessmentDescription || '',
       status: assessment.status,
       startedAt: assessment.startedAt,
+      createdAt: assessment.createdAt || assessment.startedAt,
+      updatedAt: assessment.updatedAt || assessment.lastModified || assessment.startedAt,
       completedAt: assessment.completedAt,
       completedCategories: assessment.completedCategories,
       totalCategories: assessmentFramework.assessmentAreas.length,

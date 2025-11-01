@@ -798,7 +798,7 @@ const AssessmentsListNew = () => {
   };
 
   const getTimeAgo = (dateString) => {
-    if (!dateString) return 'Recently';
+    if (!dateString) return 'Just now';
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
@@ -809,6 +809,19 @@ const AssessmentsListNew = () => {
     if (diffInDays === 1) return '1 day ago';
     if (diffInDays < 7) return `${diffInDays} days ago`;
     return date.toLocaleDateString();
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true 
+    });
   };
 
   const pillars = [
@@ -1081,33 +1094,36 @@ const AssessmentsListNew = () => {
                         </div>
                         <span>›</span>
                         <div className="meta-item">
-                          <span>👤</span>
-                          <span>{assessment.contactEmail || 'No owner'}</span>
+                          <span>🏭</span>
+                          <span>{assessment.industry || 'Not specified'}</span>
+                        </div>
+                      </div>
+                      <div className="meta" style={{ marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>
+                        <div className="meta-item">
+                          <span>📝</span>
+                          <span>Created by: {assessment.contactName || assessment.contactEmail?.split('@')[0] || 'Unknown'}</span>
                         </div>
                         <span>•</span>
                         <div className="meta-item">
-                          <span>🕒</span>
-                          <span>{getTimeAgo(assessment.updatedAt || assessment.createdAt)}</span>
+                          <span>📅</span>
+                          <span>{formatDateTime(assessment.createdAt)}</span>
+                        </div>
+                      </div>
+                      <div className="meta" style={{ marginTop: '4px', fontSize: '0.85rem', color: '#64748b' }}>
+                        <div className="meta-item">
+                          <span>✏️</span>
+                          <span>Updated by: {assessment.contactName || assessment.contactEmail?.split('@')[0] || 'Unknown'}</span>
+                        </div>
+                        <span>•</span>
+                        <div className="meta-item">
+                          <span>🕐</span>
+                          <span>{formatDateTime(assessment.updatedAt)}</span>
                         </div>
                       </div>
                     </div>
                     <StatusBadge $status={status}>
                       {getStatusLabel(assessment)}
                     </StatusBadge>
-                  </div>
-
-                  <div className="pillars">
-                    {completedPillars.slice(0, 5).map((pillar, idx) => (
-                      <PillarTag key={idx}>
-                        {pillar.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </PillarTag>
-                    ))}
-                    {completedPillars.length > 5 && (
-                      <PillarTag>+{completedPillars.length - 5} more</PillarTag>
-                    )}
-                    {completedPillars.length === 0 && (
-                      <PillarTag style={{ opacity: 0.5 }}>No pillars completed</PillarTag>
-                    )}
                   </div>
 
                   <div className="progress-section">

@@ -334,14 +334,53 @@ const GlobalNav = () => {
     try {
       toast.loading('Creating fully populated sample assessment...', { id: 'sample-assessment' });
       
-      // Generate unique sample data with timestamp
+      // Generate unique, realistic sample data
       const timestamp = Date.now();
       const randomSuffix = Math.random().toString(36).substring(2, 8);
+      
+      // Realistic company names
+      const companies = [
+        'Acme Healthcare Systems', 'TechVision Financial Services', 'Global Retail Analytics Corp',
+        'Premier Insurance Group', 'NextGen Manufacturing', 'Unified Telecom Solutions',
+        'Apex Pharmaceuticals', 'MetroBank Financial', 'Summit Energy Corporation',
+        'Velocity Logistics Group', 'Horizon Media Networks', 'CoreTech Industries',
+        'Pinnacle Healthcare Partners', 'Atlas Supply Chain', 'Quantum Financial Analytics'
+      ];
+      
+      // Realistic industries
+      const industries = [
+        'Healthcare', 'Financial Services', 'Retail', 'Insurance', 'Manufacturing',
+        'Telecommunications', 'Pharmaceuticals', 'Banking', 'Energy', 'Logistics',
+        'Media & Entertainment', 'Technology', 'Life Sciences', 'Supply Chain'
+      ];
+      
+      // Realistic contact names and roles
+      const firstNames = ['Sarah', 'Michael', 'Jennifer', 'David', 'Emily', 'Robert', 'Lisa', 'James', 'Maria', 'John'];
+      const lastNames = ['Chen', 'Patel', 'Johnson', 'Garcia', 'Smith', 'Williams', 'Brown', 'Davis', 'Martinez', 'Anderson'];
+      const roles = ['CDO', 'VP Data & Analytics', 'Director of Data Engineering', 'Head of ML/AI', 'Chief Analytics Officer'];
+      
+      // Pick random values
+      const company = companies[Math.floor(Math.random() * companies.length)];
+      const industry = industries[Math.floor(Math.random() * industries.length)];
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const role = roles[Math.floor(Math.random() * roles.length)];
+      
+      // Create realistic email domain from company name
+      const emailDomain = company.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .split(' ')
+        .slice(0, 2)
+        .join('') + '.com';
+      
       const sampleData = {
-        assessmentName: `Sample Assessment - ${new Date().toLocaleString()} [${randomSuffix}]`,
-        organizationName: 'Demo Organization',
-        industry: 'Technology',
-        contactEmail: 'demo@example.com'
+        assessmentName: `${company} - Data Platform Maturity Assessment`,
+        organizationName: company,
+        industry: industry,
+        contactEmail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${emailDomain}`,
+        contactName: `${firstName} ${lastName}`,
+        contactRole: role,
+        assessmentDescription: `Comprehensive assessment of data platform capabilities and maturity across all six pillars for ${company}`
       };
       
       const result = await assessmentService.startAssessment(sampleData);
