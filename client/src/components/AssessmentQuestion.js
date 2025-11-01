@@ -1575,8 +1575,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               {/* Separator */}
               <div style={{ width: '1px', height: '20px', background: '#e5e7eb' }} />
 
-              {/* Question Numbers - Compact */}
-              {currentArea?.questions && (currentArea.questions || []).slice(0, 10).map((q, idx) => {
+              {/* Question Numbers - Compact (show first 10 only) */}
+              {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
+                // Only render first 10 question numbers to save space
+                if (idx >= 10) return null;
+                
                 const isComplete = isQuestionCompleted(q);
                 const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
                 const isCurrent = idx === currentQuestionIndex;
