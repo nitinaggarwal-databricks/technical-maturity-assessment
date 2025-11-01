@@ -1086,7 +1086,6 @@ const AssessmentsListNew = () => {
                 >
                   <div className="header">
                     <div>
-                      <div className="title">{assessment.assessmentName || 'Untitled Assessment'}</div>
                       <div className="meta">
                         <div className="meta-item">
                           <span>🏢</span>
