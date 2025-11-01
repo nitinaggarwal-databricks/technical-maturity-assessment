@@ -205,10 +205,10 @@ class AdaptiveRecommendationEngine {
       const future = this.calculateAreaScoreByPerspective(area, responses, 'future_state');
       
       areaScores[area.id] = {
-        current: Math.round(current),
-        future: Math.round(future),
-        gap: Math.round(future - current),
-        overall: Math.round((current + future) / 2)
+        current: parseFloat(current.toFixed(1)), // 🔥 FIX: Use 1 decimal place
+        future: parseFloat(future.toFixed(1)),
+        gap: parseFloat((future - current).toFixed(1)),
+        overall: parseFloat(((current + future) / 2).toFixed(1))
       };
       
       areaGaps[area.id] = future - current;
@@ -219,10 +219,13 @@ class AdaptiveRecommendationEngine {
     const commentInsights = this.extractCommentInsights(responses, areasToAnalyze);
     
     // Generate adaptive recommendations
+    const currentScoreVal = this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'current_state');
+    const futureScoreVal = this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'future_state');
+    
     const recommendations = {
       overall: {
-        currentScore: Math.round(this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'current_state')),
-        futureScore: Math.round(this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'future_state')),
+        currentScore: parseFloat(currentScoreVal.toFixed(1)), // 🔥 FIX: Use 1 decimal place
+        futureScore: parseFloat(futureScoreVal.toFixed(1)),
         gap: 0, // Will calculate
         level: assessmentFramework.maturityLevels[Math.max(1, Math.min(5, overallScore))],
         summary: this.generateAdaptiveSummary(areaScores, painPointAnalysis, commentInsights)
@@ -239,7 +242,7 @@ class AdaptiveRecommendationEngine {
       executiveSummary: {}
     };
 
-    recommendations.overall.gap = recommendations.overall.futureScore - recommendations.overall.currentScore;
+    recommendations.overall.gap = parseFloat((recommendations.overall.futureScore - recommendations.overall.currentScore).toFixed(1)); // 🔥 FIX: 1 decimal place
 
     // Generate area-specific adaptive recommendations
     Object.keys(areaScores).forEach(areaId => {

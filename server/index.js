@@ -1151,12 +1151,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         
         // Calculate dimension scores
         if (dimAnsweredCount > 0) {
+          const dimCurrentScore = dimCurrentSum / dimAnsweredCount;
+          const dimFutureScore = dimFutureSum / dimAnsweredCount;
           dimensionScores[dimension.id] = {
             id: dimension.id,
             name: dimension.name,
-            currentScore: dimCurrentSum / dimAnsweredCount,
-            futureScore: dimFutureSum / dimAnsweredCount,
-            gap: (dimFutureSum / dimAnsweredCount) - (dimCurrentSum / dimAnsweredCount),
+            currentScore: parseFloat(dimCurrentScore.toFixed(1)), // 🔥 FIX: 1 decimal place
+            futureScore: parseFloat(dimFutureScore.toFixed(1)),
+            gap: parseFloat((dimFutureScore - dimCurrentScore).toFixed(1)),
             questionsAnswered: dimAnsweredCount,
             totalQuestions: dimQuestionCount
           };
@@ -1167,10 +1169,10 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         id: area.id,
         name: area.name,
         description: area.description,
-        score: Math.round(currentScore), // Use current score as overall score
-        currentScore: Math.round(currentScore),
-        futureScore: Math.round(futureScore),
-        gap: Math.round(futureScore - currentScore),
+        score: parseFloat(currentScore.toFixed(1)), // 🔥 FIX: Use 1 decimal place (2.0, 3.5, etc.)
+        currentScore: parseFloat(currentScore.toFixed(1)),
+        futureScore: parseFloat(futureScore.toFixed(1)),
+        gap: parseFloat((futureScore - currentScore).toFixed(1)),
         level: adaptiveRecommendationEngine.getMaturityLevel(currentScore),
         weight: areasWithResponses.length > 0 ? 1 / areasWithResponses.length : 0,
         isPartial: !isCompleted,
