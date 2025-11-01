@@ -81,12 +81,13 @@ export const startAssessment = async (organizationInfo) => {
 export const getAssessmentStatus = async (assessmentId) => {
   try {
     const response = await api.get(`/assessment/${assessmentId}/status`);
+    // API interceptor already extracts response.data, so we get the actual data directly
     // Backend returns { success: true, data: { ... } }
-    if (response.data && response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.success && response.data) {
+      return response.data;
     }
     // Fallback for backwards compatibility
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error fetching assessment status:', error);
     throw error;
