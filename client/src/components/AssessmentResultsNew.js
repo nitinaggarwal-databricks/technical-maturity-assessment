@@ -1825,6 +1825,9 @@ const AssessmentResultsNew = () => {
     );
   }
 
+  // 🔥 FIX: Extract resultsData FIRST before using it
+  const resultsData = results?.data || results;
+  
   // Calculate maturity levels from actual results data
   // 🔥 FIX: Default to Level 1 (Explore) if no responses, not Level 3!
   const hasAnyResponses = resultsData?.assessmentInfo?.questionsAnswered > 0;
@@ -1966,7 +1969,7 @@ const AssessmentResultsNew = () => {
     return data;
   };
 
-  const resultsData = results?.data || results;
+  // 🔥 resultsData already declared at top - removed duplicate
   console.log('[AssessmentResultsNew] Rendering with resultsData:', resultsData);
   console.log('[AssessmentResultsNew] resultsData keys:', resultsData ? Object.keys(resultsData) : 'null');
   console.log('[AssessmentResultsNew] categoryDetails keys:', resultsData?.categoryDetails ? Object.keys(resultsData.categoryDetails) : 'null');
