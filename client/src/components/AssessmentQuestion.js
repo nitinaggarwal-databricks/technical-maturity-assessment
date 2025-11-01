@@ -957,6 +957,15 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           setLoading(false);
         } catch (error) {
           console.error('Error loading area data:', error);
+          
+          // If assessment not found, redirect to assessments list
+          if (error.message?.includes('Assessment not found') || error.message?.includes('404')) {
+            toast.error('Assessment not found. Redirecting to assessments list...');
+            setTimeout(() => navigate('/assessments'), 2000);
+          } else {
+            toast.error('Failed to load assessment data');
+          }
+          
           setLoading(false);
         }
       }
