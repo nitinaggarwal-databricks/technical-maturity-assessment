@@ -1514,71 +1514,124 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       />
       <ContentWrapper>
         <ProgressSection>
-          {/* 🆕 SINGLE COMPACT LINE: Everything in one row */}
+          {/* 🆕 ULTRA COMPACT: Everything in ONE single line */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between',
             gap: '12px',
             flexWrap: 'wrap',
-            marginBottom: '12px'
+            marginBottom: '8px'
           }}>
-            {/* Left side: Title */}
-            <AreaTitle style={{ margin: 0, fontSize: '1.5rem', flexShrink: 0 }}>
+            {/* Left: Title */}
+            <AreaTitle style={{ margin: 0, fontSize: '1.3rem', flexShrink: 0 }}>
               <div>{currentArea.name}</div>
               {currentDimension && (
-                <DimensionSubtitle style={{ fontSize: '0.85rem' }}>{currentDimension.name}</DimensionSubtitle>
+                <DimensionSubtitle style={{ fontSize: '0.75rem', marginTop: '2px' }}>{currentDimension.name}</DimensionSubtitle>
               )}
             </AreaTitle>
             
-            {/* Right side: Status indicators */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            {/* Middle: Filters + Question Numbers (compact) */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              flex: 1,
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}>
+              {/* Filter Buttons - Compact */}
+              <FilterButton 
+                active={questionFilter === 'all'} 
+                onClick={() => setQuestionFilter('all')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                All
+                <FilterBadge active={questionFilter === 'all'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.total}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                active={questionFilter === 'completed'} 
+                onClick={() => setQuestionFilter('completed')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                Done
+                <FilterBadge active={questionFilter === 'completed'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.completed}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                active={questionFilter === 'not_started'} 
+                onClick={() => setQuestionFilter('not_started')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                Todo
+                <FilterBadge active={questionFilter === 'not_started'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.notStarted}
+                </FilterBadge>
+              </FilterButton>
+
+              {/* Separator */}
+              <div style={{ width: '1px', height: '20px', background: '#e5e7eb' }} />
+
+              {/* Question Numbers - Compact */}
+              {currentArea?.questions && (currentArea.questions || []).slice(0, 10).map((q, idx) => {
+                const isComplete = isQuestionCompleted(q);
+                const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+                const isCurrent = idx === currentQuestionIndex;
+                
+                return (
+                  <MiniMapDot
+                    key={q.id}
+                    isComplete={isComplete}
+                    isPartial={isPartial}
+                    isCurrent={isCurrent}
+                    onClick={() => handleJumpToQuestion(idx)}
+                    title={`Q${idx + 1}: ${q.topic}`}
+                    style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}
+                  >
+                    {idx + 1}
+                  </MiniMapDot>
+                );
+              })}
+            </div>
+            
+            {/* Right: Status indicators */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
               <AutoSaveStatus status={autoSaveStatus}>
-                {autoSaveStatus === 'saving' && (
-                  <>
-                    <FiSave size={16} />
-                    <span style={{ fontSize: '0.85rem' }}>Saving...</span>
-                  </>
-                )}
                 {autoSaveStatus === 'saved' && (
                   <>
-                    <FiCheckCircle size={16} className="save-icon" />
-                    <span style={{ fontSize: '0.85rem' }}>
-                      All changes saved
-                      <LastSavedText>
-                        {getLastSavedText() && ` • ${getLastSavedText()}`}
-                      </LastSavedText>
-                    </span>
+                    <FiCheckCircle size={14} className="save-icon" />
+                    <span style={{ fontSize: '0.75rem' }}>Saved</span>
                   </>
                 )}
-                {autoSaveStatus === 'error' && (
+                {autoSaveStatus === 'saving' && (
                   <>
-                    <FiWifiOff size={16} />
-                    <span style={{ fontSize: '0.85rem' }}>Save failed</span>
+                    <FiSave size={14} />
+                    <span style={{ fontSize: '0.75rem' }}>Saving...</span>
                   </>
                 )}
               </AutoSaveStatus>
-              <ProgressText style={{ fontSize: '0.85rem' }}>
-                Question {currentQuestionIndex + 1} of {questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
-                {questionFilter !== 'all' && <span style={{ color: '#ff6b35', fontWeight: 600 }}> (Filtered)</span>}
+              <ProgressText style={{ fontSize: '0.75rem' }}>
+                Q {currentQuestionIndex + 1}/{questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
               </ProgressText>
               
-              {/* Skip Checkbox - Compact */}
+              {/* Skip Checkbox - Ultra Compact */}
               {currentQuestion && (
                 <label 
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '6px', 
+                    gap: '4px', 
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
+                    fontSize: '0.75rem',
                     fontWeight: 600,
                     color: skippedQuestions[currentQuestion?.id] ? '#f59e0b' : '#6b7280',
-                    padding: '4px 8px',
+                    padding: '3px 6px',
                     background: skippedQuestions[currentQuestion?.id] ? '#fef3c7' : '#f8f9fa',
-                    borderRadius: '6px',
-                    border: `2px solid ${skippedQuestions[currentQuestion?.id] ? '#fbbf24' : '#e5e7eb'}`,
-                    transition: 'all 0.2s ease',
+                    borderRadius: '4px',
+                    border: `1px solid ${skippedQuestions[currentQuestion?.id] ? '#fbbf24' : '#e5e7eb'}`,
                     flexShrink: 0
                   }}
                 >
@@ -1586,7 +1639,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                     type="checkbox"
                     checked={skippedQuestions[currentQuestion?.id] || false}
                     onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
-                    style={{ width: '14px', height: '14px', cursor: 'pointer' }}
+                    style={{ width: '12px', height: '12px', cursor: 'pointer' }}
                   />
                   Skip
                 </label>
@@ -1594,143 +1647,12 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             </div>
           </div>
           
-          {/* Progress Bar */}
-          <ProgressBar style={{ marginBottom: '12px' }}>
+          {/* Progress Bar - Thin */}
+          <ProgressBar style={{ marginBottom: '8px', height: '4px' }}>
             <ProgressFill progress={progress} />
           </ProgressBar>
-          
-          {/* Filters + Question Numbers */}
-          <FilterSection style={{ marginBottom: 0 }}>
-            {/* Filter Buttons */}
-            <FilterButton 
-              active={questionFilter === 'all'} 
-              onClick={() => setQuestionFilter('all')}
-            >
-              All
-              <FilterBadge active={questionFilter === 'all'}>
-                {filterStats.total}
-              </FilterBadge>
-            </FilterButton>
-            <FilterButton 
-              active={questionFilter === 'completed'} 
-              onClick={() => setQuestionFilter('completed')}
-            >
-              Completed
-              <FilterBadge active={questionFilter === 'completed'}>
-                {filterStats.completed}
-              </FilterBadge>
-            </FilterButton>
-            <FilterButton 
-              active={questionFilter === 'not_started'} 
-              onClick={() => setQuestionFilter('not_started')}
-            >
-              Not Started
-              <FilterBadge active={questionFilter === 'not_started'}>
-                {filterStats.notStarted}
-              </FilterBadge>
-            </FilterButton>
-            <FilterButton 
-              active={questionFilter === 'without_notes'} 
-              onClick={() => setQuestionFilter('without_notes')}
-            >
-              Completed Without Notes
-              <FilterBadge active={questionFilter === 'without_notes'}>
-                {filterStats.withoutNotes}
-              </FilterBadge>
-            </FilterButton>
-
-            {/* Separator */}
-            <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }} />
-
-            {/* Question Numbers */}
-            {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
-              const isComplete = isQuestionCompleted(q);
-              const hasComment = hasNotes(q);
-              const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
-              const isCurrent = idx === currentQuestionIndex;
-              
-              return (
-                <MiniMapDot
-                  key={q.id}
-                  isComplete={isComplete}
-                  isPartial={isPartial}
-                  isCurrent={isCurrent}
-                  onClick={() => handleJumpToQuestion(idx)}
-                  title={`Question ${idx + 1}: ${q.topic} - ${isComplete ? '✓ Complete' : isPartial ? '⚠ Partial' : '○ Not started'}`}
-                >
-                  {idx + 1}
-                </MiniMapDot>
-              );
-            })}
-
-            {/* Hide Map Button */}
-            <button
-              onClick={() => setShowMiniMap(!showMiniMap)}
-              style={{
-                marginLeft: 'auto',
-                padding: '6px 12px',
-                background: '#f3f4f6',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                color: '#666',
-                fontWeight: '500'
-              }}
-            >
-              {showMiniMap ? 'Hide Map' : 'Show Map'}
-            </button>
-          </FilterSection>
         </ProgressSection>
 
-        {/* 🆕 BULK ACTIONS BAR */}
-        {showBulkActions && (
-          <BulkActionsBar>
-            <BulkActionsTitle>
-              <span>⚡</span>
-              <span>Power User Actions</span>
-            </BulkActionsTitle>
-            <BulkActionsButtons>
-              <BulkActionButton onClick={() => handleBulkSetCurrentState(1)}>
-                Set All Current → L1
-              </BulkActionButton>
-              <BulkActionButton onClick={() => handleBulkSetCurrentState(2)}>
-                Set All Current → L2
-              </BulkActionButton>
-              <BulkActionButton onClick={() => handleBulkSetCurrentState(3)}>
-                Set All Current → L3
-              </BulkActionButton>
-              <BulkActionButton onClick={handleSkipToNextUnanswered}>
-                Skip to Next Unanswered
-              </BulkActionButton>
-              <BulkActionButton onClick={() => setShowBulkActions(false)}>
-                Hide
-              </BulkActionButton>
-            </BulkActionsButtons>
-          </BulkActionsBar>
-        )}
-
-        {/* Toggle Bulk Actions Button */}
-        {!showBulkActions && (
-          <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-            <button
-              onClick={() => setShowBulkActions(true)}
-              style={{
-                padding: '10px 20px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
-              }}
-            >
-              ⚡ Show Power User Actions
-            </button>
-          </div>
-        )}
 
         <ScrollableContent>
           <AnimatePresence mode="wait">
@@ -1745,51 +1667,6 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               <QuestionContent>
                 <QuestionTopic>{currentQuestion?.topic}</QuestionTopic>
                 <QuestionText>{currentQuestion?.question}</QuestionText>
-                {/* 🆕 Load Sample Answer Button */}
-                <button
-                  onClick={() => {
-                    // Generate sample answer for this question
-                    const randomCurrent = Math.floor(Math.random() * 2) + 1; // 1 or 2
-                    const randomFuture = randomCurrent + Math.floor(Math.random() * 2) + 1; // at least +1
-                    
-                    handlePerspectiveResponse(currentQuestion.id, 'current_state', randomCurrent);
-                    handlePerspectiveResponse(currentQuestion.id, 'future_state', Math.min(randomFuture, 5));
-                    
-                    // Add a sample comment
-                    const sampleComments = [
-                      "Currently using manual processes, looking to standardize.",
-                      "Have basic implementation in place, need to scale across teams.",
-                      "Working towards enterprise-wide adoption with documented standards.",
-                      "Optimizing current processes and exploring advanced capabilities.",
-                      "Leading-edge implementation with continuous improvement focus."
-                    ];
-                    const comment = sampleComments[randomCurrent - 1] || sampleComments[0];
-                    handleCommentChange(currentQuestion.id, comment);
-                    
-                    toast.success('Sample answer loaded!', { duration: 1500, icon: '✨' });
-                  }}
-                  style={{
-                    marginTop: '12px',
-                    padding: '8px 16px',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
-                  }}
-                  onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-                  onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                >
-                  <span>✨</span>
-                  <span>Load Sample Answer</span>
-                </button>
               </QuestionContent>
             </QuestionHeader>
 

@@ -2903,30 +2903,36 @@ const AssessmentResultsNew = () => {
                                       <button
                                         onClick={() => handleEditBadItem(pillar.id, idx, displayText)}
                                         style={{
-                                          padding: '4px 8px',
-                                          fontSize: '0.75rem',
+                                          padding: '6px',
                                           background: '#3b82f6',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
-                                          cursor: 'pointer'
+                                          cursor: 'pointer',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center'
                                         }}
+                                        title="Edit"
                                       >
-                                        Edit
+                                        <FiEdit3 size={14} />
                                       </button>
                                       <button
                                         onClick={() => handleDeleteBadItem(pillar.id, idx)}
                                         style={{
-                                          padding: '4px 8px',
-                                          fontSize: '0.75rem',
+                                          padding: '6px',
                                           background: '#ef4444',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
-                                          cursor: 'pointer'
+                                          cursor: 'pointer',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center'
                                         }}
+                                        title="Delete"
                                       >
-                                        Delete
+                                        <FiTrash2 size={14} />
                                       </button>
                                     </>
                                   )}
