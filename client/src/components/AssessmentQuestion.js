@@ -508,7 +508,7 @@ const SubmissionProgressFill = styled(motion.div)`
   border-radius: 6px;
 `;
 
-const ProgressText = styled.div`
+const SubmissionProgressText = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1952,13 +1952,13 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
                   />
                 </SubmissionProgressBar>
-                <ProgressText>
+                <SubmissionProgressText>
                   <FiLoader size={16} />
                   {submissionMessage}
                   <span style={{ marginLeft: 'auto', fontWeight: 600, color: '#ff6b35' }}>
                     {submissionProgress}%
                   </span>
-                </ProgressText>
+                </SubmissionProgressText>
               </ProgressContainer>
             </DialogBox>
           </DialogOverlay>
