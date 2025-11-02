@@ -1532,74 +1532,78 @@ class IntelligentRecommendationEngine {
     console.log(`[calculateBusinessImpact] Avg gap: ${avgGap.toFixed(1)}, Avg current: ${avgCurrent.toFixed(1)}, Avg target: ${avgTarget.toFixed(1)}`);
     
     // Industry-specific multipliers (based on data-driven insights)
+    // Life Sciences: Conservative due to regulatory constraints and validation requirements
     const industryMultipliers = {
-      'Financial Services': { speed: 1.2, cost: 1.1, overhead: 1.15 },
-      'Healthcare': { speed: 1.15, cost: 1.05, overhead: 1.2 },
-      'Retail': { speed: 1.25, cost: 1.15, overhead: 1.1 },
-      'Manufacturing': { speed: 1.1, cost: 1.2, overhead: 1.25 },
-      'Technology': { speed: 1.15, cost: 1.1, overhead: 1.15 },
-      'Telecommunications': { speed: 1.2, cost: 1.15, overhead: 1.2 },
-      'Energy': { speed: 1.1, cost: 1.2, overhead: 1.15 },
+      'Financial Services': { speed: 1.1, cost: 1.05, overhead: 1.1 },
+      'Healthcare': { speed: 1.0, cost: 1.0, overhead: 1.15 },
+      'Life Sciences': { speed: 0.9, cost: 1.0, overhead: 1.1 },
+      'Pharmaceuticals': { speed: 0.9, cost: 1.0, overhead: 1.1 },
+      'Retail': { speed: 1.15, cost: 1.1, overhead: 1.05 },
+      'Manufacturing': { speed: 1.05, cost: 1.15, overhead: 1.2 },
+      'Technology': { speed: 1.1, cost: 1.05, overhead: 1.1 },
+      'Telecommunications': { speed: 1.1, cost: 1.1, overhead: 1.15 },
+      'Energy': { speed: 1.05, cost: 1.15, overhead: 1.1 },
       'default': { speed: 1.0, cost: 1.0, overhead: 1.0 }
     };
     
     const multipliers = industryMultipliers[industry] || industryMultipliers['default'];
     
     // Base impact calculations using realistic industry benchmarks
+    // Life Sciences considerations: Regulatory validation, compliance, longer deployment cycles
     
     // 1. ANALYTICS SPEED (based on Analytics/BI and Data Engineering maturity improvements)
     const analyticsPillar = prioritizedActions.find(p => p.pillarId === 'analytics_bi');
     const dataEngPillar = prioritizedActions.find(p => p.pillarId === 'data_engineering');
     
-    // Base: Conservative 30% per maturity level improvement (realistic)
-    // Photon/Serverless SQL can provide 2-3x speedup in best cases
+    // Base: Conservative 20% per maturity level improvement (realistic for regulated industries)
+    // Photon/Serverless SQL can provide 1.5-2x speedup in validated environments
     let speedMultiplier = 1.0;
     if (analyticsPillar) {
       const analyticsImprovement = analyticsPillar.gap || 0;
-      speedMultiplier += analyticsImprovement * 0.3; // +30% per level (was 60%)
+      speedMultiplier += analyticsImprovement * 0.20; // +20% per level (down from 30%)
       
-      // Bonus if deploying Photon/Serverless
+      // Bonus if deploying Photon/Serverless (conservative for Life Sciences)
       const hasPhoton = analyticsPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Photon') || f.name.includes('Serverless'))
       );
       if (hasPhoton) {
-        speedMultiplier += 0.4; // +40% boost from Photon (was 80%)
+        speedMultiplier += 0.25; // +25% boost from Photon (down from 40%)
       }
     }
     
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      speedMultiplier += dataImprovement * 0.2; // +20% per level (was 40%)
+      speedMultiplier += dataImprovement * 0.15; // +15% per level (down from 20%)
       
       // Bonus for DLT automation
       const hasDLT = dataEngPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Delta Live Tables')
       );
       if (hasDLT) {
-        speedMultiplier += 0.3; // +30% boost from DLT (was 50%)
+        speedMultiplier += 0.20; // +20% boost from DLT (down from 30%)
       }
     }
     
-    // Apply industry multiplier and cap at realistic maximum
-    speedMultiplier = Math.min(speedMultiplier * multipliers.speed, 3.0); // Cap at 3× (was 5×)
+    // Apply industry multiplier and cap at realistic maximum (2× for Life Sciences)
+    speedMultiplier = Math.min(speedMultiplier * multipliers.speed, 2.2); // Cap at 2.2× (down from 3×)
     const decisionSpeed = speedMultiplier.toFixed(1) + '×';
     
     // 2. COST OPTIMIZATION (based on Platform Governance + automation level)
     const platformPillar = prioritizedActions.find(p => p.pillarId === 'platform_governance');
     const opExPillar = prioritizedActions.find(p => p.pillarId === 'operational_excellence');
     
-    // Base: 2-3% per maturity level (realistic)
+    // Base: 1.5-2% per maturity level (conservative for Life Sciences with compliance overhead)
     let costSavings = 0;
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      costSavings += platformImprovement * 2.5; // 2.5% per level (was 4%)
+      costSavings += platformImprovement * 1.5; // 1.5% per level (down from 2.5%)
       
-      // Bonus for serverless/auto-scaling
+      // Bonus for serverless/auto-scaling (modest in regulated environments)
       const hasServerless = platformPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Serverless') || f.name.includes('Auto Scaling'))
       );
       if (hasServerless) {
-        costSavings += 5; // +5% from serverless (was 8%)
+        costSavings += 3; // +3% from serverless (down from 5%)
       }
       
       // Bonus for budget controls
@@ -1607,33 +1611,34 @@ class IntelligentRecommendationEngine {
         f.name && (f.name.includes('Budget') || f.name.includes('Cost'))
       );
       if (hasBudgets) {
-        costSavings += 3; // +3% from budget controls (was 5%)
+        costSavings += 2; // +2% from budget controls (down from 3%)
       }
     }
     
     if (opExPillar) {
       const opExImprovement = opExPillar.gap || 0;
-      costSavings += opExImprovement * 2; // 2% per level (was 3%)
+      costSavings += opExImprovement * 1.5; // 1.5% per level (down from 2%)
     }
     
-    // Apply industry multiplier and cap at 25% (was 40%)
-    costSavings = Math.min(costSavings * multipliers.cost, 25);
+    // Apply industry multiplier and cap at 15% (down from 25% - realistic for Life Sciences)
+    costSavings = Math.min(costSavings * multipliers.cost, 15);
     const costOptimization = Math.round(costSavings) + '%';
     
     // 3. OPERATIONAL OVERHEAD REDUCTION (based on automation maturity)
+    // Life Sciences: Validation and compliance processes limit pure automation gains
     let overheadReduction = 0;
     
     // Data Engineering automation
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      overheadReduction += dataImprovement * 6; // 6% per level (was 12%)
+      overheadReduction += dataImprovement * 4; // 4% per level (down from 6%)
       
-      // Bonus for automation features
+      // Bonus for automation features (conservative with validation requirements)
       const hasAutomation = dataEngPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Auto Loader') || f.name.includes('DLT') || f.name.includes('Workflow'))
       );
       if (hasAutomation) {
-        overheadReduction += 8; // +8% from automation (was 15%)
+        overheadReduction += 5; // +5% from automation (down from 8%)
       }
     }
     
@@ -1641,107 +1646,109 @@ class IntelligentRecommendationEngine {
     const mlPillar = prioritizedActions.find(p => p.pillarId === 'machine_learning');
     if (mlPillar) {
       const mlImprovement = mlPillar.gap || 0;
-      overheadReduction += mlImprovement * 5; // 5% per level (was 8%)
+      overheadReduction += mlImprovement * 3; // 3% per level (down from 5%)
       
       // Bonus for MLOps automation
       const hasMLOps = mlPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('MLflow') || f.name.includes('Model Serving'))
       );
       if (hasMLOps) {
-        overheadReduction += 6; // +6% from MLOps (was 10%)
+        overheadReduction += 4; // +4% from MLOps (down from 6%)
       }
     }
     
     // Governance automation
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      overheadReduction += platformImprovement * 4; // 4% per level (was 6%)
+      overheadReduction += platformImprovement * 3; // 3% per level (down from 4%)
       
       // Bonus for Unity Catalog (reduces manual access management)
       const hasUnityCatalog = platformPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Unity Catalog')
       );
       if (hasUnityCatalog) {
-        overheadReduction += 7; // +7% from Unity Catalog (was 12%)
+        overheadReduction += 5; // +5% from Unity Catalog (down from 7%)
       }
     }
     
-    // Apply industry multiplier and cap at 40% (was 65%)
-    overheadReduction = Math.min(overheadReduction * multipliers.overhead, 40);
+    // Apply industry multiplier and cap at 25% (down from 40% - realistic for Life Sciences)
+    overheadReduction = Math.min(overheadReduction * multipliers.overhead, 25);
     const manualOverhead = Math.round(overheadReduction) + '%';
     
     // 4. TIME TO MARKET / INNOVATION VELOCITY (based on ML + Gen AI maturity)
+    // Life Sciences: Longer validation cycles, regulatory approvals slow innovation
     const genAIPillar = prioritizedActions.find(p => p.pillarId === 'generative_ai');
     
     let timeToMarket = 0;
     if (mlPillar) {
       const mlImprovement = mlPillar.gap || 0;
-      timeToMarket += mlImprovement * 8; // 8% per level (was 15%)
+      timeToMarket += mlImprovement * 5; // 5% per level (down from 8%)
       
-      // Bonus for Feature Store (speeds up model development)
+      // Bonus for Feature Store (speeds up model development, but validation still required)
       const hasFeatureStore = mlPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Feature Store')
       );
       if (hasFeatureStore) {
-        timeToMarket += 10; // +10% from Feature Store (was 20%)
+        timeToMarket += 6; // +6% from Feature Store (down from 10%)
       }
     }
     
     if (genAIPillar) {
       const genAIImprovement = genAIPillar.gap || 0;
-      timeToMarket += genAIImprovement * 7; // 7% per level (was 12%)
+      timeToMarket += genAIImprovement * 4; // 4% per level (down from 7%)
       
-      // Bonus for pre-built LLMs
+      // Bonus for pre-built LLMs (still requires validation for clinical use)
       const hasLLMs = genAIPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('DBRX') || f.name.includes('Foundation Model'))
       );
       if (hasLLMs) {
-        timeToMarket += 12; // +12% from foundation models (was 25%)
+        timeToMarket += 6; // +6% from foundation models (down from 12%)
       }
     }
     
-    // Cap at 40% (was 70%)
-    timeToMarket = Math.min(timeToMarket, 40);
+    // Cap at 20% (down from 40% - much more conservative for Life Sciences)
+    timeToMarket = Math.min(timeToMarket, 20);
     const timeToMarketValue = Math.round(timeToMarket) + '%';
     
     // 5. DATA QUALITY & TRUST (based on Data Engineering + Platform Governance)
+    // Life Sciences: Critical for GxP compliance and regulatory submissions
     let dataQuality = 0;
     if (dataEngPillar) {
       const dataImprovement = dataEngPillar.gap || 0;
-      dataQuality += dataImprovement * 6; // 6% per level (was 10%)
+      dataQuality += dataImprovement * 5; // 5% per level (down from 6%)
       
-      // Bonus for Delta Lake (ACID compliance)
+      // Bonus for Delta Lake (ACID compliance - important for audit trails)
       const hasDelta = dataEngPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Delta')
       );
       if (hasDelta) {
-        dataQuality += 8; // +8% from Delta Lake (was 15%)
+        dataQuality += 6; // +6% from Delta Lake (down from 8%)
       }
       
-      // Bonus for Data Quality features
+      // Bonus for Data Quality features (critical for Life Sciences)
       const hasDQ = dataEngPillar.databricksFeatures?.some(f => 
         f.name && (f.name.includes('Quality') || f.name.includes('Expectations'))
       );
       if (hasDQ) {
-        dataQuality += 6; // +6% from DQ tools (was 12%)
+        dataQuality += 5; // +5% from DQ tools (down from 6%)
       }
     }
     
     if (platformPillar) {
       const platformImprovement = platformPillar.gap || 0;
-      dataQuality += platformImprovement * 5; // 5% per level (was 8%)
+      dataQuality += platformImprovement * 4; // 4% per level (down from 5%)
       
-      // Bonus for Unity Catalog (lineage + governance)
+      // Bonus for Unity Catalog (lineage + governance - critical for compliance)
       const hasUnityCatalog = platformPillar.databricksFeatures?.some(f => 
         f.name && f.name.includes('Unity Catalog')
       );
       if (hasUnityCatalog) {
-        dataQuality += 10; // +10% from Unity Catalog (was 18%)
+        dataQuality += 8; // +8% from Unity Catalog (down from 10%)
       }
     }
     
-    // Cap at 35% (was 60%)
-    dataQuality = Math.min(dataQuality, 35);
+    // Cap at 25% (down from 35% - realistic for Life Sciences)
+    dataQuality = Math.min(dataQuality, 25);
     const dataQualityValue = Math.round(dataQuality) + '%';
     
     // 6. TEAM PRODUCTIVITY / DEVELOPER EFFICIENCY (based on all pillars)

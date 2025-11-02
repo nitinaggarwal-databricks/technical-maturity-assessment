@@ -27,7 +27,7 @@ const NavContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 48px;
+  gap: 0px;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
@@ -744,12 +744,6 @@ const GlobalNav = () => {
   return (
     <Nav>
       <NavContainer>
-        <DatabricksLogo 
-          src="/databricks-logo.svg" 
-          alt="Databricks" 
-          onClick={handleLogoClick}
-        />
-        
         {/* Desktop Navigation */}
         <TopNav>
           <NavLink onClick={handleLogoClick}>Home</NavLink>
