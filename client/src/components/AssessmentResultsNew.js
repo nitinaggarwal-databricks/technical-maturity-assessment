@@ -995,11 +995,15 @@ const AssessmentResultsNew = () => {
       results.data.pillarResults.forEach(pillar => {
         collapsedSections[`pillar-${pillar.id}`] = true; // true = collapsed
       });
+      // Also collapse Strategic Roadmap and Business Impact sections by default
+      collapsedSections['strategic-roadmap'] = true;
+      collapsedSections['business-impact'] = true;
+      
       setCustomizations(prev => ({
         ...prev,
         collapsedSections: { ...prev.collapsedSections, ...collapsedSections }
       }));
-      console.log('[AssessmentResultsNew] Initialized pillars as collapsed:', collapsedSections);
+      console.log('[AssessmentResultsNew] Initialized sections as collapsed:', collapsedSections);
     }
   }, [results, assessmentId]);
 
@@ -4438,10 +4442,31 @@ const AssessmentResultsNew = () => {
 
           {/* Strategic Roadmap */}
           <RoadmapSection>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <SectionTitle style={{ marginBottom: 0 }}>Strategic Roadmap & Next Steps</SectionTitle>
+            <div 
+              onClick={() => toggleSection('strategic-roadmap')} 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                marginBottom: '16px',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                <SectionTitle style={{ marginBottom: 0 }}>Strategic Roadmap & Next Steps</SectionTitle>
+                <div style={{ color: '#6b7280' }}>
+                  {customizations.collapsedSections['strategic-roadmap'] ? (
+                    <FiChevronDown size={24} />
+                  ) : (
+                    <FiChevronUp size={24} />
+                  )}
+                </div>
+              </div>
               <button
-                onClick={() => alert('Add new phase functionality - coming soon! Each phase already has individual edit buttons.')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  alert('Add new phase functionality - coming soon! Each phase already has individual edit buttons.');
+                }}
                 style={{
                   background: '#10b981',
                   color: '#6b7280',
@@ -4462,6 +4487,16 @@ const AssessmentResultsNew = () => {
                 +
               </button>
             </div>
+            
+            <AnimatePresence>
+              {!customizations.collapsedSections['strategic-roadmap'] && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ overflow: 'hidden' }}
+                >
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
               {resultsData?.roadmap?.roadmapIntro || 
                resultsData?.maturitySummary?.roadmapIntro || 
@@ -4633,14 +4668,38 @@ const AssessmentResultsNew = () => {
                 );
               })}
             </RoadmapPhases>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </RoadmapSection>
 
           {/* Expected Business Impact */}
           <ImpactSection>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <SectionTitle style={{ marginBottom: 0 }}>Expected Business Impact</SectionTitle>
+            <div 
+              onClick={() => toggleSection('business-impact')} 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                marginBottom: '24px',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                <SectionTitle style={{ marginBottom: 0 }}>Expected Business Impact</SectionTitle>
+                <div style={{ color: '#6b7280' }}>
+                  {customizations.collapsedSections['business-impact'] ? (
+                    <FiChevronDown size={24} />
+                  ) : (
+                    <FiChevronUp size={24} />
+                  )}
+                </div>
+              </div>
               <button
-                onClick={handleAddImpactMetric}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddImpactMetric();
+                }}
                 style={{
                   background: 'transparent',
                   color: '#6b7280',
@@ -4661,6 +4720,16 @@ const AssessmentResultsNew = () => {
                 +
               </button>
             </div>
+            
+            <AnimatePresence>
+              {!customizations.collapsedSections['business-impact'] && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ overflow: 'hidden' }}
+                >
             <ImpactMetrics>
               {/* Dynamically render all impact metrics from businessImpact */}
               {resultsData?.businessImpact && Object.entries(resultsData.businessImpact).map(([metricKey, metricData], index) => {
@@ -5012,6 +5081,9 @@ const AssessmentResultsNew = () => {
                 </MetricCard>
               )}
             </ImpactMetrics>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </ImpactSection>
         </ReportBody>
       </ReportContainer>
