@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiCheckCircle,
   FiAlertTriangle,
@@ -987,6 +987,21 @@ const AssessmentResultsNew = () => {
       console.log('[AssessmentResultsNew] Saved customizations to localStorage');
     }
   }, [customizations, assessmentId]);
+
+  // Initialize pillars as collapsed by default
+  useEffect(() => {
+    if (results?.data?.pillarResults && !localStorage.getItem(`assessment_customizations_${assessmentId}`)) {
+      const collapsedSections = {};
+      results.data.pillarResults.forEach(pillar => {
+        collapsedSections[`pillar-${pillar.id}`] = true; // true = collapsed
+      });
+      setCustomizations(prev => ({
+        ...prev,
+        collapsedSections: { ...prev.collapsedSections, ...collapsedSections }
+      }));
+      console.log('[AssessmentResultsNew] Initialized pillars as collapsed:', collapsedSections);
+    }
+  }, [results, assessmentId]);
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
   const fetchResults = useCallback(async (showRefreshToast = false) => {
@@ -2394,9 +2409,16 @@ const AssessmentResultsNew = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <PillarHeader>
-                  <div className="pillar-info">
+                  <div className="pillar-info" onClick={() => toggleSection(`pillar-${pillar.id}`)} style={{ cursor: 'pointer', flex: 1 }}>
                     <span className="pillar-icon">{pillar.icon}</span>
                     <h3>{pillar.name}</h3>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: '#6b7280' }}>
+                      {customizations.collapsedSections[`pillar-${pillar.id}`] ? (
+                        <FiChevronDown size={24} />
+                      ) : (
+                        <FiChevronUp size={24} />
+                      )}
+                    </div>
                   </div>
                   <div className="pillar-actions">
                     {editingPillar === pillar.id ? (
@@ -2436,6 +2458,17 @@ const AssessmentResultsNew = () => {
                     )}
                   </div>
                 </PillarHeader>
+                
+                {/* Collapsible Content */}
+                <AnimatePresence>
+                  {!customizations.collapsedSections[`pillar-${pillar.id}`] && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      style={{ overflow: 'hidden' }}
+                    >
                 
                 {/* Dimension Maturity Chart */}
                 {dimensions.length > 0 && (
@@ -4396,6 +4429,9 @@ const AssessmentResultsNew = () => {
                     )}
                 </PillarBody>
                 )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </PillarSection>
             );
           })}
