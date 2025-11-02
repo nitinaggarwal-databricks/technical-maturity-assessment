@@ -503,8 +503,8 @@ const RoadmapPhases = styled.div`
 `;
 
 const PhaseCard = styled(motion.div)`
-  background: ${props => props.$bgColor || '#fef3c7'};
-  border: 2px solid ${props => props.$borderColor || '#fbbf24'};
+  background: ${props => props.$bgColor || '#ffffff'};
+  border: 2px solid ${props => props.$borderColor || '#e5e7eb'};
   border-radius: 12px;
   padding: 28px 32px;
   position: relative;
@@ -593,8 +593,8 @@ const ImpactMetrics = styled.div`
 `;
 
 const MetricCard = styled(motion.div)`
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   padding: 32px 28px;
   text-align: center;
@@ -3955,10 +3955,10 @@ const AssessmentResultsNew = () => {
                     {((data.nextSteps && data.nextSteps.length > 0) || (data.specificRecommendations && data.specificRecommendations.length > 0)) && (
                       <div style={{ 
                         marginTop: '16px',
-                        background: customizations.cardColors[`nextSteps-${pillar.id}`]?.bg || 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                        background: customizations.cardColors[`nextSteps-${pillar.id}`]?.bg || '#ffffff',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: `2px solid ${customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d'}`
+                        border: `2px solid ${customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#e5e7eb'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
