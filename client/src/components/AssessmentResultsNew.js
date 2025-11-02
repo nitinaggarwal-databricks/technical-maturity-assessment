@@ -16,7 +16,8 @@ import {
   FiSave,
   FiTrash2,
   FiX,
-  FiPrinter
+  FiPrinter,
+  FiDroplet
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -936,7 +937,8 @@ const AssessmentResultsNew = () => {
     newNextSteps: {}, // { pillarId: [array of new next steps] }
     newPhaseItems: {}, // { phaseId: [array of new items] }
     newImpactMetrics: [], // Array of new impact metrics
-    impactMetrics: {} // { metricKey: { value, label, drivers } }
+    impactMetrics: {}, // { metricKey: { value, label, drivers } }
+    cardColors: {} // { cardKey: { bg, border, text } }
   });
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
@@ -1572,6 +1574,67 @@ const AssessmentResultsNew = () => {
       ...editedContent,
       [`new-bad-${pillarId}`]: ''
     });
+  };
+
+  // 🎨 Color customization handler
+  const handleCardColorChange = (cardKey, colorType) => {
+    // Create a hidden input element to trigger native color picker
+    const input = document.createElement('input');
+    input.type = 'color';
+    
+    // Get current color or use default
+    const currentColors = customizations.cardColors[cardKey] || {};
+    const defaultColors = {
+      'good': { bg: '#dcfce7', border: '#bbf7d0', text: '#166534' },
+      'bad': { bg: '#fee2e2', border: '#fecaca', text: '#991b1b' },
+      'features': { bg: '#dbeafe', border: '#bfdbfe', text: '#1e40af' },
+      'nextSteps': { bg: '#fef3c7', border: '#fde68a', text: '#92400e' },
+      'roadmap': { bg: '#f3e8ff', border: '#e9d5ff', text: '#6b21a8' },
+      'impact': { bg: '#e0f2fe', border: '#bae6fd', text: '#075985' }
+    };
+    
+    const cardType = cardKey.split('-')[0]; // Extract card type from cardKey
+    const defaults = defaultColors[cardType] || defaultColors['good'];
+    
+    input.value = currentColors.bg || defaults.bg;
+    
+    input.onchange = (e) => {
+      const newColor = e.target.value;
+      
+      // Calculate complementary colors
+      // Convert hex to RGB
+      const r = parseInt(newColor.slice(1, 3), 16);
+      const g = parseInt(newColor.slice(3, 5), 16);
+      const b = parseInt(newColor.slice(5, 7), 16);
+      
+      // Lighten for background (add 40 to each channel, max 255)
+      const lightR = Math.min(255, r + 40);
+      const lightG = Math.min(255, g + 40);
+      const lightB = Math.min(255, b + 40);
+      const bgColor = `#${lightR.toString(16).padStart(2, '0')}${lightG.toString(16).padStart(2, '0')}${lightB.toString(16).padStart(2, '0')}`;
+      
+      // Darken for text (subtract 100 from each channel, min 0)
+      const darkR = Math.max(0, r - 100);
+      const darkG = Math.max(0, g - 100);
+      const darkB = Math.max(0, b - 100);
+      const textColor = `#${darkR.toString(16).padStart(2, '0')}${darkG.toString(16).padStart(2, '0')}${darkB.toString(16).padStart(2, '0')}`;
+      
+      setCustomizations({
+        ...customizations,
+        cardColors: {
+          ...customizations.cardColors,
+          [cardKey]: {
+            bg: bgColor,
+            border: newColor,
+            text: textColor
+          }
+        }
+      });
+      
+      toast.success('Card color updated!');
+    };
+    
+    input.click();
   };
 
   const handleSaveAddedBadItem = (pillarId) => {
@@ -2383,17 +2446,17 @@ const AssessmentResultsNew = () => {
                     <PillarTopRow>
                       {/* What's Working - Premium Card Style */}
                       <div style={{ 
-                        background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                        background: customizations.cardColors[`good-${pillar.id}`]?.bg || 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: '2px solid #bbf7d0'
+                        border: `2px solid ${customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'space-between',
                           marginBottom: '16px',
-                          color: '#166534',
+                          color: customizations.cardColors[`good-${pillar.id}`]?.text || '#166534',
                           fontSize: '0.95rem',
                           fontWeight: 700,
                           textTransform: 'uppercase',
@@ -2403,27 +2466,51 @@ const AssessmentResultsNew = () => {
                             <FiCheckCircle size={20} />
                             What's Working
                           </div>
-                          <button
-                            onClick={() => handleAddGoodItem(pillar.id)}
-                            style={{
-                              background: '#22c55e',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '28px',
-                              height: '28px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '1.2rem',
-                              fontWeight: 'bold',
-                              lineHeight: '1'
-                            }}
-                            title="Add new item"
-                          >
-                            +
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleCardColorChange(`good-${pillar.id}`, 'bg')}
+                              style={{
+                                background: 'transparent',
+                                color: customizations.cardColors[`good-${pillar.id}`]?.text || '#166534',
+                                border: `1px solid ${customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0'}`,
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                transition: 'all 0.2s'
+                              }}
+                              title="Change card color"
+                              onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0')}
+                              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                              <FiDroplet size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleAddGoodItem(pillar.id)}
+                              style={{
+                                background: '#22c55e',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                lineHeight: '1'
+                              }}
+                              title="Add new item"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theGood.length > 0 ? (
@@ -2755,17 +2842,17 @@ const AssessmentResultsNew = () => {
 
                       {/* Key Challenges - Premium Card Style */}
                       <div style={{ 
-                        background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                        background: customizations.cardColors[`bad-${pillar.id}`]?.bg || 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: '2px solid #fecaca'
+                        border: `2px solid ${customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'space-between',
                           marginBottom: '16px',
-                          color: '#991b1b',
+                          color: customizations.cardColors[`bad-${pillar.id}`]?.text || '#991b1b',
                           fontSize: '0.95rem',
                           fontWeight: 700,
                           textTransform: 'uppercase',
@@ -2775,27 +2862,51 @@ const AssessmentResultsNew = () => {
                             <FiAlertTriangle size={20} />
                             KEY CHALLENGES
                           </div>
-                          <button
-                            onClick={() => handleAddBadItem(pillar.id)}
-                            style={{
-                              background: '#ef4444',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '28px',
-                              height: '28px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '1.2rem',
-                              fontWeight: 'bold',
-                              lineHeight: '1'
-                            }}
-                            title="Add new challenge"
-                          >
-                            +
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleCardColorChange(`bad-${pillar.id}`, 'bg')}
+                              style={{
+                                background: 'transparent',
+                                color: customizations.cardColors[`bad-${pillar.id}`]?.text || '#991b1b',
+                                border: `1px solid ${customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca'}`,
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                transition: 'all 0.2s'
+                              }}
+                              title="Change card color"
+                              onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca')}
+                              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                              <FiDroplet size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleAddBadItem(pillar.id)}
+                              style={{
+                                background: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                lineHeight: '1'
+                              }}
+                              title="Add new challenge"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {data.theBad.length > 0 ? (
@@ -3134,33 +3245,57 @@ const AssessmentResultsNew = () => {
 
                     {/* Full Width: Databricks Recommendations */}
                     <PillarFullWidth>
-                  <PillarColumn $color="#3b82f6">
+                  <PillarColumn $color={customizations.cardColors[`features-${pillar.id}`]?.border || "#3b82f6"}>
                     <div className="column-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FiInfo />
                         {data.databricksFeatures && data.databricksFeatures.length > 0 ? 'Databricks Recommendations' : 'Recommendations'}
                       </div>
-                      <button
-                        onClick={() => handleAddFeature(pillar.id)}
-                        style={{
-                          background: '#3b82f6',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '28px',
-                          height: '28px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          fontSize: '1.2rem',
-                          fontWeight: 'bold',
-                          lineHeight: '1'
-                        }}
-                        title="Add new feature"
-                      >
-                        +
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                          onClick={() => handleCardColorChange(`features-${pillar.id}`, 'bg')}
+                          style={{
+                            background: 'transparent',
+                            color: customizations.cardColors[`features-${pillar.id}`]?.text || '#1e40af',
+                            border: `1px solid ${customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe'}`,
+                            borderRadius: '50%',
+                            width: '28px',
+                            height: '28px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            transition: 'all 0.2s'
+                          }}
+                          title="Change card color"
+                          onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe')}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <FiDroplet size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleAddFeature(pillar.id)}
+                          style={{
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '28px',
+                            height: '28px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold',
+                            lineHeight: '1'
+                          }}
+                          title="Add new feature"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                     {data.databricksFeatures && data.databricksFeatures.length > 0 ? (
                       <div>
@@ -3673,17 +3808,17 @@ const AssessmentResultsNew = () => {
                     {((data.nextSteps && data.nextSteps.length > 0) || (data.specificRecommendations && data.specificRecommendations.length > 0)) && (
                       <div style={{ 
                         marginTop: '16px',
-                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                        background: customizations.cardColors[`nextSteps-${pillar.id}`]?.bg || 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: '2px solid #fcd34d'
+                        border: `2px solid ${customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'space-between',
                           marginBottom: '16px',
-                          color: '#92400e',
+                          color: customizations.cardColors[`nextSteps-${pillar.id}`]?.text || '#92400e',
                           fontSize: '0.95rem',
                           fontWeight: 700,
                           textTransform: 'uppercase',
@@ -3693,27 +3828,51 @@ const AssessmentResultsNew = () => {
                             <span style={{ fontSize: '1.2rem' }}>🎯</span>
                             Next Steps
                           </div>
-                          <button
-                            onClick={() => handleAddNextStep(pillar.id)}
-                            style={{
-                              background: '#f59e0b',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '28px',
-                              height: '28px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '1.2rem',
-                              fontWeight: 'bold',
-                              lineHeight: '1'
-                            }}
-                            title="Add new next step"
-                          >
-                            +
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleCardColorChange(`nextSteps-${pillar.id}`, 'bg')}
+                              style={{
+                                background: 'transparent',
+                                color: customizations.cardColors[`nextSteps-${pillar.id}`]?.text || '#92400e',
+                                border: `1px solid ${customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d'}`,
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                transition: 'all 0.2s'
+                              }}
+                              title="Change card color"
+                              onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d')}
+                              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                              <FiDroplet size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleAddNextStep(pillar.id)}
+                              style={{
+                                background: '#f59e0b',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                lineHeight: '1'
+                              }}
+                              title="Add new next step"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                         <div style={{ 
                           display: 'flex',
