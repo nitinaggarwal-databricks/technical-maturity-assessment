@@ -26,7 +26,8 @@ const Nav = styled.nav`
 const NavContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 48px;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
@@ -34,6 +35,7 @@ const NavContainer = styled.div`
 
   @media (max-width: 768px) {
     padding: 0 16px;
+    justify-content: space-between;
   }
 `;
 
@@ -56,7 +58,7 @@ const TopNav = styled.div`
   display: flex;
   align-items: center;
   gap: 32px;
-  flex-wrap: wrap;
+  flex: 1;
 
   @media (max-width: 1400px) {
     gap: 20px;
@@ -70,6 +72,17 @@ const TopNav = styled.div`
     gap: 12px;
   }
 
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  
   @media (max-width: 640px) {
     display: none;
   }
@@ -745,6 +758,9 @@ const GlobalNav = () => {
           <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
           <NavLink onClick={() => navigate('/assessments')}>My Assessments</NavLink>
           <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
+        </TopNav>
+
+        <ActionButtons>
           <SecondaryCTAButton onClick={handleTrySample}>
             <FiPlay size={14} />
             Try Sample
@@ -752,7 +768,7 @@ const GlobalNav = () => {
           <CTAButton onClick={() => navigate('/start')}>
             Start Assessment →
           </CTAButton>
-        </TopNav>
+        </ActionButtons>
 
         {/* Mobile Menu Button */}
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
