@@ -18,7 +18,9 @@ import {
   FiX,
   FiPrinter,
   FiDroplet,
-  FiRotateCcw
+  FiRotateCcw,
+  FiChevronDown,
+  FiChevronUp
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -326,6 +328,24 @@ const PillarHeader = styled.div`
       justify-content: flex-end;
       margin-top: 12px;
     }
+  }
+`;
+
+const CollapsibleHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  .collapse-icon {
+    transition: transform 0.3s ease;
+    ${props => props.$collapsed && 'transform: rotate(180deg);'}
   }
 `;
 
@@ -938,8 +958,35 @@ const AssessmentResultsNew = () => {
     newPhaseItems: {}, // { phaseId: [array of new items] }
     newImpactMetrics: [], // Array of new impact metrics
     impactMetrics: {}, // { metricKey: { value, label, drivers } }
-    cardColors: {} // { cardKey: { bg, border, text } }
+    cardColors: {}, // { cardKey: { bg, border, text } }
+    collapsedSections: {} // { sectionKey: boolean }
   });
+
+  // Load customizations from localStorage on mount
+  useEffect(() => {
+    if (assessmentId) {
+      const storageKey = `assessment_customizations_${assessmentId}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setCustomizations(prevState => ({ ...prevState, ...parsed }));
+          console.log('[AssessmentResultsNew] Loaded customizations from localStorage:', parsed);
+        } catch (error) {
+          console.error('[AssessmentResultsNew] Error parsing saved customizations:', error);
+        }
+      }
+    }
+  }, [assessmentId]);
+
+  // Save customizations to localStorage whenever they change
+  useEffect(() => {
+    if (assessmentId && Object.keys(customizations).length > 0) {
+      const storageKey = `assessment_customizations_${assessmentId}`;
+      localStorage.setItem(storageKey, JSON.stringify(customizations));
+      console.log('[AssessmentResultsNew] Saved customizations to localStorage');
+    }
+  }, [customizations, assessmentId]);
 
   // Extract fetchResults as a callable function with useCallback to avoid dependency warnings
   const fetchResults = useCallback(async (showRefreshToast = false) => {
@@ -1576,21 +1623,32 @@ const AssessmentResultsNew = () => {
     });
   };
 
+  // 🔄 Toggle section collapsed state
+  const toggleSection = (sectionKey) => {
+    setCustomizations(prev => ({
+      ...prev,
+      collapsedSections: {
+        ...prev.collapsedSections,
+        [sectionKey]: !prev.collapsedSections[sectionKey]
+      }
+    }));
+  };
+
   // 🎨 Color customization handler
   const handleCardColorChange = (cardKey, colorType) => {
     // Create a hidden input element to trigger native color picker
     const input = document.createElement('input');
     input.type = 'color';
     
-    // Get current color or use default
+    // Get current color or use default (WHITE)
     const currentColors = customizations.cardColors[cardKey] || {};
     const defaultColors = {
-      'good': { bg: '#dcfce7', border: '#bbf7d0', text: '#166534' },
-      'bad': { bg: '#fee2e2', border: '#fecaca', text: '#991b1b' },
-      'features': { bg: '#dbeafe', border: '#bfdbfe', text: '#1e40af' },
-      'nextSteps': { bg: '#fef3c7', border: '#fde68a', text: '#92400e' },
-      'roadmap': { bg: '#f3e8ff', border: '#e9d5ff', text: '#6b21a8' },
-      'impact': { bg: '#e0f2fe', border: '#bae6fd', text: '#075985' }
+      'good': { bg: '#ffffff', border: '#e5e7eb', text: '#166534' },
+      'bad': { bg: '#ffffff', border: '#e5e7eb', text: '#991b1b' },
+      'features': { bg: '#ffffff', border: '#e5e7eb', text: '#1e40af' },
+      'nextSteps': { bg: '#ffffff', border: '#e5e7eb', text: '#92400e' },
+      'roadmap': { bg: '#ffffff', border: '#e5e7eb', text: '#6b21a8' },
+      'impact': { bg: '#ffffff', border: '#e5e7eb', text: '#075985' }
     };
     
     const cardType = cardKey.split('-')[0]; // Extract card type from cardKey
@@ -2460,10 +2518,10 @@ const AssessmentResultsNew = () => {
                     <PillarTopRow>
                       {/* What's Working - Premium Card Style */}
                       <div style={{ 
-                        background: customizations.cardColors[`good-${pillar.id}`]?.bg || 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                        background: customizations.cardColors[`good-${pillar.id}`]?.bg || '#ffffff',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: `2px solid ${customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0'}`
+                        border: `2px solid ${customizations.cardColors[`good-${pillar.id}`]?.border || '#e5e7eb'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
@@ -2880,10 +2938,10 @@ const AssessmentResultsNew = () => {
 
                       {/* Key Challenges - Premium Card Style */}
                       <div style={{ 
-                        background: customizations.cardColors[`bad-${pillar.id}`]?.bg || 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                        background: customizations.cardColors[`bad-${pillar.id}`]?.bg || '#ffffff',
                         borderRadius: '16px',
                         padding: '24px',
-                        border: `2px solid ${customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca'}`
+                        border: `2px solid ${customizations.cardColors[`bad-${pillar.id}`]?.border || '#e5e7eb'}`
                       }}>
                         <div style={{ 
                           display: 'flex', 
@@ -3307,8 +3365,8 @@ const AssessmentResultsNew = () => {
 
                     {/* Full Width: Databricks Recommendations */}
                     <PillarFullWidth style={{
-                      background: customizations.cardColors[`features-${pillar.id}`]?.bg || 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                      border: `2px solid ${customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe'}`
+                      background: customizations.cardColors[`features-${pillar.id}`]?.bg || '#ffffff',
+                      border: `2px solid ${customizations.cardColors[`features-${pillar.id}`]?.border || '#e5e7eb'}`
                     }}>
                   <PillarColumn $color={customizations.cardColors[`features-${pillar.id}`]?.text || "#1e40af"}>
                     <div className="column-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
