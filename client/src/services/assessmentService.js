@@ -354,6 +354,24 @@ export const submitAssessment = async (assessmentId) => {
 };
 
 /**
+ * Get industry benchmarking report
+ */
+export const getBenchmarkReport = async (assessmentId) => {
+  try {
+    console.log(`[getBenchmarkReport] Fetching for assessment: ${assessmentId}`);
+    const response = await api.get(`/assessment/${assessmentId}/benchmark`);
+    // API interceptor already extracts response.data
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return response;
+  } catch (error) {
+    console.error('Error fetching benchmark report:', error);
+    throw error;
+  }
+};
+
+/**
  * Health check
  */
 export const healthCheck = async () => {

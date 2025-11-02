@@ -18,6 +18,7 @@ const IntelligentRecommendationEngine = require('./services/intelligentRecommend
 const featureDB = require('./services/databricksFeatureDatabase');
 const StorageAdapter = require('./utils/storageAdapter');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
+const industryBenchmarkingService = require('./services/industryBenchmarkingService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1338,6 +1339,142 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating assessment results',
+      error: error.message
+    });
+  }
+});
+
+// Get industry benchmarking report (EY-quality)
+app.get('/api/assessment/:id/benchmark', async (req, res) => {
+  try {
+    console.log(`🎯 [BENCHMARK ENDPOINT] Request for assessment: ${req.params.id}`);
+    
+    // Prevent caching
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+
+    const { id } = req.params;
+    const assessment = await assessments.get(id);
+
+    if (!assessment) {
+      console.log(`❌ [BENCHMARK ENDPOINT] Assessment ${id} not found`);
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    console.log(`✅ [BENCHMARK ENDPOINT] Assessment ${id} found, generating benchmarking report`);
+
+    // Ensure responses exists
+    if (!assessment.responses || typeof assessment.responses !== 'object') {
+      assessment.responses = {};
+    }
+
+    const hasAnyResponses = Object.keys(assessment.responses).length > 0;
+    
+    if (!hasAnyResponses) {
+      return res.json({
+        success: true,
+        data: {
+          message: 'No responses yet - complete assessment to generate benchmarking report',
+          assessmentInfo: {
+            id: assessment.id,
+            assessmentName: assessment.assessmentName,
+            industry: assessment.industry,
+            startedAt: assessment.startedAt
+          }
+        }
+      });
+    }
+
+    // Calculate pillar scores
+    const pillarScores = {};
+    const areasWithResponses = [];
+    
+    for (const area of assessmentFramework.assessmentAreas) {
+      const areaResponses = Object.entries(assessment.responses).filter(([qId]) => {
+        const question = area.dimensions.flatMap(d => d.questions).find(q => q.id === qId);
+        return question !== undefined;
+      });
+
+      if (areaResponses.length > 0) {
+        areasWithResponses.push(area);
+        
+        // Calculate current and future scores
+        let currentTotal = 0;
+        let futureTotal = 0;
+        let count = 0;
+
+        areaResponses.forEach(([qId, response]) => {
+          if (response.currentState && !isNaN(response.currentState)) {
+            currentTotal += parseFloat(response.currentState);
+            count++;
+          }
+          if (response.futureState && !isNaN(response.futureState)) {
+            futureTotal += parseFloat(response.futureState);
+          }
+        });
+
+        const currentScore = count > 0 ? parseFloat((currentTotal / count).toFixed(1)) : 0;
+        const futureScore = count > 0 ? parseFloat((futureTotal / count).toFixed(1)) : 0;
+        const gap = parseFloat((futureScore - currentScore).toFixed(1));
+
+        pillarScores[area.id] = {
+          currentScore,
+          futureScore,
+          gap,
+          responseCount: count
+        };
+      }
+    }
+
+    // Calculate overall score (average of current scores)
+    const pillarCurrentScores = Object.values(pillarScores).map(p => p.currentScore);
+    const overallScore = pillarCurrentScores.length > 0
+      ? parseFloat((pillarCurrentScores.reduce((sum, s) => sum + s, 0) / pillarCurrentScores.length).toFixed(1))
+      : 0;
+
+    // Extract pain points from responses
+    const painPoints = [];
+    Object.values(assessment.responses).forEach(response => {
+      if (response.painPoints && Array.isArray(response.painPoints)) {
+        response.painPoints.forEach(pp => {
+          if (!painPoints.find(p => p.value === pp.value || p.label === pp.label)) {
+            painPoints.push(pp);
+          }
+        });
+      }
+    });
+
+    console.log(`📊 [BENCHMARK] Overall Score: ${overallScore}, Pillars: ${Object.keys(pillarScores).length}, Pain Points: ${painPoints.length}`);
+
+    // Generate comprehensive EY-quality benchmarking report
+    const benchmarkReport = await industryBenchmarkingService.generateComprehensiveBenchmarkReport(
+      assessment.industry || 'Technology',
+      assessment,
+      overallScore,
+      pillarScores,
+      painPoints
+    );
+
+    console.log('✅ [BENCHMARK] Report generated successfully');
+
+    res.json({
+      success: true,
+      data: benchmarkReport
+    });
+
+  } catch (error) {
+    console.error('❌ [BENCHMARK] Error generating benchmarking report:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating benchmarking report',
       error: error.message
     });
   }

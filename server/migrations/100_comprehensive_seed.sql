@@ -152,3 +152,4 @@ INSERT INTO databricks_features (name, category, short_description, release_date
 ('Experiment Tracking', 'machine_learning', 'Track ML experiments with MLflow', '2025-2-15', 'Q1 2023', 'GA', 'https://docs.databricks.com/en/mlflow/experiments.html', false, false, 2),
 ('Model Lineage', 'machine_learning', 'Track data-to-model lineage', '2025-4-15', 'Q2 2024', 'GA', 'https://docs.databricks.com/en/machine-learning/ml-lineage.html', false, true, 2);
 
+

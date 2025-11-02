@@ -25,6 +25,7 @@ import {
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
+import EYBenchmarkingReport from './EYBenchmarkingReport';
 
 // =======================
 // STYLED COMPONENTS
@@ -920,6 +921,8 @@ const AssessmentResultsNew = () => {
   const [exporting, setExporting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [framework, setFramework] = useState(null);
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
   
   // Edit state management
   const [editMode, setEditMode] = useState(false); // Global edit mode toggle
@@ -1061,6 +1064,30 @@ const AssessmentResultsNew = () => {
       setLoading(false);
     }
   }, [assessmentId, fetchResults, routerLocation.key]);
+
+  // Fetch benchmarking data
+  const fetchBenchmarkData = useCallback(async () => {
+    try {
+      setBenchmarkLoading(true);
+      console.log('[AssessmentResultsNew] Fetching benchmarking data for:', assessmentId);
+      const data = await assessmentService.getBenchmarkReport(assessmentId);
+      console.log('[AssessmentResultsNew] Benchmark data received:', data);
+      setBenchmarkData(data);
+    } catch (err) {
+      console.error('[AssessmentResultsNew] Error fetching benchmark data:', err);
+      // Don't show error toast - benchmarking is optional
+      setBenchmarkData(null);
+    } finally {
+      setBenchmarkLoading(false);
+    }
+  }, [assessmentId]);
+
+  // Fetch benchmarking data after results are loaded
+  useEffect(() => {
+    if (results && results.data && !benchmarkData && !benchmarkLoading) {
+      fetchBenchmarkData();
+    }
+  }, [results, benchmarkData, benchmarkLoading, fetchBenchmarkData]);
 
   // Fetch assessment framework for dimension names
   useEffect(() => {
@@ -5075,6 +5102,16 @@ const AssessmentResultsNew = () => {
               )}
             </AnimatePresence>
           </ImpactSection>
+
+          {/* Industry Benchmarking Report */}
+          {benchmarkData && (
+            <EYBenchmarkingReport
+              assessment={results?.data?.assessmentInfo}
+              benchmarkData={benchmarkData}
+              overallScore={results?.data?.overallScore || 0}
+              pillarScores={results?.data?.categoryDetails || {}}
+            />
+          )}
         </ReportBody>
       </ReportContainer>
     </PageContainer>
