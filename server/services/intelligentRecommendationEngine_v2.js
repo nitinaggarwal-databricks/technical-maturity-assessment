@@ -1153,7 +1153,7 @@ class IntelligentRecommendationEngine {
       'no_vector_search': ['Vector Search', 'Online Tables', 'Delta Sync'],
       'prompt_management': ['AI Playground', 'MLflow', 'AI Gateway'],
       'no_rag': ['Mosaic AI Agent Framework', 'Vector Search'],
-      'reputation_risk': ['AI Gateway', 'Guardrails', 'Content Filtering'],
+      'reputation_risk': ['Mosaic AI Model Serving', 'AI Gateway', 'Audit Logs'],
       'compliance_risk': ['AI Gateway', 'Audit Logs', 'Model Monitoring'],
       
       // Operational Excellence pain points
@@ -1217,32 +1217,37 @@ class IntelligentRecommendationEngine {
   
   getFeatureDocsLink(featureName) {
     const docsLinks = {
-      'Unity Catalog': 'https://docs.databricks.com/en/data-governance/unity-catalog/index.html',
-      'Audit Logs': 'https://docs.databricks.com/en/admin/account-settings/audit-logs.html',
-      'Delta Sharing': 'https://docs.databricks.com/en/data-sharing/index.html',
-      'Delta Live Tables': 'https://docs.databricks.com/en/delta-live-tables/index.html',
-      'Lakehouse Monitoring': 'https://docs.databricks.com/en/lakehouse-monitoring/index.html',
-      'Photon': 'https://docs.databricks.com/en/compute/photon.html',
-      'Serverless SQL': 'https://docs.databricks.com/en/sql/admin/serverless.html',
-      'Liquid Clustering': 'https://docs.databricks.com/en/delta/clustering.html',
-      'MLflow': 'https://docs.databricks.com/en/mlflow/index.html',
-      'Model Serving': 'https://docs.databricks.com/en/machine-learning/model-serving/index.html',
-      'Vector Search': 'https://docs.databricks.com/en/generative-ai/vector-search.html',
-      'AI Gateway': 'https://docs.databricks.com/en/generative-ai/ai-gateway.html',
-      'Workflows': 'https://docs.databricks.com/en/jobs/index.html',
-      'Auto Loader': 'https://docs.databricks.com/en/ingestion/auto-loader/index.html',
-      'Databricks Asset Bundles': 'https://docs.databricks.com/en/dev-tools/bundles/index.html',
-      'Feature Store': 'https://docs.databricks.com/en/machine-learning/feature-store/index.html',
-      'Databricks Academy': 'https://www.databricks.com/learn/training',
-      'System Tables': 'https://docs.databricks.com/en/admin/system-tables/index.html',
-      'Cluster Policies': 'https://docs.databricks.com/en/admin/clusters/policies.html',
-      'Row-Level Security': 'https://docs.databricks.com/en/data-governance/unity-catalog/row-and-column-filters.html',
-      'Column Masking': 'https://docs.databricks.com/en/data-governance/unity-catalog/row-and-column-filters.html',
-      'Data Lineage': 'https://docs.databricks.com/en/data-governance/unity-catalog/data-lineage.html',
-      'Data Classification': 'https://docs.databricks.com/en/data-governance/unity-catalog/tags.html',
-      'Clean Rooms': 'https://docs.databricks.com/en/data-sharing/clean-rooms.html'
+      'Unity Catalog': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/',
+      'Audit Logs': 'https://docs.databricks.com/aws/en/admin/account-settings/audit-logs',
+      'Delta Sharing': 'https://docs.databricks.com/aws/en/data-sharing/',
+      'Delta Live Tables': 'https://docs.databricks.com/aws/en/ldp/',
+      'Lakehouse Monitoring': 'https://docs.databricks.com/aws/en/lakehouse-monitoring/',
+      'Photon': 'https://docs.databricks.com/aws/en/compute/photon',
+      'Serverless SQL': 'https://docs.databricks.com/aws/en/compute/sql-warehouse/serverless',
+      'Liquid Clustering': 'https://docs.databricks.com/aws/en/delta/clustering',
+      'MLflow': 'https://docs.databricks.com/aws/en/mlflow/',
+      'Model Serving': 'https://docs.databricks.com/aws/en/machine-learning/model-serving/',
+      'Mosaic AI Model Serving': 'https://docs.databricks.com/aws/en/machine-learning/model-serving/',
+      'Vector Search': 'https://docs.databricks.com/aws/en/generative-ai/vector-search',
+      'AI Gateway': 'https://docs.databricks.com/aws/en/generative-ai/ai-gateway',
+      'Workflows': 'https://docs.databricks.com/aws/en/jobs/',
+      'Auto Loader': 'https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader',
+      'Databricks Asset Bundles': 'https://docs.databricks.com/aws/en/dev-tools/bundles/',
+      'Feature Store': 'https://docs.databricks.com/aws/en/machine-learning/feature-store/',
+      'Databricks Academy': 'https://www.databricks.com/learn/training/home',
+      'System Tables': 'https://docs.databricks.com/aws/en/admin/system-tables/',
+      'Cluster Policies': 'https://docs.databricks.com/aws/en/admin/clusters/policies',
+      'Row-Level Security': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/',
+      'Column Masking': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/',
+      'Data Lineage': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-lineage',
+      'Data Classification': 'https://docs.databricks.com/aws/en/database-objects/tags',
+      'Clean Rooms': 'https://docs.databricks.com/aws/en/data-sharing/clean-rooms',
+      'Model Monitoring': 'https://docs.databricks.com/aws/en/mlflow/model-monitoring/',
+      'Mosaic AI Agent Framework': 'https://docs.databricks.com/aws/en/generative-ai/agent-framework/',
+      'AI Playground': 'https://docs.databricks.com/aws/en/generative-ai/ai-playground',
+      'Online Tables': 'https://docs.databricks.com/aws/en/machine-learning/feature-store/online-tables'
     };
-    return docsLinks[featureName] || 'https://docs.databricks.com/en/index.html';
+    return docsLinks[featureName] || 'https://docs.databricks.com/aws/en/index.html';
   }
   
   getFeatureDescription(featureName) {
