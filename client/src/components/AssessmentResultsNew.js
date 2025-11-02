@@ -17,7 +17,8 @@ import {
   FiTrash2,
   FiX,
   FiPrinter,
-  FiDroplet
+  FiDroplet,
+  FiRotateCcw
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -1637,6 +1638,20 @@ const AssessmentResultsNew = () => {
     input.click();
   };
 
+  // 🔄 Reset card color to original
+  const handleResetCardColor = (cardKey) => {
+    const newCustomizations = { ...customizations };
+    
+    // Remove the custom color for this card (will revert to default)
+    if (newCustomizations.cardColors[cardKey]) {
+      delete newCustomizations.cardColors[cardKey];
+      setCustomizations(newCustomizations);
+      toast.success('Color reset to original!');
+    } else {
+      toast.info('Card is already using original colors');
+    }
+  };
+
   const handleSaveAddedBadItem = (pillarId) => {
     const newText = editedContent[`new-bad-${pillarId}`];
     if (!newText || !newText.trim()) {
@@ -2489,6 +2504,30 @@ const AssessmentResultsNew = () => {
                             >
                               <FiDroplet size={14} />
                             </button>
+                            {customizations.cardColors[`good-${pillar.id}`] && (
+                              <button
+                                onClick={() => handleResetCardColor(`good-${pillar.id}`)}
+                                style={{
+                                  background: 'transparent',
+                                  color: customizations.cardColors[`good-${pillar.id}`]?.text || '#166534',
+                                  border: `1px solid ${customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0'}`,
+                                  borderRadius: '50%',
+                                  width: '28px',
+                                  height: '28px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  fontSize: '1rem',
+                                  transition: 'all 0.2s'
+                                }}
+                                title="Reset to original color"
+                                onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`good-${pillar.id}`]?.border || '#bbf7d0')}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <FiRotateCcw size={14} />
+                              </button>
+                            )}
                             <button
                               onClick={() => handleAddGoodItem(pillar.id)}
                               style={{
@@ -2885,6 +2924,30 @@ const AssessmentResultsNew = () => {
                             >
                               <FiDroplet size={14} />
                             </button>
+                            {customizations.cardColors[`bad-${pillar.id}`] && (
+                              <button
+                                onClick={() => handleResetCardColor(`bad-${pillar.id}`)}
+                                style={{
+                                  background: 'transparent',
+                                  color: customizations.cardColors[`bad-${pillar.id}`]?.text || '#991b1b',
+                                  border: `1px solid ${customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca'}`,
+                                  borderRadius: '50%',
+                                  width: '28px',
+                                  height: '28px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  fontSize: '1rem',
+                                  transition: 'all 0.2s'
+                                }}
+                                title="Reset to original color"
+                                onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`bad-${pillar.id}`]?.border || '#fecaca')}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <FiRotateCcw size={14} />
+                              </button>
+                            )}
                             <button
                               onClick={() => handleAddBadItem(pillar.id)}
                               style={{
@@ -3274,6 +3337,30 @@ const AssessmentResultsNew = () => {
                         >
                           <FiDroplet size={14} />
                         </button>
+                        {customizations.cardColors[`features-${pillar.id}`] && (
+                          <button
+                            onClick={() => handleResetCardColor(`features-${pillar.id}`)}
+                            style={{
+                              background: 'transparent',
+                              color: customizations.cardColors[`features-${pillar.id}`]?.text || '#1e40af',
+                              border: `1px solid ${customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe'}`,
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1rem',
+                              transition: 'all 0.2s'
+                            }}
+                            title="Reset to original color"
+                            onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe')}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <FiRotateCcw size={14} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleAddFeature(pillar.id)}
                           style={{
@@ -3851,6 +3938,30 @@ const AssessmentResultsNew = () => {
                             >
                               <FiDroplet size={14} />
                             </button>
+                            {customizations.cardColors[`nextSteps-${pillar.id}`] && (
+                              <button
+                                onClick={() => handleResetCardColor(`nextSteps-${pillar.id}`)}
+                                style={{
+                                  background: 'transparent',
+                                  color: customizations.cardColors[`nextSteps-${pillar.id}`]?.text || '#92400e',
+                                  border: `1px solid ${customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d'}`,
+                                  borderRadius: '50%',
+                                  width: '28px',
+                                  height: '28px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  fontSize: '1rem',
+                                  transition: 'all 0.2s'
+                                }}
+                                title="Reset to original color"
+                                onMouseEnter={(e) => e.currentTarget.style.background = (customizations.cardColors[`nextSteps-${pillar.id}`]?.border || '#fcd34d')}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <FiRotateCcw size={14} />
+                              </button>
+                            )}
                             <button
                               onClick={() => handleAddNextStep(pillar.id)}
                               style={{
