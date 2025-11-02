@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff, FiLoader } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import UserEmailPrompt from './UserEmailPrompt';
@@ -489,6 +489,43 @@ const DialogButton = styled(motion.button)`
   `}
 `;
 
+const ProgressContainer = styled.div`
+  margin-top: 24px;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+`;
+
+const ProgressFill = styled(motion.div)`
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 6px;
+`;
+
+const ProgressText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.938rem;
+  color: #4b5563;
+  font-weight: 500;
+  
+  svg {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
 const LoadingSpinner = styled.div`
   display: flex;
   align-items: center;
@@ -839,6 +876,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all', 'completed', 'not_started', 'without_notes'
   const [showBulkActions, setShowBulkActions] = useState(false); // 🆕 Bulk actions toggle
   const [showMiniMap, setShowMiniMap] = useState(true); // 🆕 Mini-map toggle
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false); // 🆕 Report submission state
+  const [submissionProgress, setSubmissionProgress] = useState(0); // 🆕 Progress tracking
+  const [submissionMessage, setSubmissionMessage] = useState(''); // 🆕 Progress message
 
   // Get dimension from query parameter
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
@@ -1454,12 +1494,45 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     }
   };
 
-  const handleViewResults = () => {
-    console.log('[AssessmentQuestion] Navigating to results:', assessmentId);
+  const handleSubmitReport = async () => {
+    console.log('[AssessmentQuestion] Submitting assessment and generating report:', assessmentId);
     setShowCompletionDialog(false);
-    setTimeout(() => {
+    setIsSubmittingReport(true);
+    setSubmissionProgress(0);
+    
+    // Authentic progress messages (same as NavigationPanel)
+    const progressSteps = [
+      { progress: 10, message: 'Analyzing assessment responses...' },
+      { progress: 25, message: 'Calculating maturity scores...' },
+      { progress: 40, message: 'Generating recommendations...' },
+      { progress: 55, message: 'Identifying Databricks features...' },
+      { progress: 70, message: 'Building strategic roadmap...' },
+      { progress: 85, message: 'Calculating business impact...' },
+      { progress: 95, message: 'Finalizing report...' },
+      { progress: 100, message: 'Assessment complete!' }
+    ];
+
+    try {
+      // Submit assessment to API
+      await assessmentService.submitAssessment(assessmentId);
+      
+      // Animate progress
+      for (const step of progressSteps) {
+        await new Promise(resolve => setTimeout(resolve, 1250)); // 10 seconds total / 8 steps
+        setSubmissionProgress(step.progress);
+        setSubmissionMessage(step.message);
+      }
+      
+      // Small delay before navigation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Navigate to results
       navigate(`/results/${assessmentId}`);
-    }, 300);
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      toast.error('Failed to submit assessment. Please try again.');
+      setIsSubmittingReport(false);
+    }
   };
 
   if (loading) {
@@ -1821,23 +1894,23 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               {nextPillarInfo ? (
                 <>
                   Great progress! Would you like to review the next pillar ({nextPillarInfo.name}) 
-                  or view your overall assessment results?
+                  or submit and generate your overall assessment report?
                 </>
               ) : (
                 <>
                   Congratulations! You've completed all pillars. 
-                  View your comprehensive assessment results now.
+                  Submit your assessment to generate a comprehensive report.
                 </>
               )}
             </DialogMessage>
             <DialogButtons>
               <DialogButton
                 variant="secondary"
-                onClick={handleViewResults}
+                onClick={handleSubmitReport}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                View Results
+                Submit
               </DialogButton>
               {nextPillarInfo && (
                 <DialogButton
@@ -1853,6 +1926,44 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           </DialogBox>
         </DialogOverlay>
       )}
+
+      {/* Progress Dialog for Report Generation */}
+      <AnimatePresence>
+        {isSubmittingReport && (
+          <DialogOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <DialogBox
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <DialogTitle>✨ Generating Your Report</DialogTitle>
+              <DialogMessage>
+                Please wait while we analyze your assessment and create personalized recommendations...
+              </DialogMessage>
+              <ProgressContainer>
+                <ProgressBar>
+                  <ProgressFill
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${submissionProgress}%` }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  />
+                </ProgressBar>
+                <ProgressText>
+                  <FiLoader size={16} />
+                  {submissionMessage}
+                  <span style={{ marginLeft: 'auto', fontWeight: 600, color: '#ff6b35' }}>
+                    {submissionProgress}%
+                  </span>
+                </ProgressText>
+              </ProgressContainer>
+            </DialogBox>
+          </DialogOverlay>
+        )}
+      </AnimatePresence>
     </AssessmentContainer>
   );
 };
