@@ -1850,7 +1850,7 @@ const AssessmentResultsNew = () => {
             style={{
               marginTop: '16px',
               padding: '10px 20px',
-              background: '#3b82f6',
+              background: '#6b7280',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -1891,7 +1891,7 @@ const AssessmentResultsNew = () => {
             style={{
               marginTop: '16px',
               padding: '10px 20px',
-              background: '#3b82f6',
+              background: '#6b7280',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -2530,7 +2530,7 @@ const AssessmentResultsNew = () => {
                             <button
                               onClick={() => handleAddGoodItem(pillar.id)}
                               style={{
-                                background: '#22c55e',
+                                background: '#6b7280',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '50%',
@@ -2627,7 +2627,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '4px 8px',
                                           fontSize: '0.75rem',
-                                          background: '#22c55e',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -2658,7 +2658,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '6px',
                                           fontSize: '0.75rem',
-                                          background: '#3b82f6',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -2672,7 +2672,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '6px',
                                           fontSize: '0.75rem',
-                                          background: '#ef4444',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -2752,7 +2752,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '4px 8px',
                                         fontSize: '0.75rem',
-                                        background: '#22c55e',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -2783,7 +2783,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -2797,7 +2797,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -2848,7 +2848,7 @@ const AssessmentResultsNew = () => {
                                   style={{
                                     padding: '6px 12px',
                                     fontSize: '0.8rem',
-                                    background: '#22c55e',
+                                    background: '#6b7280',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '4px',
@@ -2950,7 +2950,7 @@ const AssessmentResultsNew = () => {
                             <button
                               onClick={() => handleAddBadItem(pillar.id)}
                               style={{
-                                background: '#ef4444',
+                                background: '#6b7280',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '50%',
@@ -3047,7 +3047,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '4px 8px',
                                           fontSize: '0.75rem',
-                                          background: '#ef4444',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3077,7 +3077,7 @@ const AssessmentResultsNew = () => {
                                         onClick={() => handleEditBadItem(pillar.id, idx, displayText)}
                                         style={{
                                           padding: '6px',
-                                          background: '#3b82f6',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3094,7 +3094,7 @@ const AssessmentResultsNew = () => {
                                         onClick={() => handleDeleteBadItem(pillar.id, idx)}
                                         style={{
                                           padding: '6px',
-                                          background: '#ef4444',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3178,7 +3178,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '4px 8px',
                                         fontSize: '0.75rem',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -3209,7 +3209,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -3223,7 +3223,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -3274,7 +3274,7 @@ const AssessmentResultsNew = () => {
                                   style={{
                                     padding: '6px 12px',
                                     fontSize: '0.8rem',
-                                    background: '#ef4444',
+                                    background: '#6b7280',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '4px',
@@ -3366,7 +3366,7 @@ const AssessmentResultsNew = () => {
                         <button
                           onClick={() => handleAddFeature(pillar.id)}
                           style={{
-                            background: '#3b82f6',
+                            background: '#6b7280',
                             color: 'white',
                             border: 'none',
                             borderRadius: '50%',
@@ -3483,7 +3483,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '4px 12px',
                                         fontSize: '0.75rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -3535,7 +3535,7 @@ const AssessmentResultsNew = () => {
                                         }}
                                         style={{
                                           padding: '6px',
-                                          background: '#3b82f6',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3552,7 +3552,7 @@ const AssessmentResultsNew = () => {
                                         onClick={() => handleDeleteFeature(pillar.id, idx)}
                                         style={{
                                           padding: '6px',
-                                          background: '#ef4444',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3662,7 +3662,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px 14px',
                                         fontSize: '0.8rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -3709,7 +3709,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '3px 8px',
                                           fontSize: '0.7rem',
-                                          background: '#3b82f6',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3723,7 +3723,7 @@ const AssessmentResultsNew = () => {
                                         style={{
                                           padding: '3px 8px',
                                           fontSize: '0.7rem',
-                                          background: '#ef4444',
+                                          background: '#6b7280',
                                           color: 'white',
                                           border: 'none',
                                           borderRadius: '4px',
@@ -3796,7 +3796,7 @@ const AssessmentResultsNew = () => {
                                   style={{
                                     padding: '6px 14px',
                                     fontSize: '0.8rem',
-                                    background: '#3b82f6',
+                                    background: '#6b7280',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '4px',
@@ -3967,7 +3967,7 @@ const AssessmentResultsNew = () => {
                             <button
                               onClick={() => handleAddNextStep(pillar.id)}
                               style={{
-                                background: '#f59e0b',
+                                background: '#6b7280',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '50%',
@@ -4080,7 +4080,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '4px 8px',
                                         fontSize: '0.75rem',
-                                        background: '#f59e0b',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4116,7 +4116,7 @@ const AssessmentResultsNew = () => {
                                       }}
                                       style={{
                                         padding: '6px',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4133,7 +4133,7 @@ const AssessmentResultsNew = () => {
                                       onClick={() => handleDeleteNextStep(pillar.id, idx)}
                                       style={{
                                         padding: '6px',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4208,7 +4208,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '4px 8px',
                                         fontSize: '0.75rem',
-                                        background: '#f59e0b',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4240,7 +4240,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4254,7 +4254,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4306,7 +4306,7 @@ const AssessmentResultsNew = () => {
                                   style={{
                                     padding: '6px 12px',
                                     fontSize: '0.8rem',
-                                    background: '#f59e0b',
+                                    background: '#6b7280',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '4px',
@@ -4502,7 +4502,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#3b82f6',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4517,7 +4517,7 @@ const AssessmentResultsNew = () => {
                                       style={{
                                         padding: '6px',
                                         fontSize: '0.75rem',
-                                        background: '#ef4444',
+                                        background: '#6b7280',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -4548,7 +4548,7 @@ const AssessmentResultsNew = () => {
               <button
                 onClick={handleAddImpactMetric}
                 style={{
-                  background: '#3b82f6',
+                  background: '#6b7280',
                   color: 'white',
                   border: 'none',
                   borderRadius: '50%',
@@ -4632,7 +4632,7 @@ const AssessmentResultsNew = () => {
                             style={{
                               padding: '6px 12px',
                               fontSize: '0.8rem',
-                              background: '#3b82f6',
+                              background: '#6b7280',
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
@@ -4666,7 +4666,7 @@ const AssessmentResultsNew = () => {
                             style={{
                               padding: '6px 12px',
                               fontSize: '0.75rem',
-                              background: '#3b82f6',
+                              background: '#6b7280',
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
@@ -4680,7 +4680,7 @@ const AssessmentResultsNew = () => {
                             style={{
                               padding: '6px 12px',
                               fontSize: '0.75rem',
-                              background: '#ef4444',
+                              background: '#6b7280',
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
@@ -4764,7 +4764,7 @@ const AssessmentResultsNew = () => {
                           style={{
                             padding: '6px 14px',
                             fontSize: '0.8rem',
-                            background: '#3b82f6',
+                            background: '#6b7280',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
@@ -4798,7 +4798,7 @@ const AssessmentResultsNew = () => {
                           style={{
                             padding: '6px 12px',
                             fontSize: '0.75rem',
-                            background: '#3b82f6',
+                            background: '#6b7280',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
@@ -4812,7 +4812,7 @@ const AssessmentResultsNew = () => {
                           style={{
                             padding: '6px 12px',
                             fontSize: '0.75rem',
-                            background: '#ef4444',
+                            background: '#6b7280',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
@@ -4889,7 +4889,7 @@ const AssessmentResultsNew = () => {
                         style={{
                           padding: '6px 12px',
                           fontSize: '0.8rem',
-                          background: '#3b82f6',
+                          background: '#6b7280',
                           color: 'white',
                           border: 'none',
                           borderRadius: '4px',
