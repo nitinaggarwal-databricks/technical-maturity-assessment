@@ -401,10 +401,9 @@ const PillarTopRow = styled.div`
 
 const PillarFullWidth = styled.div`
   width: 100%;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  /* Background and border are now controlled by inline styles for customization */
   border-radius: 16px;
   padding: 24px;
-  border: 2px solid #bfdbfe;
   
   @media (max-width: 768px) {
     padding: 18px;
@@ -3307,8 +3306,11 @@ const AssessmentResultsNew = () => {
                     </PillarTopRow>
 
                     {/* Full Width: Databricks Recommendations */}
-                    <PillarFullWidth>
-                  <PillarColumn $color={customizations.cardColors[`features-${pillar.id}`]?.border || "#3b82f6"}>
+                    <PillarFullWidth style={{
+                      background: customizations.cardColors[`features-${pillar.id}`]?.bg || 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                      border: `2px solid ${customizations.cardColors[`features-${pillar.id}`]?.border || '#bfdbfe'}`
+                    }}>
+                  <PillarColumn $color={customizations.cardColors[`features-${pillar.id}`]?.text || "#1e40af"}>
                     <div className="column-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FiInfo />
