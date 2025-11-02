@@ -493,7 +493,7 @@ const ProgressContainer = styled.div`
   margin-top: 24px;
 `;
 
-const ProgressBar = styled.div`
+const SubmissionProgressBar = styled.div`
   width: 100%;
   height: 12px;
   background: #e5e7eb;
@@ -1945,13 +1945,13 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 Please wait while we analyze your assessment and create personalized recommendations...
               </DialogMessage>
               <ProgressContainer>
-                <ProgressBar>
+                <SubmissionProgressBar>
                   <ProgressFill
                     initial={{ width: '0%' }}
                     animate={{ width: `${submissionProgress}%` }}
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
                   />
-                </ProgressBar>
+                </SubmissionProgressBar>
                 <ProgressText>
                   <FiLoader size={16} />
                   {submissionMessage}
