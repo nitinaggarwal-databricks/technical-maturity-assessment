@@ -1389,9 +1389,39 @@ class IntelligentRecommendationEngine {
       const topChallenge = pillar.theBad?.[0] || `Maturity gap of ${pillar.gap} levels`;
       const topFeature = pillar.databricksFeatures?.[0]?.name || 'recommended features';
       const outcome = businessOutcomes[pillar.pillarId] || 'driving measurable business value';
-      // Use reasonable truncation for roadmap items (150 chars) to keep them concise but complete
-      const challengeShort = topChallenge.length > 150 ? topChallenge.substring(0, 150) + '...' : topChallenge;
-      phase1Items.push(`${pillar.pillarName}: Deploy ${topFeature} to address ${challengeShort} - ${outcome}`);
+      
+      // 🔥 MORE DYNAMIC: Use actual user comments if available, otherwise use challenge
+      let specificContext = topChallenge;
+      
+      // Check if pillar has user comments with specific pain points
+      if (pillar.comments && pillar.comments.length > 0) {
+        const meaningfulComments = pillar.comments.filter(c => 
+          c.comment && c.comment.length > 20 && 
+          !c.comment.toLowerCase().includes('generic') &&
+          !c.comment.toLowerCase().includes('test')
+        );
+        
+        if (meaningfulComments.length > 0) {
+          // Use first meaningful comment as context
+          specificContext = meaningfulComments[0].comment;
+        }
+      }
+      
+      // Truncate for readability
+      const contextShort = specificContext.length > 150 ? specificContext.substring(0, 150) + '...' : specificContext;
+      
+      // Vary the phrasing based on pillar type
+      const actions = {
+        'platform_governance': 'Implement',
+        'data_engineering': 'Deploy',
+        'analytics_bi': 'Scale',
+        'machine_learning': 'Establish',
+        'generative_ai': 'Launch',
+        'operational_excellence': 'Optimize'
+      };
+      
+      const action = actions[pillar.pillarId] || 'Deploy';
+      phase1Items.push(`${pillar.pillarName}: ${action} ${topFeature} to address ${contextShort} - ${outcome}`);
     });
     
     // Ensure we have at least 3 items in Phase 1
@@ -1405,9 +1435,24 @@ class IntelligentRecommendationEngine {
     // Phase 2: High priority pillars (gap = 1) + scale critical solutions
     const highPriorityPillars = sorted.filter(p => p.gap === 1 || (p.gap >= 2 && !criticalPillars.slice(0, 2).includes(p)));
     highPriorityPillars.slice(0, 2).forEach(pillar => {
+      // 🔥 DYNAMIC: Vary which feature is mentioned (use 2nd or 1st)
       const topFeature = pillar.databricksFeatures?.[1]?.name || pillar.databricksFeatures?.[0]?.name || 'capabilities';
       const outcome = businessOutcomes[pillar.pillarId] || 'improving operational efficiency';
-      phase2Items.push(`${pillar.pillarName}: Scale ${topFeature} across teams and use cases - ${outcome}`);
+      
+      // 🔥 DYNAMIC: Use multiple challenges if available
+      let challengeContext = '';
+      if (pillar.theBad && pillar.theBad.length > 1) {
+        // Combine first 2 challenges
+        challengeContext = ` addressing ${pillar.theBad.slice(0, 2).join(' and ')}`;
+        if (challengeContext.length > 100) {
+          challengeContext = challengeContext.substring(0, 100) + '...';
+        }
+      }
+      
+      const scalingActions = ['Scale', 'Expand', 'Roll out', 'Deploy'];
+      const action = scalingActions[Math.floor(Math.random() * scalingActions.length)];
+      
+      phase2Items.push(`${pillar.pillarName}: ${action} ${topFeature} across teams and use cases${challengeContext} - ${outcome}`);
     });
     
     // Add integration items for Phase 2
@@ -1426,17 +1471,38 @@ class IntelligentRecommendationEngine {
     // Add MLOps/CI-CD if ML pillar exists
     const mlPillar = sorted.find(p => p.pillarId === 'machine_learning');
     if (mlPillar) {
-      phase3Items.push('Formalize MLOps CI/CD pipeline for automated model deployment - reducing time-to-production by 70%');
+      // 🔥 DYNAMIC: Check user comments for specific ML challenges
+      const mlChallenges = mlPillar.theBad || [];
+      const hasDeploymentIssues = mlChallenges.some(c => 
+        c.toLowerCase().includes('deployment') || 
+        c.toLowerCase().includes('production') ||
+        c.toLowerCase().includes('mlops')
+      );
+      
+      if (hasDeploymentIssues) {
+        phase3Items.push('Formalize MLOps CI/CD pipeline for automated model deployment - reducing time-to-production by 70%');
+      } else {
+        phase3Items.push('Establish ML model monitoring and retraining automation - ensuring model accuracy and reducing drift');
+      }
     }
     
     // Add GenAI if pillar exists
     const genaiPillar = sorted.find(p => p.pillarId === 'genai' || p.pillarId === 'generative_ai');
     if (genaiPillar) {
       const hasRAG = genaiPillar.theBad?.some(c => c.toLowerCase().includes('rag'));
+      const hasGovernance = genaiPillar.theBad?.some(c => 
+        c.toLowerCase().includes('governance') || 
+        c.toLowerCase().includes('compliance') ||
+        c.toLowerCase().includes('policy')
+      );
+      
+      // 🔥 DYNAMIC: Tailor GenAI recommendation to specific challenges
       if (hasRAG) {
         phase3Items.push('Expand GenAI use cases with RAG implementation and vector search - unlocking new revenue opportunities');
+      } else if (hasGovernance) {
+        phase3Items.push('Deploy production GenAI applications with governance guardrails - creating competitive differentiation while ensuring compliance');
       } else {
-        phase3Items.push('Deploy production GenAI applications with governance guardrails - creating competitive differentiation');
+        phase3Items.push('Scale GenAI capabilities across enterprise use cases - driving innovation and operational efficiency');
       }
     }
     
