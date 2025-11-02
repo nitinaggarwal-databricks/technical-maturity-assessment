@@ -3686,16 +3686,6 @@ const AssessmentResultsNew = () => {
                                         {displayFeature.releaseDate}
                                       </span>
                                     )}
-                                    {displayFeature.docs && (
-                                      <a 
-                                        href={displayFeature.docs} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}
-                                      >
-                                        📚 Docs →
-                                      </a>
-                                    )}
                                   </div>
                                 </>
                               )}

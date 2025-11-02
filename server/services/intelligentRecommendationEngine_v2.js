@@ -709,7 +709,6 @@ class IntelligentRecommendationEngine {
           name: f.name,
           description: f.description || f.short_description,
           benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
-          docsLink: f.docs || f.documentation_url,
           reason: reason // 🔥 NEW: WHY this feature is recommended
         };
       });
@@ -819,7 +818,6 @@ class IntelligentRecommendationEngine {
         description: feature.detailed_description || feature.description || 'Advanced Databricks capability to address your technical challenges',
         benefits: benefits,
         icon: this.getCategoryIcon(feature.category),
-        docsLink: feature.documentation_url || feature.docs || 'https://docs.databricks.com',
         gaStatus: feature.ga_status || 'GA',
         releaseDate: feature.ga_quarter || 'Latest',
         category: feature.category,
@@ -1199,13 +1197,11 @@ class IntelligentRecommendationEngine {
       if (detailedFeature) {
         featureDetails.push(detailedFeature);
       } else {
-        // Create basic feature object with proper docs link
-        const docsLink = this.getFeatureDocsLink(featureName);
+        // Create basic feature object without docs link
         featureDetails.push({
           name: featureName,
           description: this.getFeatureDescription(featureName),
-          benefits: this.getFeatureBenefits(featureName),
-          docs: docsLink
+          benefits: this.getFeatureBenefits(featureName)
         });
       }
     });
@@ -1213,41 +1209,6 @@ class IntelligentRecommendationEngine {
     console.log(`[mapPainPointsToFeatures] ${pillarId}: ${painPoints.length} pain points → ${features.size} unique features → ${featureDetails.length} with details`);
     
     return featureDetails;
-  }
-  
-  getFeatureDocsLink(featureName) {
-    const docsLinks = {
-      'Unity Catalog': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/',
-      'Audit Logs': 'https://docs.databricks.com/aws/en/admin/account-settings/audit-logs',
-      'Delta Sharing': 'https://docs.databricks.com/aws/en/data-sharing/',
-      'Delta Live Tables': 'https://docs.databricks.com/aws/en/ldp/',
-      'Lakehouse Monitoring': 'https://docs.databricks.com/aws/en/lakehouse-monitoring/',
-      'Photon': 'https://docs.databricks.com/aws/en/compute/photon',
-      'Serverless SQL': 'https://docs.databricks.com/aws/en/compute/sql-warehouse/serverless',
-      'Liquid Clustering': 'https://docs.databricks.com/aws/en/delta/clustering',
-      'MLflow': 'https://docs.databricks.com/aws/en/mlflow/',
-      'Model Serving': 'https://docs.databricks.com/aws/en/machine-learning/model-serving/',
-      'Mosaic AI Model Serving': 'https://docs.databricks.com/aws/en/machine-learning/model-serving/',
-      'Vector Search': 'https://docs.databricks.com/aws/en/generative-ai/vector-search',
-      'AI Gateway': 'https://docs.databricks.com/aws/en/generative-ai/ai-gateway',
-      'Workflows': 'https://docs.databricks.com/aws/en/jobs/',
-      'Auto Loader': 'https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader',
-      'Databricks Asset Bundles': 'https://docs.databricks.com/aws/en/dev-tools/bundles/',
-      'Feature Store': 'https://docs.databricks.com/aws/en/machine-learning/feature-store/',
-      'Databricks Academy': 'https://www.databricks.com/learn/training/home',
-      'System Tables': 'https://docs.databricks.com/aws/en/admin/system-tables/',
-      'Cluster Policies': 'https://docs.databricks.com/aws/en/admin/clusters/policies',
-      'Row-Level Security': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/',
-      'Column Masking': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/',
-      'Data Lineage': 'https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-lineage',
-      'Data Classification': 'https://docs.databricks.com/aws/en/database-objects/tags',
-      'Clean Rooms': 'https://docs.databricks.com/aws/en/data-sharing/clean-rooms',
-      'Model Monitoring': 'https://docs.databricks.com/aws/en/mlflow/model-monitoring/',
-      'Mosaic AI Agent Framework': 'https://docs.databricks.com/aws/en/generative-ai/agent-framework/',
-      'AI Playground': 'https://docs.databricks.com/aws/en/generative-ai/ai-playground',
-      'Online Tables': 'https://docs.databricks.com/aws/en/machine-learning/feature-store/online-tables'
-    };
-    return docsLinks[featureName] || 'https://docs.databricks.com/aws/en/index.html';
   }
   
   getFeatureDescription(featureName) {
