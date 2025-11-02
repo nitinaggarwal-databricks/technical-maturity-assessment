@@ -502,7 +502,7 @@ const SubmissionProgressBar = styled.div`
   margin-bottom: 12px;
 `;
 
-const ProgressFill = styled(motion.div)`
+const SubmissionProgressFill = styled(motion.div)`
   height: 100%;
   background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
   border-radius: 6px;
@@ -1946,7 +1946,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               </DialogMessage>
               <ProgressContainer>
                 <SubmissionProgressBar>
-                  <ProgressFill
+                  <SubmissionProgressFill
                     initial={{ width: '0%' }}
                     animate={{ width: `${submissionProgress}%` }}
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
