@@ -948,9 +948,9 @@ const Dashboard = () => {
       const response = await assessmentService.getDashboardStats();
       const data = response?.data || response;
       
-      // If no data or all zeros, use sample data
-      if (!data || data.totalAssessments === 0) {
-        console.log('[Dashboard] No real data found, using sample data');
+      // If no data or no completed assessments, use sample data
+      if (!data || data.totalAssessments === 0 || data.completedAssessments === 0) {
+        console.log('[Dashboard] No completed assessments, using sample data');
         setDashboardData(getSampleDashboardData());
       } else {
         setDashboardData(data);
