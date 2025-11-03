@@ -26,6 +26,9 @@ import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
 import EYBenchmarkingReport from './EYBenchmarkingReport';
+import ExecutiveDashboard from './ExecutiveDashboard';
+import ROICalculator from './ROICalculator';
+import RiskHeatmap from './RiskHeatmap';
 
 // =======================
 // STYLED COMPONENTS
@@ -2276,7 +2279,27 @@ const AssessmentResultsNew = () => {
               </ActionButton>
             </ActionButtons>
           </HeaderTop>
+        </ReportHeader>
 
+        {/* Executive Dashboard */}
+        <ExecutiveDashboard 
+          results={resultsData} 
+          assessment={resultsData?.assessmentInfo}
+        />
+
+        {/* ROI Calculator */}
+        <ROICalculator 
+          results={resultsData} 
+          assessment={resultsData?.assessmentInfo}
+        />
+
+        {/* Risk Heatmap */}
+        <RiskHeatmap 
+          results={resultsData} 
+          assessment={resultsData?.assessmentInfo}
+        />
+
+        <ReportHeader>
           <MaturityOverview>
             <MaturityCard $iconBg="rgba(59, 130, 246, 0.3)">
               <div className="icon">
