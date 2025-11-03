@@ -13,6 +13,7 @@ import {
   FiCheckCircle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import jsPDF from 'jspdf';
 
 // =====================
 // STYLED COMPONENTS
@@ -430,8 +431,164 @@ const ROICalculator = ({ results, assessment }) => {
   };
 
   const handleDownloadBusinessCase = () => {
-    toast.success('Business case PDF downloading...');
-    // TODO: Implement PDF generation
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let yPos = 20;
+
+      // Header
+      doc.setFillColor(102, 126, 234);
+      doc.rect(0, 0, pageWidth, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Databricks ROI Business Case', pageWidth / 2, 25, { align: 'center' });
+      
+      yPos = 50;
+
+      // Organization Info
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Prepared for: ${assessment?.organizationName || 'Your Organization'}`, 20, yPos);
+      yPos += 7;
+      doc.text(`Industry: ${assessment?.industry || 'Technology'}`, 20, yPos);
+      yPos += 7;
+      doc.text(`Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, 20, yPos);
+      yPos += 7;
+      doc.text(`Scenario: ${scenario.charAt(0).toUpperCase() + scenario.slice(1)}`, 20, yPos);
+      yPos += 15;
+
+      // Assumptions Section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(59, 130, 246);
+      doc.text('Assumptions', 20, yPos);
+      yPos += 10;
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`• Team Size: ${assumptions.teamSize} engineers`, 25, yPos);
+      yPos += 7;
+      doc.text(`• Data Volume: ${assumptions.dataVolumeTB} TB`, 25, yPos);
+      yPos += 7;
+      doc.text(`• Current Infrastructure Cost: ${formatCurrency(assumptions.currentInfraCost)} annually`, 25, yPos);
+      yPos += 7;
+      doc.text(`• Average Engineer Salary: ${formatCurrency(assumptions.avgEngineerSalary)}`, 25, yPos);
+      yPos += 15;
+
+      // Annual Savings Section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(59, 130, 246);
+      doc.text('Annual Savings', 20, yPos);
+      yPos += 10;
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(16, 185, 129);
+      doc.text(formatCurrency(roi.savings), 25, yPos);
+      yPos += 10;
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Infrastructure Cost Reduction: ${formatCurrency(roi.savingsBreakdown.infra)}`, 30, yPos);
+      yPos += 7;
+      doc.text(`Engineering Productivity Gains: ${formatCurrency(roi.savingsBreakdown.productivity)}`, 30, yPos);
+      yPos += 7;
+      doc.text(`Data Quality Improvements: ${formatCurrency(roi.savingsBreakdown.quality)}`, 30, yPos);
+      yPos += 15;
+
+      // New Revenue Section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(59, 130, 246);
+      doc.text('New Revenue Opportunities', 20, yPos);
+      yPos += 10;
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(16, 185, 129);
+      doc.text(formatCurrency(roi.revenue), 25, yPos);
+      yPos += 10;
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`GenAI Applications: ${formatCurrency(roi.revenueBreakdown.genAI)}`, 30, yPos);
+      yPos += 7;
+      doc.text(`ML Model Deployment: ${formatCurrency(roi.revenueBreakdown.ml)}`, 30, yPos);
+      yPos += 7;
+      doc.text(`Data Monetization: ${formatCurrency(roi.revenueBreakdown.monetization)}`, 30, yPos);
+      yPos += 15;
+
+      // Check if we need a new page
+      if (yPos > pageHeight - 60) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      // 3-Year ROI Section
+      doc.setFillColor(102, 126, 234);
+      doc.roundedRect(15, yPos - 5, pageWidth - 30, 50, 3, 3, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3-YEAR NET ROI', pageWidth / 2, yPos + 5, { align: 'center' });
+      
+      doc.setFontSize(28);
+      doc.text(formatCurrency(roi.netROI), pageWidth / 2, yPos + 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${roi.roiRatio.toFixed(1)}x return on investment • ${roi.paybackMonths} month payback`, pageWidth / 2, yPos + 32, { align: 'center' });
+      
+      yPos += 60;
+
+      // Investment Breakdown
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Total 3-Year Value: ${formatCurrency(roi.threeYearValue)}`, 20, yPos);
+      yPos += 7;
+      doc.text(`Databricks Investment: ${formatCurrency(roi.investment)}`, 20, yPos);
+      yPos += 7;
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Net ROI: ${formatCurrency(roi.netROI)}`, 20, yPos);
+      yPos += 15;
+
+      // Disclaimer
+      if (yPos > pageHeight - 40) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      const disclaimerText = 'Calculations based on industry benchmarks from Forrester Total Economic Impact studies and Databricks customer case studies. Actual results vary by organization. Conservative scenario uses lower-bound estimates, Realistic uses median values, and Optimistic uses upper-quartile results.';
+      const disclaimerLines = doc.splitTextToSize(disclaimerText, pageWidth - 40);
+      doc.text(disclaimerLines, 20, yPos);
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Generated by Databricks Maturity Assessment Platform', pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+      // Save the PDF
+      const fileName = `Databricks_ROI_Business_Case_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      
+      toast.success('Business case PDF downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF. Please try again.');
+    }
   };
 
   const handleReset = () => {
