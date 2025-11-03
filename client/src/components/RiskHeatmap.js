@@ -312,9 +312,118 @@ const ActionButton = styled.button`
 // RISK DATA
 // =====================
 
+const getSampleRisks = () => {
+  return [
+    {
+      id: 'compliance-violation',
+      title: 'Compliance & Governance Gaps',
+      impact: 'high',
+      probability: 'high',
+      financialImpact: '$5M-$20M',
+      description: 'Lack of centralized governance increases risk of data breaches, regulatory fines, and compliance violations.',
+      mitigation: [
+        'Deploy Unity Catalog for centralized governance',
+        'Implement audit logging and access controls',
+        'Establish data classification policies',
+        'Conduct regular compliance audits'
+      ],
+      timeline: '4-6 weeks',
+      priority: 'Critical'
+    },
+    {
+      id: 'data-breach',
+      title: 'Data Security & Privacy Risk',
+      impact: 'high',
+      probability: 'medium',
+      financialImpact: '$2M-$10M',
+      description: 'Inadequate security controls and access management expose sensitive data to unauthorized access.',
+      mitigation: [
+        'Enable row-level and column-level security',
+        'Implement data masking and encryption',
+        'Deploy threat detection and monitoring',
+        'Establish incident response procedures'
+      ],
+      timeline: '6-8 weeks',
+      priority: 'Critical'
+    },
+    {
+      id: 'pipeline-failures',
+      title: 'Data Pipeline Reliability Issues',
+      impact: 'medium',
+      probability: 'high',
+      financialImpact: '$500K-$2M/yr',
+      description: 'Unreliable data pipelines cause delays, data quality issues, and business disruptions.',
+      mitigation: [
+        'Implement Delta Live Tables for reliability',
+        'Add automated testing and monitoring',
+        'Enable data quality checks',
+        'Set up alerting and notifications'
+      ],
+      timeline: '4-6 weeks',
+      priority: 'High'
+    },
+    {
+      id: 'cost-overruns',
+      title: 'Cloud Cost Management',
+      impact: 'medium',
+      probability: 'medium',
+      financialImpact: '$300K-$1M/yr',
+      description: 'Unoptimized workloads and lack of cost monitoring lead to budget overruns.',
+      mitigation: [
+        'Implement automated cluster management',
+        'Set up cost monitoring and alerts',
+        'Optimize job configurations',
+        'Enable auto-scaling and spot instances'
+      ],
+      timeline: '2-3 weeks',
+      priority: 'Medium'
+    },
+    {
+      id: 'genai-adoption',
+      title: 'GenAI Competitive Lag',
+      impact: 'medium',
+      probability: 'high',
+      financialImpact: '$1M-$5M opportunity cost',
+      description: 'Slow GenAI adoption puts organization behind competitors in innovation and efficiency.',
+      mitigation: [
+        'Deploy Mosaic AI Agent Framework',
+        'Implement Vector Search for RAG',
+        'Train teams on Foundation Model APIs',
+        'Start with high-impact use cases'
+      ],
+      timeline: '8-12 weeks',
+      priority: 'High'
+    },
+    {
+      id: 'ml-deployment-delays',
+      title: 'ML Model Deployment Delays',
+      impact: 'low',
+      probability: 'medium',
+      financialImpact: '$200K-$500K/yr',
+      description: 'Manual ML deployment processes slow time-to-production and reduce model ROI.',
+      mitigation: [
+        'Deploy Mosaic AI Model Serving',
+        'Implement MLOps best practices',
+        'Automate model monitoring and retraining',
+        'Establish model governance framework'
+      ],
+      timeline: '6-8 weeks',
+      priority: 'Medium'
+    }
+  ];
+};
+
 const getRisks = (results) => {
   const risks = [];
   const categoryDetails = results?.categoryDetails || {};
+  
+  console.log('[RiskHeatmap] Generating risks from:', { categoryDetails, resultsKeys: Object.keys(results || {}) });
+  
+  // If no category details, generate sample risks
+  if (Object.keys(categoryDetails).length === 0) {
+    console.log('[RiskHeatmap] No category details found, using sample risks');
+    return getSampleRisks();
+  }
   
   // Analyze gaps and create risks
   Object.entries(categoryDetails).forEach(([id, data]) => {
