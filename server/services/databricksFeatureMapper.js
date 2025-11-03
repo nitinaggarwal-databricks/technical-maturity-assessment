@@ -161,6 +161,14 @@ class DatabricksFeatureMapper {
         emerging: {
           features: [
             {
+              name: 'Lakeflow Connect',
+              description: 'Managed connectors for SaaS data ingestion (Revenue-generating)',
+              benefits: ['Zero-code SaaS integration', '100+ pre-built connectors', 'Automated schema evolution', 'Reduces time-to-insight from weeks to hours'],
+              releaseDate: 'GA - October 2025',
+              docs: 'https://docs.databricks.com/connect/index.html',
+              monetization: 'Premium feature - DBU consumption based on data volume'
+            },
+            {
               name: 'Delta Live Tables (DLT)',
               description: 'Declarative ETL framework for reliable pipelines',
               benefits: ['Simplified ETL', 'Data quality checks', 'Auto-recovery'],
@@ -180,6 +188,13 @@ class DatabricksFeatureMapper {
               benefits: ['Automatic schema detection', 'File discovery', 'Cost-effective'],
               releaseDate: 'GA with file events - September 2025',
               docs: 'https://docs.databricks.com/ingestion/auto-loader/index.html'
+            },
+            {
+              name: 'Streaming Tables',
+              description: 'Simplified streaming data processing',
+              benefits: ['Simplified streaming syntax', 'Automatic backfill', 'Built-in quality checks'],
+              releaseDate: 'Public Preview - October 2025',
+              docs: 'https://docs.databricks.com/structured-streaming/streaming-tables.html'
             }
           ],
           recommendations: [

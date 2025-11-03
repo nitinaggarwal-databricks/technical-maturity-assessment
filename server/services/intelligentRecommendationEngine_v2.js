@@ -145,8 +145,8 @@ class IntelligentRecommendationEngine {
       
       // Data Engineering
       'pipeline': {
-        features: ['Delta Live Tables', 'Workflows', 'Auto Loader', 'Change Data Capture'],
-        solution: 'Modernize pipelines with Delta Live Tables for declarative ETL, Auto Loader for streaming, and CDC for real-time sync',
+        features: ['Delta Live Tables', 'Lakeflow Pipelines', 'Workflows', 'Auto Loader', 'Change Data Capture'],
+        solution: 'Modernize pipelines with Delta Live Tables for declarative ETL, Lakeflow Pipelines for visual development, Auto Loader for streaming, and CDC for real-time sync',
         category: 'data_engineering'
       },
       'quality': {
@@ -155,13 +155,23 @@ class IntelligentRecommendationEngine {
         category: 'data_engineering'
       },
       'ingestion': {
-        features: ['Auto Loader', 'Copy Into', 'Streaming Tables', 'Partner Connectors'],
-        solution: 'Automate ingestion with Auto Loader for cloud files, streaming tables for real-time, and connectors for SaaS',
+        features: ['Lakeflow Connect', 'Auto Loader', 'Copy Into', 'Streaming Tables', 'Partner Connectors'],
+        solution: 'Accelerate data ingestion with Lakeflow Connect for SaaS integration, Auto Loader for cloud files, streaming tables for real-time, and 100+ partner connectors',
         category: 'data_engineering'
       },
       'streaming': {
-        features: ['Structured Streaming', 'Delta Live Tables', 'Auto Loader', 'Kafka Integration'],
-        solution: 'Build streaming pipelines with Structured Streaming, DLT for declarative logic, and native Kafka integration',
+        features: ['Structured Streaming', 'Delta Live Tables', 'Auto Loader', 'Kafka Integration', 'Streaming Tables'],
+        solution: 'Build streaming pipelines with Structured Streaming, DLT for declarative logic, Streaming Tables for simplified development, and native Kafka integration',
+        category: 'data_engineering'
+      },
+      'connector': {
+        features: ['Lakeflow Connect', 'Partner Connect', 'JDBC/ODBC', 'REST APIs', 'Fivetran', 'Airbyte'],
+        solution: 'Integrate data sources with Lakeflow Connect for managed SaaS connectors, Partner Connect for one-click setup, and custom integrations via APIs',
+        category: 'data_engineering'
+      },
+      'saas': {
+        features: ['Lakeflow Connect', 'Partner Connect', 'Fivetran Integration', 'Salesforce Connector', 'ServiceNow Connector'],
+        solution: 'Connect SaaS applications with Lakeflow Connect for zero-code integration, reducing time-to-insight from weeks to hours',
         category: 'data_engineering'
       },
       
@@ -172,45 +182,60 @@ class IntelligentRecommendationEngine {
         category: 'machine_learning'
       },
       'model': {
-        features: ['MLflow Model Registry', 'Model Serving', 'Feature Store', 'Lakehouse Monitoring'],
-        solution: 'Manage model lifecycle with MLflow Registry, deploy with Model Serving, and monitor with Lakehouse Monitoring',
-        category: 'machine_learning'
-      },
-      'feature': {
-        features: ['Feature Store', 'Unity Catalog', 'Feature Serving', 'Online Tables'],
-        solution: 'Centralize features in Feature Store, govern with Unity Catalog, and serve with low-latency Online Tables',
+        features: ['Mosaic AI Model Serving', 'MLflow Model Registry', 'Feature Engineering', 'Lakehouse Monitoring'],
+        solution: 'Deploy models with Mosaic AI Model Serving for production-grade inference, manage lifecycle with MLflow Registry, and monitor with Lakehouse Monitoring',
         category: 'machine_learning'
       },
       'serving': {
-        features: ['Model Serving', 'Serverless Endpoints', 'Foundation Model APIs', 'GPU Serving'],
-        solution: 'Deploy models with Serverless Model Serving for auto-scaling, GPU support, and foundation model APIs',
+        features: ['Mosaic AI Model Serving', 'Serverless Inference', 'GPU Serving', 'Foundation Model APIs'],
+        solution: 'Scale model deployment with Mosaic AI Model Serving for low-latency inference, serverless autoscaling, and GPU acceleration for LLMs',
+        category: 'machine_learning'
+      },
+      'feature': {
+        features: ['Feature Engineering in Unity Catalog', 'Online Tables', 'Feature Serving'],
+        solution: 'Centralize features in Unity Catalog Feature Engineering, serve with low-latency Online Tables for real-time ML',
+        category: 'machine_learning'
+      },
+      'online': {
+        features: ['Online Tables', 'Serverless Compute', 'Change Data Feed', 'DLT'],
+        solution: 'Enable real-time ML with Online Tables for sub-10ms feature serving, powered by serverless compute and CDC',
         category: 'machine_learning'
       },
       
-      // GenAI
+      // GenAI (Revenue-generating features)
       'genai': {
-        features: ['Mosaic AI Agent Framework', 'Vector Search', 'AI Playground', 'Foundation Model APIs'],
-        solution: 'Build GenAI apps with Agent Framework for RAG, Vector Search for retrieval, and playground for testing',
+        features: ['Mosaic AI Agent Framework', 'Mosaic AI Agent Evaluation', 'Vector Search', 'AI Playground', 'Foundation Model APIs'],
+        solution: 'Build production GenAI apps with Mosaic AI Agent Framework for RAG, Agent Evaluation for quality, Vector Search for retrieval, and FM APIs for generation',
         category: 'genai'
       },
       'rag': {
-        features: ['Vector Search', 'Mosaic AI Agent Framework', 'Foundation Model APIs', 'Online Tables'],
-        solution: 'Implement RAG with Vector Search for embeddings, Agent Framework for orchestration, and FM APIs for generation',
+        features: ['Vector Search', 'Mosaic AI Agent Framework', 'Mosaic AI Agent Evaluation', 'Foundation Model APIs', 'Online Tables'],
+        solution: 'Implement enterprise RAG with Vector Search for embeddings, Agent Framework for orchestration, Agent Evaluation for quality assurance, and FM APIs for generation',
         category: 'genai'
       },
       'llm': {
-        features: ['Foundation Model APIs', 'Model Serving', 'AI Gateway', 'AI Playground'],
-        solution: 'Deploy LLMs with Foundation Model APIs, custom models via Model Serving, and govern with AI Gateway',
+        features: ['Foundation Model APIs', 'Mosaic AI Model Serving', 'Mosaic AI Gateway', 'AI Playground', 'External Models'],
+        solution: 'Deploy LLMs with Foundation Model APIs (DBRX, Llama, Mixtral), custom models via Mosaic AI Model Serving, and govern with Mosaic AI Gateway for cost/quality control',
+        category: 'genai'
+      },
+      'agent': {
+        features: ['Mosaic AI Agent Framework', 'Mosaic AI Agent Evaluation', 'Compound AI Systems', 'MLflow AI Gateway'],
+        solution: 'Build compound AI systems with Mosaic AI Agent Framework, evaluate quality with Agent Evaluation, and orchestrate with MLflow',
         category: 'genai'
       },
       'prompt': {
-        features: ['AI Playground', 'MLflow', 'AI Gateway', 'Prompt Engineering Tools'],
-        solution: 'Develop prompts in AI Playground, version with MLflow, and monitor quality with AI Gateway',
+        features: ['AI Playground', 'MLflow', 'Mosaic AI Gateway', 'Prompt Engineering Tools'],
+        solution: 'Develop prompts in AI Playground, version with MLflow, monitor quality with Mosaic AI Gateway, and optimize costs',
         category: 'genai'
       },
       'vector': {
-        features: ['Vector Search', 'Delta Lake', 'Online Tables', 'Mosaic AI Agent Framework'],
-        solution: 'Index vectors with Vector Search on Delta Lake, serve with Online Tables for low-latency retrieval',
+        features: ['Vector Search', 'Delta Lake', 'Online Tables', 'Mosaic AI Agent Framework', 'Embedding Models'],
+        solution: 'Index vectors with Vector Search on Delta Lake, serve with Online Tables for low-latency retrieval, integrate with Agent Framework for RAG',
+        category: 'genai'
+      },
+      'evaluation': {
+        features: ['Mosaic AI Agent Evaluation', 'MLflow Evaluate', 'AI Playground', 'LLM Judges'],
+        solution: 'Evaluate GenAI quality with Mosaic AI Agent Evaluation for multi-turn conversations, MLflow for metrics tracking, and LLM judges for automated assessment',
         category: 'genai'
       },
       
