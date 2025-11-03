@@ -1,14 +1,26 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
 /**
  * Generate Industry Benchmarking Report using OpenAI
  * Professional-grade competitive intelligence and market analysis
  */
 class IndustryBenchmarkingService {
+  
+  /**
+   * Get OpenAI client instance (lazy initialization)
+   */
+  getOpenAIClient() {
+    if (!this.openaiClient) {
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn('[IndustryBenchmarking] OPENAI_API_KEY not set, will use fallback data');
+        return null;
+      }
+      this.openaiClient = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+      });
+    }
+    return this.openaiClient;
+  }
   
   /**
    * Generate comprehensive industry benchmarking report
@@ -23,6 +35,14 @@ class IndustryBenchmarkingService {
     console.log(`[IndustryBenchmarking] Generating professional report for ${industry}`);
     
     try {
+      const openai = this.getOpenAIClient();
+      
+      // If no OpenAI client (missing API key), use fallback immediately
+      if (!openai) {
+        console.log('[IndustryBenchmarking] No OpenAI client available, using fallback report');
+        return this.getFallbackReport(industry, customerScore, pillarScores);
+      }
+      
       const prompt = this.buildBenchmarkingPrompt(industry, assessment, customerScore, pillarScores, painPoints);
       
       const response = await openai.chat.completions.create({
