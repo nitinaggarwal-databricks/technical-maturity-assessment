@@ -25,7 +25,6 @@ import {
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
-import EYBenchmarkingReport from './EYBenchmarkingReport';
 
 // =======================
 // STYLED COMPONENTS
@@ -5114,15 +5113,6 @@ const AssessmentResultsNew = () => {
             </AnimatePresence>
           </ImpactSection>
 
-          {/* Industry Benchmarking Report */}
-          {benchmarkData && (
-            <EYBenchmarkingReport
-              assessment={results?.data?.assessmentInfo}
-              benchmarkData={benchmarkData}
-              overallScore={results?.data?.overallScore || 0}
-              pillarScores={results?.data?.categoryDetails || {}}
-            />
-          )}
         </ReportBody>
       </ReportContainer>
     </PageContainer>

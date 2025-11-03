@@ -8,6 +8,7 @@ import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
 import ROICalculator from './ROICalculator';
 import RiskHeatmap from './RiskHeatmap';
+import IndustryBenchmarkingReport from './IndustryBenchmarkingReport';
 
 // =====================
 // STYLED COMPONENTS
@@ -154,6 +155,8 @@ const ExecutiveCommandCenter = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -182,6 +185,30 @@ const ExecutiveCommandCenter = () => {
       fetchResults();
     }
   }, [assessmentId]);
+
+  // Fetch benchmarking data
+  useEffect(() => {
+    const fetchBenchmarkData = async () => {
+      if (!results) return;
+      
+      try {
+        setBenchmarkLoading(true);
+        console.log('[ExecutiveCommandCenter] Fetching benchmarking data for:', assessmentId);
+        const data = await assessmentService.getBenchmarkReport(assessmentId);
+        console.log('[ExecutiveCommandCenter] Benchmark data received:', data);
+        setBenchmarkData(data);
+      } catch (err) {
+        console.error('[ExecutiveCommandCenter] Error fetching benchmark data:', err);
+        setBenchmarkData(null);
+      } finally {
+        setBenchmarkLoading(false);
+      }
+    };
+
+    if (results && !benchmarkData && !benchmarkLoading) {
+      fetchBenchmarkData();
+    }
+  }, [results, benchmarkData, benchmarkLoading, assessmentId]);
 
   const handleBack = () => {
     navigate(`/results/${assessmentId}`);
@@ -280,6 +307,16 @@ const ExecutiveCommandCenter = () => {
           results={results} 
           assessment={results?.assessmentInfo}
         />
+
+        {/* Industry Benchmarking Report */}
+        {benchmarkData && (
+          <IndustryBenchmarkingReport
+            assessment={results?.assessmentInfo}
+            benchmarkData={benchmarkData}
+            overallScore={results?.overallScore || 0}
+            pillarScores={results?.categoryDetails || {}}
+          />
+        )}
       </ContentContainer>
     </PageContainer>
   );

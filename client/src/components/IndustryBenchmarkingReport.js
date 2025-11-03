@@ -62,7 +62,7 @@ const ReportHeader = styled.div`
   }
 `;
 
-const EYLogo = styled.div`
+const BrandingLogo = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 2px;
@@ -380,7 +380,7 @@ const DownloadButton = styled(motion.button)`
   }
 `;
 
-const EYBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarScores }) => {
+const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarScores }) => {
   const [collapsedSections, setCollapsedSections] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -446,9 +446,9 @@ const EYBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarS
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* EY Header */}
+      {/* Report Header */}
       <ReportHeader>
-        <EYLogo>EY | BUILDING A BETTER WORKING WORLD</EYLogo>
+        <BrandingLogo>DATABRICKS MATURITY ASSESSMENT</BrandingLogo>
         <ReportTitle>Industry Benchmarking Report</ReportTitle>
         <ReportSubtitle>
           Data Platform Maturity Analysis  •  {assessment?.industry || 'Industry'}  •  {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
@@ -807,6 +807,6 @@ const EYBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarS
   );
 };
 
-export default EYBenchmarkingReport;
+export default IndustryBenchmarkingReport;
 
 

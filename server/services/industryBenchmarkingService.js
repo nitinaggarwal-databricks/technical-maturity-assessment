@@ -5,13 +5,13 @@ const openai = new OpenAI({
 });
 
 /**
- * Generate EY-Quality Industry Benchmarking Report using OpenAI
+ * Generate Industry Benchmarking Report using OpenAI
  * Professional-grade competitive intelligence and market analysis
  */
 class IndustryBenchmarkingService {
   
   /**
-   * Generate comprehensive EY-quality benchmarking report
+   * Generate comprehensive industry benchmarking report
    * @param {string} industry - Industry name
    * @param {object} assessment - Full assessment data
    * @param {number} customerScore - Overall maturity score
@@ -20,10 +20,10 @@ class IndustryBenchmarkingService {
    * @returns {Promise<object>} Comprehensive benchmarking report
    */
   async generateComprehensiveBenchmarkReport(industry, assessment, customerScore, pillarScores, painPoints) {
-    console.log(`[IndustryBenchmarking] Generating EY-quality report for ${industry}`);
+    console.log(`[IndustryBenchmarking] Generating professional report for ${industry}`);
     
     try {
-      const prompt = this.buildEYQualityPrompt(industry, assessment, customerScore, pillarScores, painPoints);
+      const prompt = this.buildBenchmarkingPrompt(industry, assessment, customerScore, pillarScores, painPoints);
       
       const response = await openai.chat.completions.create({
         model: 'gpt-4',
