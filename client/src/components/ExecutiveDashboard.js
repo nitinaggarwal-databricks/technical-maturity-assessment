@@ -621,7 +621,7 @@ function getStrategicImperatives(results, categoryDetails) {
       timeline = '8-12 weeks';
     } else if (gap.id.includes('machine_learning') || gap.id.includes('ml')) {
       title = 'Deploy Mosaic AI Model Serving for production ML';
-      impact: 'Reduce deployment time 70%';
+      impact = 'Reduce deployment time 70%';
       timeline = '6-8 weeks';
     } else if (gap.id.includes('analytics')) {
       title = 'Scale Databricks SQL with serverless warehouses';
