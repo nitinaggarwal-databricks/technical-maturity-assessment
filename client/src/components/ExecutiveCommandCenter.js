@@ -313,7 +313,7 @@ const ExecutiveCommandCenter = () => {
           <IndustryBenchmarkingReport
             assessment={results?.assessmentInfo}
             benchmarkData={benchmarkData}
-            overallScore={results?.overallScore || 0}
+            overallScore={results?.overall?.currentScore || results?.overallScore || 0}
             pillarScores={results?.categoryDetails || {}}
           />
         )}

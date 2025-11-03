@@ -325,7 +325,8 @@ const ExecutiveDashboard = ({ results, assessment }) => {
   const [animatedRevenue, setAnimatedRevenue] = useState(0);
   const [animatedRisks, setAnimatedRisks] = useState(0);
 
-  const overallScore = results?.overallScore || 0;
+  // FIX: API returns results.overall.currentScore, not results.overallScore
+  const overallScore = results?.overall?.currentScore || results?.overallScore || 0;
   const categoryDetails = results?.categoryDetails || {};
   
   // Calculate metrics

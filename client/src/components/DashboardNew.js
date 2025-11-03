@@ -997,8 +997,118 @@ const Dashboard = () => {
   }, [dashboardData]);
 
   const handleExport = () => {
-    toast.success('Exporting dashboard data...');
-    // TODO: Implement export
+    try {
+      if (!dashboardData) {
+        toast.error('No data available to export');
+        return;
+      }
+
+      toast.loading('Preparing export...', { id: 'export' });
+      
+      // Build CSV content
+      let csvContent = 'DATABRICKS MATURITY ASSESSMENT - DASHBOARD DATA\n';
+      csvContent += `Generated: ${new Date().toLocaleString()}\n\n`;
+      
+      // Overview Section
+      csvContent += 'OVERVIEW METRICS\n';
+      csvContent += 'Metric,Value,Trend\n';
+      csvContent += `Total Assessments,${dashboardData.totalAssessments || 0},${dashboardData.totalAssessmentsTrend > 0 ? '+' : ''}${dashboardData.totalAssessmentsTrend || 0}\n`;
+      csvContent += `Active Customers,${dashboardData.activeCustomers || 0},${dashboardData.activeCustomersTrend > 0 ? '+' : ''}${dashboardData.activeCustomersTrend || 0}\n`;
+      csvContent += `Avg Maturity Score,${dashboardData.avgMaturityLevel || 0},${dashboardData.avgMaturityLevelTrend > 0 ? '+' : ''}${dashboardData.avgMaturityLevelTrend || 0}\n`;
+      csvContent += `Avg Completion Time,${dashboardData.avgCompletionTime || 0} hrs,${dashboardData.avgCompletionTimeTrend > 0 ? '+' : ''}${dashboardData.avgCompletionTimeTrend || 0}\n`;
+      csvContent += `Feedback NPS,${dashboardData.feedbackNPS || 0},${dashboardData.feedbackNPSTrend > 0 ? '+' : ''}${dashboardData.feedbackNPSTrend || 0}\n`;
+      csvContent += '\n';
+      
+      // Maturity Distribution Section
+      if (dashboardData.maturityDistribution) {
+        csvContent += 'MATURITY DISTRIBUTION\n';
+        csvContent += 'Level,Percentage\n';
+        csvContent += `Level 5 (Optimizing),${(dashboardData.maturityDistribution.level5 * 100).toFixed(1)}%\n`;
+        csvContent += `Level 4 (Managed),${(dashboardData.maturityDistribution.level4 * 100).toFixed(1)}%\n`;
+        csvContent += `Level 3 (Defined),${(dashboardData.maturityDistribution.level3 * 100).toFixed(1)}%\n`;
+        csvContent += `Level 1-2 (Exploring/Emerging),${(dashboardData.maturityDistribution.level12 * 100).toFixed(1)}%\n`;
+        csvContent += '\n';
+      }
+      
+      // Industry Breakdown Section
+      if (dashboardData.industryBreakdown && dashboardData.industryBreakdown.length > 0) {
+        csvContent += 'INDUSTRY BREAKDOWN\n';
+        csvContent += 'Industry,Count,Avg Score\n';
+        dashboardData.industryBreakdown.forEach(ind => {
+          csvContent += `${ind.industry},${ind.count},${ind.avgScore?.toFixed(1) || 'N/A'}\n`;
+        });
+        csvContent += '\n';
+      }
+      
+      // Pillar Performance Section
+      if (dashboardData.pillarBreakdown && dashboardData.pillarBreakdown.length > 0) {
+        csvContent += 'PILLAR PERFORMANCE\n';
+        csvContent += 'Pillar,Avg Score,Count,Avg Gap\n';
+        dashboardData.pillarBreakdown.forEach(pillar => {
+          csvContent += `${pillar.name},${pillar.avgScore?.toFixed(1) || 'N/A'},${pillar.count},${pillar.avgGap?.toFixed(1) || 'N/A'}\n`;
+        });
+        csvContent += '\n';
+      }
+      
+      // Customer Portfolio Section
+      if (dashboardData.customerPortfolio && dashboardData.customerPortfolio.length > 0) {
+        csvContent += 'CUSTOMER PORTFOLIO\n';
+        csvContent += 'Organization,Industry,Status,Maturity Score,Completion %,Last Updated\n';
+        dashboardData.customerPortfolio.forEach(customer => {
+          csvContent += `${customer.name},${customer.industry},${customer.status},${customer.maturityScore?.toFixed(1) || 'N/A'},${customer.completionPercent || 0}%,${customer.lastUpdated}\n`;
+        });
+        csvContent += '\n';
+      }
+      
+      // Recent Assessments Section
+      if (dashboardData.recentAssessments && dashboardData.recentAssessments.length > 0) {
+        csvContent += 'RECENT ASSESSMENTS\n';
+        csvContent += 'Organization,Industry,Status,Score,Started,Completion Time (hrs)\n';
+        dashboardData.recentAssessments.forEach(assessment => {
+          const startedDate = assessment.startedAt ? new Date(assessment.startedAt).toLocaleDateString() : 'N/A';
+          csvContent += `${assessment.organizationName},${assessment.industry},${assessment.status},${assessment.overallScore?.toFixed(1) || 'N/A'},${startedDate},${assessment.completionTime?.toFixed(1) || 'N/A'}\n`;
+        });
+        csvContent += '\n';
+      }
+      
+      // NPS Breakdown Section
+      if (dashboardData.npsBreakdown) {
+        csvContent += 'NPS BREAKDOWN\n';
+        csvContent += 'Category,Count,Percentage\n';
+        csvContent += `Promoters (9-10),${dashboardData.npsBreakdown.promoters},${dashboardData.npsBreakdown.promotersPercent}%\n`;
+        csvContent += `Passives (7-8),${dashboardData.npsBreakdown.passives},${dashboardData.npsBreakdown.passivesPercent}%\n`;
+        csvContent += `Detractors (0-6),${dashboardData.npsBreakdown.detractors},${dashboardData.npsBreakdown.detractorsPercent}%\n`;
+        csvContent += '\n';
+      }
+      
+      // Weekly Completions Section
+      if (dashboardData.weeklyCompletions && dashboardData.weeklyCompletions.labels) {
+        csvContent += 'WEEKLY COMPLETIONS\n';
+        csvContent += 'Week,Completed,Avg Hours\n';
+        dashboardData.weeklyCompletions.labels.forEach((label, idx) => {
+          csvContent += `${label},${dashboardData.weeklyCompletions.counts[idx]},${dashboardData.weeklyCompletions.avgHours[idx]}\n`;
+        });
+        csvContent += '\n';
+      }
+      
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.setAttribute('href', url);
+      link.setAttribute('download', `databricks-dashboard-insights-${timestamp}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success('Dashboard data exported successfully!', { id: 'export' });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export dashboard data', { id: 'export' });
+    }
   };
 
   const handleShare = () => {

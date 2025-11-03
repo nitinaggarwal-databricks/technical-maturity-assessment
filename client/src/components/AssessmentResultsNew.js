@@ -97,6 +97,14 @@ const ReportContainer = styled.div`
     0 8px 16px rgba(0, 0, 0, 0.04),
     0 20px 40px rgba(0, 0, 0, 0.06); /* Multi-layer depth */
   overflow: hidden;
+
+  /* 🖨️ PRINT OPTIMIZATION */
+  @media print {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
 `;
 
 const ReportHeader = styled.div`
@@ -132,6 +140,18 @@ const ReportHeader = styled.div`
 
   @media (max-width: 768px) {
     padding: 40px 24px 32px;
+  }
+
+  /* 🖨️ PRINT OPTIMIZATION */
+  @media print {
+    background: white !important;
+    color: #1a1a1a !important;
+    padding: 24px 32px !important;
+    border-bottom: 3px solid #ff6b35;
+    
+    &::before {
+      display: none !important;
+    }
   }
 `;
 
@@ -176,6 +196,23 @@ const TitleSection = styled.div`
       font-size: 0.875rem;
     }
   }
+
+  /* 🖨️ PRINT OPTIMIZATION */
+  @media print {
+    h1 {
+      color: #1a1a1a !important;
+      background: none !important;
+      -webkit-text-fill-color: #1a1a1a !important;
+      text-shadow: none !important;
+      font-size: 1.75rem !important;
+      margin-bottom: 8px !important;
+    }
+
+    .subtitle {
+      color: #4b5563 !important;
+      font-size: 0.9rem !important;
+    }
+  }
 `;
 
 const ActionButtons = styled.div`
@@ -190,6 +227,11 @@ const ActionButtons = styled.div`
       flex: 1;
       min-width: 140px;
     }
+  }
+
+  /* 🖨️ PRINT: Hide all action buttons */
+  @media print {
+    display: none !important;
   }
 `;
 
@@ -326,6 +368,43 @@ const MaturityCard = styled.div`
       font-size: 1.5rem;
     }
   }
+
+  /* 🖨️ PRINT OPTIMIZATION */
+  @media print {
+    background: white !important;
+    border: 2px solid #e5e7eb !important;
+    padding: 16px !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    
+    &::before {
+      display: none !important;
+    }
+
+    .icon {
+      background: #f3f4f6 !important;
+      color: #1a1a1a !important;
+      width: 36px !important;
+      height: 36px !important;
+      margin-bottom: 12px !important;
+    }
+
+    .label {
+      color: #6b7280 !important;
+      font-size: 0.75rem !important;
+    }
+
+    .value {
+      color: #1a1a1a !important;
+      font-size: 1.5rem !important;
+    }
+
+    .description {
+      color: #4b5563 !important;
+      font-size: 0.8rem !important;
+    }
+  }
 `;
 
 const ReportBody = styled.div`
@@ -333,6 +412,11 @@ const ReportBody = styled.div`
 
   @media (max-width: 768px) {
     padding: 32px 24px;
+  }
+
+  /* 🖨️ PRINT OPTIMIZATION */
+  @media print {
+    padding: 24px 32px !important;
   }
 `;
 

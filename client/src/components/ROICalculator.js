@@ -13,7 +13,7 @@ import {
   FiCheckCircle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import jsPDF from 'jspdf';
+// jsPDF import removed - Download Business Case feature removed
 
 // =====================
 // STYLED COMPONENTS
@@ -779,14 +779,6 @@ const ROICalculator = ({ results, assessment }) => {
         </TotalROICard>
 
         <ActionButtons>
-          <ActionButton
-            onClick={handleDownloadBusinessCase}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiDownload />
-            Download Business Case
-          </ActionButton>
           <ActionButton
             onClick={handleReset}
             whileHover={{ scale: 1.05 }}
