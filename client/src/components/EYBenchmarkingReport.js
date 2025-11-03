@@ -453,7 +453,7 @@ const EYBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarS
         <ReportSubtitle>
           Data Platform Maturity Analysis  •  {assessment?.industry || 'Industry'}  •  {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </ReportSubtitle>
-        <div style={{ marginTop: '24px', display: 'flex', gap: '16px', position: 'relative', z-index: 1 }}>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '16px', position: 'relative', zIndex: 1 }}>
           <DownloadButton whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <FiDownload size={18} />
             Download Report
