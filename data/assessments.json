@@ -785,5 +785,41 @@
       }
     ],
     "submittedAt": "2025-11-03T21:09:26.013Z"
+  },
+  "f03a8547-953b-4876-8367-ec44836988fc": {
+    "id": "f03a8547-953b-4876-8367-ec44836988fc",
+    "organizationName": "Test Corp",
+    "contactEmail": "test@test.com",
+    "contactName": "",
+    "contactRole": "",
+    "industry": "Technology",
+    "assessmentName": "Test Assessment",
+    "assessmentDescription": "",
+    "startedAt": "2025-11-03T21:16:03.871Z",
+    "createdAt": "2025-11-03T21:16:03.871Z",
+    "updatedAt": "2025-11-03T21:16:03.871Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
+  },
+  "6dfb9a02-0e8d-4028-90c4-37f53ba610c0": {
+    "id": "6dfb9a02-0e8d-4028-90c4-37f53ba610c0",
+    "organizationName": "Test Corp",
+    "contactEmail": "test@test.com",
+    "contactName": "",
+    "contactRole": "",
+    "industry": "Technology",
+    "assessmentName": "Test Assessment",
+    "assessmentDescription": "",
+    "startedAt": "2025-11-03T21:16:09.760Z",
+    "createdAt": "2025-11-03T21:16:09.760Z",
+    "updatedAt": "2025-11-03T21:16:09.760Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
   }
 }

@@ -9,7 +9,7 @@
     "editorEmail": "sarah.johnson@automationfirst.com",
     "createdAt": "2025-11-03T21:08:59.595Z",
     "lastModified": "2025-11-03T21:08:59.595Z",
-    "updatedAt": "2025-11-03T21:09:20.980Z",
+    "updatedAt": "2025-11-03T21:09:26.013Z",
     "status": "submitted",
     "responses": {
       "env_standardization_current_state": 3,
@@ -784,6 +784,24 @@
         "changes": "Sample assessment created"
       }
     ],
-    "submittedAt": "2025-11-03T21:09:20.980Z"
+    "submittedAt": "2025-11-03T21:09:26.013Z"
+  },
+  "f03a8547-953b-4876-8367-ec44836988fc": {
+    "id": "f03a8547-953b-4876-8367-ec44836988fc",
+    "organizationName": "Test Corp",
+    "contactEmail": "test@test.com",
+    "contactName": "",
+    "contactRole": "",
+    "industry": "Technology",
+    "assessmentName": "Test Assessment",
+    "assessmentDescription": "",
+    "startedAt": "2025-11-03T21:16:03.871Z",
+    "createdAt": "2025-11-03T21:16:03.871Z",
+    "updatedAt": "2025-11-03T21:16:03.871Z",
+    "status": "in_progress",
+    "responses": {},
+    "completedCategories": [],
+    "currentCategory": "platform_governance",
+    "editHistory": []
   }
 }
