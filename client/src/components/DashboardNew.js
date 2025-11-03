@@ -981,15 +981,15 @@ const Dashboard = () => {
 
       setAnimatedTotal(Math.floor((dashboardData.totalAssessments || 0) * progress));
       setAnimatedCompleted(Math.floor((dashboardData.completedAssessments || 0) * progress));
-      setAnimatedAvgScore((dashboardData.averageMaturityScore || 0) * progress);
-      setAnimatedAvgTime(Math.floor((dashboardData.averageCompletionTime || 0) * progress));
+      setAnimatedAvgScore((parseFloat(dashboardData.avgMaturityLevel || dashboardData.averageMaturityScore) || 0) * progress);
+      setAnimatedAvgTime(Math.floor((parseFloat(dashboardData.avgCompletionTime || dashboardData.averageCompletionTime) || 0) * progress));
 
       if (currentStep >= steps) {
         clearInterval(timer);
         setAnimatedTotal(dashboardData.totalAssessments || 0);
         setAnimatedCompleted(dashboardData.completedAssessments || 0);
-        setAnimatedAvgScore(dashboardData.averageMaturityScore || 0);
-        setAnimatedAvgTime(dashboardData.averageCompletionTime || 0);
+        setAnimatedAvgScore(parseFloat(dashboardData.avgMaturityLevel || dashboardData.averageMaturityScore) || 0);
+        setAnimatedAvgTime(parseFloat(dashboardData.avgCompletionTime || dashboardData.averageCompletionTime) || 0);
       }
     }, interval);
 
