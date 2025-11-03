@@ -71,7 +71,7 @@ const PrintStyles = styled.div`
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #f9fafb;
+  background: #fafbfc; /* Premium off-white */
   padding: 40px 24px;
   padding-top: 108px; /* 68px GlobalNav + 40px top padding */
 
@@ -90,19 +90,48 @@ const PageContainer = styled.div`
 const ReportContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: #ffffff; /* Pure white */
+  border-radius: 20px; /* Softer corners */
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 20px 40px rgba(0, 0, 0, 0.06); /* Multi-layer depth */
   overflow: hidden;
 `;
 
 const ReportHeader = styled.div`
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  padding: 48px 48px 40px;
+  /* Premium gradient with depth */
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  padding: 56px 48px 48px; /* More breathing room */
   color: white;
+  position: relative;
+  overflow: hidden;
+
+  /* Animated gradient overlay */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.1) 0%,
+      rgba(59, 130, 246, 0.1) 50%,
+      rgba(16, 185, 129, 0.1) 100%
+    );
+    animation: gradientShift 15s ease infinite;
+    pointer-events: none;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
 
   @media (max-width: 768px) {
-    padding: 32px 24px 28px;
+    padding: 40px 24px 32px;
   }
 `;
 
@@ -116,21 +145,31 @@ const HeaderTop = styled.div`
 `;
 
 const TitleSection = styled.div`
+  position: relative;
+  z-index: 1;
+
   h1 {
-    font-size: 2rem;
+    font-size: 2.5rem; /* Larger, more commanding */
     font-weight: 800;
-    margin: 0 0 8px 0;
-    letter-spacing: -0.02em;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.03em; /* Tighter for premium feel */
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
   }
 
   .subtitle {
-    font-size: 0.938rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8); /* Slightly more visible */
+    font-weight: 400;
+    letter-spacing: 0.01em;
   }
 
   @media (max-width: 768px) {
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
     }
 
     .subtitle {
@@ -155,32 +194,41 @@ const ActionButtons = styled.div`
 `;
 
 const ActionButton = styled(motion.button)`
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
   color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); /* Premium easing */
+  backdrop-filter: blur(12px) saturate(180%);
+  position: relative;
+  z-index: 1;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    transform: none;
   }
 
   @media (max-width: 768px) {
-    padding: 9px 16px;
+    padding: 10px 18px;
     font-size: 0.813rem;
     justify-content: center;
   }
@@ -198,44 +246,81 @@ const MaturityOverview = styled.div`
 `;
 
 const MaturityCard = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 24px;
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 28px;
+  backdrop-filter: blur(16px) saturate(180%);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+
+  /* Subtle glow effect on hover */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: linear-gradient(135deg, 
+      rgba(139, 92, 246, 0.3) 0%, 
+      rgba(59, 130, 246, 0.3) 50%,
+      rgba(16, 185, 129, 0.3) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    &::before {
+      opacity: 1;
+    }
+  }
 
   .icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     background: ${props => props.$iconBg || 'rgba(255, 255, 255, 0.2)'};
     display: grid;
     place-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .label {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .value {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 800;
     color: white;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
   }
 
   .description {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
   }
 
   @media (max-width: 768px) {
-    padding: 20px;
+    padding: 24px;
 
     .value {
       font-size: 1.5rem;
