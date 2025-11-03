@@ -396,6 +396,11 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
     }));
   };
 
+  const handleDownloadReport = () => {
+    // Trigger browser print dialog (user can save as PDF)
+    window.print();
+  };
+
   const getTierIcon = (tier) => {
     switch(tier) {
       case 'Market Leader': return FiAward;
@@ -436,9 +441,23 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
     );
   }
 
-  const { executiveSummary, competitivePositioning, pillarAnalysis, competitiveIntelligence, strategicRecommendations } = benchmarkData;
+  const { executiveSummary, competitivePositioning, pillarAnalysis, competitiveIntelligence, strategicRecommendations, metadata } = benchmarkData;
   const TierIcon = getTierIcon(competitivePositioning?.overallRanking?.tier);
   const tierColors = getTierColor(competitivePositioning?.overallRanking?.tier);
+
+  // Use score from metadata if available (preferred), otherwise fallback to prop or calculate from pillars
+  const actualScore = metadata?.overallScore || overallScore || (
+    pillarAnalysis ? 
+      Object.values(pillarAnalysis).reduce((sum, p) => sum + (p.customerScore || 0), 0) / Object.values(pillarAnalysis).length 
+      : 0
+  );
+
+  console.log('[IndustryBenchmarkingReport] Score debug:', { 
+    metadataScore: metadata?.overallScore, 
+    propScore: overallScore, 
+    actualScore,
+    pillarCount: pillarAnalysis ? Object.keys(pillarAnalysis).length : 0
+  });
 
   return (
     <ReportContainer
@@ -454,7 +473,11 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
           Data Platform Maturity Analysis  •  {assessment?.industry || 'Industry'}  •  {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </ReportSubtitle>
         <div style={{ marginTop: '24px', display: 'flex', gap: '16px', position: 'relative', zIndex: 1 }}>
-          <DownloadButton whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <DownloadButton 
+            onClick={handleDownloadReport}
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+          >
             <FiDownload size={18} />
             Download Report
           </DownloadButton>
@@ -524,7 +547,7 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
 
           <MetricCard $bg="#e0f2fe" $border="#0ea5e9" $accent="#0284c7">
             <MetricLabel>Maturity Score</MetricLabel>
-            <MetricValue>{overallScore?.toFixed(1)}<span style={{ fontSize: '1rem', color: '#6b7280' }}>/5.0</span></MetricValue>
+            <MetricValue>{actualScore?.toFixed(1)}<span style={{ fontSize: '1rem', color: '#6b7280' }}>/5.0</span></MetricValue>
             <MetricSubtext $color="#0369a1">
               Comprehensive 6-pillar assessment
             </MetricSubtext>
@@ -799,8 +822,22 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
           <p><strong>Data Source:</strong> {benchmarkData.methodology?.dataSource}</p>
           <p><strong>Sample Size:</strong> {benchmarkData.methodology?.sampleSize}+ {assessment?.industry} organizations</p>
           <p><strong>Assessment Framework:</strong> {benchmarkData.methodology?.assessmentCriteria}</p>
+          <p><strong>Benchmarking Period:</strong> {benchmarkData.methodology?.benchmarkingPeriod || 'Q3-Q4 2024'}</p>
           <p><strong>Last Updated:</strong> {benchmarkData.methodology?.lastUpdated}</p>
           <p><strong>Confidence Level:</strong> {benchmarkData.methodology?.confidenceLevel}</p>
+          
+          {benchmarkData.methodology?.assumptions && benchmarkData.methodology.assumptions.length > 0 && (
+            <div style={{ marginTop: '20px', padding: '16px', background: 'white', borderRadius: '8px', border: '2px solid #e5e7eb' }}>
+              <strong style={{ color: '#1f2937', fontSize: '0.938rem' }}>Key Assumptions:</strong>
+              <ul style={{ marginTop: '12px', paddingLeft: '20px' }}>
+                {benchmarkData.methodology.assumptions.map((assumption, idx) => (
+                  <li key={idx} style={{ marginBottom: '8px', color: '#4b5563' }}>
+                    {assumption}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </Section>
     </ReportContainer>
