@@ -948,11 +948,13 @@ const Dashboard = () => {
       const response = await assessmentService.getDashboardStats();
       const data = response?.data || response;
       
-      // If no data or no completed assessments, use sample data
-      if (!data || data.totalAssessments === 0 || data.completedAssessments === 0) {
-        console.log('[Dashboard] No completed assessments, using sample data');
+      // If no data or no meaningful scores, use sample data
+      const avgScore = parseFloat(data?.avgMaturityLevel || '0');
+      if (!data || data.totalAssessments === 0 || avgScore === 0) {
+        console.log('[Dashboard] No meaningful data (totalAssessments:', data?.totalAssessments, 'avgScore:', avgScore, '), using sample data');
         setDashboardData(getSampleDashboardData());
       } else {
+        console.log('[Dashboard] Using real data (totalAssessments:', data.totalAssessments, 'avgScore:', avgScore, ')');
         setDashboardData(data);
       }
     } catch (error) {
