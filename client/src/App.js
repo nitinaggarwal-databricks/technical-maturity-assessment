@@ -14,7 +14,7 @@ import AssessmentQuestion from './components/AssessmentQuestion';
 import AssessmentResults from './components/AssessmentResultsNew';
 import AssessmentManagement from './components/AssessmentsListNew';
 import AssessmentDashboard from './components/AssessmentDashboard';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/DashboardNew';
 import LoadingSpinner from './components/LoadingSpinner';
 import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
 
