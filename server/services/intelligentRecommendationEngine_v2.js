@@ -1489,17 +1489,17 @@ class IntelligentRecommendationEngine {
       phases: [
         {
           id: 'phase1',
-          title: 'Phase 1: Foundation (0–3 months)',
+          title: 'Phase 1: Foundation (0–1 month)',
           items: phase1Items.slice(0, 3)
         },
         {
           id: 'phase2',
-          title: 'Phase 2: Scale (3–6 months)',
+          title: 'Phase 2: Scale (1–2 months)',
           items: phase2Items.slice(0, 3)
         },
         {
           id: 'phase3',
-          title: 'Phase 3: Optimize (6–12 months)',
+          title: 'Phase 3: Optimize (2–3 months)',
           items: phase3Items.slice(0, 3)
         }
       ]
