@@ -751,8 +751,27 @@ class IntelligentRecommendationEngine {
           reason = `Addresses your challenge: "${userIssue}${relatedComment.comment.length > 100 ? '...' : ''}"`;
         } else if (matchingPainPoint) {
           reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
+        } else if (topPainPoints.length > 0) {
+          // Use top pain point for this pillar as context
+          const topPain = topPainPoints[0];
+          reason = `Helps address: ${topPain.label || topPain.value}`;
         } else {
-          reason = `Recommended based on your maturity gap and pain points`;
+          // Generate reason from feature's own description/benefits
+          const featureBenefit = f.benefits?.[0] || f.description || f.short_description;
+          if (featureBenefit && featureBenefit.length > 20) {
+            reason = featureBenefit.substring(0, 120) + (featureBenefit.length > 120 ? '...' : '');
+          } else {
+            // Last resort - use pillar-specific context
+            const pillarContextMap = {
+              'platform_governance': 'Improves governance, security, and compliance',
+              'data_engineering': 'Enhances data pipeline reliability and quality',
+              'analytics_bi': 'Accelerates analytics and insights delivery',
+              'machine_learning': 'Streamlines ML model development and deployment',
+              'generative_ai': 'Enables GenAI applications with governance',
+              'operational_excellence': 'Improves monitoring, cost control, and collaboration'
+            };
+            reason = pillarContextMap[pillarId] || 'Recommended for improving platform maturity';
+          }
         }
         
         return {
