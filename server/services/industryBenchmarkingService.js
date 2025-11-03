@@ -72,9 +72,9 @@ class IndustryBenchmarkingService {
   }
 
   /**
-   * Build EY-quality prompt for comprehensive benchmarking
+   * Build professional prompt for comprehensive benchmarking
    */
-  buildEYQualityPrompt(industry, assessment, customerScore, pillarScores, painPoints) {
+  buildBenchmarkingPrompt(industry, assessment, customerScore, pillarScores, painPoints) {
     const pillarNames = {
       'platform_governance': 'Platform & Governance',
       'data_engineering': 'Data Engineering & Integration',
@@ -90,7 +90,7 @@ class IndustryBenchmarkingService {
 
     const topPainPoints = painPoints?.slice(0, 5).map(p => `- ${p.label || p.value}`).join('\n') || 'Not specified';
 
-    return `As an EY Senior Partner, create a comprehensive industry benchmarking report for a ${industry} organization.
+    return `As a Senior Data Platform Strategy Consultant, create a comprehensive industry benchmarking report for a ${industry} organization.
 
 CLIENT PROFILE:
 - Industry: ${industry}
@@ -104,7 +104,7 @@ ${pillarDetails}
 TOP BUSINESS CHALLENGES:
 ${topPainPoints}
 
-DELIVERABLE: Generate an EY-quality executive benchmarking report with the following structure:
+DELIVERABLE: Generate a professional executive benchmarking report with the following structure:
 
 {
   "executiveSummary": {
@@ -346,7 +346,7 @@ DELIVERABLE: Generate an EY-quality executive benchmarking report with the follo
   },
 
   "methodology": {
-    "dataSource": "EY Industry Benchmarking Database, Gartner Research, Forrester Wave Analysis",
+    "dataSource": "Industry Benchmarking Database, Gartner Research, Forrester Wave Analysis",
     "sampleSize": <realistic number 100-500>,
     "industryScope": "${industry} organizations globally",
     "assessmentCriteria": "Six-pillar data platform maturity framework",
@@ -375,7 +375,7 @@ CRITICAL REQUIREMENTS:
       // Add metadata
       metadata: {
         generatedAt: new Date().toISOString(),
-        reportType: 'EY Industry Benchmarking Analysis',
+        reportType: 'Industry Benchmarking Analysis',
         industry: industry,
         overallScore: customerScore,
         reportVersion: '1.0'
