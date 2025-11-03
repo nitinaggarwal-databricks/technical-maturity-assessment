@@ -781,8 +781,13 @@ const AssessmentsListNew = () => {
   });
 
   const getStatusFromAssessment = (assessment) => {
-    if (assessment.status === 'completed') return 'completed';
+    // Check explicit status first
+    if (assessment.status === 'completed' || assessment.status === 'submitted') return 'completed';
+    
+    // If has responses or completed categories, it's in progress
     if (assessment.completedCategories && assessment.completedCategories.length > 0) return 'in_progress';
+    if (assessment.responses && Object.keys(assessment.responses).length > 0) return 'in_progress';
+    
     return 'not_started';
   };
 
@@ -794,7 +799,18 @@ const AssessmentsListNew = () => {
   };
 
   const getProgressPercentage = (assessment) => {
-    return Math.round(((assessment.completedCategories?.length || 0) / 6) * 100);
+    // If status is explicitly completed/submitted, return 100%
+    if (assessment.status === 'completed' || assessment.status === 'submitted') {
+      return 100;
+    }
+    
+    // Calculate based on completed categories
+    const totalPillars = 6; // Total number of pillars
+    const completedCount = assessment.completedCategories?.length || 0;
+    const percentage = Math.round((completedCount / totalPillars) * 100);
+    
+    // Cap at 99% if not officially submitted (to show it's not complete)
+    return percentage >= 100 ? 99 : percentage;
   };
 
   const getTimeAgo = (dateString) => {
