@@ -37,6 +37,31 @@ class IntelligentRecommendationEngine {
         solution: 'Configure role-based and attribute-based access control via Unity Catalog with service principal automation',
         category: 'security'
       },
+      'sharing': {
+        features: ['Delta Sharing', 'Databricks Marketplace', 'Clean Rooms', 'Unity Catalog'],
+        solution: 'Enable secure data sharing with Delta Sharing for external partners, Databricks Marketplace for data monetization, and Clean Rooms for privacy-preserving collaboration',
+        category: 'governance'
+      },
+      'marketplace': {
+        features: ['Databricks Marketplace', 'Delta Sharing', 'Lakehouse Apps', 'Partner Connect'],
+        solution: 'Monetize data assets via Databricks Marketplace, share securely with Delta Sharing, and distribute AI apps with Lakehouse Apps',
+        category: 'governance'
+      },
+      'monetization': {
+        features: ['Databricks Marketplace', 'Delta Sharing', 'Data Products', 'Unity Catalog'],
+        solution: 'Build data products with Unity Catalog, monetize via Databricks Marketplace, and enable secure consumption with Delta Sharing',
+        category: 'governance'
+      },
+      'collaboration': {
+        features: ['Delta Sharing', 'Clean Rooms', 'Databricks Marketplace', 'Lakehouse Federation'],
+        solution: 'Collaborate securely with Delta Sharing for open sharing, Clean Rooms for privacy-preserving analytics, and Marketplace for discovery',
+        category: 'governance'
+      },
+      'external': {
+        features: ['Delta Sharing', 'Lakehouse Federation', 'Partner Connect', 'REST APIs'],
+        solution: 'Share data externally with Delta Sharing (open protocol), federate queries across clouds with Lakehouse Federation, and integrate via APIs',
+        category: 'governance'
+      },
       
       // Training & Enablement
       'training': {
@@ -1160,6 +1185,11 @@ class IntelligentRecommendationEngine {
       'data_misuse': ['Unity Catalog', 'Audit Logs', 'Row-Level Security', 'Column Masking'],
       'regulatory_exposure': ['Unity Catalog', 'Compliance Security Profile', 'Audit Logs', 'Data Classification'],
       'compliance_sharing': ['Delta Sharing', 'Unity Catalog', 'Audit Logs', 'Clean Rooms'],
+      'external_sharing': ['Delta Sharing', 'Databricks Marketplace', 'Clean Rooms', 'Lakehouse Federation'],
+      'data_monetization': ['Databricks Marketplace', 'Delta Sharing', 'Unity Catalog', 'Data Products'],
+      'partner_collaboration': ['Delta Sharing', 'Clean Rooms', 'Partner Connect', 'Databricks Marketplace'],
+      'data_silos': ['Delta Sharing', 'Lakehouse Federation', 'Unity Catalog', 'Partner Connect'],
+      'no_data_products': ['Databricks Marketplace', 'Delta Sharing', 'Unity Catalog', 'Lakehouse Apps'],
       
       // Machine Learning pain points
       'no_experiment_tracking': ['MLflow Tracking', 'MLflow Autologging', 'Experiments'],

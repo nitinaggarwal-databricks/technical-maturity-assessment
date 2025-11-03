@@ -22,6 +22,22 @@ class DatabricksFeatureMapper {
               docs: 'https://docs.databricks.com/data-governance/unity-catalog/index.html'
             },
             {
+              name: 'Delta Sharing',
+              description: 'Open protocol for secure data sharing (Revenue-generating)',
+              benefits: ['Share live data securely', 'No data duplication', 'Open standard', 'Cross-platform sharing'],
+              releaseDate: 'GA with row/column filters - October 2025',
+              docs: 'https://docs.databricks.com/data-sharing/index.html',
+              monetization: 'Enables data monetization and ecosystem growth'
+            },
+            {
+              name: 'Databricks Marketplace',
+              description: 'Data and AI marketplace for monetization (Revenue-generating)',
+              benefits: ['Monetize data assets', 'Discover data products', 'AI app distribution', 'Partner ecosystem'],
+              releaseDate: 'GA - October 2025',
+              docs: 'https://docs.databricks.com/marketplace/index.html',
+              monetization: 'Platform for data product monetization and consumption-based revenue'
+            },
+            {
               name: 'Serverless Compute',
               description: 'Instantly available compute without cluster management',
               benefits: ['Zero cluster management', 'Sub-second startup', 'Cost optimization'],
@@ -29,11 +45,12 @@ class DatabricksFeatureMapper {
               docs: 'https://docs.databricks.com/serverless-compute/index.html'
             },
             {
-              name: 'Databricks Runtime 17.3 LTS',
-              description: 'Latest long-term support runtime with enhanced performance',
-              benefits: ['Photon engine improvements', 'Better Delta Lake performance', 'Security updates'],
-              releaseDate: 'GA - October 2025',
-              docs: 'https://docs.databricks.com/release-notes/runtime/17.3.html'
+              name: 'Clean Rooms',
+              description: 'Privacy-preserving data collaboration',
+              benefits: ['Secure multi-party analytics', 'No raw data exposure', 'Compliance-friendly'],
+              releaseDate: 'Public Preview - October 2025',
+              docs: 'https://docs.databricks.com/clean-rooms/index.html',
+              monetization: 'Enables secure data collaboration and new revenue streams'
             }
           ],
           recommendations: [
