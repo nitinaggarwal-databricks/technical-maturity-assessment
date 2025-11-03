@@ -26,9 +26,6 @@ import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
 import EYBenchmarkingReport from './EYBenchmarkingReport';
-import ExecutiveDashboard from './ExecutiveDashboard';
-import ROICalculator from './ROICalculator';
-import RiskHeatmap from './RiskHeatmap';
 
 // =======================
 // STYLED COMPONENTS
@@ -2242,6 +2239,15 @@ const AssessmentResultsNew = () => {
             </TitleSection>
             <ActionButtons>
               <ActionButton
+                onClick={() => navigate(`/executive/${assessmentId}`)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+              >
+                <FiTarget size={16} />
+                Executive Command Center
+              </ActionButton>
+              <ActionButton
                 onClick={handleRefresh}
                 disabled={refreshing}
                 whileHover={{ scale: 1.02 }}
@@ -2280,24 +2286,6 @@ const AssessmentResultsNew = () => {
             </ActionButtons>
           </HeaderTop>
         </ReportHeader>
-
-        {/* Executive Dashboard */}
-        <ExecutiveDashboard 
-          results={resultsData} 
-          assessment={resultsData?.assessmentInfo}
-        />
-
-        {/* ROI Calculator */}
-        <ROICalculator 
-          results={resultsData} 
-          assessment={resultsData?.assessmentInfo}
-        />
-
-        {/* Risk Heatmap */}
-        <RiskHeatmap 
-          results={resultsData} 
-          assessment={resultsData?.assessmentInfo}
-        />
 
         <ReportHeader>
           <MaturityOverview>
