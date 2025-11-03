@@ -17,7 +17,15 @@ import {
   FiActivity,
   FiGlobe,
   FiCalendar,
-  FiCheckCircle
+  FiCheckCircle,
+  FiAlertCircle,
+  FiLayers,
+  FiPieChart,
+  FiTrendingDown as FiArrowDown,
+  FiArrowRight,
+  FiRefreshCw,
+  FiEye,
+  FiPlay
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -445,6 +453,283 @@ const PerformerScore = styled.div`
   }
 `;
 
+// Pillar Performance Section
+const PillarPerformanceSection = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+`;
+
+const PillarGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const PillarCard = styled(motion.div)`
+  background: linear-gradient(135deg, ${props => props.$gradient || '#f8fafc, #f1f5f9'});
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: ${props => props.$borderColor || '#3b82f6'};
+  }
+`;
+
+const PillarHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+`;
+
+const PillarName = styled.div`
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const PillarScore = styled.div`
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: ${props => props.$color || '#3b82f6'};
+  font-family: 'JetBrains Mono', monospace;
+`;
+
+const PillarMetric = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 12px;
+
+  .label {
+    font-weight: 500;
+  }
+
+  .value {
+    font-weight: 700;
+    color: #1e293b;
+  }
+`;
+
+// Recent Activity Section
+const RecentActivitySection = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+`;
+
+const ActivityList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const ActivityItem = styled(motion.div)`
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-left: 4px solid ${props => props.$color || '#3b82f6'};
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+  }
+`;
+
+const ActivityIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: ${props => props.$bg || '#3b82f6'};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
+const ActivityContent = styled.div`
+  flex: 1;
+`;
+
+const ActivityTitle = styled.div`
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+`;
+
+const ActivityDetails = styled.div`
+  font-size: 0.813rem;
+  color: #64748b;
+`;
+
+const ActivityTime = styled.div`
+  font-size: 0.75rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  align-self: center;
+`;
+
+// Insights & Trends Section
+const InsightsSection = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const InsightCard = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+`;
+
+const InsightHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+`;
+
+const InsightIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: ${props => props.$bg || 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)'};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const InsightTitle = styled.h3`
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+`;
+
+const InsightContent = styled.div`
+  font-size: 0.938rem;
+  line-height: 1.6;
+  color: #475569;
+`;
+
+const InsightList = styled.ul`
+  margin: 12px 0 0 0;
+  padding-left: 20px;
+  
+  li {
+    margin-bottom: 8px;
+    color: #64748b;
+  }
+`;
+
+const StatBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: ${props => props.$bg || '#dbeafe'};
+  color: ${props => props.$color || '#1e40af'};
+  border-radius: 20px;
+  font-size: 0.813rem;
+  font-weight: 600;
+  margin-top: 12px;
+`;
+
+// Quick Actions Section
+const QuickActionsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const QuickActionCard = styled(motion.button)`
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  }
+`;
+
+const QuickActionIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: ${props => props.$bg || 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)'};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const QuickActionLabel = styled.div`
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+`;
+
+const QuickActionCount = styled.div`
+  font-size: 0.75rem;
+  color: #64748b;
+`;
+
 // Loading & Error States
 const LoadingContainer = styled.div`
   min-height: 60vh;
@@ -782,10 +1067,290 @@ const Dashboard = () => {
             ))}
           </PerformersList>
         </TopPerformersSection>
+
+        {/* Pillar Performance Breakdown */}
+        {dashboardData?.pillarBreakdown && dashboardData.pillarBreakdown.length > 0 && (
+          <PillarPerformanceSection>
+            <SectionHeader>
+              <SectionTitle>
+                <FiLayers />
+                Pillar Performance Breakdown
+              </SectionTitle>
+            </SectionHeader>
+            <PillarGrid>
+              {dashboardData.pillarBreakdown.map((pillar, index) => (
+                <PillarCard
+                  key={pillar.pillarId}
+                  $gradient={pillar.gradient}
+                  $borderColor={pillar.color}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <PillarHeader>
+                    <PillarName>
+                      {pillar.icon} {pillar.name}
+                    </PillarName>
+                    <PillarScore $color={pillar.color}>
+                      {pillar.avgScore.toFixed(1)}
+                    </PillarScore>
+                  </PillarHeader>
+                  <PillarMetric>
+                    <span className="label">Assessments</span>
+                    <span className="value">{pillar.count}</span>
+                  </PillarMetric>
+                  <PillarMetric>
+                    <span className="label">Avg Gap</span>
+                    <span className="value">{pillar.avgGap.toFixed(1)}</span>
+                  </PillarMetric>
+                </PillarCard>
+              ))}
+            </PillarGrid>
+          </PillarPerformanceSection>
+        )}
+
+        {/* Insights & Key Trends */}
+        <InsightsSection>
+          <InsightCard>
+            <InsightHeader>
+              <InsightIcon $bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                <FiTrendingUp size={24} />
+              </InsightIcon>
+              <InsightTitle>Key Trends</InsightTitle>
+            </InsightHeader>
+            <InsightContent>
+              Analysis across all assessments reveals:
+              <InsightList>
+                <li>
+                  <strong>Platform & Governance</strong> shows highest avg score ({dashboardData?.pillarBreakdown?.[0]?.avgScore?.toFixed(1) || 'N/A'}/5.0)
+                </li>
+                <li>
+                  <strong>Generative AI</strong> pillar has largest improvement gap 
+                </li>
+                <li>
+                  {completionRate}% of started assessments reach completion
+                </li>
+                <li>
+                  Average time to complete: {dashboardData?.averageCompletionTime || 0} minutes
+                </li>
+              </InsightList>
+              <StatBadge $bg="#dcfce7" $color="#166534">
+                <FiTrendingUp size={14} />
+                {dashboardData?.completedAssessments || 0} completed assessments
+              </StatBadge>
+            </InsightContent>
+          </InsightCard>
+
+          <InsightCard>
+            <InsightHeader>
+              <InsightIcon $bg="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+                <FiTarget size={24} />
+              </InsightIcon>
+              <InsightTitle>Common Focus Areas</InsightTitle>
+            </InsightHeader>
+            <InsightContent>
+              Organizations prioritize:
+              <InsightList>
+                <li>
+                  <strong>Data Engineering & Integration</strong> - improving pipelines and workflows
+                </li>
+                <li>
+                  <strong>Generative AI adoption</strong> - exploring LLMs and AI agents
+                </li>
+                <li>
+                  <strong>Operational Excellence</strong> - enhancing monitoring and governance
+                </li>
+                <li>
+                  <strong>Analytics & BI</strong> - democratizing data access
+                </li>
+              </InsightList>
+              <StatBadge $bg="#fef3c7" $color="#92400e">
+                <FiZap size={14} />
+                Top improvement areas
+              </StatBadge>
+            </InsightContent>
+          </InsightCard>
+
+          <InsightCard>
+            <InsightHeader>
+              <InsightIcon $bg="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+                <FiAlertCircle size={24} />
+              </InsightIcon>
+              <InsightTitle>Industry Insights</InsightTitle>
+            </InsightHeader>
+            <InsightContent>
+              {industryBreakdown.length > 0 ? (
+                <>
+                  <p style={{ marginBottom: '12px' }}>
+                    <strong>{industryBreakdown[0]?.industry}</strong> leads with {industryBreakdown[0]?.count} assessments
+                  </p>
+                  <InsightList>
+                    <li>Financial Services: Focus on governance & compliance</li>
+                    <li>Technology: GenAI and ML adoption leaders</li>
+                    <li>Healthcare: Data engineering maturity growth</li>
+                    <li>Retail: Analytics & BI transformation</li>
+                  </InsightList>
+                  <StatBadge $bg="#dbeafe" $color="#1e40af">
+                    <FiGlobe size={14} />
+                    {industryBreakdown.length} industries represented
+                  </StatBadge>
+                </>
+              ) : (
+                <p>No industry data available yet.</p>
+              )}
+            </InsightContent>
+          </InsightCard>
+
+          <InsightCard>
+            <InsightHeader>
+              <InsightIcon $bg="linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+                <FiPieChart size={24} />
+              </InsightIcon>
+              <InsightTitle>Maturity Distribution</InsightTitle>
+            </InsightHeader>
+            <InsightContent>
+              <InsightList>
+                <li>
+                  <strong>Level 5 (Optimizing):</strong> {Math.round((dashboardData?.maturityDistribution?.level5 || 0) * 100)}% of organizations
+                </li>
+                <li>
+                  <strong>Level 4 (Managed):</strong> {Math.round((dashboardData?.maturityDistribution?.level4 || 0) * 100)}%
+                </li>
+                <li>
+                  <strong>Level 3 (Defined):</strong> {Math.round((dashboardData?.maturityDistribution?.level3 || 0.3) * 100)}%
+                </li>
+                <li>
+                  <strong>Level 1-2 (Exploring/Emerging):</strong> {Math.round((dashboardData?.maturityDistribution?.level12 || 0.5) * 100)}%
+                </li>
+              </InsightList>
+              <StatBadge $bg="#fce7f3" $color="#9f1239">
+                <FiActivity size={14} />
+                Average: {animatedAvgScore.toFixed(1)}/5.0
+              </StatBadge>
+            </InsightContent>
+          </InsightCard>
+        </InsightsSection>
+
+        {/* Recent Activity */}
+        {dashboardData?.recentAssessments && dashboardData.recentAssessments.length > 0 && (
+          <RecentActivitySection>
+            <SectionHeader>
+              <SectionTitle>
+                <FiActivity />
+                Recent Activity
+              </SectionTitle>
+            </SectionHeader>
+            <ActivityList>
+              {dashboardData.recentAssessments.slice(0, 8).map((assessment, index) => {
+                const timeAgo = getTimeAgo(assessment.startedAt);
+                const activityType = assessment.status === 'submitted' ? 'completed' : 'started';
+                const activityColor = activityType === 'completed' ? '#10b981' : '#3b82f6';
+                const ActivityIconComponent = activityType === 'completed' ? FiCheckCircle : FiPlay;
+                
+                return (
+                  <ActivityItem
+                    key={assessment.id}
+                    $color={activityColor}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    onClick={() => navigate(`/results/${assessment.id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <ActivityIcon $bg={activityColor}>
+                      <ActivityIconComponent size={20} />
+                    </ActivityIcon>
+                    <ActivityContent>
+                      <ActivityTitle>
+                        {assessment.organizationName || 'Anonymous Organization'} {activityType} assessment
+                      </ActivityTitle>
+                      <ActivityDetails>
+                        {assessment.industry} • 
+                        {assessment.status === 'submitted' && assessment.overallScore 
+                          ? ` Score: ${assessment.overallScore.toFixed(1)}/5.0` 
+                          : ' In Progress'}
+                      </ActivityDetails>
+                    </ActivityContent>
+                    <ActivityTime>{timeAgo}</ActivityTime>
+                  </ActivityItem>
+                );
+              })}
+            </ActivityList>
+          </RecentActivitySection>
+        )}
+
+        {/* Quick Actions */}
+        <SectionTitle style={{ marginBottom: '24px' }}>
+          <FiZap />
+          Quick Actions
+        </SectionTitle>
+        <QuickActionsGrid>
+          <QuickActionCard
+            onClick={() => navigate('/assessments')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <QuickActionIcon $bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+              <FiBarChart2 size={28} />
+            </QuickActionIcon>
+            <QuickActionLabel>View All Assessments</QuickActionLabel>
+            <QuickActionCount>{dashboardData?.totalAssessments || 0} total</QuickActionCount>
+          </QuickActionCard>
+
+          <QuickActionCard
+            onClick={() => navigate('/start')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <QuickActionIcon $bg="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+              <FiArrowRight size={28} />
+            </QuickActionIcon>
+            <QuickActionLabel>Start New Assessment</QuickActionLabel>
+            <QuickActionCount>Begin now</QuickActionCount>
+          </QuickActionCard>
+
+          <QuickActionCard
+            onClick={handleExport}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <QuickActionIcon $bg="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+              <FiDownload size={28} />
+            </QuickActionIcon>
+            <QuickActionLabel>Export All Data</QuickActionLabel>
+            <QuickActionCount>CSV/Excel</QuickActionCount>
+          </QuickActionCard>
+
+          <QuickActionCard
+            onClick={fetchDashboardData}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <QuickActionIcon $bg="linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+              <FiRefreshCw size={28} />
+            </QuickActionIcon>
+            <QuickActionLabel>Refresh Data</QuickActionLabel>
+            <QuickActionCount>Update now</QuickActionCount>
+          </QuickActionCard>
+        </QuickActionsGrid>
       </ContentContainer>
     </PageContainer>
   );
 };
+
+// Helper function to calculate time ago
+function getTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${diffDays}d ago`;
+}
 
 export default Dashboard;
 

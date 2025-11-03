@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiAward,
@@ -33,6 +33,55 @@ import {
   Cell
 } from 'recharts';
 
+// Global print styles to hide navigation and other UI elements
+const GlobalPrintStyles = createGlobalStyle`
+  @media print {
+    /* Hide navigation, headers, and action buttons */
+    nav,
+    header,
+    [class*="GlobalNav"],
+    [class*="PageHeader"],
+    [class*="BackButton"],
+    [class*="ActionButton"],
+    [class*="DownloadButton"] {
+      display: none !important;
+    }
+
+    /* Hide all fixed/sticky elements */
+    *[style*="position: fixed"],
+    *[style*="position: sticky"] {
+      position: static !important;
+    }
+
+    /* Reset body and page margins */
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+    }
+
+    /* Optimize print layout */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    /* Prevent page breaks inside important sections */
+    section,
+    [class*="Section"],
+    [class*="MetricsGrid"],
+    [class*="InsightCard"] {
+      page-break-inside: avoid;
+    }
+
+    /* Add page breaks between major sections */
+    [class*="Section"] {
+      page-break-after: auto;
+    }
+  }
+`;
+
 // ... (keeping all the styled components from before, adding more)
 
 const ReportContainer = styled(motion.div)`
@@ -41,6 +90,13 @@ const ReportContainer = styled(motion.div)`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin: 40px 0;
   overflow: hidden;
+
+  @media print {
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+    page-break-inside: avoid;
+  }
 `;
 
 const ReportHeader = styled.div`
@@ -59,6 +115,15 @@ const ReportHeader = styled.div`
     height: 500px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
+  }
+
+  @media print {
+    padding: 20px 40px;
+    page-break-after: avoid;
+    
+    &::before {
+      display: none;
+    }
   }
 `;
 
@@ -460,11 +525,13 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
   });
 
   return (
-    <ReportContainer
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
+    <>
+      <GlobalPrintStyles />
+      <ReportContainer
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
       {/* Report Header */}
       <ReportHeader>
         <BrandingLogo>DATABRICKS MATURITY ASSESSMENT</BrandingLogo>
@@ -841,6 +908,7 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
         </div>
       </Section>
     </ReportContainer>
+    </>
   );
 };
 
