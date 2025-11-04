@@ -1358,7 +1358,9 @@ const Dashboard = () => {
                 <PerformerScore>
                   <div className="score">
                     {activeTab === 'fastest'
-                      ? `${performer.completionTime || 'N/A'}min`
+                      ? (performer.completionTime !== null && performer.completionTime !== undefined 
+                          ? `${performer.completionTime}min` 
+                          : 'N/A')
                       : (performer.overallScore || 0).toFixed(1)
                     }
                   </div>

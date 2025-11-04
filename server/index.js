@@ -1965,7 +1965,11 @@ app.get('/api/dashboard/stats', async (req, res) => {
       .slice(0, 2)
       .map(a => ({
         name: a.organizationName || 'Unknown',
+        organizationName: a.organizationName || 'Unknown',
+        industry: a.industry || 'Not Specified',
+        startedAt: a.startedAt,
         assessmentId: a.id,
+        completionTime: parseFloat(a.completionTime.toFixed(1)), // 🔥 Include completionTime for frontend
         detail: `${a.completionTime.toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
       }));
     
