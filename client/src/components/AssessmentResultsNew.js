@@ -4746,9 +4746,41 @@ const AssessmentResultsNew = () => {
                   style={{ overflow: 'hidden' }}
                 >
             <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
-              {resultsData?.roadmap?.roadmapIntro || 
-               resultsData?.maturitySummary?.roadmapIntro || 
-               'This roadmap outlines short-, mid-, and long-term priorities across each pillar to achieve targeted maturity improvements.'}
+              {(() => {
+                // 🎯 Generate dynamic, specific roadmap intro based on actual data
+                const completedPillars = Object.keys(resultsData?.categoryDetails || {});
+                const totalGap = completedPillars.reduce((sum, pillarId) => {
+                  const pillar = resultsData.categoryDetails[pillarId];
+                  return sum + (pillar?.gap || 0);
+                }, 0);
+                const avgGap = completedPillars.length > 0 ? (totalGap / completedPillars.length).toFixed(1) : 0;
+                
+                // Find pillars with biggest gaps
+                const pillarGaps = completedPillars.map(pillarId => ({
+                  id: pillarId,
+                  name: resultsData.categoryDetails[pillarId]?.name || pillarId,
+                  gap: resultsData.categoryDetails[pillarId]?.gap || 0
+                })).sort((a, b) => b.gap - a.gap);
+                
+                const topPillars = pillarGaps.slice(0, 2).map(p => p.name).join(' and ');
+                const roadmapPhases = resultsData?.roadmap?.phases || [];
+                const totalActions = roadmapPhases.reduce((sum, phase) => sum + (phase.items?.length || 0), 0);
+                
+                // Count total recommendations
+                const totalRecs = Object.values(resultsData?.categoryDetails || {}).reduce((sum, pillar) => {
+                  return sum + (pillar?.recommendations?.length || 0);
+                }, 0);
+                
+                if (resultsData?.roadmap?.roadmapIntro) {
+                  return resultsData.roadmap.roadmapIntro;
+                }
+                
+                if (completedPillars.length === 0) {
+                  return 'Complete at least one pillar to see your personalized strategic roadmap.';
+                }
+                
+                return `Based on your ${completedPillars.length} completed pillar${completedPillars.length > 1 ? 's' : ''}, this ${roadmapPhases.length}-phase roadmap prioritizes ${totalActions} targeted actions to close an average ${avgGap}-point maturity gap. Focus areas: ${topPillars}, with ${totalRecs} specific Databricks feature recommendations to accelerate your data platform transformation.`;
+              })()}
             </p>
 
             <RoadmapPhases>
