@@ -1550,6 +1550,9 @@ const Dashboard = () => {
                 const activityColor = activityType === 'completed' ? '#10b981' : '#3b82f6';
                 const ActivityIconComponent = activityType === 'completed' ? FiCheckCircle : FiPlay;
                 
+                // 🚨 Check if this is sample data (IDs start with 'sample-')
+                const isSampleData = assessment.id?.startsWith('sample-');
+                
                 return (
                   <ActivityItem
                     key={assessment.id}
@@ -1557,8 +1560,8 @@ const Dashboard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    onClick={() => navigate(`/results/${assessment.id}`)}
-                    style={{ cursor: 'pointer' }}
+                    onClick={() => !isSampleData && navigate(`/results/${assessment.id}`)}
+                    style={{ cursor: isSampleData ? 'default' : 'pointer', opacity: isSampleData ? 0.7 : 1 }}
                   >
                     <ActivityIcon $bg={activityColor}>
                       <ActivityIconComponent size={20} />
