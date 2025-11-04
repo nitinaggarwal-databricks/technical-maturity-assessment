@@ -1100,25 +1100,35 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         console.log(`⚠️ OpenAI scores missing for ${area.id}, calculating from responses...`);
         let currentSum = 0;
         let futureSum = 0;
-        let questionCount = 0;
+        let answeredCount = 0;
+        let totalQuestions = 0;
         
         area.dimensions.forEach(dimension => {
           dimension.questions.forEach(question => {
             const currentKey = `${question.id}_current_state`;
             const futureKey = `${question.id}_future_state`;
+            const skippedKey = `${question.id}_skipped`;
             
-            if (assessment.responses[currentKey] !== undefined) {
-              currentSum += assessment.responses[currentKey];
-              futureSum += assessment.responses[futureKey] || assessment.responses[currentKey];
-              questionCount++;
+            // Count all non-skipped questions as part of the denominator
+            if (!assessment.responses[skippedKey]) {
+              totalQuestions++;
+              
+              // Only add to sum if actually answered
+              if (assessment.responses[currentKey] !== undefined) {
+                currentSum += assessment.responses[currentKey];
+                futureSum += assessment.responses[futureKey] || assessment.responses[currentKey];
+                answeredCount++;
+              }
             }
           });
         });
         
-        if (questionCount > 0) {
-          currentScore = currentSum / questionCount;
-          futureScore = futureSum / questionCount;
-          console.log(`✅ Calculated scores for ${area.id}: current=${currentScore.toFixed(2)}, future=${futureScore.toFixed(2)}`);
+        // FIX: Divide by total non-skipped questions, not just answered questions
+        // This ensures partial completion shows lower scores (e.g., 1/10 = 0.5, not 5/1 = 5.0)
+        if (totalQuestions > 0) {
+          currentScore = currentSum / totalQuestions;
+          futureScore = futureSum / totalQuestions;
+          console.log(`✅ Calculated scores for ${area.id}: answered=${answeredCount}/${totalQuestions}, current=${currentScore.toFixed(2)}, future=${futureScore.toFixed(2)}`);
         }
       }
       
@@ -1406,22 +1416,35 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
         areasWithResponses.push(area);
         
         // Calculate current and future scores
+        // FIX: Count total non-skipped questions, not just answered ones
         let currentTotal = 0;
         let futureTotal = 0;
-        let count = 0;
+        let answeredCount = 0;
+        let totalNonSkippedQuestions = 0;
+
+        // Count all questions in this area
+        area.dimensions.forEach(dimension => {
+          dimension.questions.forEach(question => {
+            const skippedKey = `${question.id}_skipped`;
+            if (!assessment.responses[skippedKey]) {
+              totalNonSkippedQuestions++;
+            }
+          });
+        });
 
         areaResponses.forEach(([qId, response]) => {
           if (response.currentState && !isNaN(response.currentState)) {
             currentTotal += parseFloat(response.currentState);
-            count++;
+            answeredCount++;
           }
           if (response.futureState && !isNaN(response.futureState)) {
             futureTotal += parseFloat(response.futureState);
           }
         });
 
-        const currentScore = count > 0 ? parseFloat((currentTotal / count).toFixed(1)) : 0;
-        const futureScore = count > 0 ? parseFloat((futureTotal / count).toFixed(1)) : 0;
+        // Divide by total non-skipped questions to reflect partial completion
+        const currentScore = totalNonSkippedQuestions > 0 ? parseFloat((currentTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
+        const futureScore = totalNonSkippedQuestions > 0 ? parseFloat((futureTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
         const gap = parseFloat((futureScore - currentScore).toFixed(1));
 
         pillarScores[area.id] = {
