@@ -1992,6 +1992,49 @@ app.get('/api/dashboard/stats', async (req, res) => {
         detail: `${a.stalledTime.toFixed(0)} hrs stalled • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
       }));
     
+    // 🚨 ADD MISSING FIELDS: industryBreakdown, pillarBreakdown, recentAssessments
+    const industryBreakdown = {};
+    allAssessments.forEach(a => {
+      const industry = a.industry || 'Not Specified';
+      if (!industryBreakdown[industry]) {
+        industryBreakdown[industry] = { count: 0, avgScore: 0, totalScore: 0 };
+      }
+      industryBreakdown[industry].count++;
+      const score = calcAvgMaturity([a]);
+      industryBreakdown[industry].totalScore += score;
+      industryBreakdown[industry].avgScore = industryBreakdown[industry].totalScore / industryBreakdown[industry].count;
+    });
+    
+    const pillarBreakdown = {};
+    pillarIds.forEach(pillarId => {
+      const pillarNames = {
+        'platform_governance': 'Platform & Governance',
+        'data_engineering': 'Data Engineering',
+        'analytics_bi': 'Analytics & BI',
+        'machine_learning': 'Machine Learning',
+        'generative_ai': 'Generative AI',
+        'operational_excellence': 'Operational Excellence'
+      };
+      pillarBreakdown[pillarId] = {
+        name: pillarNames[pillarId],
+        avgCurrent: pillarMaturityCurrent[pillarIds.indexOf(pillarId)],
+        avgTarget: pillarMaturityTarget[pillarIds.indexOf(pillarId)]
+      };
+    });
+    
+    const recentAssessmentsFormatted = allAssessments
+      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .slice(0, 10)
+      .map(a => ({
+        id: a.id,
+        organizationName: a.organizationName,
+        industry: a.industry,
+        status: a.status || 'in_progress',
+        startedAt: a.startedAt,
+        completedAt: a.completedAt,
+        overallScore: calcAvgMaturity([a])
+      }));
+    
     console.log('[Dashboard Stats] Calculations complete');
     
     res.json({
@@ -2018,7 +2061,11 @@ app.get('/api/dashboard/stats', async (req, res) => {
         customerPortfolio,
         fastest: fastest.length > 0 ? fastest : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
         improvement: improvementList.length > 0 ? improvementList : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
-        stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }]
+        stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }],
+        // 🚨 NEW FIELDS for frontend
+        industryBreakdown,
+        pillarBreakdown,
+        recentAssessments: recentAssessmentsFormatted
       }
     });
   } catch (error) {
