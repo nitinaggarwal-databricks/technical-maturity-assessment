@@ -3923,21 +3923,19 @@ const AssessmentResultsNew = () => {
                                   <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '8px', lineHeight: '1.4' }}>
                                     {displayFeature.description}
                                   </div>
-                                  {/* 🔥 NEW: Show WHY this feature is recommended */}
-                                  {displayFeature.reason && (
-                                    <div style={{ 
-                                      fontSize: '0.75rem', 
-                                      color: '#f59e0b', 
-                                      background: '#fef3c7',
-                                      padding: '8px 12px',
-                                      borderRadius: '6px',
-                                      marginBottom: '8px',
-                                      fontStyle: 'italic',
-                                      borderLeft: '3px solid #f59e0b'
-                                    }}>
-                                      <strong>Why recommended:</strong> {displayFeature.reason}
-                                    </div>
-                                  )}
+                                  {/* 🔥 ALWAYS Show WHY this feature is recommended */}
+                                  <div style={{ 
+                                    fontSize: '0.75rem', 
+                                    color: '#f59e0b', 
+                                    background: '#fef3c7',
+                                    padding: '8px 12px',
+                                    borderRadius: '6px',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic',
+                                    borderLeft: '3px solid #f59e0b'
+                                  }}>
+                                    <strong>Why recommended:</strong> {displayFeature.reason || `Recommended based on your ${pillar.name} maturity gap and pain points`}
+                                  </div>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
                                     {displayFeature.releaseDate && (
                                       <span style={{ color: '#10b981', fontWeight: 600 }}>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 
@@ -750,11 +750,14 @@ const GlobalNav = () => {
           <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
           <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
           <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
-          <NavLink onClick={() => navigate('/assessments')}>My Assessments</NavLink>
           <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
         </TopNav>
 
         <ActionButtons>
+          <SecondaryCTAButton onClick={() => navigate('/assessments')}>
+            <FiList size={14} />
+            My Assessments
+          </SecondaryCTAButton>
           <SecondaryCTAButton onClick={handleTrySample}>
             <FiPlay size={14} />
             Try Sample
@@ -776,8 +779,11 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavigate('/assessments')}>My Assessments</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/insights-dashboard')}>Dashboard</MobileNavLink>
+        <MobileSecondaryCTAButton onClick={() => handleNavigate('/assessments')}>
+          <FiList size={16} />
+          My Assessments
+        </MobileSecondaryCTAButton>
         <MobileSecondaryCTAButton onClick={handleTrySample}>
           <FiPlay size={16} />
           Try Sample Assessment
