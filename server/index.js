@@ -1720,7 +1720,12 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const activeCustomersTrend = recentCustomers - previousCustomers;
     
     // 3. AVERAGE COMPLETION TIME with trend
-    const completedAssessments = allAssessments.filter(a => a.completedAt);
+    // 🔥 FIX: Handle both completedAt and submittedAt, both startedAt and createdAt
+    const completedAssessments = allAssessments.filter(a => a.completedAt || a.submittedAt).map(a => ({
+      ...a,
+      completedAt: a.completedAt || a.submittedAt,
+      startedAt: a.startedAt || a.createdAt
+    }));
     const recentCompleted = completedAssessments.filter(a => 
       new Date(a.completedAt).getTime() >= thirtyDaysAgo
     );
@@ -1732,8 +1737,10 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const calcAvgTime = (assessments) => {
       if (assessments.length === 0) return 0;
       return assessments.reduce((sum, a) => {
-        const hours = (new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60);
-        return sum + hours;
+        const completed = new Date(a.completedAt || a.submittedAt);
+        const started = new Date(a.startedAt || a.createdAt);
+        const hours = (completed - started) / (1000 * 60 * 60);
+        return sum + (hours > 0 ? hours : 0);
       }, 0) / assessments.length;
     };
     
@@ -1868,7 +1875,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // 8. CUSTOMER PORTFOLIO with dynamic key gaps
     const customerPortfolio = allAssessments
-      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .sort((a, b) => new Date(b.startedAt || b.createdAt) - new Date(a.startedAt || a.createdAt))
       .slice(0, 10)
       .map(assessment => {
         const completion = Math.round((assessment.completedCategories?.length || 0) / 6 * 100);
@@ -1979,10 +1986,10 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // 11. STALLED ASSESSMENTS (not completed, oldest first)
     const stalled = allAssessments
-      .filter(a => !a.completedAt)
+      .filter(a => !a.completedAt && !a.submittedAt)
       .map(a => ({
         ...a,
-        stalledTime: (now - new Date(a.startedAt).getTime()) / (1000 * 60 * 60)
+        stalledTime: (now - new Date(a.startedAt || a.createdAt).getTime()) / (1000 * 60 * 60)
       }))
       .sort((a, b) => b.stalledTime - a.stalledTime)
       .slice(0, 2)
@@ -2023,15 +2030,15 @@ app.get('/api/dashboard/stats', async (req, res) => {
     });
     
     const recentAssessmentsFormatted = allAssessments
-      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .sort((a, b) => new Date(b.startedAt || b.createdAt) - new Date(a.startedAt || a.createdAt))
       .slice(0, 10)
       .map(a => ({
         id: a.id,
         organizationName: a.organizationName,
         industry: a.industry,
         status: a.status || 'in_progress',
-        startedAt: a.startedAt,
-        completedAt: a.completedAt,
+        startedAt: a.startedAt || a.createdAt,
+        completedAt: a.completedAt || a.submittedAt,
         overallScore: calcAvgMaturity([a])
       }));
     
