@@ -2350,12 +2350,61 @@ const AssessmentResultsNew = () => {
   };
   
   const showStaleDataWarning = hasGenericContent();
+  
+  // 🚨 CHECK: Are there any fully completed pillars?
+  const completedPillars = resultsData?.assessmentInfo?.completedPillars || 0;
+  const hasNoCompletedPillars = completedPillars === 0;
 
   return (
     <PageContainer>
       <ReportContainer>
+        {/* 🚨 NO COMPLETED PILLARS WARNING */}
+        {hasNoCompletedPillars && (
+          <div style={{
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: 'white',
+            padding: '32px 24px',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '20px',
+            boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)'
+          }}>
+            <FiAlertTriangle size={48} style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '12px' }}>
+                ⚠️ No Results Available Yet
+              </div>
+              <div style={{ fontSize: '1.125rem', opacity: 0.95, marginBottom: '8px' }}>
+                You need to <strong>fully complete at least one pillar</strong> (answer or skip all questions) before we can generate meaningful recommendations, strategic roadmaps, and insights.
+              </div>
+              <div style={{ fontSize: '1rem', opacity: 0.9 }}>
+                <strong>Current Progress:</strong> {resultsData?.assessmentInfo?.questionsAnswered || 0} of {resultsData?.assessmentInfo?.totalQuestions || 60} questions addressed ({resultsData?.assessmentInfo?.completionPercentage || 0}%)
+              </div>
+            </div>
+            <button
+              onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+              style={{
+                background: 'white',
+                color: '#ef4444',
+                border: 'none',
+                padding: '16px 28px',
+                borderRadius: '10px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontSize: '1.063rem',
+                flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              Continue Assessment →
+            </button>
+          </div>
+        )}
+        
         {/* Stale Data Warning */}
-        {showStaleDataWarning && (
+        {!hasNoCompletedPillars && showStaleDataWarning && (
           <div style={{
             background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
             color: '#6b7280',
@@ -2396,7 +2445,7 @@ const AssessmentResultsNew = () => {
           </div>
         )}
         
-        {/* Header */}
+        {/* Header - Always show */}
         <ReportHeader>
           <HeaderTop>
             <TitleSection>
@@ -2455,6 +2504,9 @@ const AssessmentResultsNew = () => {
           </HeaderTop>
         </ReportHeader>
 
+        {/* 🚨 ONLY SHOW RESULTS IF AT LEAST ONE PILLAR IS FULLY COMPLETED */}
+        {!hasNoCompletedPillars && (
+          <>
         <ReportHeader>
           <MaturityOverview>
             <MaturityCard $iconBg="rgba(59, 130, 246, 0.3)">
@@ -5283,6 +5335,9 @@ const AssessmentResultsNew = () => {
           </ImpactSection>
 
         </ReportBody>
+          </>
+        )}
+        {/* End of conditional results rendering */}
       </ReportContainer>
     </PageContainer>
   );

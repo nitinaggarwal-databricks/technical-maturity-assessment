@@ -1087,7 +1087,32 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('🔍 DEBUG: recommendations.areaScores:', JSON.stringify(recommendations.areaScores, null, 2));
     console.log('🔍 DEBUG: areasWithResponses:', areasWithResponses.map(a => a.id));
     
-    areasWithResponses.forEach(area => {
+    // 🚨 NEW: Filter to only FULLY COMPLETED pillars (all questions answered or skipped)
+    const fullyCompletedAreas = areasWithResponses.filter(area => {
+      let totalQuestions = 0;
+      let addressedQuestions = 0; // answered or skipped
+      
+      area.dimensions.forEach(dimension => {
+        dimension.questions.forEach(question => {
+          totalQuestions++;
+          const currentKey = `${question.id}_current_state`;
+          const skippedKey = `${question.id}_skipped`;
+          
+          if (assessment.responses[currentKey] !== undefined || assessment.responses[skippedKey]) {
+            addressedQuestions++;
+          }
+        });
+      });
+      
+      const isFullyCompleted = addressedQuestions === totalQuestions;
+      console.log(`📊 Pillar ${area.id}: ${addressedQuestions}/${totalQuestions} questions addressed - ${isFullyCompleted ? '✅ COMPLETE' : '⏸️ PARTIAL (excluded)'}`);
+      return isFullyCompleted;
+    });
+    
+    console.log(`✅ Fully completed pillars: ${fullyCompletedAreas.length}/${areasWithResponses.length}`);
+    
+    // Only process fully completed pillars
+    fullyCompletedAreas.forEach(area => {
       const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
       console.log(`🔍 DEBUG: Area ${area.id} - areaScore from recommendations:`, areaScore);
       
@@ -1279,6 +1304,40 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       console.log(`✅ Maturity summary generated: ${maturitySummary.current.level} → ${maturitySummary.target.level}`);
     }
 
+    // 🚨 RECALCULATE overall score using ONLY fully completed pillars
+    if (fullyCompletedAreas.length > 0) {
+      const completedPillarScores = fullyCompletedAreas.map(area => {
+        const detail = categoryDetails[area.id];
+        return {
+          current: detail?.currentScore || 0,
+          future: detail?.futureScore || 0
+        };
+      });
+      
+      const avgCurrent = completedPillarScores.reduce((sum, s) => sum + s.current, 0) / completedPillarScores.length;
+      const avgFuture = completedPillarScores.reduce((sum, s) => sum + s.future, 0) / completedPillarScores.length;
+      
+      recommendations.overall = {
+        currentScore: parseFloat(avgCurrent.toFixed(1)),
+        futureScore: parseFloat(avgFuture.toFixed(1)),
+        gap: parseFloat((avgFuture - avgCurrent).toFixed(1)),
+        level: avgCurrent < 2 ? 'Initial' : avgCurrent < 3 ? 'Developing' : avgCurrent < 4 ? 'Defined' : avgCurrent < 4.5 ? 'Advanced' : 'Optimized',
+        summary: `Based on ${fullyCompletedAreas.length} completed pillar(s)`
+      };
+      
+      console.log(`✅ Overall score recalculated from ${fullyCompletedAreas.length} fully completed pillars: ${avgCurrent.toFixed(1)} → ${avgFuture.toFixed(1)}`);
+    } else {
+      // No fully completed pillars - return empty/minimal results
+      recommendations.overall = {
+        currentScore: 0,
+        futureScore: 0,
+        gap: 0,
+        level: 'Not Started',
+        summary: 'No pillars fully completed yet. Complete all questions in at least one pillar to see results.'
+      };
+      console.log(`⚠️ No fully completed pillars - returning minimal results`);
+    }
+
     const results = {
       assessmentInfo: {
         id: assessment.id,
@@ -1289,8 +1348,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         industry: assessment.industry,
         completedAt: assessment.completedAt,
         startedAt: assessment.startedAt,
-        isPartialAssessment: areasWithResponses.length < assessmentFramework.assessmentAreas.length || assessment.completedCategories.length < assessmentFramework.assessmentAreas.length,
-        completedPillars: assessment.completedCategories.length,
+        isPartialAssessment: fullyCompletedAreas.length < assessmentFramework.assessmentAreas.length,
+        completedPillars: fullyCompletedAreas.length, // 🚨 Changed to fully completed count
         totalPillars: assessmentFramework.assessmentAreas.length,
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,

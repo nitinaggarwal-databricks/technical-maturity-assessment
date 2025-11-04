@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiDownload, FiShare2 } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
@@ -257,6 +257,10 @@ const ExecutiveCommandCenter = () => {
     );
   }
 
+  // 🚨 CHECK: Are there any fully completed pillars?
+  const completedPillars = results?.assessmentInfo?.completedPillars || 0;
+  const hasNoCompletedPillars = completedPillars === 0;
+
   return (
     <PageContainer>
       <PageHeader>
@@ -290,32 +294,71 @@ const ExecutiveCommandCenter = () => {
       </PageHeader>
 
       <ContentContainer>
-        {/* Executive Dashboard */}
-        <ExecutiveDashboard 
-          results={results} 
-          assessment={results?.assessmentInfo}
-        />
+        {/* 🚨 Show warning if no completed pillars */}
+        {hasNoCompletedPillars ? (
+          <div style={{
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: 'white',
+            padding: '48px 32px',
+            borderRadius: '16px',
+            textAlign: 'center',
+            maxWidth: '800px',
+            margin: '80px auto'
+          }}>
+            <FiAlertTriangle size={64} style={{ marginBottom: '24px' }} />
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '16px' }}>
+              Executive Command Center Unavailable
+            </h2>
+            <p style={{ fontSize: '1.25rem', opacity: 0.95, marginBottom: '32px' }}>
+              Complete at least one pillar (answer or skip all questions) to access executive dashboards, ROI calculations, and strategic insights.
+            </p>
+            <button
+              onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+              style={{
+                background: 'white',
+                color: '#ef4444',
+                border: 'none',
+                padding: '16px 32px',
+                borderRadius: '10px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontSize: '1.125rem',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              Continue Assessment →
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Executive Dashboard */}
+            <ExecutiveDashboard 
+              results={results} 
+              assessment={results?.assessmentInfo}
+            />
 
-        {/* ROI Calculator */}
-        <ROICalculator 
-          results={results} 
-          assessment={results?.assessmentInfo}
-        />
+            {/* ROI Calculator */}
+            <ROICalculator 
+              results={results} 
+              assessment={results?.assessmentInfo}
+            />
 
-        {/* Risk Heatmap */}
-        <RiskHeatmap 
-          results={results} 
-          assessment={results?.assessmentInfo}
-        />
+            {/* Risk Heatmap */}
+            <RiskHeatmap 
+              results={results} 
+              assessment={results?.assessmentInfo}
+            />
 
-        {/* Industry Benchmarking Report */}
-        {benchmarkData && (
-          <IndustryBenchmarkingReport
-            assessment={results?.assessmentInfo}
-            benchmarkData={benchmarkData}
-            overallScore={results?.overall?.currentScore || results?.overallScore || 0}
-            pillarScores={results?.categoryDetails || {}}
-          />
+            {/* Industry Benchmarking Report */}
+            {benchmarkData && (
+              <IndustryBenchmarkingReport
+                assessment={results?.assessmentInfo}
+                benchmarkData={benchmarkData}
+                overallScore={results?.overall?.currentScore || results?.overallScore || 0}
+                pillarScores={results?.categoryDetails || {}}
+              />
+            )}
+          </>
         )}
       </ContentContainer>
     </PageContainer>
