@@ -2053,6 +2053,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
       data: {
         totalAssessments,
         totalAssessmentsTrend,
+        completedAssessments: completedAssessments.length, // 🔥 FIX: Add completed assessments count
         activeCustomers,
         activeCustomersTrend,
         avgCompletionTime: avgCompletionTime > 0 ? avgCompletionTime.toFixed(1) : '0.0',
