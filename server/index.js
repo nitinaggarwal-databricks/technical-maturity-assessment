@@ -1479,41 +1479,39 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
     const areasWithResponses = [];
     
     for (const area of assessmentFramework.assessmentAreas) {
-      const areaResponses = Object.entries(assessment.responses).filter(([qId]) => {
-        const question = area.dimensions.flatMap(d => d.questions).find(q => q.id === qId);
-        return question !== undefined;
+      // Calculate current and future scores
+      let currentTotal = 0;
+      let futureTotal = 0;
+      let answeredCount = 0;
+      let totalNonSkippedQuestions = 0;
+
+      // Count all questions in this area and calculate scores
+      area.dimensions.forEach(dimension => {
+        dimension.questions.forEach(question => {
+          const currentKey = `${question.id}_current_state`;
+          const futureKey = `${question.id}_future_state`;
+          const skippedKey = `${question.id}_skipped`;
+          
+          // Count non-skipped questions
+          if (!assessment.responses[skippedKey]) {
+            totalNonSkippedQuestions++;
+            
+            // Add to totals if answered
+            if (assessment.responses[currentKey] !== undefined) {
+              currentTotal += parseFloat(assessment.responses[currentKey]);
+              answeredCount++;
+            }
+            if (assessment.responses[futureKey] !== undefined) {
+              futureTotal += parseFloat(assessment.responses[futureKey]);
+            }
+          }
+        });
       });
 
-      if (areaResponses.length > 0) {
+      // Only include pillar if it has responses
+      if (answeredCount > 0) {
         areasWithResponses.push(area);
         
-        // Calculate current and future scores
-        // FIX: Count total non-skipped questions, not just answered ones
-        let currentTotal = 0;
-        let futureTotal = 0;
-        let answeredCount = 0;
-        let totalNonSkippedQuestions = 0;
-
-        // Count all questions in this area
-        area.dimensions.forEach(dimension => {
-          dimension.questions.forEach(question => {
-            const skippedKey = `${question.id}_skipped`;
-            if (!assessment.responses[skippedKey]) {
-              totalNonSkippedQuestions++;
-            }
-          });
-        });
-
-        areaResponses.forEach(([qId, response]) => {
-          if (response.currentState && !isNaN(response.currentState)) {
-            currentTotal += parseFloat(response.currentState);
-            answeredCount++;
-          }
-          if (response.futureState && !isNaN(response.futureState)) {
-            futureTotal += parseFloat(response.futureState);
-          }
-        });
-
         // Divide by total non-skipped questions to reflect partial completion
         const currentScore = totalNonSkippedQuestions > 0 ? parseFloat((currentTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
         const futureScore = totalNonSkippedQuestions > 0 ? parseFloat((futureTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
@@ -1523,7 +1521,7 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
           currentScore,
           futureScore,
           gap,
-          responseCount: count
+          responseCount: answeredCount
         };
       }
     }
