@@ -38,6 +38,27 @@ const DashboardContainer = styled.div`
   @media (max-width: 768px) {
     padding: 32px 24px;
   }
+
+  /* 🖨️ PRINT: Keep entire component together */
+  @media print {
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    page-break-before: auto !important;
+    page-break-after: auto !important;
+    margin-bottom: 20px !important;
+    padding: 32px !important;
+    background: white !important;
+    border: 2px solid #667eea !important;
+    
+    &::before {
+      display: none !important;
+    }
+    
+    /* Preserve colors in print */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 `;
 
 const DashboardHeader = styled.div`

@@ -39,14 +39,30 @@ const PrintStyles = styled.div`
     color-adjust: exact !important;
     
     /* Hide navigation and action buttons */
-    nav, button:not(.print-visible), .no-print {
+    nav, button:not(.print-visible), .no-print, header, [class*="GlobalNav"], [class*="ActionButton"] {
       display: none !important;
     }
     
-    /* Optimize page breaks */
-    * {
+    /* 🚨 CRITICAL: Keep ALL sections together - NO splits across pages */
+    section,
+    div[style*="background"],
+    div[style*="border"],
+    div[style*="box-shadow"],
+    [class*="Section"],
+    [class*="Card"],
+    [class*="Container"],
+    [class*="Grid"],
+    [class*="Panel"] {
       page-break-inside: avoid !important;
-      break-inside: avoid !important;
+      break-inside: avoid-page !important;
+      page-break-before: auto !important;
+      page-break-after: auto !important;
+    }
+    
+    /* Headings stay with content */
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid !important;
+      break-after: avoid-page !important;
     }
     
     /* Full width for print */
@@ -104,6 +120,8 @@ const ReportContainer = styled.div`
     border-radius: 0 !important;
     max-width: 100% !important;
     margin: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
   }
 `;
 

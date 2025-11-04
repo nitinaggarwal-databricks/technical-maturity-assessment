@@ -29,6 +29,18 @@ const CalculatorContainer = styled.div`
   @media (max-width: 768px) {
     padding: 24px;
   }
+
+  /* 🖨️ PRINT: Keep entire component together */
+  @media print {
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    page-break-before: auto !important;
+    page-break-after: auto !important;
+    margin-bottom: 20px !important;
+    padding: 24px !important;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
 `;
 
 const CalculatorHeader = styled.div`

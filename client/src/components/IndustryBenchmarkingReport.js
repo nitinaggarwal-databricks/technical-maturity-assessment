@@ -67,17 +67,24 @@ const GlobalPrintStyles = createGlobalStyle`
       color-adjust: exact !important;
     }
 
-    /* Prevent page breaks inside important sections */
+    /* 🚨 CRITICAL: Prevent page breaks inside ANY component */
     section,
     [class*="Section"],
     [class*="MetricsGrid"],
-    [class*="InsightCard"] {
-      page-break-inside: avoid;
+    [class*="InsightCard"],
+    [class*="Card"],
+    [class*="Container"],
+    div[style*="background"],
+    div[style*="border"],
+    div[style*="padding"] {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
     }
 
-    /* Add page breaks between major sections */
+    /* Major sections can break to new page if needed */
     [class*="Section"] {
-      page-break-after: auto;
+      page-break-before: auto !important;
+      page-break-after: auto !important;
     }
   }
 `;
