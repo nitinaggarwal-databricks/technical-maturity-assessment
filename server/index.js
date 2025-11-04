@@ -2036,15 +2036,27 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const recentAssessmentsFormatted = allAssessments
       .sort((a, b) => new Date(b.startedAt || b.createdAt) - new Date(a.startedAt || a.createdAt))
       .slice(0, 10)
-      .map(a => ({
-        id: a.id,
-        organizationName: a.organizationName,
-        industry: a.industry,
-        status: a.status || 'in_progress',
-        startedAt: a.startedAt || a.createdAt,
-        completedAt: a.completedAt || a.submittedAt,
-        overallScore: calcAvgMaturity([a])
-      }));
+      .map(a => {
+        // Calculate completion time if assessment is completed
+        let completionTime = null;
+        if (a.completedAt || a.submittedAt) {
+          const completed = new Date(a.completedAt || a.submittedAt);
+          const started = new Date(a.startedAt || a.createdAt);
+          const hours = (completed - started) / (1000 * 60 * 60);
+          completionTime = hours > 0 ? parseFloat(hours.toFixed(1)) : 0.0;
+        }
+        
+        return {
+          id: a.id,
+          organizationName: a.organizationName,
+          industry: a.industry,
+          status: a.status || 'in_progress',
+          startedAt: a.startedAt || a.createdAt,
+          completedAt: a.completedAt || a.submittedAt,
+          overallScore: calcAvgMaturity([a]),
+          completionTime // 🔥 FIX: Add completion time for Top Performers
+        };
+      });
     
     console.log('[Dashboard Stats] Calculations complete');
     
