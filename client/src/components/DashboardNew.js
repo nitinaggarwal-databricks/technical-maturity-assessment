@@ -950,11 +950,32 @@ const Dashboard = () => {
       
       // If no data or no meaningful scores, use sample data
       const avgScore = parseFloat(data?.avgMaturityLevel || '0');
-      if (!data || data.totalAssessments === 0 || avgScore === 0) {
-        console.log('[Dashboard] No meaningful data (totalAssessments:', data?.totalAssessments, 'avgScore:', avgScore, '), using sample data');
+      const totalAssessments = parseInt(data?.totalAssessments || '0');
+      
+      // 🚨 Use sample data if:
+      // - No assessments exist, OR
+      // - Average score is 0 (no completed pillars), OR
+      // - Missing required fields (industryBreakdown, pillarBreakdown, etc.)
+      const hasInsufficientData = 
+        !data || 
+        totalAssessments === 0 || 
+        avgScore === 0 ||
+        !data.industryBreakdown ||
+        !data.pillarBreakdown ||
+        !data.recentAssessments;
+      
+      if (hasInsufficientData) {
+        console.log('[Dashboard] Insufficient data detected:', {
+          totalAssessments,
+          avgScore,
+          hasIndustryBreakdown: !!data?.industryBreakdown,
+          hasPillarBreakdown: !!data?.pillarBreakdown,
+          hasRecentAssessments: !!data?.recentAssessments
+        });
+        console.log('[Dashboard] Using sample data for better UX');
         setDashboardData(getSampleDashboardData());
       } else {
-        console.log('[Dashboard] Using real data (totalAssessments:', data.totalAssessments, 'avgScore:', avgScore, ')');
+        console.log('[Dashboard] Using real data (totalAssessments:', totalAssessments, 'avgScore:', avgScore, ')');
         setDashboardData(data);
       }
     } catch (error) {
