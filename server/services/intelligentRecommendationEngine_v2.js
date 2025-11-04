@@ -1260,6 +1260,7 @@ class IntelligentRecommendationEngine {
     ];
     
     // Match our pain-point-specific features with detailed info from mapper
+    // 🔥 ALSO ADD "WHY" REASON FOR EACH FEATURE (like we do in database path)
     featureArray.forEach(featureName => {
       const detailedFeature = allMapperFeatures.find(f => 
         f.name && (
@@ -1268,19 +1269,49 @@ class IntelligentRecommendationEngine {
         )
       );
       
+      // Find which pain point this feature addresses
+      const matchingPainPoint = painPoints.find(pp => {
+        const relevantFeatures = featureMap[pp.value] || [];
+        return relevantFeatures.some(f => 
+          f.toLowerCase().includes(featureName.toLowerCase()) ||
+          featureName.toLowerCase().includes(f.toLowerCase())
+        );
+      });
+      
+      // Build the "WHY" reason
+      let reason = '';
+      if (matchingPainPoint) {
+        reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
+      } else {
+        // Fallback to pillar-specific context
+        const pillarContextMap = {
+          'platform_governance': 'Improves governance, security, and compliance',
+          'data_engineering': 'Enhances data pipeline reliability and quality',
+          'analytics_bi': 'Accelerates analytics and insights delivery',
+          'machine_learning': 'Streamlines ML model development and deployment',
+          'generative_ai': 'Enables GenAI applications with governance',
+          'operational_excellence': 'Improves monitoring, cost control, and collaboration'
+        };
+        reason = pillarContextMap[pillarId] || 'Recommended for improving platform maturity';
+      }
+      
       if (detailedFeature) {
-        featureDetails.push(detailedFeature);
+        featureDetails.push({
+          ...detailedFeature,
+          reason: reason // 🔥 ADD REASON
+        });
       } else {
         // Create basic feature object without docs link
         featureDetails.push({
           name: featureName,
           description: this.getFeatureDescription(featureName),
-          benefits: this.getFeatureBenefits(featureName)
+          benefits: this.getFeatureBenefits(featureName),
+          reason: reason // 🔥 ADD REASON
         });
       }
     });
     
-    console.log(`[mapPainPointsToFeatures] ${pillarId}: ${painPoints.length} pain points → ${features.size} unique features → ${featureDetails.length} with details`);
+    console.log(`[mapPainPointsToFeatures] ${pillarId}: ${painPoints.length} pain points → ${features.size} unique features → ${featureDetails.length} with details (all with reasons)`);
     
     return featureDetails;
   }

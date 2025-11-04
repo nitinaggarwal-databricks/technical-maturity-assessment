@@ -1222,55 +1222,68 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('🧠 Generating intelligent, customer-specific recommendations...');
     const intelligentEngine = new IntelligentRecommendationEngine();
     
+    // 🚨 FIX: Generate intelligent recommendations for EACH COMPLETED PILLAR and populate categoryDetails
+    for (const area of fullyCompletedAreas) {
+      const pillarId = area.id;
+      const pillarMaturity = categoryDetails[pillarId]?.score || 3;
+      
+      console.log(`🧠 Analyzing pillar: ${pillarId} (maturity: ${pillarMaturity})`);
+      
+      // Get the pillar framework data to pass actual question IDs
+      const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+      
+      // Generate intelligent, customer-specific recommendations (NOW WITH DATABASE! 🚀)
+      const intelligentRecs = await intelligentEngine.generateRecommendations(
+        assessment,
+        pillarId,
+        pillarFramework
+      );
+      
+      console.log(`✅ Found ${intelligentRecs.recommendations.length} intelligent recommendations for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.nextSteps.length} customer-specific next steps for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.databricksFeatures.length} Databricks features for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.theGood.length} strengths and ${intelligentRecs.theBad.length} challenges for ${pillarId}`);
+      
+      // 🚨 CRITICAL FIX: Populate categoryDetails with intelligent recommendations
+      if (categoryDetails[pillarId]) {
+        categoryDetails[pillarId].theGood = intelligentRecs.theGood || [];
+        categoryDetails[pillarId].theBad = intelligentRecs.theBad || [];
+        categoryDetails[pillarId].recommendations = intelligentRecs.recommendations || [];
+        categoryDetails[pillarId].nextSteps = intelligentRecs.nextSteps || [];
+        categoryDetails[pillarId].databricksFeatures = intelligentRecs.databricksFeatures || [];
+        categoryDetails[pillarId].painPoints = intelligentRecs.theBad || []; // Alias for backward compatibility
+        categoryDetails[pillarId]._intelligentEngine = true;
+        categoryDetails[pillarId]._painPointsAnalyzed = intelligentRecs.theBad?.length || 0;
+        categoryDetails[pillarId]._strengthsIdentified = intelligentRecs.theGood?.length || 0;
+      }
+    }
+    
     // Enhance each pillar's prioritizedActions with intelligent, customer-specific recommendations
     if (recommendations.prioritizedActions && Array.isArray(recommendations.prioritizedActions)) {
       recommendations.prioritizedActions = await Promise.all(recommendations.prioritizedActions.map(async (action) => {
         const pillarId = action.pillarId || action.area || action.pillar;
-        const pillarMaturity = categoryDetails[pillarId]?.score || 3;
         
-        console.log(`🧠 Analyzing pillar: ${pillarId} (maturity: ${pillarMaturity})`);
-        
-        // Get the pillar framework data to pass actual question IDs
-        const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
-        
-        // Generate intelligent, customer-specific recommendations (NOW WITH DATABASE! 🚀)
-        const intelligentRecs = await intelligentEngine.generateRecommendations(
-          assessment,
-          pillarId,
-          pillarFramework
-        );
-        
-        console.log(`✅ Found ${intelligentRecs.recommendations.length} intelligent recommendations for ${pillarId}`);
-        console.log(`✅ Found ${intelligentRecs.nextSteps.length} customer-specific next steps for ${pillarId}`);
-        console.log(`🔍 DEBUG - intelligentRecs.nextSteps for ${pillarId}:`, JSON.stringify(intelligentRecs.nextSteps.slice(0, 2), null, 2));
-        
-        // DEBUG: Log intelligent recommendations
-        if (intelligentRecs.recommendations.length > 0) {
-          console.log(`📝 Intelligent recommendations for ${pillarId}:`, intelligentRecs.recommendations.slice(0, 1));
+        // Use the intelligent recommendations we already generated for categoryDetails
+        const pillarDetails = categoryDetails[pillarId];
+        if (pillarDetails && pillarDetails._intelligentEngine) {
+          console.log(`✅ Using cached intelligent recommendations for ${pillarId} in prioritizedActions`);
+          return {
+            ...action,
+            theGood: pillarDetails.theGood || [],
+            theBad: pillarDetails.theBad || [],
+            recommendations: pillarDetails.recommendations || [],
+            nextSteps: pillarDetails.nextSteps || [],
+            specificRecommendations: pillarDetails.nextSteps || [],
+            databricksFeatures: pillarDetails.databricksFeatures || [],
+            _intelligentEngine: true,
+            _painPointsAnalyzed: pillarDetails._painPointsAnalyzed || 0,
+            _strengthsIdentified: pillarDetails._strengthsIdentified || 0
+          };
         }
         
-        // Replace generic recommendations with intelligent, customer-specific ones
-        // ALWAYS use intelligent engine results, never fall back to old action data
-        return {
-          ...action,
-          // Override with intelligent recommendations based on actual pain points and comments
-          theGood: intelligentRecs.theGood || [],
-          theBad: intelligentRecs.theBad || [],
-          recommendations: intelligentRecs.recommendations || [],
-          nextSteps: intelligentRecs.nextSteps || [], // ✅ FIX: Use nextSteps (not specificRecommendations)
-          specificRecommendations: intelligentRecs.nextSteps || [], // Keep for backward compatibility
-          databricksFeatures: intelligentRecs.databricksFeatures || [],
-          _intelligentEngine: true,
-          _painPointsAnalyzed: intelligentRecs.theBad?.length || 0,
-          _strengthsIdentified: intelligentRecs.theGood?.length || 0,
-          _debugNextSteps: {
-            count: intelligentRecs.nextSteps?.length || 0,
-            first: intelligentRecs.nextSteps?.[0] || null,
-            second: intelligentRecs.nextSteps?.[1] || null,
-            source: 'intelligentEngine.generateRecommendations',
-            wasEmpty: !intelligentRecs.nextSteps || intelligentRecs.nextSteps.length === 0
-          }
-        };
+        // Fallback if pillar not in categoryDetails (shouldn't happen)
+        console.warn(`⚠️ Pillar ${pillarId} not found in categoryDetails, skipping intelligent recommendations`);
+        return action;
       }));
       
       // 🗺️ GENERATE DYNAMIC STRATEGIC ROADMAP based on prioritized actions
