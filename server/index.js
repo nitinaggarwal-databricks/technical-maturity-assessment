@@ -2634,6 +2634,239 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
   }
 });
 
+// ============================================
+// AUDIT TRAIL ENDPOINTS
+// ============================================
+
+// Get audit trail for an assessment
+app.get('/api/assessment/:id/audit-trail', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit = 100, offset = 0 } = req.query;
+    
+    const assessment = await assessments.get(id);
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    // Build audit trail from edit_history and responses
+    const auditEvents = [];
+    
+    // 1. Assessment creation event
+    auditEvents.push({
+      id: 'event_created',
+      eventType: 'assessment_created',
+      timestamp: assessment.startedAt || assessment.createdAt,
+      userEmail: assessment.contactEmail,
+      userName: assessment.contactName || 'System',
+      changes: {
+        assessmentName: { to: assessment.assessmentName },
+        organizationName: { to: assessment.organizationName },
+        industry: { to: assessment.industry }
+      },
+      impact: {
+        reportCreated: true,
+        dashboardAvailable: false
+      },
+      afterSnapshot: {
+        status: 'in_progress',
+        progress: 0,
+        completedCategories: [],
+        responseCount: 0
+      }
+    });
+    
+    // 2. Add events from edit_history
+    if (assessment.editHistory && Array.isArray(assessment.editHistory)) {
+      assessment.editHistory.forEach((edit, index) => {
+        auditEvents.push({
+          id: `event_edit_${index}`,
+          eventType: 'metadata_updated',
+          timestamp: edit.timestamp,
+          userEmail: edit.editorEmail || edit.editor || assessment.contactEmail,
+          userName: edit.editorName || 'User',
+          changes: edit.changes || {},
+          impact: {
+            reportHeaderChanged: !!(edit.changes.organizationName || edit.changes.assessmentName),
+            benchmarkingChanged: !!edit.changes.industry
+          }
+        });
+      });
+    }
+    
+    // 3. Track response changes (group by pillar completion)
+    const responsesByPillar = {};
+    Object.keys(assessment.responses || {}).forEach(key => {
+      if (key.includes('_skipped') || key.includes('_comment')) return;
+      
+      // Extract pillar from question ID
+      const questionId = key.split('_current_state')[0].split('_future_state')[0].split('_technical_pain')[0].split('_business_pain')[0];
+      const pillar = assessmentFramework.assessmentAreas.find(area => 
+        area.dimensions.some(dim => 
+          dim.questions.some(q => q.id === questionId)
+        )
+      );
+      
+      if (pillar) {
+        if (!responsesByPillar[pillar.id]) {
+          responsesByPillar[pillar.id] = {
+            pillarName: pillar.name,
+            responses: []
+          };
+        }
+        responsesByPillar[pillar.id].responses.push(key);
+      }
+    });
+    
+    // 4. Add pillar completion events
+    (assessment.completedCategories || []).forEach((pillarId, index) => {
+      const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+      const pillarData = responsesByPillar[pillarId] || { responses: [] };
+      
+      auditEvents.push({
+        id: `event_pillar_${pillarId}`,
+        eventType: 'pillar_completed',
+        timestamp: assessment.lastModified || assessment.updatedAt || assessment.startedAt,
+        userEmail: assessment.lastEditor || assessment.contactEmail,
+        userName: assessment.lastEditorName || 'User',
+        changes: {
+          completedCategories: {
+            from: index,
+            to: index + 1
+          },
+          pillar: {
+            id: pillarId,
+            name: pillar?.name || pillarId
+          }
+        },
+        impact: {
+          maturityScoreChanged: true,
+          recommendationsChanged: true,
+          executiveSummaryChanged: true,
+          strategicRoadmapChanged: true,
+          pillarResultsAvailable: true
+        },
+        afterSnapshot: {
+          progress: Math.round(((index + 1) / assessmentFramework.assessmentAreas.length) * 100),
+          completedCategories: assessment.completedCategories.slice(0, index + 1),
+          responseCount: pillarData.responses.length
+        }
+      });
+    });
+    
+    // 5. Assessment completion event
+    if (assessment.status === 'completed' && assessment.completedAt) {
+      auditEvents.push({
+        id: 'event_completed',
+        eventType: 'assessment_completed',
+        timestamp: assessment.completedAt,
+        userEmail: assessment.lastEditor || assessment.contactEmail,
+        userName: assessment.lastEditorName || 'User',
+        changes: {
+          status: {
+            from: 'in_progress',
+            to: 'completed'
+          }
+        },
+        impact: {
+          fullReportAvailable: true,
+          executiveCommandCenterAvailable: true,
+          benchmarkingAvailable: true,
+          exportAvailable: true
+        },
+        afterSnapshot: {
+          status: 'completed',
+          progress: 100,
+          completedCategories: assessment.completedCategories,
+          responseCount: Object.keys(assessment.responses || {}).filter(k => !k.includes('_skipped') && !k.includes('_comment')).length
+        }
+      });
+    }
+    
+    // Sort by timestamp (newest first)
+    auditEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Apply pagination
+    const paginatedEvents = auditEvents.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: {
+        assessmentId: id,
+        assessmentName: assessment.assessmentName,
+        organizationName: assessment.organizationName,
+        totalEvents: auditEvents.length,
+        events: paginatedEvents,
+        summary: {
+          created: assessment.startedAt,
+          lastModified: assessment.lastModified || assessment.updatedAt,
+          completed: assessment.completedAt,
+          totalEditors: [...new Set(auditEvents.map(e => e.userEmail).filter(Boolean))].length,
+          pillarsCompleted: assessment.completedCategories?.length || 0,
+          totalPillars: assessmentFramework.assessmentAreas.length,
+          responseCount: Object.keys(assessment.responses || {}).filter(k => !k.includes('_skipped') && !k.includes('_comment')).length
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving audit trail:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving audit trail',
+      error: error.message
+    });
+  }
+});
+
+// Add audit event (for manual tracking or future use)
+app.post('/api/assessment/:id/audit-event', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { eventType, userEmail, userName, changes, metadata } = req.body;
+    
+    const assessment = await assessments.get(id);
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    // Initialize edit history if needed
+    if (!assessment.editHistory) {
+      assessment.editHistory = [];
+    }
+    
+    // Add event to edit history
+    assessment.editHistory.push({
+      timestamp: new Date().toISOString(),
+      eventType,
+      editorEmail: userEmail,
+      editorName: userName,
+      changes: changes || {},
+      metadata: metadata || {}
+    });
+    
+    // Save assessment
+    await assessments.set(id, assessment);
+    
+    res.json({
+      success: true,
+      message: 'Audit event recorded'
+    });
+  } catch (error) {
+    console.error('Error recording audit event:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error recording audit event',
+      error: error.message
+    });
+  }
+});
+
 // Serve React app for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
   // Serve static files (JS, CSS, images, manifest.json, etc.) - must be BEFORE catch-all

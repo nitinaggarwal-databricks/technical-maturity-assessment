@@ -17,6 +17,7 @@ import AssessmentDashboard from './components/AssessmentDashboard';
 import Dashboard from './components/DashboardNew';
 import LoadingSpinner from './components/LoadingSpinner';
 import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
+import AssessmentHistory from './components/AssessmentHistory';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -267,6 +268,11 @@ function App() {
           <Route 
             path="/executive/:assessmentId" 
             element={<ExecutiveCommandCenter />} 
+          />
+          
+          <Route 
+            path="/history/:assessmentId" 
+            element={<AssessmentHistory />} 
           />
           
           <Route 

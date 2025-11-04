@@ -20,7 +20,8 @@ import {
   FiDroplet,
   FiRotateCcw,
   FiChevronDown,
-  FiChevronUp
+  FiChevronUp,
+  FiClock
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -2473,6 +2474,15 @@ const AssessmentResultsNew = () => {
               </div>
             </TitleSection>
             <ActionButtons>
+              <ActionButton
+                onClick={() => navigate(`/history/${assessmentId}`)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+              >
+                <FiClock size={16} />
+                History
+              </ActionButton>
               <ActionButton
                 onClick={() => navigate(`/executive/${assessmentId}`)}
                 whileHover={{ scale: 1.02 }}
