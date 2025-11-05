@@ -160,76 +160,73 @@ function addPillarSheet(workbook, assessment, pillar) {
     ]
   ];
   
-  // Find all response keys for this pillar and extract unique question IDs
-  const questionIds = new Set();
-  Object.keys(responses).forEach(key => {
-    // Extract base question ID (remove _current_state, _future_state, etc.)
-    const questionId = key.replace(/_current_state|_future_state|_technical_pain|_business_pain|_comment$/g, '');
-    questionIds.add(questionId);
+  // Iterate through this pillar's dimensions and questions
+  pillar.dimensions.forEach(dimension => {
+    dimension.questions.forEach(question => {
+      const currentKey = `${question.id}_current_state`;
+      const futureKey = `${question.id}_future_state`;
+      const techPainKey = `${question.id}_technical_pain`;
+      const bizPainKey = `${question.id}_business_pain`;
+      const commentKey = `${question.id}_comment`;
+      
+      // Only add if this question has data
+      if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
+        const currentValue = parseInt(responses[currentKey]) || '';
+        const futureValue = parseInt(responses[futureKey]) || '';
+        const gap = (currentValue && futureValue) ? futureValue - currentValue : '';
+        
+        // Get maturity level labels
+        const currentLevel = getMaturityLabel(currentValue);
+        const futureLevel = getMaturityLabel(futureValue);
+        
+        // Get pain points
+        const techPain = responses[techPainKey];
+        const bizPain = responses[bizPainKey];
+        
+        const techPainText = Array.isArray(techPain) ? techPain.join('; ') : (techPain || '');
+        const bizPainText = Array.isArray(bizPain) ? bizPain.join('; ') : (bizPain || '');
+        
+        const comment = responses[commentKey] || '';
+        
+        pillarData.push([
+          dimension.name,
+          question.text,  // Use actual question text from framework
+          currentValue,
+          currentLevel,
+          futureValue,
+          futureLevel,
+          gap,
+          techPainText,
+          bizPainText,
+          comment
+        ]);
+      }
+    });
   });
   
-  // Add each question's data
-  questionIds.forEach(questionId => {
-    const currentKey = `${questionId}_current_state`;
-    const futureKey = `${questionId}_future_state`;
-    const techPainKey = `${questionId}_technical_pain`;
-    const bizPainKey = `${questionId}_business_pain`;
-    const commentKey = `${questionId}_comment`;
+  // Only add sheet if there's data
+  if (pillarData.length > 3) {  // More than just headers
+    const ws = XLSX.utils.aoa_to_sheet(pillarData);
     
-    // Only add if this pillar has data
-    if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
-      const currentValue = parseInt(responses[currentKey]) || '';
-      const futureValue = parseInt(responses[futureKey]) || '';
-      const gap = (currentValue && futureValue) ? futureValue - currentValue : '';
-      
-      // Get maturity level labels
-      const currentLevel = getMaturityLabel(currentValue);
-      const futureLevel = getMaturityLabel(futureValue);
-      
-      // Get pain points
-      const techPain = responses[techPainKey];
-      const bizPain = responses[bizPainKey];
-      
-      const techPainText = Array.isArray(techPain) ? techPain.join('; ') : (techPain || '');
-      const bizPainText = Array.isArray(bizPain) ? bizPain.join('; ') : (bizPain || '');
-      
-      const comment = responses[commentKey] || '';
-      
-      pillarData.push([
-        questionId,
-        'Question',  // Placeholder since we don't have the full question text
-        currentValue,
-        currentLevel,
-        futureValue,
-        futureLevel,
-        gap,
-        techPainText,
-        bizPainText,
-        comment
-      ]);
-    }
-  });
-  
-  const ws = XLSX.utils.aoa_to_sheet(pillarData);
-  
-  // Set column widths
-  ws['!cols'] = [
-    { wch: 25 }, // Dimension
-    { wch: 50 }, // Question
-    { wch: 12 }, // Current State
-    { wch: 15 }, // Current Level
-    { wch: 12 }, // Future State
-    { wch: 15 }, // Future Level
-    { wch: 8 },  // Gap
-    { wch: 40 }, // Technical Pain
-    { wch: 40 }, // Business Pain
-    { wch: 50 }  // Notes
-  ];
-  
-  // Sanitize sheet name (max 31 chars, no special characters)
-  const sheetName = pillar.name.substring(0, 31).replace(/[:\\/?*\[\]]/g, '_');
-  
-  XLSX.utils.book_append_sheet(workbook, ws, sheetName);
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 25 }, // Dimension
+      { wch: 50 }, // Question
+      { wch: 12 }, // Current State
+      { wch: 15 }, // Current Level
+      { wch: 12 }, // Future State
+      { wch: 15 }, // Future Level
+      { wch: 8 },  // Gap
+      { wch: 40 }, // Technical Pain
+      { wch: 40 }, // Business Pain
+      { wch: 50 }  // Notes
+    ];
+    
+    // Sanitize sheet name (max 31 chars, no special characters)
+    const sheetName = pillar.name.substring(0, 31).replace(/[:\\/?*\[\]]/g, '_');
+    
+    XLSX.utils.book_append_sheet(workbook, ws, sheetName);
+  }
 }
 
 /**
