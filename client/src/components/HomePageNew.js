@@ -768,56 +768,6 @@ const HomePageNew = () => {
                 Get a comprehensive assessment of your organization's technical maturity across 6 critical pillars. 
                 Receive personalized recommendations and a clear roadmap for success.
               </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <ButtonGroup>
-                  <PrimaryButton
-                    onClick={() => navigate('/start')}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Start My Free Assessment
-                    <FiArrowRight />
-                  </PrimaryButton>
-                  <div style={{ position: 'relative' }} ref={sampleMenuRef}>
-                    <SecondaryButton
-                      onClick={() => setShowSampleMenu(!showSampleMenu)}
-                      disabled={generatingSample}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <FiPlayCircle />
-                      Try Sample Assessment
-                    </SecondaryButton>
-                    <AnimatePresence>
-                      {showSampleMenu && (
-                        <SampleDropdown
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <SampleMenuItem onClick={() => handleGenerateSample('full')}>
-                            <div className="label">Full Assessment</div>
-                            <div className="desc">All 6 pillars completed (~5 min)</div>
-                          </SampleMenuItem>
-                          <SampleMenuItem onClick={() => handleGenerateSample('partial')}>
-                            <div className="label">Partial Assessment</div>
-                            <div className="desc">3 pillars completed (~3 min)</div>
-                          </SampleMenuItem>
-                          <SampleMenuItem onClick={() => handleGenerateSample('minimal')}>
-                            <div className="label">Quick Preview</div>
-                            <div className="desc">1 pillar completed (~1 min)</div>
-                          </SampleMenuItem>
-                        </SampleDropdown>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </ButtonGroup>
-              </motion.div>
             </HeroText>
 
             <HeroSidebar>
