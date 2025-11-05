@@ -1343,7 +1343,7 @@ const Dashboard = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                onClick={() => navigate(`/results/${performer.id}`)}
+                onClick={() => navigate(`/executive-command-center/${performer.id}`)}
                 style={{ cursor: 'pointer' }}
               >
                 <PerformerRank $rank={index + 1}>
@@ -1562,7 +1562,7 @@ const Dashboard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    onClick={() => !isSampleData && navigate(`/results/${assessment.id}`)}
+                    onClick={() => !isSampleData && navigate(`/executive-command-center/${assessment.id}`)}
                     style={{ cursor: isSampleData ? 'default' : 'pointer', opacity: isSampleData ? 0.7 : 1 }}
                   >
                     <ActivityIcon $bg={activityColor}>
