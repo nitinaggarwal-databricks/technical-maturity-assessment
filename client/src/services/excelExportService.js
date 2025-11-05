@@ -15,6 +15,15 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
     
     console.log('[Excel Export] Assessment data loaded:', assessment);
 
+    // Fetch full assessment framework with questions from API
+    let fullFramework = null;
+    try {
+      fullFramework = await api.get('/assessment/framework');
+      console.log('[Excel Export] Full framework loaded');
+    } catch (error) {
+      console.warn('[Excel Export] Could not load full framework:', error);
+    }
+
     // Fetch results data (recommendations, scores, etc.)
     let resultsData = null;
     try {
@@ -42,10 +51,12 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
       addOverallNextStepsSheet(workbook, resultsData);
     }
     
-    // Add detailed question/response sheets for each pillar
-    assessmentFramework.assessmentAreas.forEach(pillar => {
-      addPillarSheet(workbook, assessment, pillar);
-    });
+    // Add detailed question/response sheets for each pillar (if full framework available)
+    if (fullFramework && fullFramework.assessmentAreas) {
+      fullFramework.assessmentAreas.forEach(pillar => {
+        addPillarSheet(workbook, assessment, pillar);
+      });
+    }
     
     // Generate file name
     const timestamp = new Date().toISOString().split('T')[0];
@@ -153,6 +164,12 @@ function addPillarSheet(workbook, assessment, pillar) {
       'Notes/Comments'
     ]
   ];
+  
+  // Safety check: only process if pillar has dimensions
+  if (!pillar.dimensions || !Array.isArray(pillar.dimensions)) {
+    console.warn(`[Excel Export] Pillar ${pillar.name} has no dimensions, skipping detail sheet`);
+    return;
+  }
   
   // Iterate through this pillar's dimensions and questions
   pillar.dimensions.forEach(dimension => {
@@ -420,7 +437,16 @@ export const exportCompletedPillarsToExcel = async (assessmentId, assessmentName
     // Fetch assessment data using configured API instance
     const assessment = await api.get(`/assessment/${assessmentId}`);
     
-    const completedPillars = assessmentFramework.assessmentAreas.filter(pillar => 
+    // Fetch full assessment framework with questions from API
+    let fullFramework = null;
+    try {
+      fullFramework = await api.get('/assessment/framework');
+    } catch (error) {
+      console.warn('[Excel Export] Could not load full framework:', error);
+      throw new Error('Cannot export without assessment framework');
+    }
+    
+    const completedPillars = fullFramework.assessmentAreas.filter(pillar => 
       assessment.completedCategories?.includes(pillar.id)
     );
     
@@ -447,18 +473,20 @@ export const exportCompletedPillarsToExcel = async (assessmentId, assessmentName
       let futureTotal = 0;
       let answeredCount = 0;
       
-      pillar.dimensions.forEach(dimension => {
-        dimension.questions.forEach(question => {
-          const currentKey = `${question.id}_current_state`;
-          const futureKey = `${question.id}_future_state`;
-          
-          if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
-            answeredCount++;
-            currentTotal += parseInt(responses[currentKey]) || 0;
-            futureTotal += parseInt(responses[futureKey]) || 0;
-          }
+      if (pillar.dimensions) {
+        pillar.dimensions.forEach(dimension => {
+          dimension.questions.forEach(question => {
+            const currentKey = `${question.id}_current_state`;
+            const futureKey = `${question.id}_future_state`;
+            
+            if (responses[currentKey] !== undefined || responses[futureKey] !== undefined) {
+              answeredCount++;
+              currentTotal += parseInt(responses[currentKey]) || 0;
+              futureTotal += parseInt(responses[futureKey]) || 0;
+            }
+          });
         });
-      });
+      }
       
       const avgCurrent = answeredCount > 0 ? (currentTotal / answeredCount).toFixed(1) : 'N/A';
       const avgFuture = answeredCount > 0 ? (futureTotal / answeredCount).toFixed(1) : 'N/A';
