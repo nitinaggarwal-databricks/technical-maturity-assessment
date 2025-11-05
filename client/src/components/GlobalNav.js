@@ -750,10 +750,12 @@ const GlobalNav = () => {
           <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
           <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
           <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
-          <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
         </TopNav>
 
         <ActionButtons>
+          <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+            Dashboard
+          </SecondaryCTAButton>
           <SecondaryCTAButton onClick={() => navigate('/assessments')}>
             <FiList size={14} />
             My Assessments
@@ -779,7 +781,9 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavigate('/insights-dashboard')}>Dashboard</MobileNavLink>
+        <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+          Dashboard
+        </MobileSecondaryCTAButton>
         <MobileSecondaryCTAButton onClick={() => handleNavigate('/assessments')}>
           <FiList size={16} />
           My Assessments
