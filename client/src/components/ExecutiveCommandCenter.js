@@ -270,7 +270,7 @@ const ExecutiveCommandCenter = () => {
           whileTap={{ scale: 0.98 }}
         >
           <FiArrowLeft />
-          Back to Full Report
+          Full Report
         </BackButton>
 
         <ActionButtons>
