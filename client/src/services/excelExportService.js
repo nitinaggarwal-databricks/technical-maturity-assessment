@@ -11,15 +11,17 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
     console.log('[Excel Export] Starting export for assessment:', assessmentId);
 
     // Fetch assessment data using configured API instance
-    const assessment = await api.get(`/assessment/${assessmentId}`);
+    const assessmentResponse = await api.get(`/assessment/${assessmentId}`);
+    const assessment = assessmentResponse.data || assessmentResponse;
     
     console.log('[Excel Export] Assessment data loaded:', assessment);
 
     // Fetch full assessment framework with questions from API
     let fullFramework = null;
     try {
-      fullFramework = await api.get('/assessment/framework');
-      console.log('[Excel Export] Full framework loaded');
+      const frameworkResponse = await api.get('/assessment/framework');
+      fullFramework = frameworkResponse.data || frameworkResponse;
+      console.log('[Excel Export] Full framework loaded:', fullFramework);
     } catch (error) {
       console.warn('[Excel Export] Could not load full framework:', error);
     }
@@ -27,7 +29,8 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
     // Fetch results data (recommendations, scores, etc.)
     let resultsData = null;
     try {
-      resultsData = await api.get(`/assessment/${assessmentId}/results`);
+      const resultsResponse = await api.get(`/assessment/${assessmentId}/results`);
+      resultsData = resultsResponse.data || resultsResponse;
       console.log('[Excel Export] Results data loaded:', resultsData);
     } catch (error) {
       console.warn('[Excel Export] Could not load results:', error);
@@ -435,12 +438,14 @@ export const exportCompletedPillarsToExcel = async (assessmentId, assessmentName
     console.log('[Excel Export] Starting export for completed pillars:', assessmentId);
 
     // Fetch assessment data using configured API instance
-    const assessment = await api.get(`/assessment/${assessmentId}`);
+    const assessmentResponse = await api.get(`/assessment/${assessmentId}`);
+    const assessment = assessmentResponse.data || assessmentResponse;
     
     // Fetch full assessment framework with questions from API
     let fullFramework = null;
     try {
-      fullFramework = await api.get('/assessment/framework');
+      const frameworkResponse = await api.get('/assessment/framework');
+      fullFramework = frameworkResponse.data || frameworkResponse;
     } catch (error) {
       console.warn('[Excel Export] Could not load full framework:', error);
       throw new Error('Cannot export without assessment framework');
