@@ -37,15 +37,9 @@ export const exportAssessmentToExcel = async (assessmentId, assessmentName = 'As
     if (resultsData) {
       addResultsOverviewSheet(workbook, resultsData);
       addBusinessImpactSheet(workbook, resultsData);
+      addPillarAnalysisSheet(workbook, resultsData); // Combined: Strengths, Challenges, Recommendations
       addDatabricksRecommendationsSheet(workbook, resultsData);
       addOverallNextStepsSheet(workbook, resultsData);
-      
-      // Add pillar-specific results
-      if (resultsData.prioritizedActions) {
-        resultsData.prioritizedActions.forEach(pillarResult => {
-          addPillarResultsSheet(workbook, pillarResult);
-        });
-      }
     }
     
     // Add detailed question/response sheets for each pillar
@@ -364,72 +358,46 @@ function addOverallNextStepsSheet(workbook, resultsData) {
 }
 
 /**
- * Add Pillar Results sheet with what's working, challenges, and recommendations
+ * Add consolidated Pillar Analysis sheet with strengths and challenges for all pillars
  */
-function addPillarResultsSheet(workbook, pillarResult) {
-  const pillarName = pillarResult.pillarName || pillarResult.pillar;
-  const pillarData = [
-    [`${pillarName} - Analysis & Recommendations`],
+function addPillarAnalysisSheet(workbook, resultsData) {
+  const analysisData = [
+    ['PILLAR ANALYSIS - STRENGTHS & CHALLENGES'],
     [''],
-    ['MATURITY SCORES'],
-    ['Current Score', pillarResult.currentScore || 'N/A'],
-    ['Target Score', pillarResult.targetScore || 'N/A'],
-    ['Gap', pillarResult.gap || 'N/A'],
-    ['Priority', pillarResult.priority || 'N/A'],
-    [''],
-    ["WHAT'S WORKING WELL"]
+    ['Pillar', 'Type', 'Finding']
   ];
   
-  if (pillarResult.theGood && pillarResult.theGood.length > 0) {
-    pillarResult.theGood.forEach((item, idx) => {
-      pillarData.push([`${idx + 1}. ${item}`]);
-    });
-  } else {
-    pillarData.push(['No strengths identified']);
-  }
-  
-  pillarData.push([''], ['KEY CHALLENGES']);
-  
-  if (pillarResult.theBad && pillarResult.theBad.length > 0) {
-    pillarResult.theBad.forEach((item, idx) => {
-      pillarData.push([`${idx + 1}. ${item}`]);
-    });
-  } else {
-    pillarData.push(['No challenges identified']);
-  }
-  
-  pillarData.push([''], ['DATABRICKS RECOMMENDATIONS']);
-  
-  if (pillarResult.databricksFeatures && pillarResult.databricksFeatures.length > 0) {
-    pillarResult.databricksFeatures.forEach((feature, idx) => {
-      const featureName = typeof feature === 'string' ? feature : feature.name;
-      const featureDesc = typeof feature === 'object' ? feature.description : '';
-      pillarData.push([`${idx + 1}. ${featureName}`]);
-      if (featureDesc) {
-        pillarData.push([`   ${featureDesc}`]);
+  if (resultsData.prioritizedActions) {
+    resultsData.prioritizedActions.forEach(pillarResult => {
+      const pillarName = pillarResult.pillarName || pillarResult.pillar;
+      
+      // Add strengths
+      if (pillarResult.theGood && pillarResult.theGood.length > 0) {
+        pillarResult.theGood.forEach((item, idx) => {
+          analysisData.push([
+            idx === 0 ? pillarName : '', // Only show pillar name once
+            'Strength',
+            item
+          ]);
+        });
+      }
+      
+      // Add challenges
+      if (pillarResult.theBad && pillarResult.theBad.length > 0) {
+        pillarResult.theBad.forEach((item, idx) => {
+          analysisData.push([
+            (pillarResult.theGood && pillarResult.theGood.length > 0) || idx > 0 ? '' : pillarName,
+            'Challenge',
+            item
+          ]);
+        });
       }
     });
-  } else {
-    pillarData.push(['No specific features recommended']);
   }
   
-  pillarData.push([''], ['NEXT STEPS']);
-  
-  if (pillarResult.specificRecommendations && pillarResult.specificRecommendations.length > 0) {
-    pillarResult.specificRecommendations.forEach((step, idx) => {
-      pillarData.push([`${idx + 1}. ${step}`]);
-    });
-  } else {
-    pillarData.push(['No next steps defined']);
-  }
-  
-  const ws = XLSX.utils.aoa_to_sheet(pillarData);
-  ws['!cols'] = [{ wch: 100 }];
-  
-  // Sanitize sheet name (max 31 chars, no special characters)
-  const sheetName = `${pillarName} Results`.substring(0, 31).replace(/[:\\/?*\[\]]/g, '_');
-  
-  XLSX.utils.book_append_sheet(workbook, ws, sheetName);
+  const ws = XLSX.utils.aoa_to_sheet(analysisData);
+  ws['!cols'] = [{ wch: 30 }, { wch: 15 }, { wch: 80 }];
+  XLSX.utils.book_append_sheet(workbook, ws, 'Pillar Analysis');
 }
 
 /**
