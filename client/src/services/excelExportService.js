@@ -174,8 +174,15 @@ function addPillarSheet(workbook, assessment, pillar) {
     return;
   }
   
+  console.log(`[Excel Export] Processing pillar: ${pillar.name}, dimensions: ${pillar.dimensions.length}`);
+  
   // Iterate through this pillar's dimensions and questions
   pillar.dimensions.forEach(dimension => {
+    if (!dimension.questions || !Array.isArray(dimension.questions)) {
+      console.warn(`[Excel Export] Dimension ${dimension.name} has no questions array`);
+      return;
+    }
+    
     dimension.questions.forEach(question => {
       const currentKey = `${question.id}_current_state`;
       const futureKey = `${question.id}_future_state`;
@@ -202,9 +209,14 @@ function addPillarSheet(workbook, assessment, pillar) {
         
         const comment = responses[commentKey] || '';
         
+        // Use question.text or question.question as fallback
+        const questionText = question.text || question.question || question.title || `Question ${question.id}`;
+        
+        console.log(`[Excel Export] Adding question: ${question.id}, text: ${questionText?.substring(0, 50)}...`);
+        
         pillarData.push([
           dimension.name,
-          question.text,  // Use actual question text from framework
+          questionText,
           currentValue,
           currentLevel,
           futureValue,
