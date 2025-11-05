@@ -1426,7 +1426,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
   }
 });
 
-// Get industry benchmarking report (EY-quality)
+// Get industry benchmarking report
 app.get('/api/assessment/:id/benchmark', async (req, res) => {
   try {
     console.log(`🎯 [BENCHMARK ENDPOINT] Request for assessment: ${req.params.id}`);
@@ -1546,7 +1546,7 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
 
     console.log(`📊 [BENCHMARK] Overall Score: ${overallScore}, Pillars: ${Object.keys(pillarScores).length}, Pain Points: ${painPoints.length}`);
 
-    // Generate comprehensive EY-quality benchmarking report
+    // Generate comprehensive benchmarking report
     const benchmarkReport = await industryBenchmarkingService.generateComprehensiveBenchmarkReport(
       assessment.industry || 'Technology',
       assessment,

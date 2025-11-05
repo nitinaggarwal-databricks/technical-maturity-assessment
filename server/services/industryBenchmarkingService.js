@@ -50,7 +50,7 @@ class IndustryBenchmarkingService {
         messages: [
           {
             role: 'system',
-            content: `You are a Senior Partner at Ernst & Young (EY) with 20+ years of experience in 
+            content: `You are a Senior Data Platform Strategy Consultant with 20+ years of experience in 
                      digital transformation consulting, data platform strategy, and competitive intelligence.
                      
                      You have deep expertise in:
@@ -58,7 +58,7 @@ class IndustryBenchmarkingService {
                      - Data platform maturity assessment
                      - Digital transformation roadmaps
                      - C-suite advisory and strategic recommendations
-                     - Market research from Gartner, Forrester, McKinsey, IDC
+                     - Market research from leading industry analysts
                      
                      Your reports are:
                      - Executive-ready and board-level quality
