@@ -2087,8 +2087,17 @@ app.get('/api/dashboard/stats', async (req, res) => {
         improvement: improvementList.length > 0 ? improvementList : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
         stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }],
         // 🚨 NEW FIELDS for frontend
-        industryBreakdown,
-        pillarBreakdown,
+        industryBreakdown: Object.entries(industryBreakdown).map(([industry, data]) => ({
+          industry,
+          count: data.count,
+          avgScore: parseFloat(data.avgScore.toFixed(1))
+        })),
+        pillarBreakdown: Object.entries(pillarBreakdown).map(([pillar, data]) => ({
+          pillar,
+          avgCurrent: parseFloat(data.avgCurrent.toFixed(1)),
+          avgTarget: parseFloat(data.avgTarget.toFixed(1)),
+          gap: parseFloat(data.gap.toFixed(1))
+        })),
         recentAssessments: recentAssessmentsFormatted
       }
     });
