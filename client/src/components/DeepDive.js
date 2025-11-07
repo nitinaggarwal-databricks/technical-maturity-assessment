@@ -580,6 +580,14 @@ const CategoryTitle = styled.h3`
   flex: 1;
 `;
 
+const CategoryDescription = styled.div`
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 12px;
+  line-height: 1.6;
+  font-weight: 400;
+`;
+
 const CategoryBody = styled.div`
   padding: 28px 32px;
 `;
@@ -651,35 +659,6 @@ const SmallIconButton = styled.button`
     background: ${props => props.variant === 'delete' ? '#fecaca' : '#dbeafe'};
     transform: scale(1.1);
   }
-`;
-
-const ExpandButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-top: 12px;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const ExpandedContent = styled(motion.div)`
-  padding: 20px 32px 8px;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-  color: #475569;
-  font-size: 0.9375rem;
-  line-height: 1.7;
 `;
 
 // Maturity Matrix Styles
@@ -1606,8 +1585,6 @@ const ResizableCard = ({ objective, onResize, children, ...props }) => {
 // =======================
 
 const DeepDive = () => {
-  const [expandedCards, setExpandedCards] = useState({});
-  
   // Section ordering state
   const [sectionOrder, setSectionOrder] = useState([
     'objectives',
@@ -1619,9 +1596,9 @@ const DeepDive = () => {
     'matrices'
   ]);
 
-  // Section collapse state (all collapsed by default)
+  // Section collapse state (Strategic Objectives expanded by default, others collapsed)
   const [collapsedSections, setCollapsedSections] = useState({
-    objectives: true,
+    objectives: false,
     categories: true,
     successPlan: true,
     engagementPlan: true,
@@ -1672,14 +1649,6 @@ const DeepDive = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [parentCategory, setParentCategory] = useState(null); // For sub-category editing
-
-  // Toggle card expansion
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({
-      ...prev,
-      [cardId]: !prev[cardId]
-    }));
-  };
 
   // Move section up
   const moveSectionUp = (sectionId) => {
@@ -2160,6 +2129,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'Pipelines are self-healing, version-controlled, and SLA-managed. Data quality continuously validated across environments.',
           tools: 'DLT Advanced Toolkit, SLA Automation Scripts'
+        },
+        {
+          stage: '5. Transform',
+          description: 'Data movement operates as intelligent, self-optimizing fabric. Real-time CDC and streaming orchestrated end-to-end with AI-driven anomaly detection.',
+          tools: 'Streaming Fabric, AI Quality Automation, Real-Time Lineage'
         }
       ]
     },
@@ -2188,6 +2162,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'DBSQL Serverless and AI BI (Genie) enable natural-language analytics. Predictive insights embedded into workflows.',
           tools: 'AI BI Genie, Predictive Analytics Accelerator'
+        },
+        {
+          stage: '5. Transform',
+          description: 'Analytics operates as conversational, AI-native experience. Self-service insights democratized across all personas with zero learning curve.',
+          tools: 'Genie Spaces, Compound AI System, Auto-Insights Framework'
         }
       ]
     },
@@ -2216,6 +2195,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'Model Serving is automated with event-driven retraining and explainability.',
           tools: 'MLflow + Feature Store Integration, Bias Detection Library'
+        },
+        {
+          stage: '5. Transform',
+          description: 'MLOps operates as autonomous ecosystem with CI/CD/CT for real-time model governance and continuous validation.',
+          tools: 'Auto-ML Pipeline, Continuous Training Framework, Real-Time Monitoring'
         }
       ]
     },
@@ -2244,6 +2228,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'Multi-agent architectures orchestrate knowledge retrieval and actions via AI Gateway.',
           tools: 'Multi-Agent Framework, AI Gateway Policy Templates'
+        },
+        {
+          stage: '5. Transform',
+          description: 'GenAI ecosystem powers compound AI systems with autonomous agents, unified observability, and adaptive governance.',
+          tools: 'Agent Orchestration Platform, Real-Time Governance, Compound AI Templates'
         }
       ]
     },
@@ -2272,6 +2261,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'Predictive alerting and auto-remediation ensure resilience. FinOps integrated into scorecards.',
           tools: 'FinOps + Observability Dashboard, Policy Automation'
+        },
+        {
+          stage: '5. Transform',
+          description: 'Platform operates with AI-driven self-healing, predictive cost optimization, and zero-touch operations.',
+          tools: 'AIOps Platform, Intelligent Cost Optimizer, Autonomous Operations Suite'
         }
       ]
     }
@@ -3258,6 +3252,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                     <div style={{ flex: 1 }}>
                       <CategoryLabel>{category.label}</CategoryLabel>
                       <CategoryTitle>{category.title}</CategoryTitle>
+                      <CategoryDescription>
+                        <FormattedText>{category.description}</FormattedText>
+                      </CategoryDescription>
                     </div>
                     <CardActions>
                       <IconButton onClick={() => handleEdit('category', category)}>
@@ -3271,10 +3268,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       </IconButton>
                     </CardActions>
                   </CategoryHeaderTop>
-                  <ExpandButton onClick={() => toggleCard(category.id)}>
-                    {expandedCards[category.id] ? 'Show Less' : 'Show More'}
-                    {expandedCards[category.id] ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
-                  </ExpandButton>
                 </CategoryHeader>
 
                 <CategoryBody>
@@ -3306,24 +3299,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                     ))}
                   </SubCategoryList>
                 </CategoryBody>
-
-                <AnimatePresence>
-                  {expandedCards[category.id] && (
-                    <ExpandedContent
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div>
-                        <strong>Description:</strong>
-                        <FormattedText style={{ marginTop: '0.5em' }}>
-                          {category.description}
-                        </FormattedText>
-                      </div>
-                    </ExpandedContent>
-                  )}
-                </AnimatePresence>
               </CategoryCard>
             ))}
                 </CategoryContainer>
