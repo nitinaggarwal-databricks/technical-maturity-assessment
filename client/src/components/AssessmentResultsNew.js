@@ -2930,12 +2930,27 @@ const AssessmentResultsNew = () => {
               }
             };
             
-            // Unified premium background for all pillars
-            const unifiedGradient = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
-            const unifiedBorder = '#e2e8f0';
+            // Function to generate a subtle tinted gradient based on color
+            const generateTintedGradient = (color) => {
+              // Convert hex to RGB for tinting
+              const hex = color.replace('#', '');
+              const r = parseInt(hex.substr(0, 2), 16);
+              const g = parseInt(hex.substr(2, 2), 16);
+              const b = parseInt(hex.substr(4, 2), 16);
+              
+              // Create very subtle tinted gradient (5% and 10% opacity)
+              return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.05) 0%, rgba(${r}, ${g}, ${b}, 0.10) 100%)`;
+            };
             
             const pillarColorScheme = premiumColors[pillar.id] || premiumColors['operational_excellence'];
             const pillarColor = customizations.pillarColors[pillar.id] || pillarColorScheme.primary;
+            
+            // Use custom gradient if color was customized, otherwise unified default
+            const pillarGradient = customizations.pillarColors[pillar.id] 
+              ? generateTintedGradient(customizations.pillarColors[pillar.id])
+              : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+            
+            const unifiedBorder = '#e2e8f0';
             
             // Get dimensions from results data (PRIMARY SOURCE - always available)
             let dimensions = [];
@@ -2980,7 +2995,7 @@ const AssessmentResultsNew = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <PillarHeader
-                  $gradient={unifiedGradient}
+                  $gradient={pillarGradient}
                   $borderColor={unifiedBorder}
                   $accentColor={pillarColor}
                   $textColor={pillarColorScheme.text}
