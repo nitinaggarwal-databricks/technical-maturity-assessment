@@ -37,18 +37,20 @@ import * as assessmentService from '../services/assessmentService';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
-  padding: 40px 24px;
-  padding-top: 108px;
+  padding: 108px 0 40px 0;
 
   @media (max-width: 768px) {
-    padding: 24px 16px;
-    padding-top: 92px;
+    padding: 92px 0 24px 0;
   }
 `;
 
 const ContentContainer = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
 `;
 
 const PageHeader = styled.div`

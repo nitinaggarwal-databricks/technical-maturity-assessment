@@ -91,12 +91,10 @@ const PrintStyles = styled.div`
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #fafbfc; /* Premium off-white */
-  padding: 40px 24px;
-  padding-top: 108px; /* 68px GlobalNav + 40px top padding */
+  padding: 108px 0 40px 0; /* 68px GlobalNav + 40px top padding */
 
   @media (max-width: 768px) {
-    padding: 24px 16px;
-    padding-top: 92px; /* 68px GlobalNav + 24px top padding */
+    padding: 92px 0 24px 0; /* 68px GlobalNav + 24px top padding */
   }
   
   @media print {
@@ -107,14 +105,11 @@ const PageContainer = styled.div`
 `;
 
 const ReportContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   background: #ffffff; /* Pure white */
-  border-radius: 20px; /* Softer corners */
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 8px 16px rgba(0, 0, 0, 0.04),
-    0 20px 40px rgba(0, 0, 0, 0.06); /* Multi-layer depth */
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 
   /* 🖨️ PRINT OPTIMIZATION */

@@ -17,19 +17,17 @@ import Footer from './Footer';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
-  padding: 40px 24px;
-  padding-top: 108px;
+  padding: 108px 0 40px 0;
 
   @media (max-width: 768px) {
-    padding: 24px 16px;
-    padding-top: 92px;
+    padding: 92px 0 24px 0;
   }
 `;
 
 const PageHeader = styled.div`
   position: relative;
-  max-width: 1200px;
-  margin: 0 auto 32px;
+  margin: 0 0 32px 0;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -353,8 +351,12 @@ const ActionButton = styled(motion.button)`
 `;
 
 const ContentContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
 `;
 
 const LoadingContainer = styled.div`

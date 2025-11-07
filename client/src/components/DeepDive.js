@@ -109,11 +109,15 @@ const PageContainer = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 40px 24px;
+  width: 100%;
+  margin: 0;
+  padding: 40px 40px;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 40px 16px;
+  }
 `;
 
 const PageHeader = styled.div`
