@@ -102,12 +102,10 @@ const GlobalPrintStyles = createGlobalStyle`
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
-  padding: 40px 24px;
-  padding-top: 108px;
+  padding: 108px 0 40px 0;
 
   @media (max-width: 768px) {
-    padding: 24px 16px;
-    padding-top: 92px;
+    padding: 92px 0 24px 0;
   }
 
   @media print {
@@ -117,12 +115,15 @@ const PageContainer = styled.div`
 `;
 
 const PageHeader = styled.div`
-  max-width: 1200px;
-  margin: 0 auto 24px;
-  padding: 20px 0;
+  margin: 0 0 24px 0;
+  padding: 20px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    padding: 20px 16px;
+  }
 
   @media print {
     display: none !important;
@@ -173,9 +174,9 @@ const BenchmarkButton = styled(motion.button)`
 
 const ReportContainer = styled(motion.div)`
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin: 40px 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
   overflow: hidden;
 
   @media print {
