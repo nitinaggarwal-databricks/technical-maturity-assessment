@@ -1126,8 +1126,16 @@ const AnalysisCardTitle = styled.h3`
 const AnalysisCardBody = styled.div`
   padding: 32px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 24px;
+
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -1138,13 +1146,14 @@ const AnalysisCardBody = styled.div`
 const AnalysisStageCard = styled.div`
   background: #f9fafb;
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   border: 2px solid #e5e7eb;
   transition: all 0.3s ease;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  min-width: 200px;
 
   &:hover {
     border-color: ${props => props.color || '#3b82f6'};
@@ -2625,10 +2634,21 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     setModalType(type);
     setEditingItem(null);
     // Set default values including a default icon
-    setFormData({
+    const defaultFormData = {
       icon: '🎯',
       borderColor: '#3b82f6'
-    });
+    };
+    
+    // Add default description for scenarios
+    if (type === 'scenario') {
+      defaultFormData.description = `Explore: Disparate workspaces; no visibility.
+Experiment: Uncoordinated clusters and governance gaps.
+Formalize: Central workspace registry; minimal identity integration.
+Optimize: Unified catalog and FinOps tagging.
+Transform: Fully governed multi-domain Lakehouse with automation.`;
+    }
+    
+    setFormData(defaultFormData);
     setModalOpen(true);
   };
 
