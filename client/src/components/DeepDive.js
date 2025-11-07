@@ -103,9 +103,14 @@ const insertFormatting = (textAreaRef, prefix, suffix = '') => {
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding-top: 80px;
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
+  padding-top: 100px;
   padding-bottom: 60px;
+
+  @media print {
+    background: white !important;
+    padding-top: 0;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -173,20 +178,20 @@ const ToggleAllButton = styled.button`
 `;
 
 const PageTitle = styled.h1`
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: 2.25rem;
+  font-weight: 700;
   color: #1e293b;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 `;
 
 const PageSubtitle = styled.p`
-  font-size: 1.25rem;
-  color: #64748b;
+  font-size: 1.125rem;
+  color: #475569;
   max-width: 800px;
   margin: 0 auto;
   line-height: 1.6;
@@ -197,21 +202,23 @@ const PageSubtitle = styled.p`
 `;
 
 const Section = styled.section`
-  margin-bottom: 80px;
+  margin-bottom: 64px;
   order: ${props => props.order || 0};
 `;
 
 const SectionHeader = styled.div`
   text-align: left;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #e2e8f0;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 
   h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 1.875rem;
+    font-weight: 600;
     color: #1e293b;
     margin-bottom: 12px;
     display: flex;
@@ -219,25 +226,26 @@ const SectionHeader = styled.div`
     gap: 16px;
     cursor: pointer;
     user-select: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      color: #3b82f6;
+      color: #FF3621;
     }
 
     @media (max-width: 768px) {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
     }
   }
 
   p {
-    font-size: 1.125rem;
-    color: #64748b;
+    font-size: 1rem;
+    color: #475569;
     max-width: 700px;
     margin: 0;
     line-height: 1.6;
 
     @media (max-width: 768px) {
-      font-size: 1rem;
+      font-size: 0.938rem;
     }
   }
 `;
@@ -275,31 +283,36 @@ const ReorderButton = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  background: ${props => props.disabled ? '#f3f4f6' : '#6366f1'};
+  background: ${props => props.disabled ? '#f3f4f6' : '#1B3B6F'};
   color: ${props => props.disabled ? '#9ca3af' : 'white'};
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
-  transition: all 0.3s ease;
-  box-shadow: ${props => props.disabled ? 'none' : '0 2px 8px rgba(99, 102, 241, 0.3)'};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${props => props.disabled ? 'none' : '0 2px 8px rgba(27, 59, 111, 0.25)'};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
 
   &:hover {
-    background: ${props => props.disabled ? '#f3f4f6' : '#4f46e5'};
+    background: ${props => props.disabled ? '#f3f4f6' : '#152d55'};
     transform: ${props => props.disabled ? 'none' : 'translateY(-2px)'};
-    box-shadow: ${props => props.disabled ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.4)'};
+    box-shadow: ${props => props.disabled ? 'none' : '0 4px 12px rgba(27, 59, 111, 0.35)'};
   }
   
   &:active {
     transform: ${props => props.disabled ? 'none' : 'translateY(0)'};
   }
 
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
   @media (max-width: 768px) {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 `;
 
@@ -307,16 +320,16 @@ const AddButton = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #00A972 0%, #008c5f 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 169, 114, 0.25);
   pointer-events: auto;
   opacity: 0;
   margin-left: auto;
@@ -329,16 +342,22 @@ const AddButton = styled(motion.button)`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 169, 114, 0.35);
+    background: linear-gradient(135deg, #008c5f 0%, #007550 100%);
   }
   
   &:active {
     transform: translateY(0);
   }
 
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
   @media (max-width: 768px) {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     opacity: 1;
   }
 `;
@@ -346,7 +365,7 @@ const AddButton = styled(motion.button)`
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 32px;
+  gap: 24px;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -355,12 +374,12 @@ const CardGrid = styled.div`
 
 const Card = styled(motion.div)`
   background: white;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  border: 2px solid transparent;
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   ${props => props.$height ? `
@@ -378,8 +397,15 @@ const Card = styled(motion.div)`
   cursor: default;
 
   &:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    border-color: ${props => props.$borderColor || '#e5e7eb'};
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+  }
+
+  @media print {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+    transform: none !important;
   }
 
   /* Resize handle styling */
@@ -428,12 +454,12 @@ const CardHeader = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #1e293b;
   margin: 0;
   flex: 1;
-  line-height: 1.3;
+  line-height: 1.4;
 `;
 
 const CardActions = styled.div`
@@ -453,20 +479,27 @@ const CardActions = styled.div`
 `;
 
 const IconButton = styled.button`
-  background: ${props => props.$variant === 'delete' ? '#fee2e2' : '#eff6ff'};
-  color: ${props => props.$variant === 'delete' ? '#dc2626' : '#3b82f6'};
-  border: none;
+  background: transparent;
+  color: ${props => props.$variant === 'delete' ? '#dc2626' : '#64748b'};
+  border: 1px solid ${props => props.$variant === 'delete' ? '#fca5a5' : '#cbd5e1'};
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    background: ${props => props.$variant === 'delete' ? '#fecaca' : '#dbeafe'};
-    transform: scale(1.1);
+    background: ${props => props.$variant === 'delete' ? '#fef2f2' : '#f8fafc'};
+    border-color: ${props => props.$variant === 'delete' ? '#dc2626' : '#FF3621'};
+    color: ${props => props.$variant === 'delete' ? '#991b1b' : '#FF3621'};
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
   }
 `;
 
@@ -1495,26 +1528,34 @@ const Button = styled.button`
   font-weight: 600;
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
 
   ${props => props.$variant === 'primary' ? `
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #00A972 0%, #008c5f 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 169, 114, 0.25);
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 169, 114, 0.35);
+      background: linear-gradient(135deg, #008c5f 0%, #007550 100%);
     }
   ` : `
-    background: #f1f5f9;
+    background: white;
     color: #64748b;
+    border: 2px solid #cbd5e1;
 
     &:hover {
-      background: #e2e8f0;
+      background: #f8fafc;
+      border-color: #94a3b8;
     }
   `}
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
 `;
 
 // =======================

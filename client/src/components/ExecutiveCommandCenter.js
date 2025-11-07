@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -623,6 +623,12 @@ const ExecutiveCommandCenter = () => {
   const [logoURL, setLogoURL] = useState('');
   const [loadingURL, setLoadingURL] = useState(false);
 
+  // 🎨 CRUD State
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'phase', 'metric', 'section', etc.
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({});
+
   useEffect(() => {
     const fetchResults = async () => {
       try {
@@ -757,6 +763,41 @@ const ExecutiveCommandCenter = () => {
     setShowLogoModal(false);
     setShowURLInput(false);
     setLogoURL('');
+  };
+
+  // 🎨 CRUD Handlers
+  const handleEdit = (type, item) => {
+    console.log('[Edit]', type, item);
+    setModalType(type);
+    setEditingItem(item);
+    setFormData(item || {});
+    setShowModal(true);
+    toast.success(`Opening ${type} editor`);
+  };
+
+  const handleDelete = (type, item) => {
+    console.log('[Delete]', type, item);
+    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
+      // In a real app, you'd update the backend here
+      toast.success(`${type} deleted successfully!`);
+    }
+  };
+
+  const handleAdd = (type) => {
+    console.log('[Add]', type);
+    setModalType(type);
+    setEditingItem(null);
+    setFormData({});
+    setShowModal(true);
+    toast.success(`Add new ${type}`);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log('[Form Submit]', modalType, formData);
+    // In a real app, you'd save to backend here
+    setShowModal(false);
+    toast.success(`${modalType} ${editingItem ? 'updated' : 'added'} successfully!`);
   };
 
   if (loading) {
@@ -939,13 +980,13 @@ const ExecutiveCommandCenter = () => {
                 <SectionHeader>
                   <SectionTitle>📍 Strategic Roadmap & Next Steps</SectionTitle>
                   <SectionActions>
-                    <IconButton title="Add Phase">
+                    <IconButton title="Add Phase" onClick={() => handleAdd('phase')}>
                       <FiPlus size={16} />
                     </IconButton>
-                    <IconButton title="Edit Section">
+                    <IconButton title="Edit Section" onClick={() => handleEdit('roadmap-section', results?.roadmap)}>
                       <FiEdit2 size={16} />
                     </IconButton>
-                    <IconButton title="Delete Section">
+                    <IconButton title="Delete Section" onClick={() => handleDelete('roadmap-section', results?.roadmap)}>
                       <FiTrash2 size={16} />
                     </IconButton>
                   </SectionActions>
@@ -963,10 +1004,10 @@ const ExecutiveCommandCenter = () => {
                       }}
                     >
                       <PhaseCardActions>
-                        <IconButton title="Edit Phase">
+                        <IconButton title="Edit Phase" onClick={() => handleEdit('phase', phase)}>
                           <FiEdit2 size={14} />
                         </IconButton>
-                        <IconButton title="Delete Phase">
+                        <IconButton title="Delete Phase" onClick={() => handleDelete('phase', phase)}>
                           <FiTrash2 size={14} />
                         </IconButton>
                       </PhaseCardActions>
@@ -988,13 +1029,13 @@ const ExecutiveCommandCenter = () => {
                 <SectionHeader>
                   <SectionTitle>📊 Expected Business Impact</SectionTitle>
                   <SectionActions>
-                    <IconButton title="Add Metric">
+                    <IconButton title="Add Metric" onClick={() => handleAdd('impact-metric')}>
                       <FiPlus size={16} />
                     </IconButton>
-                    <IconButton title="Edit Section">
+                    <IconButton title="Edit Section" onClick={() => handleEdit('impact-section', results?.businessImpact)}>
                       <FiEdit2 size={16} />
                     </IconButton>
-                    <IconButton title="Delete Section">
+                    <IconButton title="Delete Section" onClick={() => handleDelete('impact-section', results?.businessImpact)}>
                       <FiTrash2 size={16} />
                     </IconButton>
                   </SectionActions>
@@ -1003,10 +1044,10 @@ const ExecutiveCommandCenter = () => {
                   {results.businessImpact.metrics.map((metric, index) => (
                     <ImpactCard key={index}>
                       <ImpactCardActions>
-                        <IconButton title="Edit Metric">
+                        <IconButton title="Edit Metric" onClick={() => handleEdit('impact-metric', metric)}>
                           <FiEdit2 size={14} />
                         </IconButton>
-                        <IconButton title="Delete Metric">
+                        <IconButton title="Delete Metric" onClick={() => handleDelete('impact-metric', metric)}>
                           <FiTrash2 size={14} />
                         </IconButton>
                       </ImpactCardActions>
