@@ -150,6 +150,27 @@ const BackButton = styled(motion.button)`
   }
 `;
 
+const BenchmarkButton = styled(motion.button)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+`;
+
 const ReportContainer = styled(motion.div)`
   background: #ffffff;
   border-radius: 16px;
@@ -788,6 +809,14 @@ const IndustryBenchmarkingReport = () => {
             <FiArrowLeft size={18} />
             Full Report
           </BackButton>
+          <BenchmarkButton
+            onClick={() => navigate(`/executive/${assessmentId}`)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FiBarChart2 size={18} />
+            Executive Command Center
+          </BenchmarkButton>
         </PageHeader>
 
       <ReportContainer
