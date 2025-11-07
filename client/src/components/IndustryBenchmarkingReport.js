@@ -869,7 +869,18 @@ const IndustryBenchmarkingReport = () => {
     console.log('[Edit]', type, item);
     setModalType(type);
     setEditingItem(item);
-    setFormData(item || {});
+    
+    // Transform data for the form based on type
+    if (type === 'executive-summary' && item) {
+      setFormData({
+        headline: item.headline || '',
+        keyFindings: item.keyFindings?.join('\n') || '',
+        marketContext: item.marketContext || ''
+      });
+    } else {
+      setFormData(item || {});
+    }
+    
     setShowModal(true);
   };
 
@@ -1463,7 +1474,10 @@ const IndustryBenchmarkingReport = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
               >
                 <ModalHeader>
-                  <h2>{editingItem ? 'Edit' : 'Add'} {modalType}</h2>
+                  <h2>
+                    {editingItem ? 'Edit' : 'Add'}{' '}
+                    {modalType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </h2>
                   <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#6b7280' }}>&times;</button>
                 </ModalHeader>
                 <form onSubmit={handleFormSubmit}>
@@ -1516,7 +1530,41 @@ const IndustryBenchmarkingReport = () => {
                         </FormGroup>
                       </>
                     )}
-                    {(modalType === 'executive-summary' || modalType === 'competitive-position' || modalType === 'methodology') && (
+                    {modalType === 'executive-summary' && (
+                      <>
+                        <FormGroup>
+                          <label>Headline</label>
+                          <textarea
+                            rows="2"
+                            value={formData.headline || ''}
+                            onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
+                            placeholder="e.g., Your organization ranks in the Below Median (38th percentile)"
+                            required
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label>Key Findings (one per line)</label>
+                          <textarea
+                            rows="5"
+                            value={formData.keyFindings || ''}
+                            onChange={(e) => setFormData({ ...formData, keyFindings: e.target.value })}
+                            placeholder="Enter each finding on a new line..."
+                            required
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label>Market Context</label>
+                          <textarea
+                            rows="3"
+                            value={formData.marketContext || ''}
+                            onChange={(e) => setFormData({ ...formData, marketContext: e.target.value })}
+                            placeholder="Industry context and trends..."
+                            required
+                          />
+                        </FormGroup>
+                      </>
+                    )}
+                    {(modalType === 'competitive-position' || modalType === 'methodology') && (
                       <FormGroup>
                         <label>Content</label>
                         <textarea
