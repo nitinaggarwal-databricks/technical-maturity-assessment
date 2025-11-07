@@ -119,6 +119,46 @@ const ContentWrapper = styled.div`
 const PageHeader = styled.div`
   text-align: center;
   margin-bottom: 60px;
+  position: relative;
+`;
+
+const ExpandCollapseControls = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+`;
+
+const ControlButton = styled.button`
+  background: ${props => props.$variant === 'expand' ? 
+    'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 
+    'linear-gradient(135deg, #64748b 0%, #475569 100%)'};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+  }
 `;
 
 const PageTitle = styled.h1`
@@ -1590,6 +1630,30 @@ const DeepDive = () => {
     }));
   };
 
+  const expandAll = () => {
+    setCollapsedSections({
+      objectives: false,
+      categories: false,
+      successPlan: false,
+      engagementPlan: false,
+      analysisActions: false,
+      scenarios: false,
+      matrices: false
+    });
+  };
+
+  const collapseAll = () => {
+    setCollapsedSections({
+      objectives: true,
+      categories: true,
+      successPlan: true,
+      engagementPlan: true,
+      analysisActions: true,
+      scenarios: true,
+      matrices: true
+    });
+  };
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('');
@@ -3035,6 +3099,16 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           <PageSubtitle>
             Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
           </PageSubtitle>
+          <ExpandCollapseControls>
+            <ControlButton $variant="expand" onClick={expandAll}>
+              <FiChevronDown size={18} />
+              Expand All
+            </ControlButton>
+            <ControlButton $variant="collapse" onClick={collapseAll}>
+              <FiChevronUp size={18} />
+              Collapse All
+            </ControlButton>
+          </ExpandCollapseControls>
         </PageHeader>
 
         {/* Objectives Section */}
