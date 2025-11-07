@@ -124,13 +124,12 @@ const PageHeader = styled.div`
 
 const ExpandCollapseControls = styled.div`
   display: flex;
-  gap: 12px;
   justify-content: center;
   margin-top: 24px;
 `;
 
-const ControlButton = styled.button`
-  background: ${props => props.$variant === 'expand' ? 
+const ToggleAllButton = styled.button`
+  background: ${props => props.$allCollapsed ? 
     'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 
     'linear-gradient(135deg, #64748b 0%, #475569 100%)'};
   color: white;
@@ -249,7 +248,6 @@ const SectionControls = styled.div`
   pointer-events: auto;
   opacity: 0;
   transition: opacity 0.3s ease;
-  margin-left: auto;
 
   section:hover &,
   .maturity-section:hover & {
@@ -294,25 +292,23 @@ const ReorderButton = styled(motion.button)`
 `;
 
 const AddButton = styled(motion.button)`
-  position: absolute;
-  right: 0;
-  top: 0;
   display: flex;
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-  z-index: 100;
   pointer-events: auto;
   opacity: 0;
+  margin-left: auto;
+  margin-right: 8px;
 
   section:hover &,
   .maturity-section:hover & {
@@ -1631,28 +1627,33 @@ const DeepDive = () => {
     }));
   };
 
-  const expandAll = () => {
-    setCollapsedSections({
-      objectives: false,
-      categories: false,
-      successPlan: false,
-      engagementPlan: false,
-      analysisActions: false,
-      scenarios: false,
-      matrices: false
-    });
-  };
-
-  const collapseAll = () => {
-    setCollapsedSections({
-      objectives: true,
-      categories: true,
-      successPlan: true,
-      engagementPlan: true,
-      analysisActions: true,
-      scenarios: true,
-      matrices: true
-    });
+  const toggleAllSections = () => {
+    // Check if all sections are collapsed
+    const allCollapsed = Object.values(collapsedSections).every(val => val === true);
+    
+    if (allCollapsed) {
+      // Expand all
+      setCollapsedSections({
+        objectives: false,
+        categories: false,
+        successPlan: false,
+        engagementPlan: false,
+        analysisActions: false,
+        scenarios: false,
+        matrices: false
+      });
+    } else {
+      // Collapse all
+      setCollapsedSections({
+        objectives: true,
+        categories: true,
+        successPlan: true,
+        engagementPlan: true,
+        analysisActions: true,
+        scenarios: true,
+        matrices: true
+      });
+    }
   };
 
   // Modal state
@@ -3101,14 +3102,24 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
           </PageSubtitle>
           <ExpandCollapseControls>
-            <ControlButton $variant="expand" onClick={expandAll}>
-              <FiChevronDown size={18} />
-              Expand All
-            </ControlButton>
-            <ControlButton $variant="collapse" onClick={collapseAll}>
-              <FiChevronUp size={18} />
-              Collapse All
-            </ControlButton>
+            {(() => {
+              const allCollapsed = Object.values(collapsedSections).every(val => val === true);
+              return (
+                <ToggleAllButton $allCollapsed={allCollapsed} onClick={toggleAllSections}>
+                  {allCollapsed ? (
+                    <>
+                      <FiChevronDown size={18} />
+                      Expand All
+                    </>
+                  ) : (
+                    <>
+                      <FiChevronUp size={18} />
+                      Collapse All
+                    </>
+                  )}
+                </ToggleAllButton>
+              );
+            })()}
           </ExpandCollapseControls>
         </PageHeader>
 
@@ -3120,17 +3131,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Strategic Objectives
                 {collapsedSections.objectives ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('objective')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Objective
+              </AddButton>
               {renderSectionControls('objectives', 'Strategic Objectives')}
             </SectionTitleRow>
             <p>Three core objectives guide our technical maturity assessment approach</p>
-            <AddButton
-              onClick={() => handleAdd('objective')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Objective
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3188,17 +3199,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Category Structure and Definitions
                 {collapsedSections.categories ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('category', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Category
+              </AddButton>
               {renderSectionControls('categories', 'Category Structure')}
             </SectionTitleRow>
             <p>Evaluation categories and sub-categories across the six alignment pillars</p>
-            <AddButton
-              onClick={() => handleAdd('category', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Category
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3307,17 +3318,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Technical Success Plan
                 {collapsedSections.successPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('success plan', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Plan Item
+              </AddButton>
               {renderSectionControls('successPlan', 'Technical Success Plan')}
             </SectionTitleRow>
             <p>How Results Play in Technical Success Plan - Mapping needs to activities and outcomes</p>
-            <AddButton
-              onClick={() => handleAdd('success plan', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Plan Item
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3421,17 +3432,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Targeted Engagement & Enablement Plan
                 {collapsedSections.engagementPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('engagement plan', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Timeline Item
+              </AddButton>
               {renderSectionControls('engagementPlan', 'Engagement & Enablement Plan')}
             </SectionTitleRow>
             <p>Timeline for engagement activities and focus areas</p>
-            <AddButton
-              onClick={() => handleAdd('engagement plan', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Timeline Item
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3487,17 +3498,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Analysis & Actions
                 {collapsedSections.analysisActions ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('analysis', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Analysis
+              </AddButton>
               {renderSectionControls('analysisActions', 'Analysis & Actions')}
             </SectionTitleRow>
             <p>Maturity improvement recommendations at each stage of the Maturity Model</p>
-            <AddButton
-              onClick={() => handleAdd('analysis', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Analysis
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3565,17 +3576,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Customer Engagement Scenarios
                 {collapsedSections.scenarios ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('scenario', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Scenario
+              </AddButton>
               {renderSectionControls('scenarios', 'Customer Engagement Scenarios')}
             </SectionTitleRow>
             <p>Tailored approaches for different customer maturity levels and situations</p>
-            <AddButton
-              onClick={() => handleAdd('scenario', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Scenario
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
@@ -3666,17 +3677,17 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 Maturity Level Definitions
                 {collapsedSections.matrices ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
               </h2>
+              <AddButton
+                onClick={() => handleAdd('maturity matrix', 'new')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlus size={16} />
+                Add Matrix
+              </AddButton>
               {renderSectionControls('matrices', 'Maturity Level Definitions')}
             </SectionTitleRow>
             <p>Detailed maturity progression for each dimension across all six categories</p>
-            <AddButton
-              onClick={() => handleAdd('maturity matrix', 'new')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiPlus size={18} />
-              Add Matrix
-            </AddButton>
           </SectionHeader>
 
           <AnimatePresence>
