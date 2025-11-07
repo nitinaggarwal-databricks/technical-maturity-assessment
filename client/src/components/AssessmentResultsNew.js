@@ -516,13 +516,16 @@ const PillarSection = styled(motion.div)`
   background: white;
   margin-bottom: 32px;
   border: 1px solid #e2e8f0;
+  border-left: 4px solid ${props => props.$color || '#e2e8f0'};
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+    border-left-width: 6px;
   }
 
   &:last-of-type {
@@ -535,18 +538,31 @@ const PillarSection = styled(motion.div)`
 
   @media print {
     box-shadow: none !important;
+    transform: none !important;
     page-break-inside: avoid !important;
   }
 `;
 
 const PillarHeader = styled.div`
-  background: #f8fafc;
+  background: ${props => props.$gradient || 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'};
   padding: 24px 32px;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid ${props => props.$borderColor || '#e2e8f0'};
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: ${props => props.$accentColor || '#e2e8f0'};
+    opacity: 0.6;
+  }
 
   .pillar-info {
     display: flex;
@@ -557,13 +573,15 @@ const PillarHeader = styled.div`
 
   .pillar-icon {
     font-size: 2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 
   h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1e293b;
+    color: ${props => props.$textColor || '#1e293b'};
     margin: 0;
+    letter-spacing: -0.01em;
   }
 
   .pillar-actions {
@@ -588,6 +606,10 @@ const PillarHeader = styled.div`
       justify-content: flex-end;
       margin-top: 12px;
     }
+  }
+  
+  @media print {
+    background: white !important;
   }
 `;
 
@@ -678,8 +700,12 @@ const ColorPickerPopover = styled.div`
 const ColorGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `;
 
 const ColorOption = styled.button`
@@ -2876,16 +2902,48 @@ const AssessmentResultsNew = () => {
           {pillars.map((pillar, index) => {
             const data = getPillarData(pillar.id);
             
-            // Get pillar color (use custom if set, otherwise default)
-            const defaultColors = {
-              'platform_governance': '#3b82f6',
-              'data_engineering': '#ef4444',
-              'analytics_bi': '#10b981',
-              'machine_learning': '#f59e0b',
-              'generative_ai': '#8b5cf6',
-              'operational_excellence': '#06b6d4'
+            // Get pillar color (use custom if set, otherwise premium default)
+            const premiumColors = {
+              'platform_governance': {
+                primary: '#1B3B6F',
+                gradient: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                border: '#cbd5e1',
+                text: '#1e293b'
+              },
+              'data_engineering': {
+                primary: '#059669',
+                gradient: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+                border: '#86efac',
+                text: '#065f46'
+              },
+              'analytics_bi': {
+                primary: '#00A972',
+                gradient: 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%)',
+                border: '#34d399',
+                text: '#064e3b'
+              },
+              'machine_learning': {
+                primary: '#7c3aed',
+                gradient: 'linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)',
+                border: '#c4b5fd',
+                text: '#5b21b6'
+              },
+              'generative_ai': {
+                primary: '#FF3621',
+                gradient: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)',
+                border: '#fb923c',
+                text: '#c2410c'
+              },
+              'operational_excellence': {
+                primary: '#475569',
+                gradient: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                border: '#cbd5e1',
+                text: '#334155'
+              }
             };
-            const pillarColor = customizations.pillarColors[pillar.id] || defaultColors[pillar.id] || '#64748b';
+            
+            const pillarColorScheme = premiumColors[pillar.id] || premiumColors['operational_excellence'];
+            const pillarColor = customizations.pillarColors[pillar.id] || pillarColorScheme.primary;
             
             // Get dimensions from results data (PRIMARY SOURCE - always available)
             let dimensions = [];
@@ -2924,15 +2982,21 @@ const AssessmentResultsNew = () => {
             return (
               <PillarSection
                 key={pillar.id}
+                $color={pillarColor}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <PillarHeader>
+                <PillarHeader
+                  $gradient={pillarColorScheme.gradient}
+                  $borderColor={pillarColorScheme.border}
+                  $accentColor={pillarColor}
+                  $textColor={pillarColorScheme.text}
+                >
                   <div className="pillar-info" onClick={() => toggleSection(`pillar-${pillar.id}`)} style={{ cursor: 'pointer', flex: 1 }}>
                     <span className="pillar-icon">{pillar.icon}</span>
                     <h3>{pillar.name}</h3>
-                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: '#6b7280' }}>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: pillarColorScheme.text, opacity: 0.6 }}>
                       {customizations.collapsedSections[`pillar-${pillar.id}`] ? (
                         <FiChevronDown size={24} />
                       ) : (
@@ -2990,6 +3054,14 @@ const AssessmentResultsNew = () => {
                               <ColorPickerLabel>Choose Color</ColorPickerLabel>
                               <ColorGrid>
                                 {[
+                                  // Premium Databricks Brand Colors (Top Row)
+                                  '#1B3B6F', // Databricks Navy
+                                  '#FF3621', // Databricks Orange
+                                  '#00A972', // Databricks Green
+                                  '#059669', // Deep Emerald
+                                  '#7c3aed', // Royal Purple
+                                  '#475569', // Professional Slate
+                                  // Extended Professional Colors
                                   '#3b82f6', // Blue
                                   '#ef4444', // Red
                                   '#10b981', // Green
@@ -3003,11 +3075,11 @@ const AssessmentResultsNew = () => {
                                   '#84cc16', // Lime
                                   '#64748b', // Slate
                                   '#dc2626', // Bright Red
-                                  '#059669', // Emerald
-                                  '#7c3aed', // Deep Purple
                                   '#0891b2', // Sky
                                   '#c026d3', // Fuchsia
                                   '#65a30d', // Green-Yellow
+                                  '#0e7490', // Dark Cyan
+                                  '#be185d', // Deep Pink
                                 ].map((color) => (
                                   <ColorOption
                                     key={color}
