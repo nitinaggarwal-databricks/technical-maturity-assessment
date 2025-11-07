@@ -289,7 +289,7 @@ const BenchmarkButton = styled(motion.button)`
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #10b981;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -298,10 +298,9 @@ const BenchmarkButton = styled(motion.button)`
   transition: all 0.2s ease;
 
   &:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    background: #059669;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    transform: translateX(-4px);
   }
 
   @media print {

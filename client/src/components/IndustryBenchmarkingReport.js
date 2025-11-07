@@ -407,16 +407,28 @@ const MetricSubtext = styled.div`
 
 const PillarGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
   margin: 24px 0;
+
+  @media (max-width: 1600px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const PillarCard = styled.div`
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px 16px;
   transition: all 0.3s ease;
   position: relative;
 
@@ -459,10 +471,11 @@ const PillarHeader = styled.div`
 `;
 
 const PillarName = styled.h4`
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
+  text-transform: capitalize;
 `;
 
 const PercentileBadge = styled.div`
@@ -624,6 +637,14 @@ const DownloadButton = styled(motion.button)`
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
   }
 `;
+
+// Helper function to format pillar names
+const formatPillarName = (pillarId) => {
+  return pillarId
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const IndustryBenchmarkingReport = () => {
   const { assessmentId } = useParams();
@@ -973,7 +994,7 @@ const IndustryBenchmarkingReport = () => {
                         </ActionButton>
                       </PillarCardActions>
                       <PillarHeader>
-                        <PillarName>{data.pillar || pillarId}</PillarName>
+                        <PillarName>{data.pillar || formatPillarName(pillarId)}</PillarName>
                         <PercentileBadge $bg={percentileColor.bg} $color={percentileColor.color}>
                           {data.percentileRank}th %ile
                         </PercentileBadge>
