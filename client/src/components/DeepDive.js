@@ -1596,15 +1596,15 @@ const DeepDive = () => {
     'matrices'
   ]);
 
-  // Section collapse state (Strategic Objectives expanded by default, others collapsed)
+  // Section collapse state (all sections expanded by default)
   const [collapsedSections, setCollapsedSections] = useState({
     objectives: false,
-    categories: true,
-    successPlan: true,
-    engagementPlan: true,
-    analysisActions: true,
-    scenarios: true,
-    matrices: true
+    categories: false,
+    successPlan: false,
+    engagementPlan: false,
+    analysisActions: false,
+    scenarios: false,
+    matrices: false
   });
 
   const toggleSection = (sectionId) => {

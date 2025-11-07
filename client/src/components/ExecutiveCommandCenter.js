@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
@@ -276,16 +276,31 @@ const BackButton = styled(motion.button)`
   font-weight: 600;
   color: #475569;
   cursor: pointer;
-  opacity: 0;
-  transition: all 0.3s ease;
-
-  ${PageHeader}:hover & {
-    opacity: 1;
-  }
+  transition: all 0.2s ease;
 
   &:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+`;
+
+const BenchmarkButton = styled(motion.button)`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     transform: translateX(-4px);
   }
 
@@ -598,6 +613,10 @@ const ExecutiveCommandCenter = () => {
     navigate(`/results/${assessmentId}`);
   };
 
+  const handleBenchmark = () => {
+    navigate(`/benchmarks/${assessmentId}`);
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -772,6 +791,15 @@ const ExecutiveCommandCenter = () => {
             <FiArrowLeft />
             Full Report
           </BackButton>
+
+          <BenchmarkButton
+            onClick={handleBenchmark}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FiBarChart2 />
+            Industry Benchmarks
+          </BenchmarkButton>
 
           <LogoContainer $hasLogo={!!customerLogo}>
             <LogoUploadBox onClick={handleLogoClick}>
