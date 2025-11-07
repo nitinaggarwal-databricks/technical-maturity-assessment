@@ -692,62 +692,142 @@ const ColorPickerPopover = styled.div`
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 16px;
+  padding: 20px;
   z-index: 1000;
-  min-width: 240px;
-`;
-
-const ColorGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`;
-
-const ColorOption = styled.button`
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  border: 2px solid ${props => props.$selected ? '#1e293b' : 'transparent'};
-  background: ${props => props.$color};
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-
-  &:hover {
-    transform: scale(1.1);
-    border-color: #64748b;
-  }
-
-  &:active {
-    transform: scale(0.9);
-  }
-
-  ${props => props.$selected && `
-    &::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-weight: bold;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-  `}
+  min-width: 300px;
 `;
 
 const ColorPickerLabel = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
   color: #64748b;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+`;
+
+const ColorInputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const ColorPreview = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ColorSwatch = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: ${props => props.$color};
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+`;
+
+const ColorInput = styled.input`
+  flex: 1;
+  height: 56px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+  }
+  
+  &:hover {
+    border-color: #cbd5e1;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #00A972;
+    box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
+  }
+`;
+
+const ColorHexInput = styled.input`
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  
+  &:hover {
+    border-color: #cbd5e1;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #00A972;
+    box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
+  }
+  
+  &::placeholder {
+    color: #94a3b8;
+  }
+`;
+
+const QuickColorsLabel = styled.div`
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+`;
+
+const QuickColorGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+`;
+
+const QuickColorButton = styled.button`
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 2px solid ${props => props.$selected ? props.$color : 'transparent'};
+  background: ${props => props.$color};
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${props => props.$selected ? `0 0 0 2px white, 0 0 0 4px ${props.$color}` : '0 1px 3px rgba(0, 0, 0, 0.1)'};
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const EditableTextarea = styled.textarea`
@@ -3058,37 +3138,59 @@ const AssessmentResultsNew = () => {
                           </ColorPickerButton>
                           {showColorPicker === pillar.id && (
                             <ColorPickerPopover onClick={(e) => e.stopPropagation()}>
-                              <ColorPickerLabel>Choose Color</ColorPickerLabel>
-                              <ColorGrid>
+                              <ColorPickerLabel>Custom Color Picker</ColorPickerLabel>
+                              <ColorInputWrapper>
+                                <ColorPreview>
+                                  <ColorSwatch $color={pillarColor} />
+                                  <ColorInput
+                                    type="color"
+                                    value={pillarColor}
+                                    onChange={(e) => {
+                                      const newColor = e.target.value;
+                                      setCustomizations({
+                                        ...customizations,
+                                        pillarColors: {
+                                          ...customizations.pillarColors,
+                                          [pillar.id]: newColor
+                                        }
+                                      });
+                                      toast.success(`Color updated for ${pillar.name}`);
+                                    }}
+                                  />
+                                </ColorPreview>
+                                <ColorHexInput
+                                  type="text"
+                                  value={pillarColor.toUpperCase()}
+                                  onChange={(e) => {
+                                    let value = e.target.value.trim();
+                                    // Auto-add # if missing
+                                    if (!value.startsWith('#')) {
+                                      value = '#' + value;
+                                    }
+                                    // Validate hex color (3 or 6 digits)
+                                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                                      setCustomizations({
+                                        ...customizations,
+                                        pillarColors: {
+                                          ...customizations.pillarColors,
+                                          [pillar.id]: value
+                                        }
+                                      });
+                                      toast.success(`Color updated for ${pillar.name}`);
+                                    }
+                                  }}
+                                  placeholder="#1B3B6F"
+                                  maxLength="7"
+                                />
+                              </ColorInputWrapper>
+                              
+                              <QuickColorsLabel>Quick Presets</QuickColorsLabel>
+                              <QuickColorGrid>
                                 {[
-                                  // Premium Databricks Brand Colors (Top Row)
-                                  '#1B3B6F', // Databricks Navy
-                                  '#FF3621', // Databricks Orange
-                                  '#00A972', // Databricks Green
-                                  '#059669', // Deep Emerald
-                                  '#7c3aed', // Royal Purple
-                                  '#475569', // Professional Slate
-                                  // Extended Professional Colors
-                                  '#3b82f6', // Blue
-                                  '#ef4444', // Red
-                                  '#10b981', // Green
-                                  '#f59e0b', // Amber
-                                  '#8b5cf6', // Purple
-                                  '#06b6d4', // Cyan
-                                  '#ec4899', // Pink
-                                  '#f97316', // Orange
-                                  '#14b8a6', // Teal
-                                  '#a855f7', // Violet
-                                  '#84cc16', // Lime
-                                  '#64748b', // Slate
-                                  '#dc2626', // Bright Red
-                                  '#0891b2', // Sky
-                                  '#c026d3', // Fuchsia
-                                  '#65a30d', // Green-Yellow
-                                  '#0e7490', // Dark Cyan
-                                  '#be185d', // Deep Pink
+                                  '#1B3B6F', '#FF3621', '#00A972', '#059669', '#7c3aed', '#475569',
+                                  '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4',
                                 ].map((color) => (
-                                  <ColorOption
+                                  <QuickColorButton
                                     key={color}
                                     $color={color}
                                     $selected={pillarColor === color}
@@ -3100,13 +3202,12 @@ const AssessmentResultsNew = () => {
                                           [pillar.id]: color
                                         }
                                       });
-                                      setShowColorPicker(null);
                                       toast.success(`Color updated for ${pillar.name}`);
                                     }}
                                     title={color}
                                   />
                                 ))}
-                              </ColorGrid>
+                              </QuickColorGrid>
                             </ColorPickerPopover>
                           )}
                         </div>
