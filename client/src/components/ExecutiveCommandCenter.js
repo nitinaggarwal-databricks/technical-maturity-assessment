@@ -606,6 +606,146 @@ const AddButton = styled(IconButton)`
   }
 `;
 
+// Modal Styled Components
+const ModalOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const ModalContent = styled(motion.div)`
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const ModalHeader = styled.div`
+  padding: 24px 32px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: capitalize;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+  }
+`;
+
+const ModalBody = styled.div`
+  padding: 32px;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #00A972;
+      box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+`;
+
+const ModalFooter = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+`;
+
+const SaveButton = styled.button`
+  background: linear-gradient(135deg, #00A972 0%, #008c5f 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 169, 114, 0.3);
+  }
+`;
+
+const CancelButton = styled.button`
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+`;
+
 // =====================
 // COMPONENT
 // =====================
@@ -1061,10 +1201,23 @@ const ExecutiveCommandCenter = () => {
             )}
 
             {/* ROI Calculator */}
-            <ROICalculator 
-              results={results} 
-              assessment={results?.assessmentInfo}
-            />
+            <Section>
+              <SectionHeader>
+                <SectionTitle>Interactive ROI Calculator</SectionTitle>
+                <SectionActions>
+                  <IconButton title="Edit ROI Calculator" onClick={() => handleEdit('roi-calculator', null)}>
+                    <FiEdit2 size={14} />
+                  </IconButton>
+                  <IconButton title="Delete ROI Calculator" onClick={() => handleDelete('roi-calculator', null)}>
+                    <FiTrash2 size={14} />
+                  </IconButton>
+                </SectionActions>
+              </SectionHeader>
+              <ROICalculator 
+                results={results} 
+                assessment={results?.assessmentInfo}
+              />
+            </Section>
 
             {/* Risk Heatmap */}
             <RiskHeatmap 
@@ -1140,6 +1293,64 @@ const ExecutiveCommandCenter = () => {
           </LogoOptionsContent>
         </LogoOptionsModal>
       )}
+
+      {/* CRUD Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <ModalOverlay onClick={() => setShowModal(false)}>
+            <ModalContent onClick={(e) => e.stopPropagation()}>
+              <ModalHeader>
+                <h2>{editingItem ? 'Edit' : 'Add'} {modalType}</h2>
+                <button onClick={() => setShowModal(false)}>✕</button>
+              </ModalHeader>
+              <ModalBody>
+                <form onSubmit={handleFormSubmit}>
+                  {modalType === 'roi-calculator' && (
+                    <>
+                      <FormGroup>
+                        <label>Calculator Title</label>
+                        <input
+                          type="text"
+                          value={formData.title || 'Interactive ROI Calculator'}
+                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                          placeholder="Enter calculator title..."
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>Subtitle/Description</label>
+                        <textarea
+                          rows="2"
+                          value={formData.subtitle || 'Customize assumptions to see your specific business case for Databricks'}
+                          onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                          placeholder="Enter subtitle..."
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>Note</label>
+                        <textarea
+                          rows="3"
+                          value={formData.note || ''}
+                          onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                          placeholder="Add any special notes or instructions..."
+                        />
+                      </FormGroup>
+                    </>
+                  )}
+
+                  <ModalFooter>
+                    <SaveButton type="submit">
+                      {editingItem ? 'Save Changes' : 'Add'}
+                    </SaveButton>
+                    <CancelButton type="button" onClick={() => setShowModal(false)}>
+                      Cancel
+                    </CancelButton>
+                  </ModalFooter>
+                </form>
+              </ModalBody>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <Footer />
