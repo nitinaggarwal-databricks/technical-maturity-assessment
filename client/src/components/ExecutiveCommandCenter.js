@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
 import ROICalculator from './ROICalculator';
 import RiskHeatmap from './RiskHeatmap';
-import IndustryBenchmarkingReport from './IndustryBenchmarkingReport';
+import Footer from './Footer';
 
 // =====================
 // STYLED COMPONENTS
@@ -27,6 +27,7 @@ const PageContainer = styled.div`
 `;
 
 const PageHeader = styled.div`
+  position: relative;
   max-width: 1200px;
   margin: 0 auto 32px;
   display: flex;
@@ -37,6 +38,230 @@ const PageHeader = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
+  }
+`;
+
+const LogoContainer = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: ${props => props.$hasLogo ? '1' : '0'};
+  transition: opacity 0.3s ease;
+
+  ${PageHeader}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+    transform: none;
+    margin-top: 16px;
+  }
+
+  @media print {
+    opacity: ${props => props.$hasLogo ? '1' : '0'} !important;
+  }
+`;
+
+const LogoUploadBox = styled.div`
+  position: relative;
+  width: 180px;
+  height: 80px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+  }
+
+  @media print {
+    border-style: solid;
+  }
+`;
+
+const LogoImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+`;
+
+const LogoPlaceholder = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 12px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const RemoveLogoButton = styled.button`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+
+  ${LogoUploadBox}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #dc2626;
+  }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
+`;
+
+const LogoOptionsModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+`;
+
+const LogoOptionsContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const LogoOptionsTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+`;
+
+const LogoOptionButton = styled.button`
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const URLInputForm = styled.form`
+  margin-top: 16px;
+`;
+
+const URLInput = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+`;
+
+const URLSubmitButton = styled.button`
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const CancelButton = styled.button`
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1e293b;
   }
 `;
 
@@ -51,22 +276,41 @@ const BackButton = styled(motion.button)`
   font-weight: 600;
   color: #475569;
   cursor: pointer;
+  opacity: 0;
   transition: all 0.3s ease;
+
+  ${PageHeader}:hover & {
+    opacity: 1;
+  }
 
   &:hover {
     border-color: #3b82f6;
     color: #3b82f6;
     transform: translateX(-4px);
   }
+
+  @media print {
+    display: none;
+  }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  ${PageHeader}:hover & {
+    opacity: 1;
+  }
 
   @media (max-width: 768px) {
     width: 100%;
     flex-direction: column;
+  }
+
+  @media print {
+    display: none;
   }
 `;
 
@@ -145,18 +389,181 @@ const ErrorText = styled.div`
   text-align: center;
 `;
 
+// Roadmap & Impact Sections
+const Section = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+`;
+
+const SectionHeader = styled.div`
+  margin-bottom: 24px;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+`;
+
+const RoadmapDescription = styled.p`
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 32px;
+`;
+
+const RoadmapPhases = styled.div`
+  display: grid;
+  gap: 24px;
+`;
+
+const PhaseCard = styled.div`
+  border-radius: 12px;
+  padding: 24px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateX(4px);
+  }
+`;
+
+const PhaseTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+`;
+
+const PhaseItems = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const PhaseItem = styled.li`
+  font-size: 0.95rem;
+  color: #475569;
+  padding: 8px 0 8px 24px;
+  position: relative;
+  line-height: 1.6;
+
+  &:before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #3b82f6;
+    font-weight: bold;
+  }
+`;
+
+const ImpactGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+`;
+
+const ImpactCard = styled.div`
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  }
+`;
+
+const ImpactValue = styled.div`
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 8px;
+`;
+
+const ImpactLabel = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+`;
+
+const ImpactDrivers = styled.div`
+  font-size: 0.875rem;
+  color: #64748b;
+  font-style: italic;
+  line-height: 1.5;
+`;
+
+// Action buttons for CRUD
+const SectionActions = styled.div`
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  ${SectionHeader}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+`;
+
+const IconButton = styled.button`
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #f0f9ff;
+  }
+`;
+
+const AddButton = styled(IconButton)`
+  border-color: #10b981;
+  color: #10b981;
+
+  &:hover {
+    border-color: #059669;
+    color: #059669;
+    background: #ecfdf5;
+  }
+`;
+
 // =====================
 // COMPONENT
 // =====================
 
 const ExecutiveCommandCenter = () => {
-  const { assessmentId } = useParams();
+  const { assessmentId} = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
-  const [benchmarkData, setBenchmarkData] = useState(null);
-  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
+  const [customerLogo, setCustomerLogo] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const [showURLInput, setShowURLInput] = useState(false);
+  const [logoURL, setLogoURL] = useState('');
+  const [loadingURL, setLoadingURL] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -186,29 +593,6 @@ const ExecutiveCommandCenter = () => {
     }
   }, [assessmentId]);
 
-  // Fetch benchmarking data
-  useEffect(() => {
-    const fetchBenchmarkData = async () => {
-      if (!results) return;
-      
-      try {
-        setBenchmarkLoading(true);
-        console.log('[ExecutiveCommandCenter] Fetching benchmarking data for:', assessmentId);
-        const data = await assessmentService.getBenchmarkReport(assessmentId);
-        console.log('[ExecutiveCommandCenter] Benchmark data received:', data);
-        setBenchmarkData(data);
-      } catch (err) {
-        console.error('[ExecutiveCommandCenter] Error fetching benchmark data:', err);
-        setBenchmarkData(null);
-      } finally {
-        setBenchmarkLoading(false);
-      }
-    };
-
-    if (results && !benchmarkData && !benchmarkLoading) {
-      fetchBenchmarkData();
-    }
-  }, [results, benchmarkData, benchmarkLoading, assessmentId]);
 
   const handleBack = () => {
     navigate(`/results/${assessmentId}`);
@@ -232,6 +616,87 @@ const ExecutiveCommandCenter = () => {
     }
   };
 
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast.error('Logo file size must be less than 2MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomerLogo(reader.result);
+        toast.success('Customer logo uploaded successfully');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = (e) => {
+    e.stopPropagation();
+    setCustomerLogo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success('Logo removed');
+  };
+
+  const handleLogoClick = () => {
+    if (!customerLogo) {
+      setShowLogoModal(true);
+    }
+  };
+
+  const handleUploadFromDevice = () => {
+    setShowLogoModal(false);
+    fileInputRef.current?.click();
+  };
+
+  const handleFetchFromURL = () => {
+    setShowURLInput(true);
+  };
+
+  const handleURLSubmit = async (e) => {
+    e.preventDefault();
+    if (!logoURL.trim()) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
+    setLoadingURL(true);
+    
+    try {
+      // Call backend API to fetch logo (bypasses CORS)
+      const response = await assessmentService.fetchLogoFromURL(logoURL);
+      
+      if (response.success && response.data) {
+        setCustomerLogo(response.data);
+        toast.success('Logo fetched successfully from customer portal');
+        setShowLogoModal(false);
+        setShowURLInput(false);
+        setLogoURL('');
+      } else {
+        toast.error(response.message || 'Failed to fetch logo');
+      }
+    } catch (error) {
+      console.error('Error fetching logo:', error);
+      toast.error(error.message || 'Failed to fetch logo from URL. Please check the URL and try again.');
+    } finally {
+      setLoadingURL(false);
+    }
+  };
+
+  const handleCancelModal = () => {
+    setShowLogoModal(false);
+    setShowURLInput(false);
+    setLogoURL('');
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -247,11 +712,45 @@ const ExecutiveCommandCenter = () => {
     return (
       <PageContainer>
         <ErrorContainer>
-          <ErrorText>{error}</ErrorText>
-          <ActionButton onClick={handleBack}>
-            <FiArrowLeft />
-            Back to Report
-          </ActionButton>
+          <FiAlertTriangle size={64} color="#ef4444" style={{ marginBottom: '20px' }} />
+          <ErrorText>Assessment not found</ErrorText>
+          <div style={{ textAlign: 'center', color: '#64748b', maxWidth: '500px', marginBottom: '32px' }}>
+            <p style={{ marginBottom: '16px' }}>
+              The assessment "{assessmentId}" could not be found. This may happen if:
+            </p>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px', marginBottom: '24px', lineHeight: '1.8' }}>
+              <li>The assessment hasn't been created yet</li>
+              <li>The assessment ID is incorrect</li>
+              <li>The assessment has been deleted</li>
+            </ul>
+            <p style={{ fontWeight: '600' }}>
+              Try one of these options:
+            </p>
+          </div>
+          <ActionButtons style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+            <ActionButton
+              onClick={() => navigate('/')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiArrowLeft />
+              Back to Home
+            </ActionButton>
+            <ActionButton
+              onClick={() => navigate('/assessments')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              View My Assessments
+            </ActionButton>
+            <ActionButton
+              onClick={() => navigate('/start')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start New Assessment
+            </ActionButton>
+          </ActionButtons>
         </ErrorContainer>
       </PageContainer>
     );
@@ -264,14 +763,40 @@ const ExecutiveCommandCenter = () => {
   return (
     <PageContainer>
       <PageHeader>
-        <BackButton
-          onClick={handleBack}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <FiArrowLeft />
-          Full Report
-        </BackButton>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <BackButton
+            onClick={handleBack}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FiArrowLeft />
+            Full Report
+          </BackButton>
+
+          <LogoContainer $hasLogo={!!customerLogo}>
+            <LogoUploadBox onClick={handleLogoClick}>
+              {customerLogo ? (
+                <>
+                  <LogoImage src={customerLogo} alt="Customer Logo" />
+                  <RemoveLogoButton onClick={handleRemoveLogo}>
+                    <FiX size={14} />
+                  </RemoveLogoButton>
+                </>
+              ) : (
+                <LogoPlaceholder>
+                  <FiUpload />
+                  <span>Customer Logo</span>
+                </LogoPlaceholder>
+              )}
+            </LogoUploadBox>
+            <HiddenFileInput
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+            />
+          </LogoContainer>
+        </div>
 
         <ActionButtons>
           <ActionButton
@@ -337,6 +862,54 @@ const ExecutiveCommandCenter = () => {
               assessment={results?.assessmentInfo}
             />
 
+            {/* Strategic Roadmap & Next Steps */}
+            {results?.roadmap?.phases && (
+              <Section style={{ marginTop: '40px' }}>
+                <SectionHeader>
+                  <SectionTitle>📍 Strategic Roadmap & Next Steps</SectionTitle>
+                </SectionHeader>
+                <RoadmapDescription>
+                  {results.roadmap.roadmapIntro || 'This roadmap outlines key phases to accelerate your data platform maturity.'}
+                </RoadmapDescription>
+                <RoadmapPhases>
+                  {results.roadmap.phases.map((phase, index) => (
+                    <PhaseCard
+                      key={phase.id}
+                      style={{
+                        background: phase.bgColor || '#f3f4f6',
+                        borderLeft: `4px solid ${phase.borderColor || '#3b82f6'}`
+                      }}
+                    >
+                      <PhaseTitle>{phase.title}</PhaseTitle>
+                      <PhaseItems>
+                        {phase.items.map((item, idx) => (
+                          <PhaseItem key={idx}>{item}</PhaseItem>
+                        ))}
+                      </PhaseItems>
+                    </PhaseCard>
+                  ))}
+                </RoadmapPhases>
+              </Section>
+            )}
+
+            {/* Expected Business Impact */}
+            {results?.businessImpact?.metrics && (
+              <Section style={{ marginTop: '40px' }}>
+                <SectionHeader>
+                  <SectionTitle>📊 Expected Business Impact</SectionTitle>
+                </SectionHeader>
+                <ImpactGrid>
+                  {results.businessImpact.metrics.map((metric, index) => (
+                    <ImpactCard key={index}>
+                      <ImpactValue>{metric.value}</ImpactValue>
+                      <ImpactLabel>{metric.label}</ImpactLabel>
+                      <ImpactDrivers>{metric.keyDrivers}</ImpactDrivers>
+                    </ImpactCard>
+                  ))}
+                </ImpactGrid>
+              </Section>
+            )}
+
             {/* ROI Calculator */}
             <ROICalculator 
               results={results} 
@@ -348,19 +921,78 @@ const ExecutiveCommandCenter = () => {
               results={results} 
               assessment={results?.assessmentInfo}
             />
-
-            {/* Industry Benchmarking Report */}
-            {benchmarkData && (
-              <IndustryBenchmarkingReport
-                assessment={results?.assessmentInfo}
-                benchmarkData={benchmarkData}
-                overallScore={results?.overall?.currentScore || results?.overallScore || 0}
-                pillarScores={results?.categoryDetails || {}}
-              />
-            )}
           </>
         )}
       </ContentContainer>
+
+      {/* Logo Upload Options Modal */}
+      {showLogoModal && (
+        <LogoOptionsModal onClick={handleCancelModal}>
+          <LogoOptionsContent onClick={(e) => e.stopPropagation()}>
+            <LogoOptionsTitle>Add Customer Logo</LogoOptionsTitle>
+            
+            {!showURLInput ? (
+              <>
+                <LogoOptionButton onClick={handleUploadFromDevice}>
+                  <FiUpload />
+                  Upload from Device
+                </LogoOptionButton>
+                
+                <LogoOptionButton onClick={handleFetchFromURL}>
+                  <FiLink />
+                  Fetch from Customer Portal URL
+                </LogoOptionButton>
+                
+                <CancelButton onClick={handleCancelModal}>
+                  Cancel
+                </CancelButton>
+              </>
+            ) : (
+              <>
+                <div style={{ 
+                  marginBottom: '16px', 
+                  padding: '12px', 
+                  background: '#f0f9ff', 
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: '#0369a1',
+                  lineHeight: '1.5'
+                }}>
+                  🤖 <strong>Smart Logo Detection:</strong> Enter any customer website URL and we'll automatically find and extract their logo!
+                  <br/>
+                  <strong>Examples:</strong>
+                  <br/>
+                  • https://google.com (extracts Google logo)
+                  <br/>
+                  • https://databricks.com (extracts Databricks logo)
+                  <br/>
+                  • https://company.com/logo.png (direct image link)
+                </div>
+                
+                <URLInputForm onSubmit={handleURLSubmit}>
+                  <URLInput
+                    type="url"
+                    value={logoURL}
+                    onChange={(e) => setLogoURL(e.target.value)}
+                    placeholder="https://cdn.example.com/logo.png"
+                    required
+                  />
+                  <URLSubmitButton type="submit" disabled={loadingURL}>
+                    {loadingURL ? 'Loading Logo...' : 'Add Logo'}
+                  </URLSubmitButton>
+                </URLInputForm>
+                
+                <CancelButton onClick={handleCancelModal}>
+                  Cancel
+                </CancelButton>
+              </>
+            )}
+          </LogoOptionsContent>
+        </LogoOptionsModal>
+      )}
+
+      {/* Footer */}
+      <Footer />
     </PageContainer>
   );
 };

@@ -724,7 +724,7 @@ class IntelligentRecommendationEngine {
       console.log(`[IntelligentEngine V2] ✅ Building ${dbFeatures.length} Databricks Features from DATABASE`);
       
       // 🔥 ADD "WHY" TO EACH FEATURE based on user pain points and comments
-      painPointFeatures = dbFeatures.map(f => {
+      painPointFeatures = dbFeatures.map((f, featureIndex) => {
         // Find the pain point this feature addresses
         const matchingPainPoint = topPainPoints.find(pp => {
           const ppLabel = pp.label?.toLowerCase() || pp.value?.toLowerCase() || '';
@@ -751,15 +751,16 @@ class IntelligentRecommendationEngine {
           reason = `Addresses your challenge: "${userIssue}${relatedComment.comment.length > 100 ? '...' : ''}"`;
         } else if (matchingPainPoint) {
           reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
-        } else if (topPainPoints.length > 0) {
-          // Use top pain point for this pillar as context
-          const topPain = topPainPoints[0];
-          reason = `Helps address: ${topPain.label || topPain.value}`;
         } else {
-          // Generate reason from feature's own description/benefits
-          const featureBenefit = f.benefits?.[0] || f.description || f.short_description;
+          // 🔥 IMPROVED: Use feature's own benefit/description FIRST before falling back to generic
+          const featureBenefit = f.benefits?.[0] || f.short_description || f.description;
           if (featureBenefit && featureBenefit.length > 20) {
             reason = featureBenefit.substring(0, 120) + (featureBenefit.length > 120 ? '...' : '');
+          } else if (topPainPoints.length > 0) {
+            // 🔥 FIX: Rotate through pain points instead of always using the first one
+            const painPointIndex = featureIndex % topPainPoints.length;
+            const rotatedPain = topPainPoints[painPointIndex];
+            reason = `Helps address: ${rotatedPain.label || rotatedPain.value}`;
           } else {
             // Last resort - use pillar-specific context
             const pillarContextMap = {
@@ -780,6 +781,12 @@ class IntelligentRecommendationEngine {
           benefits: f.benefits || [`GA: ${f.ga_status}, Released: ${f.ga_quarter}`],
           reason: reason // 🔥 NEW: WHY this feature is recommended
         };
+      });
+      
+      // 🔥 LOG: Verify unique reasons for debugging
+      console.log(`[IntelligentEngine V2] 📝 Feature reasons for ${pillarId}:`);
+      painPointFeatures.slice(0, 3).forEach(f => {
+        console.log(`  - ${f.name}: "${f.reason.substring(0, 60)}..."`);
       });
       
       // 🎯 FILTER OUT CROSS-PILLAR CONTAMINATION

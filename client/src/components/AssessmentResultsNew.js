@@ -21,11 +21,13 @@ import {
   FiRotateCcw,
   FiChevronDown,
   FiChevronUp,
-  FiClock
+  FiClock,
+  FiBarChart2
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
+import Footer from './Footer';
 
 // =======================
 // STYLED COMPONENTS
@@ -236,21 +238,43 @@ const TitleSection = styled.div`
 
 const ActionButtons = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 20px;
+  align-items: center;
   flex-wrap: wrap;
 
   @media (max-width: 768px) {
     width: 100%;
+    gap: 12px;
+  }
+
+  /* 🖨️ PRINT: Hide all action buttons */
+  @media print {
+    display: none !important;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex: 1;
     
     button {
       flex: 1;
       min-width: 140px;
     }
   }
+`;
 
-  /* 🖨️ PRINT: Hide all action buttons */
-  @media print {
-    display: none !important;
+const ButtonSeparator = styled.div`
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -2474,60 +2498,86 @@ const AssessmentResultsNew = () => {
               </div>
             </TitleSection>
             <ActionButtons>
-              <ActionButton
-                onClick={() => navigate(`/history/${assessmentId}`)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
-              >
-                <FiClock size={16} />
-                History
-              </ActionButton>
-              <ActionButton
-                onClick={() => navigate(`/executive/${assessmentId}`)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-              >
-                <FiTarget size={16} />
-                Executive Command Center
-              </ActionButton>
-              <ActionButton
-                onClick={handleRefresh}
-                disabled={refreshing}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-              >
-                <FiRefreshCw size={16} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
-                {refreshing ? 'Refreshing...' : 'Refresh'}
-              </ActionButton>
-              <ActionButton
-                onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
-              >
-                <FiEdit3 size={16} />
-                Edit Assessment
-              </ActionButton>
-              <ActionButton
-                onClick={handlePrint}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FiPrinter size={16} />
-                Print Report
-              </ActionButton>
-              <ActionButton
-                onClick={handleExportExcel}
-                disabled={exporting}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FiDownload size={16} />
-                Export Excel
-              </ActionButton>
+              {/* Primary Group - Purple + Green */}
+              <ButtonGroup>
+                <ActionButton
+                  onClick={() => navigate(`/executive/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+                >
+                  <FiTarget size={16} />
+                  Executive Command Center
+                </ActionButton>
+                <ActionButton
+                  onClick={() => navigate(`/benchmarks/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                >
+                  <FiBarChart2 size={16} />
+                  View Benchmarks
+                </ActionButton>
+              </ButtonGroup>
+
+              <ButtonSeparator />
+
+              {/* Secondary Group - Orange + Green */}
+              <ButtonGroup>
+                <ActionButton
+                  onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+                >
+                  <FiEdit3 size={16} />
+                  Edit Assessment
+                </ActionButton>
+                <ActionButton
+                  onClick={() => navigate(`/history/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+                >
+                  <FiClock size={16} />
+                  History
+                </ActionButton>
+                <ActionButton
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                >
+                  <FiRefreshCw size={16} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+                  {refreshing ? 'Refreshing...' : 'Refresh'}
+                </ActionButton>
+              </ButtonGroup>
+
+              <ButtonSeparator />
+
+              {/* Utility Group - Gray */}
+              <ButtonGroup>
+                <ActionButton
+                  onClick={handleExportExcel}
+                  disabled={exporting}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'rgba(100, 116, 139, 0.8)' }}
+                >
+                  <FiDownload size={16} />
+                  Export Excel
+                </ActionButton>
+                <ActionButton
+                  onClick={handlePrint}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'rgba(100, 116, 139, 0.8)' }}
+                >
+                  <FiPrinter size={16} />
+                  Print Report
+                </ActionButton>
+              </ButtonGroup>
             </ActionButtons>
           </HeaderTop>
         </ReportHeader>
@@ -3962,7 +4012,7 @@ const AssessmentResultsNew = () => {
                                     fontStyle: 'italic',
                                     borderLeft: '3px solid #f59e0b'
                                   }}>
-                                    <strong>Why recommended:</strong> {displayFeature.reason || `Recommended based on your ${pillar.name} maturity gap and pain points`}
+                                    {displayFeature.reason || `Helps address: Poor environment isolation`}
                                   </div>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
                                     {displayFeature.releaseDate && (
@@ -4714,689 +4764,15 @@ const AssessmentResultsNew = () => {
             );
           })}
 
-          {/* Strategic Roadmap */}
-          <RoadmapSection>
-            <div 
-              onClick={() => toggleSection('strategic-roadmap')} 
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: '16px',
-                cursor: 'pointer'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                <SectionTitle style={{ marginBottom: 0 }}>Strategic Roadmap & Next Steps</SectionTitle>
-                <div style={{ color: '#6b7280' }}>
-                  {customizations.collapsedSections['strategic-roadmap'] ? (
-                    <FiChevronDown size={24} />
-                  ) : (
-                    <FiChevronUp size={24} />
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert('Add new phase functionality - coming soon! Each phase already has individual edit buttons.');
-                }}
-                style={{
-                  background: '#10b981',
-                  color: '#6b7280',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  fontSize: '1.3rem',
-                  fontWeight: 'bold',
-                  lineHeight: '1'
-                }}
-                title="Add new phase"
-              >
-                +
-              </button>
-            </div>
-            
-            <AnimatePresence>
-              {!customizations.collapsedSections['strategic-roadmap'] && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ overflow: 'hidden' }}
-                >
-            <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px', lineHeight: 1.6 }}>
-              {(() => {
-                // 🎯 Generate dynamic, specific roadmap intro based on actual data
-                const completedPillars = Object.keys(resultsData?.categoryDetails || {});
-                const totalGap = completedPillars.reduce((sum, pillarId) => {
-                  const pillar = resultsData.categoryDetails[pillarId];
-                  return sum + (pillar?.gap || 0);
-                }, 0);
-                const avgGap = completedPillars.length > 0 ? (totalGap / completedPillars.length).toFixed(1) : 0;
-                
-                // Find pillars with biggest gaps
-                const pillarGaps = completedPillars.map(pillarId => ({
-                  id: pillarId,
-                  name: resultsData.categoryDetails[pillarId]?.name || pillarId,
-                  gap: resultsData.categoryDetails[pillarId]?.gap || 0
-                })).sort((a, b) => b.gap - a.gap);
-                
-                const topPillars = pillarGaps.slice(0, 2).map(p => p.name).join(' and ');
-                const roadmapPhases = resultsData?.roadmap?.phases || [];
-                const totalActions = roadmapPhases.reduce((sum, phase) => sum + (phase.items?.length || 0), 0);
-                
-                // Count total recommendations
-                const totalRecs = Object.values(resultsData?.categoryDetails || {}).reduce((sum, pillar) => {
-                  return sum + (pillar?.recommendations?.length || 0);
-                }, 0);
-                
-                if (resultsData?.roadmap?.roadmapIntro) {
-                  return resultsData.roadmap.roadmapIntro;
-                }
-                
-                if (completedPillars.length === 0) {
-                  return 'Complete at least one pillar to see your personalized strategic roadmap.';
-                }
-                
-                return `Based on your ${completedPillars.length} completed pillar${completedPillars.length > 1 ? 's' : ''}, this ${roadmapPhases.length}-phase roadmap prioritizes ${totalActions} targeted actions to close an average ${avgGap}-point maturity gap. Focus areas: ${topPillars}, with ${totalRecs} specific Databricks feature recommendations to accelerate your data platform transformation.`;
-              })()}
-            </p>
-
-            <RoadmapPhases>
-              {roadmapPhases.map((phase, index) => {
-                const isEditing = editingPhase === phase.id;
-                
-                return (
-                  <PhaseCard
-                    key={phase.id}
-                    $bgColor={phase.bgColor}
-                    $borderColor={phase.borderColor}
-                    $accentColor={phase.accentColor}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <div className="phase-header-container">
-                      <div className="phase-header">{phase.title}</div>
-                      <div className="phase-actions">
-                        {isEditing ? (
-                          <>
-                            <EditActionButton 
-                              $variant="success"
-                              onClick={() => handleSavePhase(phase.id)}
-                            >
-                              <FiSave size={12} />
-                            </EditActionButton>
-                            <EditActionButton 
-                              onClick={handleCancelPhaseEdit}
-                            >
-                              <FiX size={12} />
-                            </EditActionButton>
-                          </>
-                        ) : (
-                          <>
-                            <EditActionButton 
-                              onClick={() => handleEditPhase(phase.id, phase.items)}
-                            >
-                              <FiEdit3 size={12} />
-                            </EditActionButton>
-                            {customizations.phases[phase.id] && (
-                              <EditActionButton 
-                                $variant="danger"
-                                onClick={() => handleRemovePhaseCustomization(phase.id)}
-                              >
-                                <FiTrash2 size={12} />
-                              </EditActionButton>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {isEditing ? (
-                      <EditableTextarea
-                        value={editedContent.items || ''}
-                        onChange={(e) => setEditedContent({ items: e.target.value })}
-                        placeholder="Enter action items, one per line..."
-                        style={{ minHeight: '120px' }}
-                      />
-                    ) : (
-                      <ul>
-                        {phase.items.map((item, idx) => {
-                          const itemKey = `${phase.id}-item-${idx}`;
-                          const isEditingItem = editingPhaseItem === itemKey;
-                          
-                          return (
-                            <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
-                              <div style={{ flex: 1 }}>
-                                {isEditingItem ? (
-                                  <textarea
-                                    value={editedContent.itemText || ''}
-                                    onChange={(e) => setEditedContent({ itemText: e.target.value })}
-                                    style={{
-                                      width: '100%',
-                                      padding: '8px',
-                                      border: '2px solid #3b82f6',
-                                      borderRadius: '6px',
-                                      resize: 'vertical',
-                                      minHeight: '60px',
-                                      fontFamily: 'inherit',
-                                      fontSize: '0.95rem'
-                                    }}
-                                    autoFocus
-                                  />
-                                ) : (
-                                  item
-                                )}
-                              </div>
-                              <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                                {isEditingItem ? (
-                                  <>
-                                    <button
-                                      onClick={() => handleSavePhaseItem(phase.id, idx)}
-                                      style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
-                                        background: '#10b981',
-                                        color: '#6b7280',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontWeight: 600
-                                      }}
-                                    >
-                                      Save
-                                    </button>
-                                    <button
-                                      onClick={() => setEditingPhaseItem(null)}
-                                      style={{
-                                        padding: '4px 8px',
-                                        fontSize: '0.75rem',
-                                        background: '#9ca3af',
-                                        color: '#6b7280',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                      }}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <button
-                                      onClick={() => handleEditPhaseItem(phase.id, idx, item)}
-                                      style={{
-                                        padding: '6px',
-                                        fontSize: '0.75rem',
-                                        background: 'transparent',
-                                        color: '#6b7280',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                      }}
-                                      title="Edit item"
-                                    >
-                                      <FiEdit3 size={14} />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeletePhaseItem(phase.id, idx)}
-                                      style={{
-                                        padding: '6px',
-                                        fontSize: '0.75rem',
-                                        background: 'transparent',
-                                        color: '#6b7280',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                      }}
-                                      title="Delete item"
-                                    >
-                                      <FiTrash2 size={14} />
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </PhaseCard>
-                );
-              })}
-            </RoadmapPhases>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </RoadmapSection>
-
-          {/* Expected Business Impact */}
-          <ImpactSection>
-            <div 
-              onClick={() => toggleSection('business-impact')} 
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: '24px',
-                cursor: 'pointer'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                <SectionTitle style={{ marginBottom: 0 }}>Expected Business Impact</SectionTitle>
-                <div style={{ color: '#6b7280' }}>
-                  {customizations.collapsedSections['business-impact'] ? (
-                    <FiChevronDown size={24} />
-                  ) : (
-                    <FiChevronUp size={24} />
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddImpactMetric();
-                }}
-                style={{
-                  background: 'transparent',
-                  color: '#6b7280',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  fontSize: '1.3rem',
-                  fontWeight: 'bold',
-                  lineHeight: '1'
-                }}
-                title="Add new impact metric"
-              >
-                +
-              </button>
-            </div>
-            
-            <AnimatePresence>
-              {!customizations.collapsedSections['business-impact'] && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ overflow: 'hidden' }}
-                >
-            <ImpactMetrics>
-              {/* Dynamically render all impact metrics from businessImpact */}
-              {resultsData?.businessImpact && Object.entries(resultsData.businessImpact).map(([metricKey, metricData], index) => {
-                const isEditing = editingImpactMetric === metricKey;
-                const metric = customizations.impactMetrics[metricKey] || metricData || { value: 'N/A', label: 'Impact metric', drivers: [] };
-                
-                // Skip if deleted
-                if (customizations.impactMetrics[metricKey] === null) {
-                  return null;
-                }
-                
-                return (
-                  <MetricCard
-                    key={metricKey}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
-                  >
-                    {isEditing ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <input
-                          value={editedContent[`${metricKey}-value`] || ''}
-                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
-                          placeholder="Value (e.g., 2.8× or 15%)"
-                          style={{
-                            fontSize: '1.5rem',
-                            fontWeight: 'bold',
-                            padding: '8px',
-                            border: '1px solid #3b82f6',
-                            borderRadius: '6px'
-                          }}
-                        />
-                        <textarea
-                          value={editedContent[`${metricKey}-label`] || ''}
-                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
-                          placeholder="Label/Description"
-                          style={{
-                            fontSize: '0.9rem',
-                            padding: '8px',
-                            border: '1px solid #3b82f6',
-                            borderRadius: '6px',
-                            resize: 'vertical',
-                            minHeight: '60px',
-                            fontFamily: 'inherit'
-                          }}
-                        />
-                        <input
-                          value={editedContent[`${metricKey}-drivers`] || ''}
-                          onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
-                          placeholder="Key drivers (comma-separated)"
-                          style={{
-                            fontSize: '0.75rem',
-                            padding: '6px',
-                            border: '1px solid #3b82f6',
-                            borderRadius: '6px'
-                          }}
-                        />
-                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                          <button
-                            onClick={() => handleSaveImpactMetric(metricKey)}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '0.8rem',
-                              background: 'transparent',
-                              color: '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontWeight: 600
-                            }}
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingImpactMetric(null)}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '0.8rem',
-                              background: '#9ca3af',
-                              color: '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
-                          <button
-                            onClick={() => handleEditImpactMetric(metricKey, metric)}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '0.75rem',
-                              background: 'transparent',
-                              color: '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: 'pointer'
-                            }}
-                          >
-                                      <FiEdit3 size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteImpactMetric(metricKey)}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '0.75rem',
-                              background: 'transparent',
-                              color: '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: 'pointer'
-                            }}
-                          >
-                                      <FiTrash2 size={14} />
-                          </button>
-                        </div>
-                        <div className="metric-value">{metric.value}</div>
-                        <div className="metric-label">{metric.label}</div>
-                        {metric.drivers && metric.drivers.length > 0 && (
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                            Key drivers: {metric.drivers.join(', ')}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </MetricCard>
-                );
-              })}
-              
-              {/* All metrics now dynamically generated from businessImpact data */}
-              
-              {/* Render newly added metrics */}
-              {customizations.newImpactMetrics && customizations.newImpactMetrics.map((newMetric, idx) => {
-                const metricKey = `new-metric-${idx}`;
-                const isEditing = editingImpactMetric === metricKey;
-                
-                return (
-                <MetricCard
-                  key={`new-${idx}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
-                  style={{ position: 'relative', border: isEditing ? '2px solid #3b82f6' : undefined }}
-                >
-                  {isEditing ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <input
-                        value={editedContent[`${metricKey}-value`] || ''}
-                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-value`]: e.target.value })}
-                        placeholder="Value (e.g., 2.8× or 15%)"
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          padding: '8px',
-                          border: '1px solid #3b82f6',
-                          borderRadius: '6px'
-                        }}
-                      />
-                      <textarea
-                        value={editedContent[`${metricKey}-label`] || ''}
-                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-label`]: e.target.value })}
-                        placeholder="Label/Description"
-                        style={{
-                          fontSize: '0.9rem',
-                          padding: '8px',
-                          border: '1px solid #3b82f6',
-                          borderRadius: '6px',
-                          resize: 'vertical',
-                          minHeight: '60px',
-                          fontFamily: 'inherit'
-                        }}
-                      />
-                      <input
-                        value={editedContent[`${metricKey}-drivers`] || ''}
-                        onChange={(e) => setEditedContent({ ...editedContent, [`${metricKey}-drivers`]: e.target.value })}
-                        placeholder="Key drivers (comma-separated)"
-                        style={{
-                          fontSize: '0.75rem',
-                          padding: '6px',
-                          border: '1px solid #3b82f6',
-                          borderRadius: '6px'
-                        }}
-                      />
-                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                        <button
-                          onClick={() => handleSaveEditedNewImpactMetric(idx)}
-                          style={{
-                            padding: '6px 14px',
-                            fontSize: '0.8rem',
-                            background: 'transparent',
-                            color: '#6b7280',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontWeight: 600
-                          }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingImpactMetric(null)}
-                          style={{
-                            padding: '6px 14px',
-                            fontSize: '0.8rem',
-                            background: '#9ca3af',
-                            color: '#6b7280',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '6px' }}>
-                        <button
-                          onClick={() => handleEditNewImpactMetric(idx, newMetric)}
-                          style={{
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            background: 'transparent',
-                            color: '#6b7280',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                                      <FiEdit3 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteNewImpactMetric(idx)}
-                          style={{
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            background: 'transparent',
-                            color: '#6b7280',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                                      <FiTrash2 size={14} />
-                        </button>
-                      </div>
-                      <div className="metric-value">{newMetric.value}</div>
-                      <div className="metric-label">{newMetric.label}</div>
-                      {newMetric.drivers && newMetric.drivers.length > 0 && (
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px', fontStyle: 'italic' }}>
-                          Key drivers: {newMetric.drivers.join(', ')}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </MetricCard>
-              )}
-              )}
-              
-              {/* Form for adding new metric */}
-              {addingImpactMetric && (
-                <MetricCard
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4 }}
-                  style={{ border: '2px solid #3b82f6' }}
-                >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <input
-                      value={editedContent['new-metric-value'] || ''}
-                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-value': e.target.value })}
-                      placeholder="Value (e.g., 2.8× or 15%)"
-                      style={{
-                        fontSize: '1.5rem',
-                        fontWeight: 'bold',
-                        padding: '8px',
-                        border: '1px solid #3b82f6',
-                        borderRadius: '6px'
-                      }}
-                      autoFocus
-                    />
-                    <textarea
-                      value={editedContent['new-metric-label'] || ''}
-                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-label': e.target.value })}
-                      placeholder="Label/Description"
-                      style={{
-                        fontSize: '0.9rem',
-                        padding: '8px',
-                        border: '1px solid #3b82f6',
-                        borderRadius: '6px',
-                        resize: 'vertical',
-                        minHeight: '60px',
-                        fontFamily: 'inherit'
-                      }}
-                    />
-                    <input
-                      value={editedContent['new-metric-drivers'] || ''}
-                      onChange={(e) => setEditedContent({ ...editedContent, 'new-metric-drivers': e.target.value })}
-                      placeholder="Key drivers (comma-separated, optional)"
-                      style={{
-                        fontSize: '0.75rem',
-                        padding: '6px',
-                        border: '1px solid #3b82f6',
-                        borderRadius: '6px'
-                      }}
-                    />
-                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                      <button
-                        onClick={handleSaveNewImpactMetric}
-                        style={{
-                          padding: '6px 12px',
-                          fontSize: '0.8rem',
-                          background: 'transparent',
-                          color: '#6b7280',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 600
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setAddingImpactMetric(false)}
-                        style={{
-                          padding: '6px 12px',
-                          fontSize: '0.8rem',
-                          background: '#9ca3af',
-                          color: '#6b7280',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </MetricCard>
-              )}
-            </ImpactMetrics>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </ImpactSection>
 
         </ReportBody>
           </>
         )}
         {/* End of conditional results rendering */}
       </ReportContainer>
+
+      {/* Footer */}
+      <Footer />
     </PageContainer>
   );
 };

@@ -948,11 +948,15 @@ const Dashboard = () => {
       const response = await assessmentService.getDashboardStats();
       const data = response?.data || response;
       
-      // If no data or no meaningful scores, use sample data
+      // Always fetch real assessments
+      const assessmentsResponse = await assessmentService.getAllAssessments();
+      const realAssessments = assessmentsResponse?.data || assessmentsResponse || [];
+      
+      // If no data or no meaningful scores, use sample data for statistics but real assessments
       const avgScore = parseFloat(data?.avgMaturityLevel || '0');
       const totalAssessments = parseInt(data?.totalAssessments || '0');
       
-      // 🚨 Use sample data if:
+      // 🚨 Use sample data for stats if:
       // - No assessments exist, OR
       // - Average score is 0 (no completed pillars), OR
       // - Missing required fields (industryBreakdown, pillarBreakdown, etc.)
@@ -961,27 +965,65 @@ const Dashboard = () => {
         totalAssessments === 0 || 
         avgScore === 0 ||
         !data.industryBreakdown ||
-        !data.pillarBreakdown ||
-        !data.recentAssessments;
+        !data.pillarBreakdown;
       
       if (hasInsufficientData) {
-        console.log('[Dashboard] Insufficient data detected:', {
+        console.log('[Dashboard] Insufficient stats detected:', {
           totalAssessments,
           avgScore,
           hasIndustryBreakdown: !!data?.industryBreakdown,
-          hasPillarBreakdown: !!data?.pillarBreakdown,
-          hasRecentAssessments: !!data?.recentAssessments
+          hasPillarBreakdown: !!data?.pillarBreakdown
         });
-        console.log('[Dashboard] Using sample data for better UX');
-        setDashboardData(getSampleDashboardData());
+        console.log('[Dashboard] Using sample stats but REAL assessments');
+        const sampleData = getSampleDashboardData();
+        // Replace sample assessments with real ones
+        sampleData.recentAssessments = realAssessments.slice(0, 5).map(a => ({
+          id: a.id,
+          organizationName: a.organizationName || a.assessmentName || 'Unnamed Assessment',
+          industry: a.industry || 'Not specified',
+          status: a.status || 'in_progress',
+          overallScore: a.overallScore || 0,
+          startedAt: a.startedAt || a.createdAt,
+          completionTime: a.completionTime || null
+        }));
+        setDashboardData(sampleData);
       } else {
         console.log('[Dashboard] Using real data (totalAssessments:', totalAssessments, 'avgScore:', avgScore, ')');
+        // Ensure real assessments are included
+        if (!data.recentAssessments || data.recentAssessments.length === 0) {
+          data.recentAssessments = realAssessments.slice(0, 5).map(a => ({
+            id: a.id,
+            organizationName: a.organizationName || a.assessmentName || 'Unnamed Assessment',
+            industry: a.industry || 'Not specified',
+            status: a.status || 'in_progress',
+            overallScore: a.overallScore || 0,
+            startedAt: a.startedAt || a.createdAt,
+            completionTime: a.completionTime || null
+          }));
+        }
         setDashboardData(data);
       }
     } catch (error) {
       console.error('[Dashboard] Error:', error);
-      console.log('[Dashboard] Using sample data due to error');
-      setDashboardData(getSampleDashboardData());
+      // Even on error, try to show real assessments
+      try {
+        const assessmentsResponse = await assessmentService.getAllAssessments();
+        const realAssessments = assessmentsResponse?.data || assessmentsResponse || [];
+        const sampleData = getSampleDashboardData();
+        sampleData.recentAssessments = realAssessments.slice(0, 5).map(a => ({
+          id: a.id,
+          organizationName: a.organizationName || a.assessmentName || 'Unnamed Assessment',
+          industry: a.industry || 'Not specified',
+          status: a.status || 'in_progress',
+          overallScore: a.overallScore || 0,
+          startedAt: a.startedAt || a.createdAt,
+          completionTime: a.completionTime || null
+        }));
+        setDashboardData(sampleData);
+      } catch (err) {
+        console.error('[Dashboard] Failed to fetch assessments:', err);
+        setDashboardData(getSampleDashboardData());
+      }
     } finally {
       setLoading(false);
     }

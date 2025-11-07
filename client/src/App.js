@@ -18,6 +18,8 @@ import Dashboard from './components/DashboardNew';
 import LoadingSpinner from './components/LoadingSpinner';
 import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
 import AssessmentHistory from './components/AssessmentHistory';
+import DeepDive from './components/DeepDive';
+import IndustryBenchmarkingReport from './components/IndustryBenchmarkingReport';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -212,6 +214,11 @@ function App() {
           />
           
           <Route 
+            path="/deep-dive" 
+            element={<DeepDive />} 
+          />
+          
+          <Route 
             path="/dashboard" 
             element={
               <AssessmentDashboard 
@@ -268,6 +275,11 @@ function App() {
           <Route 
             path="/executive/:assessmentId" 
             element={<ExecutiveCommandCenter />} 
+          />
+          
+          <Route 
+            path="/benchmarks/:assessmentId" 
+            element={<IndustryBenchmarkingReport />} 
           />
           
           <Route 

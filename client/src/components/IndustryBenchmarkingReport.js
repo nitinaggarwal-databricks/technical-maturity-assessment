@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import Footer from './Footer';
 import {
   FiAward,
   FiTrendingUp,
@@ -14,8 +16,11 @@ import {
   FiShield,
   FiChevronDown,
   FiChevronUp,
-  FiDownload
+  FiDownload,
+  FiArrowLeft,
+  FiHome
 } from 'react-icons/fi';
+import * as assessmentService from '../services/assessmentService';
 import {
   RadarChart,
   PolarGrid,
@@ -90,6 +95,40 @@ const GlobalPrintStyles = createGlobalStyle`
 `;
 
 // ... (keeping all the styled components from before, adding more)
+
+const PageHeader = styled.div`
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media print {
+    display: none !important;
+  }
+`;
+
+const BackButton = styled(motion.button)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    transform: translateX(-4px);
+  }
+`;
 
 const ReportContainer = styled(motion.div)`
   background: #ffffff;
@@ -452,12 +491,62 @@ const DownloadButton = styled(motion.button)`
   }
 `;
 
-const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, pillarScores }) => {
+const IndustryBenchmarkingReport = () => {
+  const { assessmentId } = useParams();
+  const navigate = useNavigate();
   const [collapsedSections, setCollapsedSections] = useState({});
   const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState(null);
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate loading
+    // Fetch assessment results
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await assessmentService.getAssessmentResults(assessmentId);
+        setResults(response.data || response);
+      } catch (err) {
+        console.error('Error fetching assessment data:', err);
+        setError('Failed to load assessment data');
+        setLoading(false);
+      }
+    };
+    
+    if (assessmentId) {
+      fetchData();
+    }
+  }, [assessmentId]);
+
+  // Fetch benchmark data separately
+  useEffect(() => {
+    const fetchBenchmarkData = async () => {
+      if (!results) return;
+      
+      try {
+        const data = await assessmentService.getBenchmarkReport(assessmentId);
+        setBenchmarkData(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching benchmark data:', err);
+        setBenchmarkData(null);
+        setLoading(false);
+      }
+    };
+
+    if (results && !benchmarkData) {
+      fetchBenchmarkData();
+    }
+  }, [results, benchmarkData, assessmentId]);
+
+  // Extract data from results
+  const assessment = results?.assessmentInfo;
+  const overallScore = results?.overall?.currentScore || results?.overallScore || 0;
+  const pillarScores = results?.categoryDetails || {};
+
+  useEffect(() => {
+    // Original loading simulation
     setTimeout(() => setLoading(false), 500);
   }, []);
 
@@ -534,6 +623,26 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
   return (
     <>
       <GlobalPrintStyles />
+      
+      <PageHeader>
+        <BackButton
+          onClick={() => navigate(`/executive/${assessmentId}`)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FiArrowLeft size={18} />
+          Back to Executive Command Center
+        </BackButton>
+        <BackButton
+          onClick={() => navigate('/')}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FiHome size={18} />
+          Home
+        </BackButton>
+      </PageHeader>
+
       <ReportContainer
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -546,16 +655,6 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
         <ReportSubtitle>
           Data Platform Maturity Analysis  •  {assessment?.industry || 'Industry'}  •  {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </ReportSubtitle>
-        <div style={{ marginTop: '24px', display: 'flex', gap: '16px', position: 'relative', zIndex: 1 }}>
-          <DownloadButton 
-            onClick={handleDownloadReport}
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiDownload size={18} />
-            Download Report
-          </DownloadButton>
-        </div>
       </ReportHeader>
 
       {/* Executive Summary */}
@@ -915,6 +1014,9 @@ const IndustryBenchmarkingReport = ({ assessment, benchmarkData, overallScore, p
         </div>
       </Section>
     </ReportContainer>
+
+    {/* Footer */}
+    <Footer />
     </>
   );
 };

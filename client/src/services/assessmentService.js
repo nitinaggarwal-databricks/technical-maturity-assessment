@@ -460,6 +460,19 @@ export const validateResponses = (questions, responses) => {
   return errors;
 };
 
+/**
+ * Fetch logo from external URL via backend proxy (bypasses CORS)
+ */
+export const fetchLogoFromURL = async (url) => {
+  try {
+    const response = await api.post('/fetch-logo', { url });
+    return response;
+  } catch (error) {
+    console.error('Error fetching logo from URL:', error);
+    throw error;
+  }
+};
+
 export default api;
 
 

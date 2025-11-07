@@ -9,8 +9,12 @@ import {
   FiTarget,
   FiZap,
   FiShield,
-  FiClock
+  FiClock,
+  FiEdit2,
+  FiTrash2,
+  FiPlus
 } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 // =====================
 // STYLED COMPONENTS
@@ -102,6 +106,7 @@ const MetricsGrid = styled.div`
 `;
 
 const MetricCard = styled(motion.div)`
+  position: relative;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -267,6 +272,7 @@ const ImperativesSection = styled.div`
 `;
 
 const ImperativeCard = styled(motion.div)`
+  position: relative;
   background: white;
   border: 2px solid #e5e7eb;
   border-left: 4px solid ${props => props.$color || '#3b82f6'};
@@ -337,6 +343,217 @@ const ImpactBadge = styled.span`
   white-space: nowrap;
 `;
 
+// Interactive Elements
+const CardActions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+
+  ${MetricCard}:hover &,
+  ${ImperativeCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  @media print {
+    display: none !important;
+  }
+`;
+
+const IconButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const AddButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  margin-bottom: 16px;
+
+  ${ImperativesSection}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media print {
+    display: none !important;
+  }
+`;
+
+// Modal Styled Components
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+`;
+
+const ModalContent = styled(motion.div)`
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Label = styled.label`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+`;
+
+const Input = styled.input`
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+`;
+
+const TextArea = styled.textarea`
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-height: 100px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+`;
+
+const Button = styled.button`
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  ${props => props.$variant === 'primary' ? `
+    background: #3b82f6;
+    color: white;
+    &:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+  ` : `
+    background: #f1f5f9;
+    color: #64748b;
+    &:hover {
+      background: #e2e8f0;
+    }
+  `}
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 // =====================
 // COMPONENT
 // =====================
@@ -345,6 +562,21 @@ const ExecutiveDashboard = ({ results, assessment }) => {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [animatedRevenue, setAnimatedRevenue] = useState(0);
   const [animatedRisks, setAnimatedRisks] = useState(0);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'imperative'
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    impact: '',
+    timeline: '',
+    priority: '',
+    color: ''
+  });
+
+  // Editable strategic imperatives
+  const [imperatives, setImperatives] = useState([]);
 
   // FIX: API returns results.overall.currentScore, not results.overallScore
   const overallScore = results?.overall?.currentScore || results?.overallScore || 0;
@@ -363,8 +595,16 @@ const ExecutiveDashboard = ({ results, assessment }) => {
   // Calculate competitive position (percentile)
   const competitivePosition = calculateCompetitivePosition(overallScore);
   
-  // Get top 3 strategic imperatives
-  const strategicImperatives = getStrategicImperatives(results, categoryDetails);
+  // Get top 3 strategic imperatives (initial load)
+  const strategicImperatives = imperatives.length > 0 ? imperatives : getStrategicImperatives(results, categoryDetails);
+
+  // Initialize imperatives on first load
+  useEffect(() => {
+    if (imperatives.length === 0 && results) {
+      const initialImperatives = getStrategicImperatives(results, categoryDetails);
+      setImperatives(initialImperatives);
+    }
+  }, [results, categoryDetails, imperatives.length]);
 
   // Animate numbers on mount
   useEffect(() => {
@@ -391,6 +631,66 @@ const ExecutiveDashboard = ({ results, assessment }) => {
 
     return () => clearInterval(timer);
   }, [overallScore, revenueOpportunity, riskExposure.count]);
+
+  // Handler functions
+  const handleAdd = () => {
+    setModalType('imperative');
+    setEditingItem(null);
+    setFormData({
+      title: '',
+      impact: '',
+      timeline: '',
+      priority: 'Medium',
+      color: '#3b82f6'
+    });
+    setModalOpen(true);
+  };
+
+  const handleEdit = (type, item, index) => {
+    setModalType(type);
+    setEditingItem({ ...item, index });
+    setFormData({
+      title: item.title || '',
+      impact: item.impact || '',
+      timeline: item.timeline || '',
+      priority: item.priority || 'Medium',
+      color: item.color || '#3b82f6'
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = (type, index) => {
+    if (type === 'imperative') {
+      setImperatives(prev => prev.filter((_, i) => i !== index));
+      toast.success('Strategic imperative deleted');
+    }
+  };
+
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    
+    if (modalType === 'imperative') {
+      if (editingItem !== null) {
+        // Edit existing
+        setImperatives(prev => prev.map((imp, i) => 
+          i === editingItem.index ? { ...formData } : imp
+        ));
+        toast.success('Strategic imperative updated');
+      } else {
+        // Add new
+        setImperatives(prev => [...prev, { ...formData, id: Date.now() }]);
+        toast.success('Strategic imperative added');
+      }
+    }
+    
+    setModalOpen(false);
+    setEditingItem(null);
+  };
+
+  const handleCancel = () => {
+    setModalOpen(false);
+    setEditingItem(null);
+  };
 
   return (
     <DashboardContainer>
@@ -517,18 +817,32 @@ const ExecutiveDashboard = ({ results, assessment }) => {
 
       {/* Top 3 Strategic Imperatives */}
       <ImperativesSection>
-        <SectionTitle>
-          <FiZap />
-          Top 3 Strategic Imperatives
-        </SectionTitle>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <SectionTitle style={{ margin: 0 }}>
+            <FiZap />
+            Top 3 Strategic Imperatives
+          </SectionTitle>
+          <AddButton onClick={handleAdd}>
+            <FiPlus size={16} />
+            Add Imperative
+          </AddButton>
+        </div>
         {strategicImperatives.map((imperative, index) => (
           <ImperativeCard
-            key={index}
+            key={imperative.id || index}
             $color={imperative.color}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
           >
+            <CardActions>
+              <IconButton onClick={() => handleEdit('imperative', imperative, index)} title="Edit">
+                <FiEdit2 size={14} />
+              </IconButton>
+              <IconButton onClick={() => handleDelete('imperative', index)} title="Delete">
+                <FiTrash2 size={14} />
+              </IconButton>
+            </CardActions>
             <ImperativeHeader>
               <ImperativeNumber $color={imperative.color}>
                 {index + 1}
@@ -554,6 +868,101 @@ const ExecutiveDashboard = ({ results, assessment }) => {
           </ImperativeCard>
         ))}
       </ImperativesSection>
+
+      {/* Edit Modal */}
+      {modalOpen && (
+        <ModalOverlay onClick={handleCancel}>
+          <ModalContent
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ModalTitle>
+              <FiZap />
+              {editingItem ? 'Edit Strategic Imperative' : 'Add Strategic Imperative'}
+            </ModalTitle>
+            <Form onSubmit={handleSubmitForm}>
+              <FormGroup>
+                <Label>Title</Label>
+                <Input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g., Deploy Unity Catalog for centralized governance"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Impact</Label>
+                <Input
+                  type="text"
+                  value={formData.impact}
+                  onChange={(e) => setFormData({ ...formData, impact: e.target.value })}
+                  placeholder="e.g., Reduce compliance risk 60%"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Timeline</Label>
+                <Input
+                  type="text"
+                  value={formData.timeline}
+                  onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                  placeholder="e.g., 4-6 weeks"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Priority</Label>
+                <select
+                  value={formData.priority}
+                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                  style={{
+                    padding: '12px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '1rem'
+                  }}
+                >
+                  <option value="Critical">Critical</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Color</Label>
+                <input
+                  type="color"
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                />
+              </FormGroup>
+
+              <ButtonGroup>
+                <Button type="button" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="submit" $variant="primary">
+                  {editingItem ? 'Update' : 'Add'} Imperative
+                </Button>
+              </ButtonGroup>
+            </Form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </DashboardContainer>
   );
 };

@@ -750,6 +750,7 @@ const GlobalNav = () => {
           <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
           <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
           <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
+          <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
         </TopNav>
 
         <ActionButtons>
@@ -781,6 +782,7 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
         <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
           Dashboard
         </MobileSecondaryCTAButton>

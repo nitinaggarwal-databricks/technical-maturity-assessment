@@ -124,6 +124,196 @@ app.get('/status', async (req, res) => {
   }
 });
 
+// Fetch logo from external URL (bypasses CORS) - with intelligent logo detection
+app.post('/api/fetch-logo', async (req, res) => {
+  try {
+    const { url } = req.body;
+    
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        message: 'URL is required'
+      });
+    }
+
+    // Validate URL format
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(url);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid URL format'
+      });
+    }
+
+    const axios = require('axios');
+    const cheerio = require('cheerio');
+    
+    console.log(`[fetch-logo] Processing URL: ${url}`);
+    
+    // Helper function to fetch an image and convert to data URL
+    const fetchImageAsDataUrl = async (imageUrl) => {
+      try {
+        const fullUrl = new URL(imageUrl, url).href;
+        console.log(`[fetch-logo] Fetching image: ${fullUrl}`);
+        
+        const response = await axios.get(fullUrl, {
+          responseType: 'arraybuffer',
+          timeout: 10000,
+          maxRedirects: 5,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+          }
+        });
+        
+        const contentType = response.headers['content-type'];
+        if (!contentType || !contentType.startsWith('image/')) {
+          throw new Error('Not an image');
+        }
+        
+        const base64 = Buffer.from(response.data).toString('base64');
+        return `data:${contentType};base64,${base64}`;
+      } catch (error) {
+        console.error(`[fetch-logo] Error fetching image ${imageUrl}:`, error.message);
+        throw error;
+      }
+    };
+    
+    // First, try to fetch the URL to see what we get
+    try {
+      const response = await axios.get(url, {
+        timeout: 10000,
+        maxRedirects: 5,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        },
+        validateStatus: (status) => status < 400
+      });
+      
+      const contentType = response.headers['content-type'];
+      console.log(`[fetch-logo] Content-Type: ${contentType}`);
+      
+      // If it's already an image, return it directly
+      if (contentType && contentType.startsWith('image/')) {
+        const base64 = Buffer.from(response.data).toString('base64');
+        const dataUrl = `data:${contentType};base64,${base64}`;
+        
+        console.log(`[fetch-logo] ✅ Direct image found`);
+        return res.json({
+          success: true,
+          data: dataUrl
+        });
+      }
+      
+      // If it's HTML, parse it to find the logo
+      if (contentType && contentType.includes('html')) {
+        const $ = cheerio.load(response.data);
+        const logoStrategies = [];
+        
+        console.log(`[fetch-logo] Parsing HTML to find logo...`);
+        
+        // Strategy 1: Look for SVG logos (best quality, scalable, usually transparent)
+        const $svgLogo = $('img[src*=".svg" i][class*="logo" i], img[src*=".svg" i][id*="logo" i], img[src*=".svg" i][alt*="logo" i]').first();
+        const svgLogoSrc = $svgLogo.attr('src');
+        if (svgLogoSrc) logoStrategies.push({ name: 'SVG logo', url: svgLogoSrc, priority: 1 });
+        
+        // Strategy 2: Look for PNG logos with "logo" in the name (usually high quality, often transparent)
+        const $pngLogo = $('img[src*="logo" i][src*=".png" i]').first();
+        const pngLogoSrc = $pngLogo.attr('src');
+        if (pngLogoSrc) logoStrategies.push({ name: 'PNG logo', url: pngLogoSrc, priority: 2 });
+        
+        // Strategy 3: Look for any img with logo in class/id/alt
+        const $logoImg = $('img[class*="logo" i], img[id*="logo" i], img[alt*="logo" i]').first();
+        const logoImgSrc = $logoImg.attr('src');
+        if (logoImgSrc) logoStrategies.push({ name: 'Logo img', url: logoImgSrc, priority: 3 });
+        
+        // Strategy 4: Look for Open Graph image (usually high quality)
+        const ogImage = $('meta[property="og:image"]').attr('content');
+        if (ogImage) logoStrategies.push({ name: 'OG image', url: ogImage, priority: 4 });
+        
+        // Strategy 5: Look for Twitter card image (usually high quality)
+        const twitterImage = $('meta[name="twitter:image"]').attr('content');
+        if (twitterImage) logoStrategies.push({ name: 'Twitter image', url: twitterImage, priority: 5 });
+        
+        // Strategy 6: Look for apple-touch-icon (high quality)
+        const appleTouchIcon = $('link[rel="apple-touch-icon"]').attr('href');
+        if (appleTouchIcon) logoStrategies.push({ name: 'Apple touch icon', url: appleTouchIcon, priority: 6 });
+        
+        // Strategy 7: Look for shortcut icon
+        const shortcutIcon = $('link[rel="shortcut icon"]').attr('href');
+        if (shortcutIcon) logoStrategies.push({ name: 'Shortcut icon', url: shortcutIcon, priority: 7 });
+        
+        // Strategy 8: Look for standard favicon
+        const favicon = $('link[rel="icon"]').attr('href');
+        if (favicon) logoStrategies.push({ name: 'Favicon', url: favicon, priority: 8 });
+        
+        // Strategy 9: Try Unavatar service (aggregates multiple sources, often transparent)
+        const domain = new URL(url).hostname.replace('www.', '');
+        logoStrategies.push({ name: 'Unavatar service', url: `https://unavatar.io/${domain}?fallback=false`, priority: 9 });
+        
+        // Strategy 10: Try Clearbit Logo API (good quality but may have white backgrounds)
+        logoStrategies.push({ name: 'Clearbit API', url: `https://logo.clearbit.com/${domain}`, priority: 20 });
+        
+        // Strategy 11: Try Google Favicon Service (256x256, last resort)
+        logoStrategies.push({ name: 'Google Favicon', url: `https://www.google.com/s2/favicons?domain=${domain}&sz=256`, priority: 90 });
+        
+        // Strategy 12: Default favicon.ico (absolute last resort)
+        logoStrategies.push({ name: 'Default favicon', url: '/favicon.ico', priority: 99 });
+        
+        // Sort strategies by priority (lower number = higher priority)
+        logoStrategies.sort((a, b) => (a.priority || 50) - (b.priority || 50));
+        
+        console.log(`[fetch-logo] Found ${logoStrategies.length} potential logo URLs`);
+        
+        // Try each strategy in priority order until one succeeds
+        for (const strategy of logoStrategies) {
+          try {
+            console.log(`[fetch-logo] Trying ${strategy.name}: ${strategy.url}`);
+            const dataUrl = await fetchImageAsDataUrl(strategy.url);
+            console.log(`[fetch-logo] ✅ Successfully fetched logo using ${strategy.name}`);
+            return res.json({
+              success: true,
+              data: dataUrl
+            });
+          } catch (error) {
+            console.log(`[fetch-logo] ❌ ${strategy.name} failed: ${error.message}`);
+            // Continue to next strategy
+          }
+        }
+        
+        // If all strategies failed
+        return res.status(404).json({
+          success: false,
+          message: 'Could not fetch logo - tried all available strategies'
+        });
+      }
+      
+      // Neither image nor HTML
+      return res.status(400).json({
+        success: false,
+        message: 'URL does not point to an image or webpage'
+      });
+      
+    } catch (error) {
+      console.error('[fetch-logo] Error:', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch URL',
+        error: error.message
+      });
+    }
+    
+  } catch (error) {
+    console.error('[fetch-logo] Unexpected error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching logo',
+      error: error.message
+    });
+  }
+});
+
 // Get assessment framework
 app.get('/api/assessment/framework', async (req, res) => {
   try {
