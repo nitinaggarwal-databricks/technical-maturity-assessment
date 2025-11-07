@@ -338,6 +338,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
+  align-items: stretch;
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -401,6 +402,10 @@ const CardDescription = styled.p`
 `;
 
 const PillarCard = styled(Card)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .pillar-header {
     display: flex;
     align-items: center;
@@ -424,6 +429,7 @@ const PillarCard = styled(Card)`
     color: #64748b;
     margin-bottom: 20px;
     line-height: 1.6;
+    min-height: 3.6em;
   }
 
   .dimensions-label {
@@ -439,6 +445,8 @@ const PillarCard = styled(Card)`
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    flex: 1;
+    align-content: flex-start;
   }
 
   .dimension-tag {
@@ -448,6 +456,7 @@ const PillarCard = styled(Card)`
     color: #475569;
     border-radius: 6px;
     border: 1px solid #e2e8f0;
+    height: fit-content;
   }
 
   .explore-btn {
