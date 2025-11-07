@@ -26,8 +26,8 @@ const Nav = styled.nav`
 const NavContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0px;
+  justify-content: space-between;
+  gap: 48px;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
@@ -58,7 +58,6 @@ const TopNav = styled.div`
   display: flex;
   align-items: center;
   gap: 32px;
-  flex: 1;
 
   @media (max-width: 1400px) {
     gap: 20px;
@@ -81,7 +80,6 @@ const ActionButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: auto;
   
   @media (max-width: 640px) {
     display: none;
