@@ -2906,41 +2906,33 @@ const AssessmentResultsNew = () => {
             const premiumColors = {
               'platform_governance': {
                 primary: '#1B3B6F',
-                gradient: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-                border: '#cbd5e1',
                 text: '#1e293b'
               },
               'data_engineering': {
                 primary: '#059669',
-                gradient: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
-                border: '#86efac',
-                text: '#065f46'
+                text: '#1e293b'
               },
               'analytics_bi': {
                 primary: '#00A972',
-                gradient: 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%)',
-                border: '#34d399',
-                text: '#064e3b'
+                text: '#1e293b'
               },
               'machine_learning': {
                 primary: '#7c3aed',
-                gradient: 'linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)',
-                border: '#c4b5fd',
-                text: '#5b21b6'
+                text: '#1e293b'
               },
               'generative_ai': {
                 primary: '#FF3621',
-                gradient: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)',
-                border: '#fb923c',
-                text: '#c2410c'
+                text: '#1e293b'
               },
               'operational_excellence': {
                 primary: '#475569',
-                gradient: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                border: '#cbd5e1',
-                text: '#334155'
+                text: '#1e293b'
               }
             };
+            
+            // Unified premium background for all pillars
+            const unifiedGradient = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+            const unifiedBorder = '#e2e8f0';
             
             const pillarColorScheme = premiumColors[pillar.id] || premiumColors['operational_excellence'];
             const pillarColor = customizations.pillarColors[pillar.id] || pillarColorScheme.primary;
@@ -2988,8 +2980,8 @@ const AssessmentResultsNew = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <PillarHeader
-                  $gradient={pillarColorScheme.gradient}
-                  $borderColor={pillarColorScheme.border}
+                  $gradient={unifiedGradient}
+                  $borderColor={unifiedBorder}
                   $accentColor={pillarColor}
                   $textColor={pillarColorScheme.text}
                 >
