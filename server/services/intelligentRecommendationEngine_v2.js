@@ -743,26 +743,57 @@ class IntelligentRecommendationEngine {
                  commentText.includes('difficult');
         });
         
-        // 🎯 BUILD THE "WHY" - prioritize feature-specific benefits
+        // 🎯 BUILD THE "WHY" - prioritize feature-specific benefits (ALWAYS UNIQUE)
         let reason = '';
         if (relatedComment && relatedComment.comment) {
           // Extract first 100 chars of user comment
           const userIssue = relatedComment.comment.substring(0, 100);
           reason = `Addresses your challenge: "${userIssue}${relatedComment.comment.length > 100 ? '...' : ''}"`;
         } else {
-          // 🔥 PRIORITIZE: Use feature's own benefit/description FIRST
+          // 🔥 STRATEGY 1: Use feature's own benefit/description
           const featureBenefit = f.benefits?.[0] || f.short_description || f.description;
-          if (featureBenefit && featureBenefit.length > 20) {
+          
+          // 🔥 STRATEGY 2: Create unique reason based on feature name + context
+          const uniqueReasonMap = {
+            // GenAI Features
+            'Mosaic AI Model Serving': 'Deploy production-ready AI models with built-in governance and monitoring',
+            'AI Gateway': 'Centralized gateway for LLM usage with governance, cost tracking, and quality control',
+            'Lakehouse Monitoring': 'Automated monitoring for data quality, schema changes, and model performance',
+            'System Tables': 'Built-in queryable logs for usage tracking, billing analysis, and audit compliance',
+            'Vector Search': 'High-performance vector similarity search for RAG applications',
+            'AI Functions': 'Call LLMs directly from SQL for AI-powered data transformations',
+            'Agent Framework': 'Build and deploy multi-step AI agents with tool integration',
+            'Unity Catalog for AI': 'Govern AI models, prompts, and feature sets with centralized catalog',
+            // ML Features
+            'MLflow': 'End-to-end ML lifecycle management with experiment tracking and model registry',
+            'Feature Store': 'Centralized repository for ML features with version control and lineage',
+            'AutoML': 'Automated machine learning for rapid model development',
+            // Data Engineering Features
+            'Delta Live Tables': 'Declarative ETL pipelines with built-in quality controls',
+            'Delta Sharing': 'Secure data sharing without copying or moving data',
+            'Workflows': 'Orchestrate data, analytics, and ML pipelines',
+            // Add more as needed
+          };
+          
+          if (uniqueReasonMap[f.name]) {
+            reason = uniqueReasonMap[f.name];
+          } else if (featureBenefit && featureBenefit.length > 20) {
             reason = featureBenefit.substring(0, 150) + (featureBenefit.length > 150 ? '...' : '');
+          } else if (f.description && f.description.length > 30) {
+            // Use full description as unique reason
+            reason = f.description.substring(0, 150) + (f.description.length > 150 ? '...' : '');
           } else if (matchingPainPoint) {
-            reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
+            // Create unique reason by combining feature capability + pain point
+            const featureVerb = this.getFeatureVerb(f.name);
+            reason = `${featureVerb} ${(matchingPainPoint.label || matchingPainPoint.value).toLowerCase()}`;
           } else if (topPainPoints.length > 0) {
-            // 🔥 FIX: Rotate through pain points instead of always using the first one
+            // Rotate through pain points with unique verbs
             const painPointIndex = featureIndex % topPainPoints.length;
             const rotatedPain = topPainPoints[painPointIndex];
-            reason = `Helps address: ${rotatedPain.label || rotatedPain.value}`;
+            const featureVerb = this.getFeatureVerb(f.name);
+            reason = `${featureVerb} ${(rotatedPain.label || rotatedPain.value).toLowerCase()}`;
           } else {
-            // Last resort - use pillar-specific context
+            // Last resort - use pillar-specific context with feature name
             const pillarContextMap = {
               'platform_governance': 'Improves governance, security, and compliance',
               'data_engineering': 'Enhances data pipeline reliability and quality',
@@ -771,7 +802,7 @@ class IntelligentRecommendationEngine {
               'generative_ai': 'Enables GenAI applications with governance',
               'operational_excellence': 'Improves monitoring, cost control, and collaboration'
             };
-            reason = pillarContextMap[pillarId] || 'Recommended for improving platform maturity';
+            reason = `${f.name}: ${pillarContextMap[pillarId] || 'Recommended for improving platform maturity'}`;
           }
         }
         
@@ -1285,16 +1316,40 @@ class IntelligentRecommendationEngine {
         );
       });
       
-      // Build the "WHY" reason - prioritize feature-specific benefits
+      // Build the "WHY" reason - ALWAYS UNIQUE (same logic as database path)
       let reason = '';
-      // Check if feature has specific benefits/description
       const featureBenefit = detailedFeature?.benefits?.[0] || detailedFeature?.short_description || detailedFeature?.description;
-      if (featureBenefit && featureBenefit.length > 20) {
+      
+      // Use same unique reason map as database path
+      const uniqueReasonMap = {
+        'Mosaic AI Model Serving': 'Deploy production-ready AI models with built-in governance and monitoring',
+        'AI Gateway': 'Centralized gateway for LLM usage with governance, cost tracking, and quality control',
+        'Lakehouse Monitoring': 'Automated monitoring for data quality, schema changes, and model performance',
+        'System Tables': 'Built-in queryable logs for usage tracking, billing analysis, and audit compliance',
+        'Vector Search': 'High-performance vector similarity search for RAG applications',
+        'AI Functions': 'Call LLMs directly from SQL for AI-powered data transformations',
+        'Agent Framework': 'Build and deploy multi-step AI agents with tool integration',
+        'Unity Catalog for AI': 'Govern AI models, prompts, and feature sets with centralized catalog',
+        'MLflow': 'End-to-end ML lifecycle management with experiment tracking and model registry',
+        'Feature Store': 'Centralized repository for ML features with version control and lineage',
+        'AutoML': 'Automated machine learning for rapid model development',
+        'Delta Live Tables': 'Declarative ETL pipelines with built-in quality controls',
+        'Delta Sharing': 'Secure data sharing without copying or moving data',
+        'Workflows': 'Orchestrate data, analytics, and ML pipelines'
+      };
+      
+      if (uniqueReasonMap[featureName]) {
+        reason = uniqueReasonMap[featureName];
+      } else if (featureBenefit && featureBenefit.length > 20) {
         reason = featureBenefit.substring(0, 150) + (featureBenefit.length > 150 ? '...' : '');
+      } else if (detailedFeature?.description && detailedFeature.description.length > 30) {
+        reason = detailedFeature.description.substring(0, 150) + (detailedFeature.description.length > 150 ? '...' : '');
       } else if (matchingPainPoint) {
-        reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
+        // Create unique reason with verb + pain point
+        const featureVerb = this.getFeatureVerb(featureName);
+        reason = `${featureVerb} ${(matchingPainPoint.label || matchingPainPoint.value).toLowerCase()}`;
       } else {
-        // Fallback to pillar-specific context
+        // Last resort - feature name + pillar context
         const pillarContextMap = {
           'platform_governance': 'Improves governance, security, and compliance',
           'data_engineering': 'Enhances data pipeline reliability and quality',
@@ -1303,7 +1358,7 @@ class IntelligentRecommendationEngine {
           'generative_ai': 'Enables GenAI applications with governance',
           'operational_excellence': 'Improves monitoring, cost control, and collaboration'
         };
-        reason = pillarContextMap[pillarId] || 'Recommended for improving platform maturity';
+        reason = `${featureName}: ${pillarContextMap[pillarId] || 'Recommended for improving platform maturity'}`;
       }
       
       if (detailedFeature) {
@@ -2696,6 +2751,67 @@ class IntelligentRecommendationEngine {
     if (text.includes('lakehouse monitoring')) return 'Lakehouse Monitoring for data quality';
     
     return null;
+  }
+  
+  /**
+   * Get unique action verb for feature-based reason
+   * Returns different verbs for variety and uniqueness
+   */
+  getFeatureVerb(featureName) {
+    const verbMap = {
+      // Monitoring/Observability features
+      'Lakehouse Monitoring': 'Provides automated monitoring to prevent',
+      'System Tables': 'Delivers queryable insights to track and prevent',
+      'Audit Logs': 'Enables compliance tracking to avoid',
+      
+      // GenAI/AI features
+      'AI Gateway': 'Centralizes LLM governance to eliminate',
+      'Mosaic AI Model Serving': 'Ensures production-ready AI deployment to avoid',
+      'Vector Search': 'Powers high-performance RAG to solve',
+      'AI Functions': 'Enables SQL-based AI transformations to reduce',
+      'Agent Framework': 'Orchestrates multi-step AI workflows to prevent',
+      
+      // ML features
+      'MLflow': 'Tracks ML experiments to avoid',
+      'Feature Store': 'Manages ML features centrally to eliminate',
+      'AutoML': 'Accelerates model development to reduce',
+      'Model Registry': 'Governs model versions to prevent',
+      
+      // Data Engineering
+      'Delta Live Tables': 'Automates data quality checks to prevent',
+      'Delta Sharing': 'Enables secure sharing to avoid',
+      'Workflows': 'Orchestrates pipelines to reduce',
+      
+      // Platform Governance
+      'Unity Catalog': 'Centralizes governance to eliminate',
+      'Workspace Organization': 'Structures environments to avoid',
+      'RBAC': 'Controls access to prevent'
+    };
+    
+    // Check for exact match
+    if (verbMap[featureName]) {
+      return verbMap[featureName];
+    }
+    
+    // Check for partial matches
+    for (const [key, verb] of Object.entries(verbMap)) {
+      if (featureName.includes(key) || key.includes(featureName)) {
+        return verb;
+      }
+    }
+    
+    // Default verbs based on feature type
+    if (featureName.includes('Monitor') || featureName.includes('Observability')) {
+      return 'Monitors and prevents';
+    } else if (featureName.includes('AI') || featureName.includes('ML')) {
+      return 'Enables governance to avoid';
+    } else if (featureName.includes('Catalog') || featureName.includes('Governance')) {
+      return 'Centralizes control to eliminate';
+    } else if (featureName.includes('Automat') || featureName.includes('Workflow')) {
+      return 'Automates processes to prevent';
+    } else {
+      return 'Helps address';
+    }
   }
   
 }
