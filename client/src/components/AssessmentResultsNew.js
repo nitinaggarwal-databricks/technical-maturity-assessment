@@ -513,24 +513,36 @@ const SectionSubtitle = styled.p`
 `;
 
 const PillarSection = styled(motion.div)`
-  margin-bottom: 40px;
+  background: white;
+  margin-bottom: 32px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
 
   &:last-of-type {
     margin-bottom: 0;
   }
 
   @media (max-width: 768px) {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+  }
+
+  @media print {
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
   }
 `;
 
 const PillarHeader = styled.div`
   background: #f8fafc;
   padding: 24px 32px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 2px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2670,11 +2682,22 @@ const AssessmentResultsNew = () => {
         {/* Body */}
         <ReportBody>
           {/* Maturity Roadmap Visualization */}
-          <MaturityChart>
-            <MaturityChartTitle>
-              <FiTrendingUp style={{ color: '#10b981' }} />
-              Maturity Snapshot by Pillar
-            </MaturityChartTitle>
+          <SectionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <SectionHeader>
+              <SectionBadge>
+                <FiTrendingUp />
+              </SectionBadge>
+              <SectionTitleWrapper>
+                <SectionTitle>Maturity Snapshot by Pillar</SectionTitle>
+                <SectionSubtitle>Overview of current and target maturity levels</SectionSubtitle>
+              </SectionTitleWrapper>
+            </SectionHeader>
+
+            <MaturityChart>
             
             <MaturityLegend>
               <LegendItem>
@@ -2726,10 +2749,24 @@ const AssessmentResultsNew = () => {
                 );
               })}
             </CompactMaturityGrid>
-          </MaturityChart>
+            </MaturityChart>
+          </SectionCard>
           
           {/* Pillar-by-Pillar Assessment */}
-          <SectionTitle>Pillar-by-Pillar Assessment</SectionTitle>
+          <SectionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <SectionHeader>
+              <SectionBadge>
+                <FiBarChart2 />
+              </SectionBadge>
+              <SectionTitleWrapper>
+                <SectionTitle>Pillar-by-Pillar Assessment</SectionTitle>
+                <SectionSubtitle>Detailed breakdown of each capability area</SectionSubtitle>
+              </SectionTitleWrapper>
+            </SectionHeader>
 
           {pillars.map((pillar, index) => {
             const data = getPillarData(pillar.id);
@@ -4799,6 +4836,7 @@ const AssessmentResultsNew = () => {
               </PillarSection>
             );
           })}
+          </SectionCard>
 
 
         </ReportBody>
