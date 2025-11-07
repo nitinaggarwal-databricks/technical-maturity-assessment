@@ -118,8 +118,9 @@ const PageHeader = styled.div`
   margin: 0 0 24px 0;
   padding: 20px 40px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 16px;
 
   @media (max-width: 768px) {
     padding: 20px 16px;
@@ -190,7 +191,7 @@ const ReportContainer = styled(motion.div)`
 const ReportHeader = styled.div`
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
-  padding: 40px;
+  padding: 32px 40px;
   position: relative;
   overflow: hidden;
 
