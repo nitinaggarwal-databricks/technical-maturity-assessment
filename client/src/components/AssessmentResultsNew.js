@@ -2516,7 +2516,7 @@ const AssessmentResultsNew = () => {
                   style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
                 >
                   <FiBarChart2 size={16} />
-                  View Benchmarks
+                  Industry Benchmarks
                 </ActionButton>
               </ButtonGroup>
 

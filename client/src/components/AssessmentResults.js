@@ -1857,7 +1857,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                   style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#10b981', color: 'white', border: 'none' }}
                 >
                   <FiBarChart2 size={14} />
-                  View Benchmarks
+                  Industry Benchmarks
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={handleExportPDF}
