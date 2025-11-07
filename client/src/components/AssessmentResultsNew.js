@@ -90,7 +90,7 @@ const PrintStyles = styled.div`
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
+  background: #f9fafb;
   padding: 108px 0 40px 0;
 
   @media (max-width: 768px) {
@@ -106,20 +106,18 @@ const PageContainer = styled.div`
 
 const ReportContainer = styled.div`
   width: 100%;
+  padding: 0 40px;
   margin: 0;
-  background: #ffffff; /* Pure white */
-  border-radius: 0;
-  box-shadow: none;
-  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
 
   /* 🖨️ PRINT OPTIMIZATION */
   @media print {
-    box-shadow: none !important;
-    border-radius: 0 !important;
+    padding: 0 !important;
     max-width: 100% !important;
     margin: 0 !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid-page !important;
   }
 `;
 
@@ -431,13 +429,70 @@ const ReportBody = styled.div`
   }
 `;
 
+// Section Card Components
+const SectionCard = styled(motion.div)`
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 64px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
+    margin-bottom: 48px;
+  }
+
+  @media print {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    margin-bottom: 32px !important;
+    page-break-inside: avoid !important;
+  }
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+`;
+
+const SectionBadge = styled.div`
+  background: linear-gradient(135deg, #1B3B6F 0%, #2d4a7c 100%);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(27, 59, 111, 0.3);
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+`;
+
+const SectionTitleWrapper = styled.div`
+  flex: 1;
+`;
+
 const SectionTitle = styled.h2`
   font-size: 1.875rem;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 24px 0;
-  padding-bottom: 16px;
-  border-bottom: 3px solid #e2e8f0;
+  margin: 0 0 4px 0;
   letter-spacing: -0.02em;
   transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -447,8 +502,14 @@ const SectionTitle = styled.h2`
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
-    margin-bottom: 20px;
   }
+`;
+
+const SectionSubtitle = styled.p`
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
 `;
 
 const PillarSection = styled(motion.div)`

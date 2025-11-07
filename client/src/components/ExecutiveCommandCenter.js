@@ -246,7 +246,7 @@ const URLSubmitButton = styled.button`
   }
 `;
 
-const CancelButton = styled.button`
+const LogoCancelButton = styled.button`
   width: 100%;
   padding: 12px 20px;
   background: transparent;
@@ -1246,9 +1246,9 @@ const ExecutiveCommandCenter = () => {
                   Fetch from Customer Portal URL
                 </LogoOptionButton>
                 
-                <CancelButton onClick={handleCancelModal}>
+                <LogoCancelButton onClick={handleCancelModal}>
                   Cancel
-                </CancelButton>
+                </LogoCancelButton>
               </>
             ) : (
               <>
@@ -1285,9 +1285,9 @@ const ExecutiveCommandCenter = () => {
                   </URLSubmitButton>
                 </URLInputForm>
                 
-                <CancelButton onClick={handleCancelModal}>
+                <LogoCancelButton onClick={handleCancelModal}>
                   Cancel
-                </CancelButton>
+                </LogoCancelButton>
               </>
             )}
           </LogoOptionsContent>
