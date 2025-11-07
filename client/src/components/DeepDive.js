@@ -2629,7 +2629,8 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
       setFormData({
         title: item.stage || '',
         description: item.description || '',
-        content: item.tools || ''
+        tools: item.tools || '',
+        content: item.tools || '' // For backwards compatibility
       });
     } else if (type === 'maturity matrix') {
       setFormData({
@@ -2929,7 +2930,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                   ? {
                       stage: formData.title,
                       description: formData.description,
-                      tools: formData.content || ''
+                      tools: formData.tools || formData.content || ''
                     }
                   : level
               )
@@ -4042,6 +4043,27 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                         }
                         rows={modalType === 'sub-category' ? 2 : modalType === 'plan-activities' ? 8 : 6}
                         required={!(modalType === 'success plan')}
+                        style={{ 
+                          fontFamily: 'monospace',
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: '1.6'
+                        }}
+                      />
+                    </FormGroup>
+                  )}
+
+                  {modalType === 'stage' && (
+                    <FormGroup>
+                      <Label>Helpful Tools *</Label>
+                      <div style={{ marginBottom: '8px', fontSize: '0.875rem', color: '#6b7280' }}>
+                        💡 <strong>Formatting tips:</strong> Separate multiple tools with commas (e.g., Tool A, Tool B, Tool C)
+                      </div>
+                      <TextArea
+                        value={formData.tools || ''}
+                        onChange={(e) => handleFormChange('tools', e.target.value)}
+                        placeholder="Enter helpful tools, separated by commas&#10;e.g., ABAC Policy Templates, Audit Dashboards, Monitoring Toolkit"
+                        rows="3"
+                        required
                         style={{ 
                           fontFamily: 'monospace',
                           whiteSpace: 'pre-wrap',
