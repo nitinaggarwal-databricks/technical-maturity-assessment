@@ -19,7 +19,11 @@ import {
   FiAlertCircle,
   FiDollarSign,
   FiUsers,
-  FiAward
+  FiAward,
+  FiMonitor,
+  FiChevronLeft,
+  FiChevronRight,
+  FiX
 } from 'react-icons/fi';
 import * as assessmentService from '../services/assessmentService';
 
@@ -672,6 +676,206 @@ const FooterBottom = styled.div`
 `;
 
 // =======================
+// SLIDESHOW MODE STYLES
+// =======================
+
+const PresentationButton = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.938rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+  }
+`;
+
+const SlideshowOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`;
+
+const SlideContainer = styled(motion.div)`
+  width: 90%;
+  max-width: 1400px;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  
+  @media (max-width: 768px) {
+    width: 95%;
+    height: 85%;
+    padding: 20px;
+  }
+`;
+
+const SlideContent = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 24px;
+  padding: 60px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  
+  @media (max-width: 768px) {
+    padding: 32px;
+    border-radius: 16px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+`;
+
+const SlideNavigation = styled.div`
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 16px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    padding: 12px 24px;
+    gap: 16px;
+  }
+`;
+
+const NavButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: ${props => props.disabled ? 'rgba(148, 163, 184, 0.2)' : 'rgba(59, 130, 246, 0.2)'};
+  color: ${props => props.disabled ? '#64748b' : '#3b82f6'};
+  border: 2px solid ${props => props.disabled ? 'rgba(148, 163, 184, 0.2)' : 'rgba(59, 130, 246, 0.4)'};
+  border-radius: 12px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.6);
+    transform: scale(1.05);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+const SlideCounter = styled.div`
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0 16px;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.813rem;
+    padding: 0 8px;
+  }
+`;
+
+const ExitButton = styled.button`
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    top: 24px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+// =======================
 // COMPONENT
 // =======================
 
@@ -681,6 +885,79 @@ const HomePageNew = () => {
   const [showSampleMenu, setShowSampleMenu] = useState(false);
   const [generatingSample, setGeneratingSample] = useState(false);
   const sampleMenuRef = useRef(null);
+
+  // Presentation Mode State
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Define slides - each section becomes a slide
+  const slides = [
+    {
+      id: 'hero',
+      title: 'Databricks Maturity Assessment',
+      type: 'hero'
+    },
+    {
+      id: 'why-assessment',
+      title: 'Why Take This Assessment?',
+      type: 'section'
+    },
+    {
+      id: 'how-it-works',
+      title: 'How It Works',
+      type: 'section'
+    },
+    {
+      id: 'pillars',
+      title: 'Assessment Pillars',
+      type: 'section'
+    }
+  ];
+
+  // Presentation mode handlers
+  const startPresentation = () => {
+    setCurrentSlide(0);
+    setPresentationMode(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    document.body.style.overflow = '';
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        exitPresentation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [presentationMode, currentSlide]);
 
   // Handle scrolling when navigated from another page
   useEffect(() => {
@@ -1208,6 +1485,231 @@ const HomePageNew = () => {
           <p>&copy; 2025 Data & AI Technical Maturity Assessment Platform. All rights reserved.</p>
         </FooterBottom>
       </Footer>
+
+      {/* Presentation Mode Button */}
+      {!presentationMode && (
+        <PresentationButton onClick={startPresentation}>
+          <FiMonitor size={18} />
+          Slideshow Mode
+        </PresentationButton>
+      )}
+
+      {/* Slideshow Overlay */}
+      <AnimatePresence>
+        {presentationMode && (
+          <SlideshowOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ExitButton onClick={exitPresentation} title="Exit (ESC)">
+              <FiX size={20} />
+            </ExitButton>
+
+            <SlideContainer>
+              <SlideContent
+                key={currentSlide}
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -100, opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+              >
+                {/* Render current slide content */}
+                {slides[currentSlide].id === 'hero' && (
+                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                    <motion.h1
+                      style={{
+                        fontSize: '3rem',
+                        fontWeight: 800,
+                        color: '#1e293b',
+                        marginBottom: '24px'
+                      }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      Databricks Maturity Assessment
+                    </motion.h1>
+                    <motion.p
+                      style={{
+                        fontSize: '1.5rem',
+                        color: '#64748b',
+                        marginBottom: '32px'
+                      }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      Evaluate your data and AI platform readiness across six key pillars
+                    </motion.p>
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      style={{ marginTop: '48px' }}
+                    >
+                      <img 
+                        src="/maturity-scale.png" 
+                        alt="Maturity Scale" 
+                        style={{ maxWidth: '80%', height: 'auto', margin: '0 auto' }}
+                      />
+                    </motion.div>
+                  </div>
+                )}
+
+                {slides[currentSlide].id === 'why-assessment' && (
+                  <div style={{ padding: '20px 0' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                      Why Take This Assessment?
+                    </h2>
+                    <Grid style={{ marginTop: '40px' }}>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
+                          <FiTarget size={24} />
+                        </CardIcon>
+                        <CardTitle>Accelerate Growth</CardTitle>
+                        <CardDescription>
+                          Identify opportunities to maximize your Databricks investment and accelerate your data maturity journey.
+                        </CardDescription>
+                      </Card>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #10b981 0%, #059669 100%)">
+                          <FiZap size={24} />
+                        </CardIcon>
+                        <CardTitle>Maximize ROI</CardTitle>
+                        <CardDescription>
+                          Optimize your platform costs, improve resource utilization, and demonstrate measurable business value.
+                        </CardDescription>
+                      </Card>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)">
+                          <FiBarChart2 size={24} />
+                        </CardIcon>
+                        <CardTitle>Benchmark Progress</CardTitle>
+                        <CardDescription>
+                          See how your platform maturity compares to industry standards and identify improvement areas.
+                        </CardDescription>
+                      </Card>
+                    </Grid>
+                  </div>
+                )}
+
+                {slides[currentSlide].id === 'how-it-works' && (
+                  <div style={{ padding: '20px 0' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                      How It Works
+                    </h2>
+                    <Grid style={{ marginTop: '40px' }}>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
+                          <FiCheckCircle size={24} />
+                        </CardIcon>
+                        <CardTitle>1. Answer Questions</CardTitle>
+                        <CardDescription>
+                          Complete 30 targeted questions across six pillars covering platform governance, data engineering, ML, GenAI, and more.
+                        </CardDescription>
+                      </Card>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #10b981 0%, #059669 100%)">
+                          <FiTrendingUp size={24} />
+                        </CardIcon>
+                        <CardTitle>2. Get Insights</CardTitle>
+                        <CardDescription>
+                          Receive a detailed report with your current maturity scores, gap analysis, and personalized recommendations.
+                        </CardDescription>
+                      </Card>
+                      <Card>
+                        <CardIcon $bgColor="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)">
+                          <FiPlayCircle size={24} />
+                        </CardIcon>
+                        <CardTitle>3. Take Action</CardTitle>
+                        <CardDescription>
+                          Download an actionable roadmap with prioritized initiatives to advance your platform maturity.
+                        </CardDescription>
+                      </Card>
+                    </Grid>
+                  </div>
+                )}
+
+                {slides[currentSlide].id === 'pillars' && (
+                  <div style={{ padding: '20px 0' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                      Assessment Pillars
+                    </h2>
+                    <Grid className="three-columns" style={{ marginTop: '40px' }}>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">🧱</span>
+                          <h3>Platform & Governance</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Assess how well your Databricks foundation is secured, scalable, and governed.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">Environment Architecture</span>
+                          <span className="dimension-tag">Security & Access</span>
+                          <span className="dimension-tag">Governance & Compliance</span>
+                        </div>
+                      </PillarCard>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">🤖</span>
+                          <h3>Machine Learning & MLOps</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Understand how Databricks is leveraged for classical and predictive ML use cases.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">Experimentation</span>
+                          <span className="dimension-tag">Model Deployment</span>
+                          <span className="dimension-tag">ML Governance</span>
+                        </div>
+                      </PillarCard>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">⚙️</span>
+                          <h3>Operational Excellence</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Measure organizational readiness, adoption velocity, and realized value.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">Center of Excellence</span>
+                          <span className="dimension-tag">Training & Enablement</span>
+                          <span className="dimension-tag">Innovation Culture</span>
+                        </div>
+                      </PillarCard>
+                    </Grid>
+                  </div>
+                )}
+              </SlideContent>
+            </SlideContainer>
+
+            <SlideNavigation>
+              <NavButton
+                onClick={previousSlide}
+                disabled={currentSlide === 0}
+                title="Previous (←)"
+              >
+                <FiChevronLeft size={20} />
+              </NavButton>
+              
+              <SlideCounter>
+                {currentSlide + 1} / {slides.length}
+              </SlideCounter>
+              
+              <NavButton
+                onClick={nextSlide}
+                disabled={currentSlide === slides.length - 1}
+                title="Next (→)"
+              >
+                <FiChevronRight size={20} />
+              </NavButton>
+            </SlideNavigation>
+          </SlideshowOverlay>
+        )}
+      </AnimatePresence>
     </PageContainer>
   );
 };
