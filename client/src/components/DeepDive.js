@@ -3335,7 +3335,10 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         <Section order={sectionOrder.indexOf('engagementPlan')}>
           <SectionHeader>
             {renderSectionControls('engagementPlan', 'Engagement & Enablement Plan')}
-            <h2>Targeted Engagement & Enablement Plan</h2>
+            <h2 onClick={() => toggleSection('engagementPlan')}>
+              Targeted Engagement & Enablement Plan
+              {collapsedSections.engagementPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Timeline for engagement activities and focus areas</p>
             <AddButton
               onClick={() => handleAdd('engagement plan', 'new')}
@@ -3347,6 +3350,15 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
+          <AnimatePresence>
+            {!collapsedSections.engagementPlan && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
           <EngagementTable>
             <EngagementTableHeader>
               <EngagementTableCell>Time</EngagementTableCell>
@@ -3378,13 +3390,19 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
               </EngagementTableRow>
             ))}
           </EngagementTable>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Analysis & Actions Section */}
         <Section order={sectionOrder.indexOf('analysisActions')}>
           <SectionHeader>
             {renderSectionControls('analysisActions', 'Analysis & Actions')}
-            <h2>Analysis & Actions</h2>
+            <h2 onClick={() => toggleSection('analysisActions')}>
+              Analysis & Actions
+              {collapsedSections.analysisActions ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Maturity improvement recommendations at each stage of the Maturity Model</p>
             <AddButton
               onClick={() => handleAdd('analysis', 'new')}
@@ -3396,6 +3414,15 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
+          <AnimatePresence>
+            {!collapsedSections.analysisActions && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
           {analysisActions.map((analysis, index) => (
             <AnalysisCard className="analysis-card" key={analysis.id} $borderColor={analysis.color}>
               <AnalysisCardHeader $bgColor={analysis.bgColor}>
@@ -3439,13 +3466,19 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
               </AnalysisCardBody>
             </AnalysisCard>
           ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Customer Engagement Scenarios Section */}
         <Section order={sectionOrder.indexOf('scenarios')}>
           <SectionHeader>
             {renderSectionControls('scenarios', 'Customer Engagement Scenarios')}
-            <h2>Customer Engagement Scenarios</h2>
+            <h2 onClick={() => toggleSection('scenarios')}>
+              Customer Engagement Scenarios
+              {collapsedSections.scenarios ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Tailored approaches for different customer maturity levels and situations</p>
             <AddButton
               onClick={() => handleAdd('scenario', 'new')}
@@ -3457,6 +3490,15 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
+          <AnimatePresence>
+            {!collapsedSections.scenarios && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
           {engagementScenarios.map((scenario, index) => {
             const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
             
@@ -3523,13 +3565,19 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
               </ScenarioCard>
             );
           })}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Maturity Matrices Section */}
         <MaturitySection className="maturity-section" order={sectionOrder.indexOf('matrices')}>
           <SectionHeader>
             {renderSectionControls('matrices', 'Maturity Level Definitions')}
-            <h2>Maturity Level Definitions</h2>
+            <h2 onClick={() => toggleSection('matrices')}>
+              Maturity Level Definitions
+              {collapsedSections.matrices ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Detailed maturity progression for each dimension across all six categories</p>
             <AddButton
               onClick={() => handleAdd('maturity matrix', 'new')}
@@ -3541,6 +3589,15 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
+          <AnimatePresence>
+            {!collapsedSections.matrices && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
           {maturityMatrices.map((matrix, matrixIdx) => (
             <MaturityCard className="matrix-card" key={matrix.id} $borderColor={matrix.color}>
               <MaturityCardHeader $bgColor={matrix.bgColor}>
@@ -3605,6 +3662,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
               </MaturityTable>
             </MaturityCard>
           ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </MaturitySection>
       </ContentWrapper>
 
