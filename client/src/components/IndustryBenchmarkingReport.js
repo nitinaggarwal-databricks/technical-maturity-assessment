@@ -786,15 +786,7 @@ const IndustryBenchmarkingReport = () => {
             whileTap={{ scale: 0.95 }}
           >
             <FiArrowLeft size={18} />
-            Back to Executive Command Center
-          </BackButton>
-          <BackButton
-            onClick={() => navigate(`/results/${assessmentId}`)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiFileText size={18} />
-            Full Maturity Report
+            Full Report
           </BackButton>
         </PageHeader>
 
