@@ -743,19 +743,19 @@ class IntelligentRecommendationEngine {
                  commentText.includes('difficult');
         });
         
-        // 🎯 BUILD THE "WHY" - specific reason based on user input
+        // 🎯 BUILD THE "WHY" - prioritize feature-specific benefits
         let reason = '';
         if (relatedComment && relatedComment.comment) {
           // Extract first 100 chars of user comment
           const userIssue = relatedComment.comment.substring(0, 100);
           reason = `Addresses your challenge: "${userIssue}${relatedComment.comment.length > 100 ? '...' : ''}"`;
-        } else if (matchingPainPoint) {
-          reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
         } else {
-          // 🔥 IMPROVED: Use feature's own benefit/description FIRST before falling back to generic
+          // 🔥 PRIORITIZE: Use feature's own benefit/description FIRST
           const featureBenefit = f.benefits?.[0] || f.short_description || f.description;
           if (featureBenefit && featureBenefit.length > 20) {
-            reason = featureBenefit.substring(0, 120) + (featureBenefit.length > 120 ? '...' : '');
+            reason = featureBenefit.substring(0, 150) + (featureBenefit.length > 150 ? '...' : '');
+          } else if (matchingPainPoint) {
+            reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
           } else if (topPainPoints.length > 0) {
             // 🔥 FIX: Rotate through pain points instead of always using the first one
             const painPointIndex = featureIndex % topPainPoints.length;
@@ -1285,9 +1285,13 @@ class IntelligentRecommendationEngine {
         );
       });
       
-      // Build the "WHY" reason
+      // Build the "WHY" reason - prioritize feature-specific benefits
       let reason = '';
-      if (matchingPainPoint) {
+      // Check if feature has specific benefits/description
+      const featureBenefit = detailedFeature?.benefits?.[0] || detailedFeature?.short_description || detailedFeature?.description;
+      if (featureBenefit && featureBenefit.length > 20) {
+        reason = featureBenefit.substring(0, 150) + (featureBenefit.length > 150 ? '...' : '');
+      } else if (matchingPainPoint) {
         reason = `Solves: ${matchingPainPoint.label || matchingPainPoint.value}`;
       } else {
         // Fallback to pillar-specific context
