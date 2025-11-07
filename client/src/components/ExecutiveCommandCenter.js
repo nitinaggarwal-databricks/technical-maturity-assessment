@@ -411,10 +411,14 @@ const Section = styled.div`
   padding: 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 32px;
+  position: relative;
 `;
 
 const SectionHeader = styled.div`
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const SectionTitle = styled.h2`
@@ -440,9 +444,28 @@ const PhaseCard = styled.div`
   border-radius: 12px;
   padding: 24px;
   transition: transform 0.2s;
+  position: relative;
 
   &:hover {
     transform: translateX(4px);
+  }
+`;
+
+const PhaseCardActions = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${PhaseCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
   }
 `;
 
@@ -488,6 +511,7 @@ const ImpactCard = styled.div`
   padding: 24px;
   text-align: center;
   transition: all 0.3s ease;
+  position: relative;
 
   &:hover {
     border-color: #3b82f6;
@@ -515,6 +539,24 @@ const ImpactDrivers = styled.div`
   color: #64748b;
   font-style: italic;
   line-height: 1.5;
+`;
+
+const ImpactCardActions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${ImpactCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
 `;
 
 // Action buttons for CRUD
@@ -895,6 +937,17 @@ const ExecutiveCommandCenter = () => {
               <Section style={{ marginTop: '40px' }}>
                 <SectionHeader>
                   <SectionTitle>📍 Strategic Roadmap & Next Steps</SectionTitle>
+                  <SectionActions>
+                    <IconButton title="Add Phase">
+                      <FiPlus size={16} />
+                    </IconButton>
+                    <IconButton title="Edit Section">
+                      <FiEdit2 size={16} />
+                    </IconButton>
+                    <IconButton title="Delete Section">
+                      <FiTrash2 size={16} />
+                    </IconButton>
+                  </SectionActions>
                 </SectionHeader>
                 <RoadmapDescription>
                   {results.roadmap.roadmapIntro || 'This roadmap outlines key phases to accelerate your data platform maturity.'}
@@ -908,6 +961,14 @@ const ExecutiveCommandCenter = () => {
                         borderLeft: `4px solid ${phase.borderColor || '#3b82f6'}`
                       }}
                     >
+                      <PhaseCardActions>
+                        <IconButton title="Edit Phase">
+                          <FiEdit2 size={14} />
+                        </IconButton>
+                        <IconButton title="Delete Phase">
+                          <FiTrash2 size={14} />
+                        </IconButton>
+                      </PhaseCardActions>
                       <PhaseTitle>{phase.title}</PhaseTitle>
                       <PhaseItems>
                         {phase.items.map((item, idx) => (
@@ -925,10 +986,29 @@ const ExecutiveCommandCenter = () => {
               <Section style={{ marginTop: '40px' }}>
                 <SectionHeader>
                   <SectionTitle>📊 Expected Business Impact</SectionTitle>
+                  <SectionActions>
+                    <IconButton title="Add Metric">
+                      <FiPlus size={16} />
+                    </IconButton>
+                    <IconButton title="Edit Section">
+                      <FiEdit2 size={16} />
+                    </IconButton>
+                    <IconButton title="Delete Section">
+                      <FiTrash2 size={16} />
+                    </IconButton>
+                  </SectionActions>
                 </SectionHeader>
                 <ImpactGrid>
                   {results.businessImpact.metrics.map((metric, index) => (
                     <ImpactCard key={index}>
+                      <ImpactCardActions>
+                        <IconButton title="Edit Metric">
+                          <FiEdit2 size={14} />
+                        </IconButton>
+                        <IconButton title="Delete Metric">
+                          <FiTrash2 size={14} />
+                        </IconButton>
+                      </ImpactCardActions>
                       <ImpactValue>{metric.value}</ImpactValue>
                       <ImpactLabel>{metric.label}</ImpactLabel>
                       <ImpactDrivers>{metric.keyDrivers}</ImpactDrivers>
