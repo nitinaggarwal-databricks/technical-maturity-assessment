@@ -26,70 +26,63 @@ import { exportAssessmentToExcel } from '../services/excelExportService';
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: radial-gradient(ellipse at top, #e0e7ff 0%, #f3f4f6 50%, #ffffff 100%);
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
   position: relative;
-  padding-top: 68px; /* Height of fixed GlobalNav */
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 68px;
-    left: 0;
-    right: 0;
-    height: 400px;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    z-index: 0;
-    pointer-events: none;
+  padding-top: 68px;
+
+  @media print {
+    background: white !important;
+    padding-top: 0;
   }
 `;
 
 const Breadcrumb = styled.div`
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 24px;
+  background: transparent;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #64748b;
   position: relative;
   z-index: 1;
 
   a, button {
-    color: #3b82f6;
+    color: #1B3B6F;
     text-decoration: none;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     font: inherit;
-    transition: color 0.2s;
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      color: #2563eb;
+      color: #FF3621;
       text-decoration: underline;
     }
   }
 
   span {
-    color: #d1d5db;
+    color: #cbd5e1;
   }
 `;
 
 const ContentContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 40px 24px;
   position: relative;
   z-index: 1;
 
   @media (max-width: 768px) {
-    padding: 20px 16px;
+    padding: 24px 16px;
   }
 `;
 
 const HeaderSection = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -101,16 +94,16 @@ const HeaderSection = styled.div`
     min-width: 250px;
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.25rem;
       font-weight: 700;
-      color: #111827;
+      color: #1e293b;
       margin: 0 0 8px 0;
       letter-spacing: -0.02em;
     }
 
     p {
       font-size: 1rem;
-      color: #6b7280;
+      color: #475569;
       margin: 0;
     }
   }
@@ -151,12 +144,17 @@ const Button = styled(motion.button)`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
   }
 
   @media (max-width: 768px) {
@@ -166,34 +164,41 @@ const Button = styled(motion.button)`
 `;
 
 const PrimaryButton = styled(Button)`
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, #00A972 0%, #008c5f 100%);
   color: white;
   border: none;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 169, 114, 0.25);
 
   &:hover {
-    opacity: 0.95;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    background: linear-gradient(135deg, #008c5f 0%, #007550 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 169, 114, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const SecondaryButton = styled(Button)`
   background: white;
-  color: #374151;
-  border-color: #e5e7eb;
+  color: #64748b;
+  border: 2px solid #cbd5e1;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #475569;
   }
 `;
 
 const FilterBar = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   .top-row {
     display: flex;
@@ -226,15 +231,15 @@ const SearchBox = styled.div`
   input {
     width: 100%;
     padding: 10px 12px 10px 40px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 0.875rem;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: #00A972;
+      box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
     }
 
     &::placeholder {
@@ -272,15 +277,15 @@ const Tab = styled.button`
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${props => props.$active ? '600' : '500'};
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: ${props => props.$active ? 'white' : 'transparent'};
-  color: ${props => props.$active ? '#111827' : '#6b7280'};
+  color: ${props => props.$active ? '#1e293b' : '#64748b'};
   box-shadow: ${props => props.$active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'};
 
   &:hover {
-    color: #111827;
+    color: ${props => props.$active ? '#1e293b' : '#FF3621'};
   }
 
   @media (max-width: 768px) {
@@ -291,7 +296,7 @@ const Tab = styled.button`
 
 const Dropdown = styled.select`
   padding: 8px 32px 8px 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 0.875rem;
   color: #374151;
@@ -301,11 +306,12 @@ const Dropdown = styled.select`
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #00A972;
+    box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
   }
 
   @media (max-width: 768px) {
@@ -320,9 +326,10 @@ const BulkActionBar = styled.div`
   align-items: center;
   padding: 12px 20px;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   .left {
     display: flex;
@@ -369,7 +376,7 @@ const BulkActionBar = styled.div`
 const AssessmentsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
+  gap: 24px;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -378,15 +385,23 @@ const AssessmentsGrid = styled.div`
 
 const AssessmentCard = styled(motion.div)`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   &:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+  }
+
+  @media print {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    transform: none !important;
   }
 
   .header {
@@ -452,9 +467,9 @@ const AssessmentCard = styled(motion.div)`
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(90deg, #00A972 0%, #008c5f 100%);
     border-radius: 3px;
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .footer {
@@ -494,23 +509,23 @@ const StatusBadge = styled.span`
     switch (props.$status) {
       case 'completed':
         return `
-          background: #d1fae5;
-          color: #065f46;
+          background: #00A972;
+          color: white;
         `;
       case 'in_progress':
         return `
-          background: #dbeafe;
-          color: #1e40af;
+          background: #1B3B6F;
+          color: white;
         `;
       case 'not_started':
         return `
           background: #f3f4f6;
-          color: #374151;
+          color: #64748b;
         `;
       default:
         return `
           background: #f3f4f6;
-          color: #6b7280;
+          color: #64748b;
         `;
     }
   }}
@@ -521,9 +536,10 @@ const PillarTag = styled.span`
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 const ActionButton = styled.button`
@@ -535,23 +551,24 @@ const ActionButton = styled.button`
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: white;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
   }
 
   &.primary {
-    background: #111827;
+    background: #1B3B6F;
     color: white;
-    border-color: #111827;
+    border-color: #1B3B6F;
 
     &:hover {
-      background: #1f2937;
+      background: #152d55;
     }
   }
 
@@ -569,18 +586,19 @@ const EmptyState = styled.div`
     font-size: 4rem;
     margin-bottom: 16px;
     opacity: 0.3;
+    color: #64748b;
   }
 
   .title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
+    color: #1e293b;
     margin-bottom: 8px;
   }
 
   .message {
     font-size: 1rem;
-    color: #6b7280;
+    color: #64748b;
     margin-bottom: 24px;
   }
 `;
