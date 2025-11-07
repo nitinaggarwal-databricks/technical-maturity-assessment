@@ -123,9 +123,17 @@ const PageHeader = styled.div`
 `;
 
 const ExpandCollapseControls = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
-  justify-content: center;
-  margin-top: 24px;
+  justify-content: flex-end;
+  
+  @media (max-width: 768px) {
+    position: static;
+    justify-content: center;
+    margin-top: 24px;
+  }
 `;
 
 const ToggleAllButton = styled.button`
@@ -135,13 +143,13 @@ const ToggleAllButton = styled.button`
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
@@ -155,8 +163,8 @@ const ToggleAllButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    padding: 10px 20px;
-    font-size: 0.875rem;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -262,14 +270,14 @@ const SectionControls = styled.div`
 const ReorderButton = styled(motion.button)`
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   background: ${props => props.disabled ? '#f3f4f6' : '#6366f1'};
   color: ${props => props.disabled ? '#9ca3af' : 'white'};
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  border-radius: 6px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.3s ease;
   box-shadow: ${props => props.disabled ? 'none' : '0 2px 8px rgba(99, 102, 241, 0.3)'};
@@ -286,22 +294,22 @@ const ReorderButton = styled(motion.button)`
   }
 
   @media (max-width: 768px) {
-    font-size: 0.8rem;
-    padding: 8px 12px;
+    width: 32px;
+    height: 32px;
   }
 `;
 
 const AddButton = styled(motion.button)`
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
@@ -325,16 +333,9 @@ const AddButton = styled(motion.button)`
   }
 
   @media (max-width: 768px) {
-    position: static;
+    width: 32px;
+    height: 32px;
     opacity: 1;
-    transform: none;
-    margin: 16px auto 0;
-    display: flex;
-    width: fit-content;
-
-    &:hover {
-      transform: translateY(-2px);
-    }
   }
 `;
 
@@ -2117,6 +2118,11 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           stage: '4. Optimize',
           description: 'Environment provisioning and access control are fully automated via IaC. Policies standardized across business units with compliance automation.',
           tools: 'Terraform + DAB Integration, FinOps Dashboard, Compliance-as-Code'
+        },
+        {
+          stage: '5. Transform',
+          description: 'Platform operates as a fully governed, self-service data product ecosystem. Dynamic policies adapt to evolving business needs with zero-touch provisioning.',
+          tools: 'Data Mesh Framework, Policy-as-Code Orchestration, AI-Driven Governance'
         }
       ]
     },
@@ -3075,8 +3081,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           whileTap={{ scale: isFirst ? 1 : 0.95 }}
           title={isFirst ? "Already at top" : `Move ${sectionName} up`}
         >
-          <FiArrowUp size={16} />
-          Up
+          <FiArrowUp size={18} />
         </ReorderButton>
         <ReorderButton
           onClick={() => moveSectionDown(sectionId)}
@@ -3085,8 +3090,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
           whileTap={{ scale: isLast ? 1 : 0.95 }}
           title={isLast ? "Already at bottom" : `Move ${sectionName} down`}
         >
-          <FiArrowDown size={16} />
-          Down
+          <FiArrowDown size={18} />
         </ReorderButton>
       </SectionControls>
     );
@@ -3097,30 +3101,28 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     <PageContainer>
       <ContentWrapper>
         <PageHeader>
-          <PageTitle>The Objective of a Technical Maturity Assessment</PageTitle>
-          <PageSubtitle>
-            Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
-          </PageSubtitle>
           <ExpandCollapseControls>
             {(() => {
               const allCollapsed = Object.values(collapsedSections).every(val => val === true);
               return (
-                <ToggleAllButton $allCollapsed={allCollapsed} onClick={toggleAllSections}>
+                <ToggleAllButton 
+                  $allCollapsed={allCollapsed} 
+                  onClick={toggleAllSections}
+                  title={allCollapsed ? "Expand all sections" : "Collapse all sections"}
+                >
                   {allCollapsed ? (
-                    <>
-                      <FiChevronDown size={18} />
-                      Expand All
-                    </>
+                    <FiChevronDown size={20} />
                   ) : (
-                    <>
-                      <FiChevronUp size={18} />
-                      Collapse All
-                    </>
+                    <FiChevronUp size={20} />
                   )}
                 </ToggleAllButton>
               );
             })()}
           </ExpandCollapseControls>
+          <PageTitle>The Objective of a Technical Maturity Assessment</PageTitle>
+          <PageSubtitle>
+            Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
+          </PageSubtitle>
         </PageHeader>
 
         {/* Objectives Section */}
@@ -3135,9 +3137,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('objective')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new objective"
               >
-                <FiPlus size={16} />
-                Add Objective
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('objectives', 'Strategic Objectives')}
             </SectionTitleRow>
@@ -3203,9 +3205,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('category', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new category"
               >
-                <FiPlus size={16} />
-                Add Category
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('categories', 'Category Structure')}
             </SectionTitleRow>
@@ -3322,9 +3324,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('success plan', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new plan item"
               >
-                <FiPlus size={16} />
-                Add Plan Item
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('successPlan', 'Technical Success Plan')}
             </SectionTitleRow>
@@ -3436,9 +3438,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('engagement plan', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new timeline item"
               >
-                <FiPlus size={16} />
-                Add Timeline Item
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('engagementPlan', 'Engagement & Enablement Plan')}
             </SectionTitleRow>
@@ -3502,9 +3504,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('analysis', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new analysis"
               >
-                <FiPlus size={16} />
-                Add Analysis
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('analysisActions', 'Analysis & Actions')}
             </SectionTitleRow>
@@ -3580,9 +3582,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('scenario', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new scenario"
               >
-                <FiPlus size={16} />
-                Add Scenario
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('scenarios', 'Customer Engagement Scenarios')}
             </SectionTitleRow>
@@ -3681,9 +3683,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 onClick={() => handleAdd('maturity matrix', 'new')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                title="Add new matrix"
               >
-                <FiPlus size={16} />
-                Add Matrix
+                <FiPlus size={18} />
               </AddButton>
               {renderSectionControls('matrices', 'Maturity Level Definitions')}
             </SectionTitleRow>
