@@ -90,16 +90,16 @@ const PrintStyles = styled.div`
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #fafbfc; /* Premium off-white */
-  padding: 108px 0 40px 0; /* 68px GlobalNav + 40px top padding */
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
+  padding: 108px 0 40px 0;
 
   @media (max-width: 768px) {
-    padding: 92px 0 24px 0; /* 68px GlobalNav + 24px top padding */
+    padding: 92px 0 24px 0;
   }
   
   @media print {
     padding: 0;
-    background: white;
+    background: white !important;
     min-height: auto;
   }
 `;
@@ -124,14 +124,13 @@ const ReportContainer = styled.div`
 `;
 
 const ReportHeader = styled.div`
-  /* Premium gradient with depth */
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  padding: 56px 48px 48px; /* More breathing room */
+  background: linear-gradient(135deg, #1B3B6F 0%, #2d4a7c 100%);
+  padding: 48px 48px 40px;
   color: white;
   position: relative;
   overflow: hidden;
 
-  /* Animated gradient overlay */
+  /* Subtle gradient overlay */
   &::before {
     content: '';
     position: absolute;
@@ -141,11 +140,9 @@ const ReportHeader = styled.div`
     bottom: 0;
     background: linear-gradient(
       135deg,
-      rgba(139, 92, 246, 0.1) 0%,
-      rgba(59, 130, 246, 0.1) 50%,
-      rgba(16, 185, 129, 0.1) 100%
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 100%
     );
-    animation: gradientShift 15s ease infinite;
     pointer-events: none;
   }
 
@@ -185,20 +182,16 @@ const TitleSection = styled.div`
   z-index: 1;
 
   h1 {
-    font-size: 2.5rem; /* Larger, more commanding */
-    font-weight: 800;
+    font-size: 2.25rem;
+    font-weight: 700;
     margin: 0 0 12px 0;
-    letter-spacing: -0.03em; /* Tighter for premium feel */
-    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+    letter-spacing: -0.02em;
+    color: white;
   }
 
   .subtitle {
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8); /* Slightly more visible */
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 400;
     letter-spacing: 0.01em;
   }
@@ -275,26 +268,25 @@ const ButtonSeparator = styled.div`
 
 const ActionButton = styled(motion.button)`
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); /* Premium easing */
-  backdrop-filter: blur(12px) saturate(180%);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
@@ -305,6 +297,11 @@ const ActionButton = styled(motion.button)`
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+  }
+
+  &:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
   }
 
   @media (max-width: 768px) {
@@ -326,42 +323,18 @@ const MaturityOverview = styled.div`
 `;
 
 const MaturityCard = styled.div`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
   padding: 28px;
-  backdrop-filter: blur(16px) saturate(180%);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
-
-  /* Subtle glow effect on hover */
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 16px;
-    padding: 1.5px;
-    background: linear-gradient(135deg, 
-      rgba(139, 92, 246, 0.3) 0%, 
-      rgba(59, 130, 246, 0.3) 50%,
-      rgba(16, 185, 129, 0.3) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-
-    &::before {
-      opacity: 1;
-    }
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .icon {
@@ -459,22 +432,29 @@ const ReportBody = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 1.875rem;
+  font-weight: 600;
   color: #1e293b;
-  margin: 0 0 32px 0;
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #e2e8f0;
   letter-spacing: -0.02em;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    color: #FF3621;
+  }
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 `;
 
 const PillarSection = styled(motion.div)`
-  margin-bottom: 48px;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  margin-bottom: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   overflow: hidden;
 
   &:last-of-type {
@@ -508,7 +488,7 @@ const PillarHeader = styled.div`
 
   h3 {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #1e293b;
     margin: 0;
   }
