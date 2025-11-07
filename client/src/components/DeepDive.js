@@ -197,7 +197,6 @@ const SectionHeader = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-top: 60px;
 
   h2 {
     font-size: 2.5rem;
@@ -230,22 +229,27 @@ const SectionHeader = styled.div`
       font-size: 1rem;
     }
   }
+`;
+
+const SectionTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
 
   @media (max-width: 768px) {
-    padding-top: 0;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 `;
 
 const SectionControls = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
   display: flex;
   gap: 8px;
-  z-index: 100;
   pointer-events: auto;
   opacity: 0;
   transition: opacity 0.3s ease;
+  margin-left: auto;
 
   section:hover &,
   .maturity-section:hover & {
@@ -253,9 +257,6 @@ const SectionControls = styled.div`
   }
 
   @media (max-width: 768px) {
-    position: static;
-    transform: none;
-    margin-top: 16px;
     opacity: 1;
   }
 `;
@@ -3114,11 +3115,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Objectives Section */}
         <Section order={sectionOrder.indexOf('objectives')}>
           <SectionHeader>
-            {renderSectionControls('objectives', 'Strategic Objectives')}
-            <h2 onClick={() => toggleSection('objectives')}>
-              Strategic Objectives
-              {collapsedSections.objectives ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('objectives')}>
+                Strategic Objectives
+                {collapsedSections.objectives ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('objectives', 'Strategic Objectives')}
+            </SectionTitleRow>
             <p>Three core objectives guide our technical maturity assessment approach</p>
             <AddButton
               onClick={() => handleAdd('objective')}
@@ -3180,11 +3183,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Category Structure Section */}
         <Section order={sectionOrder.indexOf('categories')}>
           <SectionHeader>
-            {renderSectionControls('categories', 'Category Structure')}
-            <h2 onClick={() => toggleSection('categories')}>
-              Category Structure and Definitions
-              {collapsedSections.categories ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('categories')}>
+                Category Structure and Definitions
+                {collapsedSections.categories ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('categories', 'Category Structure')}
+            </SectionTitleRow>
             <p>Evaluation categories and sub-categories across the six alignment pillars</p>
             <AddButton
               onClick={() => handleAdd('category', 'new')}
@@ -3297,11 +3302,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Technical Success Plan Section */}
         <Section order={sectionOrder.indexOf('successPlan')}>
           <SectionHeader>
-            {renderSectionControls('successPlan', 'Technical Success Plan')}
-            <h2 onClick={() => toggleSection('successPlan')}>
-              Technical Success Plan
-              {collapsedSections.successPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('successPlan')}>
+                Technical Success Plan
+                {collapsedSections.successPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('successPlan', 'Technical Success Plan')}
+            </SectionTitleRow>
             <p>How Results Play in Technical Success Plan - Mapping needs to activities and outcomes</p>
             <AddButton
               onClick={() => handleAdd('success plan', 'new')}
@@ -3409,11 +3416,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Engagement & Enablement Plan Section */}
         <Section order={sectionOrder.indexOf('engagementPlan')}>
           <SectionHeader>
-            {renderSectionControls('engagementPlan', 'Engagement & Enablement Plan')}
-            <h2 onClick={() => toggleSection('engagementPlan')}>
-              Targeted Engagement & Enablement Plan
-              {collapsedSections.engagementPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('engagementPlan')}>
+                Targeted Engagement & Enablement Plan
+                {collapsedSections.engagementPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('engagementPlan', 'Engagement & Enablement Plan')}
+            </SectionTitleRow>
             <p>Timeline for engagement activities and focus areas</p>
             <AddButton
               onClick={() => handleAdd('engagement plan', 'new')}
@@ -3473,11 +3482,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Analysis & Actions Section */}
         <Section order={sectionOrder.indexOf('analysisActions')}>
           <SectionHeader>
-            {renderSectionControls('analysisActions', 'Analysis & Actions')}
-            <h2 onClick={() => toggleSection('analysisActions')}>
-              Analysis & Actions
-              {collapsedSections.analysisActions ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('analysisActions')}>
+                Analysis & Actions
+                {collapsedSections.analysisActions ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('analysisActions', 'Analysis & Actions')}
+            </SectionTitleRow>
             <p>Maturity improvement recommendations at each stage of the Maturity Model</p>
             <AddButton
               onClick={() => handleAdd('analysis', 'new')}
@@ -3549,11 +3560,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Customer Engagement Scenarios Section */}
         <Section order={sectionOrder.indexOf('scenarios')}>
           <SectionHeader>
-            {renderSectionControls('scenarios', 'Customer Engagement Scenarios')}
-            <h2 onClick={() => toggleSection('scenarios')}>
-              Customer Engagement Scenarios
-              {collapsedSections.scenarios ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('scenarios')}>
+                Customer Engagement Scenarios
+                {collapsedSections.scenarios ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('scenarios', 'Customer Engagement Scenarios')}
+            </SectionTitleRow>
             <p>Tailored approaches for different customer maturity levels and situations</p>
             <AddButton
               onClick={() => handleAdd('scenario', 'new')}
@@ -3648,11 +3661,13 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         {/* Maturity Matrices Section */}
         <MaturitySection className="maturity-section" order={sectionOrder.indexOf('matrices')}>
           <SectionHeader>
-            {renderSectionControls('matrices', 'Maturity Level Definitions')}
-            <h2 onClick={() => toggleSection('matrices')}>
-              Maturity Level Definitions
-              {collapsedSections.matrices ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
-            </h2>
+            <SectionTitleRow>
+              <h2 onClick={() => toggleSection('matrices')}>
+                Maturity Level Definitions
+                {collapsedSections.matrices ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+              </h2>
+              {renderSectionControls('matrices', 'Maturity Level Definitions')}
+            </SectionTitleRow>
             <p>Detailed maturity progression for each dimension across all six categories</p>
             <AddButton
               onClick={() => handleAdd('maturity matrix', 'new')}
