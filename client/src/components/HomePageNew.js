@@ -1650,6 +1650,40 @@ const HomePageNew = () => {
                           <span className="dimension-tag">Environment Architecture</span>
                           <span className="dimension-tag">Security & Access</span>
                           <span className="dimension-tag">Governance & Compliance</span>
+                          <span className="dimension-tag">Observability</span>
+                          <span className="dimension-tag">Cost Management</span>
+                        </div>
+                      </PillarCard>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">📊</span>
+                          <h3>Data Engineering & Integration</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Evaluate how efficiently data is ingested, transformed, and managed within Databricks.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">Ingestion Strategy</span>
+                          <span className="dimension-tag">Lakehouse Architecture</span>
+                          <span className="dimension-tag">Pipeline Orchestration</span>
+                          <span className="dimension-tag">Data Quality</span>
+                          <span className="dimension-tag">Performance</span>
+                        </div>
+                      </PillarCard>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">📈</span>
+                          <h3>Analytics & BI Modernization</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Assess how Databricks supports governed analytics, performance, and self-service access.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">Query Performance</span>
+                          <span className="dimension-tag">Data Modeling</span>
+                          <span className="dimension-tag">Visualization</span>
+                          <span className="dimension-tag">Self-Service</span>
+                          <span className="dimension-tag">Collaboration</span>
                         </div>
                       </PillarCard>
                       <PillarCard>
@@ -1658,26 +1692,46 @@ const HomePageNew = () => {
                           <h3>Machine Learning & MLOps</h3>
                         </div>
                         <div className="pillar-desc">
-                          Understand how Databricks is leveraged for classical and predictive ML use cases.
+                          Understand how Databricks is leveraged for classical and predictive ML use cases with reliable operations.
                         </div>
                         <div className="dimensions">
-                          <span className="dimension-tag">Experimentation</span>
+                          <span className="dimension-tag">Experimentation & Tracking</span>
                           <span className="dimension-tag">Model Deployment</span>
+                          <span className="dimension-tag">Feature Management</span>
                           <span className="dimension-tag">ML Governance</span>
+                          <span className="dimension-tag">Business Impact</span>
+                        </div>
+                      </PillarCard>
+                      <PillarCard>
+                        <div className="pillar-header">
+                          <span className="icon">💡</span>
+                          <h3>Generative AI & Agentic Capabilities</h3>
+                        </div>
+                        <div className="pillar-desc">
+                          Evaluate readiness to operationalize GenAI and agent-based intelligence within your organization.
+                        </div>
+                        <div className="dimensions">
+                          <span className="dimension-tag">GenAI Strategy</span>
+                          <span className="dimension-tag">Data Readiness</span>
+                          <span className="dimension-tag">Application Development</span>
+                          <span className="dimension-tag">Quality Control</span>
+                          <span className="dimension-tag">Responsible AI</span>
                         </div>
                       </PillarCard>
                       <PillarCard>
                         <div className="pillar-header">
                           <span className="icon">⚙️</span>
-                          <h3>Operational Excellence</h3>
+                          <h3>Operational Excellence & Adoption</h3>
                         </div>
                         <div className="pillar-desc">
-                          Measure organizational readiness, adoption velocity, and realized value.
+                          Measure organizational readiness, adoption velocity, and realized value from Databricks.
                         </div>
                         <div className="dimensions">
                           <span className="dimension-tag">Center of Excellence</span>
+                          <span className="dimension-tag">Community of Practice</span>
                           <span className="dimension-tag">Training & Enablement</span>
-                          <span className="dimension-tag">Innovation Culture</span>
+                          <span className="dimension-tag">Financial Management</span>
+                          <span className="dimension-tag">Innovation & Improvement</span>
                         </div>
                       </PillarCard>
                     </Grid>
