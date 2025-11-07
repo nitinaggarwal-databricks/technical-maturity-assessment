@@ -27,14 +27,11 @@ const NavContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 48px;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 40px;
 
   @media (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 24px;
     justify-content: space-between;
   }
 `;
