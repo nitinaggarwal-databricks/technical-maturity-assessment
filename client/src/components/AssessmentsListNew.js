@@ -36,39 +36,6 @@ const PageContainer = styled.div`
   }
 `;
 
-const Breadcrumb = styled.div`
-  background: transparent;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  color: #64748b;
-  position: relative;
-  z-index: 1;
-
-  a, button {
-    color: #1B3B6F;
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font: inherit;
-    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:hover {
-      color: #FF3621;
-      text-decoration: underline;
-    }
-  }
-
-  span {
-    color: #cbd5e1;
-  }
-`;
-
 const ContentContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -881,13 +848,6 @@ const AssessmentsListNew = () => {
 
   return (
     <PageContainer>
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <button onClick={() => navigate('/')}>Home</button>
-        <span>›</span>
-        <span style={{ color: '#111827' }}>Assessments</span>
-      </Breadcrumb>
-
       <ContentContainer>
         {/* Header */}
         <HeaderSection>
