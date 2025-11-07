@@ -164,6 +164,15 @@ const SectionHeader = styled.div`
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      color: #3b82f6;
+    }
 
     @media (max-width: 768px) {
       font-size: 1.75rem;
@@ -1562,6 +1571,24 @@ const DeepDive = () => {
     'scenarios',
     'matrices'
   ]);
+
+  // Section collapse state (all collapsed by default)
+  const [collapsedSections, setCollapsedSections] = useState({
+    objectives: true,
+    categories: true,
+    successPlan: true,
+    engagementPlan: true,
+    analysisActions: true,
+    scenarios: true,
+    matrices: true
+  });
+
+  const toggleSection = (sectionId) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -3013,7 +3040,10 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
         <Section order={sectionOrder.indexOf('objectives')}>
           <SectionHeader>
             {renderSectionControls('objectives', 'Strategic Objectives')}
-            <h2>Strategic Objectives</h2>
+            <h2 onClick={() => toggleSection('objectives')}>
+              Strategic Objectives
+              {collapsedSections.objectives ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Three core objectives guide our technical maturity assessment approach</p>
             <AddButton
               onClick={() => handleAdd('objective')}
@@ -3025,7 +3055,16 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
-          <CardGrid>
+          <AnimatePresence>
+            {!collapsedSections.objectives && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <CardGrid>
             {objectives.map((objective, index) => (
               <ResizableCard
                 key={objective.id}
@@ -3057,14 +3096,20 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 </CardContent>
               </ResizableCard>
             ))}
-          </CardGrid>
+                </CardGrid>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Category Structure Section */}
         <Section order={sectionOrder.indexOf('categories')}>
           <SectionHeader>
             {renderSectionControls('categories', 'Category Structure')}
-            <h2>Category Structure and Definitions</h2>
+            <h2 onClick={() => toggleSection('categories')}>
+              Category Structure and Definitions
+              {collapsedSections.categories ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>Evaluation categories and sub-categories across the six alignment pillars</p>
             <AddButton
               onClick={() => handleAdd('category', 'new')}
@@ -3076,7 +3121,16 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
-          <CategoryContainer>
+          <AnimatePresence>
+            {!collapsedSections.categories && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <CategoryContainer>
             {categories.map((category, index) => (
               <CategoryCard
                 className="category-card"
@@ -3159,14 +3213,20 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
                 </AnimatePresence>
               </CategoryCard>
             ))}
-          </CategoryContainer>
+                </CategoryContainer>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Technical Success Plan Section */}
         <Section order={sectionOrder.indexOf('successPlan')}>
           <SectionHeader>
             {renderSectionControls('successPlan', 'Technical Success Plan')}
-            <h2>Technical Success Plan</h2>
+            <h2 onClick={() => toggleSection('successPlan')}>
+              Technical Success Plan
+              {collapsedSections.successPlan ? <FiChevronDown size={32} /> : <FiChevronUp size={32} />}
+            </h2>
             <p>How Results Play in Technical Success Plan - Mapping needs to activities and outcomes</p>
             <AddButton
               onClick={() => handleAdd('success plan', 'new')}
@@ -3178,6 +3238,15 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
             </AddButton>
           </SectionHeader>
 
+          <AnimatePresence>
+            {!collapsedSections.successPlan && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: 'hidden' }}
+              >
           {technicalSuccessPlan.map((plan, index) => (
             <SuccessPlanCard className="success-card" key={plan.id} color={plan.color}>
               <SuccessPlanHeader color={plan.color}>
@@ -3257,6 +3326,9 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
               </SuccessPlanBody>
             </SuccessPlanCard>
           ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Section>
 
         {/* Engagement & Enablement Plan Section */}
