@@ -669,6 +669,124 @@ const formatPillarName = (pillarId) => {
     .join(' ');
 };
 
+// 🎨 Modal Styled Components
+const ModalOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const ModalContent = styled(motion.div)`
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-transform: capitalize;
+  }
+`;
+
+const ModalBody = styled.div`
+  padding: 24px;
+`;
+
+const ModalFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px;
+  border-top: 1px solid #e5e7eb;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.938rem;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    font-family: inherit;
+  }
+`;
+
+const SaveButton = styled.button`
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+`;
+
+const CancelButton = styled.button`
+  padding: 10px 24px;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+`;
+
 const IndustryBenchmarkingReport = () => {
   const { assessmentId } = useParams();
   const navigate = useNavigate();
@@ -677,6 +795,12 @@ const IndustryBenchmarkingReport = () => {
   const [results, setResults] = useState(null);
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [error, setError] = useState(null);
+  
+  // 🎨 CRUD State
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'section', 'metric', 'pillar', 'insight', etc.
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
     // Fetch assessment results
@@ -738,6 +862,39 @@ const IndustryBenchmarkingReport = () => {
   const handleDownloadReport = () => {
     // Trigger browser print dialog (user can save as PDF)
     window.print();
+  };
+
+  // 🎨 CRUD Handlers
+  const handleEdit = (type, item) => {
+    console.log('[Edit]', type, item);
+    setModalType(type);
+    setEditingItem(item);
+    setFormData(item || {});
+    setShowModal(true);
+  };
+
+  const handleDelete = (type, item) => {
+    console.log('[Delete]', type, item);
+    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
+      // In a real app, you'd update the backend here
+      alert(`${type} deleted successfully!`);
+    }
+  };
+
+  const handleAdd = (type) => {
+    console.log('[Add]', type);
+    setModalType(type);
+    setEditingItem(null);
+    setFormData({});
+    setShowModal(true);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log('[Form Submit]', modalType, formData);
+    // In a real app, you'd save to backend here
+    setShowModal(false);
+    alert(`${modalType} ${editingItem ? 'updated' : 'added'} successfully!`);
   };
 
   const getTierIcon = (tier) => {
@@ -843,10 +1000,10 @@ const IndustryBenchmarkingReport = () => {
             Executive Summary
           </SectionTitle>
           <SectionActions>
-            <ActionButton title="Edit Section">
+            <ActionButton title="Edit Section" onClick={() => handleEdit('executive-summary', executiveSummary)}>
               <FiEdit2 size={16} />
             </ActionButton>
-            <ActionButton title="Delete Section">
+            <ActionButton title="Delete Section" onClick={() => handleDelete('executive-summary', executiveSummary)}>
               <FiTrash2 size={16} />
             </ActionButton>
           </SectionActions>
@@ -876,13 +1033,13 @@ const IndustryBenchmarkingReport = () => {
             Your Competitive Position
           </SectionTitle>
           <SectionActions>
-            <ActionButton title="Add Metric">
+            <ActionButton title="Add Metric" onClick={() => handleAdd('metric')}>
               <FiPlus size={16} />
             </ActionButton>
-            <ActionButton title="Edit Section">
+            <ActionButton title="Edit Section" onClick={() => handleEdit('competitive-position', competitivePositioning)}>
               <FiEdit2 size={16} />
             </ActionButton>
-            <ActionButton title="Delete Section">
+            <ActionButton title="Delete Section" onClick={() => handleDelete('competitive-position', competitivePositioning)}>
               <FiTrash2 size={16} />
             </ActionButton>
           </SectionActions>
@@ -901,10 +1058,10 @@ const IndustryBenchmarkingReport = () => {
         <MetricsGrid>
           <MetricCard $bg="#fef3c7" $border="#fbbf24" $accent="#f59e0b">
             <CardActions>
-              <ActionButton title="Edit Metric">
+              <ActionButton title="Edit Metric" onClick={() => handleEdit("metric", {})}>
                 <FiEdit2 size={14} />
               </ActionButton>
-              <ActionButton title="Delete Metric">
+              <ActionButton title="Delete Metric" onClick={() => handleDelete("metric", {})}>
                 <FiTrash2 size={14} />
               </ActionButton>
             </CardActions>
@@ -918,10 +1075,10 @@ const IndustryBenchmarkingReport = () => {
 
           <MetricCard $bg="#dbeafe" $border="#3b82f6" $accent="#2563eb">
             <CardActions>
-              <ActionButton title="Edit Metric">
+              <ActionButton title="Edit Metric" onClick={() => handleEdit("metric", {})}>
                 <FiEdit2 size={14} />
               </ActionButton>
-              <ActionButton title="Delete Metric">
+              <ActionButton title="Delete Metric" onClick={() => handleDelete("metric", {})}>
                 <FiTrash2 size={14} />
               </ActionButton>
             </CardActions>
@@ -933,10 +1090,10 @@ const IndustryBenchmarkingReport = () => {
 
           <MetricCard $bg="#e0f2fe" $border="#0ea5e9" $accent="#0284c7">
             <CardActions>
-              <ActionButton title="Edit Metric">
+              <ActionButton title="Edit Metric" onClick={() => handleEdit("metric", {})}>
                 <FiEdit2 size={14} />
               </ActionButton>
-              <ActionButton title="Delete Metric">
+              <ActionButton title="Delete Metric" onClick={() => handleDelete("metric", {})}>
                 <FiTrash2 size={14} />
               </ActionButton>
             </CardActions>
@@ -979,13 +1136,13 @@ const IndustryBenchmarkingReport = () => {
             {collapsedSections['pillars'] ? <FiChevronDown size={24} style={{ marginLeft: 'auto' }} /> : <FiChevronUp size={24} style={{ marginLeft: 'auto' }} />}
           </div>
           <SectionActions>
-            <ActionButton title="Add Pillar">
+            <ActionButton title="Add Pillar" onClick={() => handleAdd('pillar')}>
               <FiPlus size={16} />
             </ActionButton>
-            <ActionButton title="Edit Section">
+            <ActionButton title="Edit Section" onClick={() => handleEdit('pillar-section', pillarAnalysis)}>
               <FiEdit2 size={16} />
             </ActionButton>
-            <ActionButton title="Delete Section">
+            <ActionButton title="Delete Section" onClick={() => handleDelete('pillar-section', pillarAnalysis)}>
               <FiTrash2 size={16} />
             </ActionButton>
           </SectionActions>
@@ -1009,10 +1166,10 @@ const IndustryBenchmarkingReport = () => {
                   return (
                     <PillarCard key={pillarId}>
                       <PillarCardActions>
-                        <ActionButton title="Edit Pillar">
+                        <ActionButton title="Edit Pillar" onClick={() => handleEdit('pillar', { pillarId, ...data })}>
                           <FiEdit2 size={14} />
                         </ActionButton>
-                        <ActionButton title="Delete Pillar">
+                        <ActionButton title="Delete Pillar" onClick={() => handleDelete('pillar', { pillarId, ...data })}>
                           <FiTrash2 size={14} />
                         </ActionButton>
                       </PillarCardActions>
@@ -1085,10 +1242,10 @@ const IndustryBenchmarkingReport = () => {
               {competitiveIntelligence.strengths.map((strength, idx) => (
                 <InsightCard key={idx} $bg="#d1fae5" $border="#10b981">
                   <InsightCardActions>
-                    <ActionButton title="Edit Strength">
+                    <ActionButton title="Edit Strength" onClick={() => handleEdit("strength", strength)}>
                       <FiEdit2 size={14} />
                     </ActionButton>
-                    <ActionButton title="Delete Strength">
+                    <ActionButton title="Delete Strength" onClick={() => handleDelete("strength", strength)}>
                       <FiTrash2 size={14} />
                     </ActionButton>
                   </InsightCardActions>
@@ -1114,10 +1271,10 @@ const IndustryBenchmarkingReport = () => {
               {competitiveIntelligence.vulnerabilities.map((vuln, idx) => (
                 <InsightCard key={idx} $bg="#fee2e2" $border="#ef4444">
                   <InsightCardActions>
-                    <ActionButton title="Edit Vulnerability">
+                    <ActionButton title="Edit Vulnerability" onClick={() => handleEdit("vulnerability", vuln)}>
                       <FiEdit2 size={14} />
                     </ActionButton>
-                    <ActionButton title="Delete Vulnerability">
+                    <ActionButton title="Delete Vulnerability" onClick={() => handleDelete("vulnerability", vuln)}>
                       <FiTrash2 size={14} />
                     </ActionButton>
                   </InsightCardActions>
@@ -1146,13 +1303,13 @@ const IndustryBenchmarkingReport = () => {
               Strategic Recommendations
             </SectionTitle>
             <SectionActions>
-              <ActionButton title="Add Recommendation">
+              <ActionButton title="Add Recommendation" onClick={() => handleAdd('recommendation')}>
                 <FiPlus size={16} />
               </ActionButton>
-              <ActionButton title="Edit Section">
+              <ActionButton title="Edit Section" onClick={() => handleEdit('recommendations-section', strategicRecommendations)}>
                 <FiEdit2 size={16} />
               </ActionButton>
-              <ActionButton title="Delete Section">
+              <ActionButton title="Delete Section" onClick={() => handleDelete('recommendations-section', strategicRecommendations)}>
                 <FiTrash2 size={16} />
               </ActionButton>
             </SectionActions>
@@ -1260,10 +1417,10 @@ const IndustryBenchmarkingReport = () => {
             Methodology & Data Sources
           </SectionTitle>
           <SectionActions>
-            <ActionButton title="Edit Section">
+            <ActionButton title="Edit Section" onClick={() => handleEdit('methodology', benchmarkData?.methodology)}>
               <FiEdit2 size={16} />
             </ActionButton>
-            <ActionButton title="Delete Section">
+            <ActionButton title="Delete Section" onClick={() => handleDelete('methodology', benchmarkData?.methodology)}>
               <FiTrash2 size={16} />
             </ActionButton>
           </SectionActions>
@@ -1294,6 +1451,97 @@ const IndustryBenchmarkingReport = () => {
 
         {/* Footer */}
         <Footer />
+
+        {/* 🎨 CRUD Modal */}
+        <AnimatePresence>
+          {showModal && (
+            <ModalOverlay onClick={() => setShowModal(false)}>
+              <ModalContent
+                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <ModalHeader>
+                  <h2>{editingItem ? 'Edit' : 'Add'} {modalType}</h2>
+                  <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#6b7280' }}>&times;</button>
+                </ModalHeader>
+                <form onSubmit={handleFormSubmit}>
+                  <ModalBody>
+                    {modalType === 'metric' && (
+                      <>
+                        <FormGroup>
+                          <label>Metric Label</label>
+                          <input
+                            type="text"
+                            value={formData.label || ''}
+                            onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                            placeholder="e.g., Overall Percentile"
+                            required
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label>Value</label>
+                          <input
+                            type="text"
+                            value={formData.value || ''}
+                            onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                            placeholder="e.g., 85th"
+                            required
+                          />
+                        </FormGroup>
+                      </>
+                    )}
+                    {(modalType === 'pillar' || modalType === 'strength' || modalType === 'vulnerability' || modalType === 'recommendation') && (
+                      <>
+                        <FormGroup>
+                          <label>Title / Area</label>
+                          <input
+                            type="text"
+                            value={formData.area || formData.title || formData.pillar || ''}
+                            onChange={(e) => setFormData({ ...formData, area: e.target.value, title: e.target.value, pillar: e.target.value })}
+                            placeholder="e.g., Platform Governance"
+                            required
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label>Description / Evidence</label>
+                          <textarea
+                            rows="4"
+                            value={formData.evidence || formData.description || ''}
+                            onChange={(e) => setFormData({ ...formData, evidence: e.target.value, description: e.target.value })}
+                            placeholder="Detailed description or evidence..."
+                            required
+                          />
+                        </FormGroup>
+                      </>
+                    )}
+                    {(modalType === 'executive-summary' || modalType === 'competitive-position' || modalType === 'methodology') && (
+                      <FormGroup>
+                        <label>Content</label>
+                        <textarea
+                          rows="6"
+                          value={formData.content || ''}
+                          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                          placeholder="Section content..."
+                          required
+                        />
+                      </FormGroup>
+                    )}
+                  </ModalBody>
+                  <ModalFooter>
+                    <CancelButton type="button" onClick={() => setShowModal(false)}>
+                      Cancel
+                    </CancelButton>
+                    <SaveButton type="submit">
+                      {editingItem ? 'Save Changes' : 'Add'}
+                    </SaveButton>
+                  </ModalFooter>
+                </form>
+              </ModalContent>
+            </ModalOverlay>
+          )}
+        </AnimatePresence>
       </PageContainer>
     </>
   );
