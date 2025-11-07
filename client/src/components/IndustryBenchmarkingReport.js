@@ -96,6 +96,23 @@ const GlobalPrintStyles = createGlobalStyle`
 
 // ... (keeping all the styled components from before, adding more)
 
+const PageContainer = styled.div`
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 40px 24px;
+  padding-top: 108px;
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    padding-top: 92px;
+  }
+
+  @media print {
+    padding: 0;
+    background: white;
+  }
+`;
+
 const PageHeader = styled.div`
   max-width: 1200px;
   margin: 0 auto 24px;
@@ -623,25 +640,25 @@ const IndustryBenchmarkingReport = () => {
   return (
     <>
       <GlobalPrintStyles />
-      
-      <PageHeader>
-        <BackButton
-          onClick={() => navigate(`/executive/${assessmentId}`)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <FiArrowLeft size={18} />
-          Back to Executive Command Center
-        </BackButton>
-        <BackButton
-          onClick={() => navigate('/')}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <FiHome size={18} />
-          Home
-        </BackButton>
-      </PageHeader>
+      <PageContainer>
+        <PageHeader>
+          <BackButton
+            onClick={() => navigate(`/executive/${assessmentId}`)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FiArrowLeft size={18} />
+            Back to Executive Command Center
+          </BackButton>
+          <BackButton
+            onClick={() => navigate('/')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FiHome size={18} />
+            Home
+          </BackButton>
+        </PageHeader>
 
       <ReportContainer
         initial={{ opacity: 0, y: 20 }}
@@ -1015,8 +1032,9 @@ const IndustryBenchmarkingReport = () => {
       </Section>
     </ReportContainer>
 
-    {/* Footer */}
-    <Footer />
+        {/* Footer */}
+        <Footer />
+      </PageContainer>
     </>
   );
 };
