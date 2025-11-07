@@ -638,6 +638,92 @@ const EditActionButton = styled.button`
   }
 `;
 
+const ColorPickerButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  background: ${props => props.$color || '#f8fafc'};
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+
+  &:hover {
+    border-color: #cbd5e1;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const ColorPickerPopover = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  z-index: 1000;
+  min-width: 240px;
+`;
+
+const ColorGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+`;
+
+const ColorOption = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid ${props => props.$selected ? '#1e293b' : 'transparent'};
+  background: ${props => props.$color};
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.1);
+    border-color: #64748b;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  ${props => props.$selected && `
+    &::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+  `}
+`;
+
+const ColorPickerLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
 const EditableTextarea = styled.textarea`
   width: 100%;
   min-height: 100px;
@@ -1204,12 +1290,14 @@ const AssessmentResultsNew = () => {
   const [editingNewFeature, setEditingNewFeature] = useState(null); // Track which new feature is being edited
   const [editingNewNextStep, setEditingNewNextStep] = useState(null); // Track which new next step is being edited
   const [editedContent, setEditedContent] = useState({});
+  const [showColorPicker, setShowColorPicker] = useState(null); // Track which pillar's color picker is shown
   const [customizations, setCustomizations] = useState({
     title: '',
     summary: '',
     pillars: {},
     phases: {},
     features: {},
+    pillarColors: {}, // Custom colors for each pillar
     nextSteps: {},
     goodItems: {}, // { pillarId_index: text }
     badItems: {}, // { pillarId_index: text }
@@ -1360,6 +1448,23 @@ const AssessmentResultsNew = () => {
     };
     fetchFramework();
   }, []);
+
+  // Close color picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showColorPicker) {
+        setShowColorPicker(null);
+      }
+    };
+    
+    if (showColorPicker) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showColorPicker]);
 
   // Refresh handler
   const handleRefresh = () => {
@@ -2771,14 +2876,16 @@ const AssessmentResultsNew = () => {
           {pillars.map((pillar, index) => {
             const data = getPillarData(pillar.id);
             
-            // Get pillar color
-            const pillarColor = 
-              pillar.id === 'platform_governance' ? '#3b82f6' :
-              pillar.id === 'data_engineering' ? '#ef4444' :
-              pillar.id === 'analytics_bi' ? '#10b981' :
-              pillar.id === 'machine_learning' ? '#f59e0b' :
-              pillar.id === 'generative_ai' ? '#8b5cf6' :
-              '#06b6d4';
+            // Get pillar color (use custom if set, otherwise default)
+            const defaultColors = {
+              'platform_governance': '#3b82f6',
+              'data_engineering': '#ef4444',
+              'analytics_bi': '#10b981',
+              'machine_learning': '#f59e0b',
+              'generative_ai': '#8b5cf6',
+              'operational_excellence': '#06b6d4'
+            };
+            const pillarColor = customizations.pillarColors[pillar.id] || defaultColors[pillar.id] || '#64748b';
             
             // Get dimensions from results data (PRIMARY SOURCE - always available)
             let dimensions = [];
@@ -2867,6 +2974,63 @@ const AssessmentResultsNew = () => {
                             <FiTrash2 size={14} />
                           </EditActionButton>
                         )}
+                        <div style={{ position: 'relative' }}>
+                          <ColorPickerButton
+                            $color={pillarColor}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowColorPicker(showColorPicker === pillar.id ? null : pillar.id);
+                            }}
+                            title="Change color"
+                          >
+                            🎨
+                          </ColorPickerButton>
+                          {showColorPicker === pillar.id && (
+                            <ColorPickerPopover onClick={(e) => e.stopPropagation()}>
+                              <ColorPickerLabel>Choose Color</ColorPickerLabel>
+                              <ColorGrid>
+                                {[
+                                  '#3b82f6', // Blue
+                                  '#ef4444', // Red
+                                  '#10b981', // Green
+                                  '#f59e0b', // Amber
+                                  '#8b5cf6', // Purple
+                                  '#06b6d4', // Cyan
+                                  '#ec4899', // Pink
+                                  '#f97316', // Orange
+                                  '#14b8a6', // Teal
+                                  '#a855f7', // Violet
+                                  '#84cc16', // Lime
+                                  '#64748b', // Slate
+                                  '#dc2626', // Bright Red
+                                  '#059669', // Emerald
+                                  '#7c3aed', // Deep Purple
+                                  '#0891b2', // Sky
+                                  '#c026d3', // Fuchsia
+                                  '#65a30d', // Green-Yellow
+                                ].map((color) => (
+                                  <ColorOption
+                                    key={color}
+                                    $color={color}
+                                    $selected={pillarColor === color}
+                                    onClick={() => {
+                                      setCustomizations({
+                                        ...customizations,
+                                        pillarColors: {
+                                          ...customizations.pillarColors,
+                                          [pillar.id]: color
+                                        }
+                                      });
+                                      setShowColorPicker(null);
+                                      toast.success(`Color updated for ${pillar.name}`);
+                                    }}
+                                    title={color}
+                                  />
+                                ))}
+                              </ColorGrid>
+                            </ColorPickerPopover>
+                          )}
+                        </div>
                       </>
                     )}
                   </div>
