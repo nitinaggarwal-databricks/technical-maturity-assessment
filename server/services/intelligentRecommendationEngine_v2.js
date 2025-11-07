@@ -764,15 +764,81 @@ class IntelligentRecommendationEngine {
             'AI Functions': 'Call LLMs directly from SQL for AI-powered data transformations',
             'Agent Framework': 'Build and deploy multi-step AI agents with tool integration',
             'Unity Catalog for AI': 'Govern AI models, prompts, and feature sets with centralized catalog',
+            
             // ML Features
             'MLflow': 'End-to-end ML lifecycle management with experiment tracking and model registry',
             'Feature Store': 'Centralized repository for ML features with version control and lineage',
             'AutoML': 'Automated machine learning for rapid model development',
+            'Model Registry': 'Version control and governance for production ML models',
+            'Model Serving': 'Low-latency endpoints for real-time ML predictions',
+            
             // Data Engineering Features
             'Delta Live Tables': 'Declarative ETL pipelines with built-in quality controls',
             'Delta Sharing': 'Secure data sharing without copying or moving data',
             'Workflows': 'Orchestrate data, analytics, and ML pipelines',
-            // Add more as needed
+            'Autoloader': 'Incrementally and efficiently process new data files',
+            
+            // Platform Governance Features (CRITICAL - these were missing!)
+            'Unity Catalog': 'Unified governance for data and AI assets with centralized access control',
+            'Data Lineage': 'Automatic tracking of data transformations and dependencies',
+            'Semantic Layer': 'Business-friendly semantic layer for consistent metrics and definitions',
+            'Compliance Security Profile': 'Pre-configured security controls for regulatory compliance',
+            'Audit Logs': 'Track and monitor all workspace activities for compliance and security',
+            
+            // Performance Features (CRITICAL - these were missing!)
+            'Serverless SQL': 'Auto-scaling SQL warehouses with instant start and pay-per-query pricing',
+            'Photon': 'High-performance query engine for 3-5x faster SQL and DataFrame queries',
+            'Predictive I/O': 'Intelligent data pre-fetching to reduce query latency',
+            'Result Caching': 'Automatic caching of query results for repeated queries',
+            'Liquid Clustering': 'Self-optimizing data layout without manual tuning',
+            
+            // Collaboration & BI Features
+            'Databricks SQL': 'Powerful SQL analytics with native BI integrations',
+            'SQL Warehouses': 'Dedicated compute for SQL queries with auto-scaling',
+            'Dashboards': 'Interactive visualizations and reporting',
+            'Alerts': 'Automated notifications for data changes and anomalies',
+            'Query Profile': 'Detailed query execution analysis for optimization',
+            
+            // Data Quality Features
+            'Expectations': 'Data quality validation rules for Delta Live Tables',
+            'Quality Metrics': 'Automated data quality scoring and monitoring',
+            'Schema Evolution': 'Automatic handling of schema changes',
+            
+            // Cost Optimization Features
+            'Cluster Policies': 'Enforce compute governance and cost controls',
+            'Budget Alerts': 'Proactive notifications for spending thresholds',
+            'Tagging': 'Cost allocation by team, project, or workload',
+            
+            // Training & Enablement Features (CRITICAL - these were causing duplicates!)
+            'Databricks Academy': 'Free online training and certification programs for platform adoption',
+            'Professional Services': 'Expert consulting for architecture, migrations, and best practices',
+            'Community Edition': 'Free access to Databricks for learning and experimentation',
+            'Partner Connect': 'Pre-integrated ecosystem partners for extended functionality',
+            
+            // Workspace & Admin Features
+            'Account Console': 'Centralized management for multi-workspace deployments',
+            'Workspace Administration': 'User management, billing, and workspace configuration',
+            'IP Access Lists': 'Network security controls for workspace access',
+            'Private Link': 'Private network connectivity for enhanced security',
+            
+            // Notebook & Development Features
+            'Notebooks': 'Collaborative notebooks with multi-language support',
+            'Repos': 'Git integration for version control and CI/CD',
+            'Databricks Asset Bundles': 'Infrastructure-as-code for deployment automation',
+            
+            // Job & Orchestration Features
+            'Job Scheduler': 'Reliable job scheduling with dependency management',
+            'Task Orchestration': 'Multi-task workflows with conditional logic',
+            
+            // Compute Features
+            'Serverless Compute': 'Instant-start compute with automatic scaling',
+            'Instance Pools': 'Pre-warmed compute instances for faster job starts',
+            'Spot Instances': 'Cost-optimized compute using cloud spot pricing',
+            
+            // Data Ingestion Features
+            'Auto Loader': 'Scalable incremental data ingestion from cloud storage',
+            'Copy Into': 'Simple bulk data loading into Delta tables',
+            'Streaming': 'Real-time data processing with structured streaming'
           };
           
           if (uniqueReasonMap[f.name]) {
@@ -1320,8 +1386,9 @@ class IntelligentRecommendationEngine {
       let reason = '';
       const featureBenefit = detailedFeature?.benefits?.[0] || detailedFeature?.short_description || detailedFeature?.description;
       
-      // Use same unique reason map as database path
+      // Use same unique reason map as database path (COMPLETE VERSION)
       const uniqueReasonMap = {
+        // GenAI Features
         'Mosaic AI Model Serving': 'Deploy production-ready AI models with built-in governance and monitoring',
         'AI Gateway': 'Centralized gateway for LLM usage with governance, cost tracking, and quality control',
         'Lakehouse Monitoring': 'Automated monitoring for data quality, schema changes, and model performance',
@@ -1330,12 +1397,81 @@ class IntelligentRecommendationEngine {
         'AI Functions': 'Call LLMs directly from SQL for AI-powered data transformations',
         'Agent Framework': 'Build and deploy multi-step AI agents with tool integration',
         'Unity Catalog for AI': 'Govern AI models, prompts, and feature sets with centralized catalog',
+        
+        // ML Features
         'MLflow': 'End-to-end ML lifecycle management with experiment tracking and model registry',
         'Feature Store': 'Centralized repository for ML features with version control and lineage',
         'AutoML': 'Automated machine learning for rapid model development',
+        'Model Registry': 'Version control and governance for production ML models',
+        'Model Serving': 'Low-latency endpoints for real-time ML predictions',
+        
+        // Data Engineering Features
         'Delta Live Tables': 'Declarative ETL pipelines with built-in quality controls',
         'Delta Sharing': 'Secure data sharing without copying or moving data',
-        'Workflows': 'Orchestrate data, analytics, and ML pipelines'
+        'Workflows': 'Orchestrate data, analytics, and ML pipelines',
+        'Autoloader': 'Incrementally and efficiently process new data files',
+        
+        // Platform Governance Features
+        'Unity Catalog': 'Unified governance for data and AI assets with centralized access control',
+        'Data Lineage': 'Automatic tracking of data transformations and dependencies',
+        'Semantic Layer': 'Business-friendly semantic layer for consistent metrics and definitions',
+        'Compliance Security Profile': 'Pre-configured security controls for regulatory compliance',
+        'Audit Logs': 'Track and monitor all workspace activities for compliance and security',
+        
+        // Performance Features
+        'Serverless SQL': 'Auto-scaling SQL warehouses with instant start and pay-per-query pricing',
+        'Photon': 'High-performance query engine for 3-5x faster SQL and DataFrame queries',
+        'Predictive I/O': 'Intelligent data pre-fetching to reduce query latency',
+        'Result Caching': 'Automatic caching of query results for repeated queries',
+        'Liquid Clustering': 'Self-optimizing data layout without manual tuning',
+        
+        // Collaboration & BI Features
+        'Databricks SQL': 'Powerful SQL analytics with native BI integrations',
+        'SQL Warehouses': 'Dedicated compute for SQL queries with auto-scaling',
+        'Dashboards': 'Interactive visualizations and reporting',
+        'Alerts': 'Automated notifications for data changes and anomalies',
+        'Query Profile': 'Detailed query execution analysis for optimization',
+        
+        // Data Quality Features
+        'Expectations': 'Data quality validation rules for Delta Live Tables',
+        'Quality Metrics': 'Automated data quality scoring and monitoring',
+        'Schema Evolution': 'Automatic handling of schema changes',
+        
+        // Cost Optimization Features
+        'Cluster Policies': 'Enforce compute governance and cost controls',
+        'Budget Alerts': 'Proactive notifications for spending thresholds',
+        'Tagging': 'Cost allocation by team, project, or workload',
+        
+        // Training & Enablement Features (CRITICAL!)
+        'Databricks Academy': 'Free online training and certification programs for platform adoption',
+        'Professional Services': 'Expert consulting for architecture, migrations, and best practices',
+        'Community Edition': 'Free access to Databricks for learning and experimentation',
+        'Partner Connect': 'Pre-integrated ecosystem partners for extended functionality',
+        
+        // Workspace & Admin Features
+        'Account Console': 'Centralized management for multi-workspace deployments',
+        'Workspace Administration': 'User management, billing, and workspace configuration',
+        'IP Access Lists': 'Network security controls for workspace access',
+        'Private Link': 'Private network connectivity for enhanced security',
+        
+        // Notebook & Development Features
+        'Notebooks': 'Collaborative notebooks with multi-language support',
+        'Repos': 'Git integration for version control and CI/CD',
+        'Databricks Asset Bundles': 'Infrastructure-as-code for deployment automation',
+        
+        // Job & Orchestration Features
+        'Job Scheduler': 'Reliable job scheduling with dependency management',
+        'Task Orchestration': 'Multi-task workflows with conditional logic',
+        
+        // Compute Features
+        'Serverless Compute': 'Instant-start compute with automatic scaling',
+        'Instance Pools': 'Pre-warmed compute instances for faster job starts',
+        'Spot Instances': 'Cost-optimized compute using cloud spot pricing',
+        
+        // Data Ingestion Features
+        'Auto Loader': 'Scalable incremental data ingestion from cloud storage',
+        'Copy Into': 'Simple bulk data loading into Delta tables',
+        'Streaming': 'Real-time data processing with structured streaming'
       };
       
       if (uniqueReasonMap[featureName]) {
