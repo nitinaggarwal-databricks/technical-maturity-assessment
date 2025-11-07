@@ -18,7 +18,10 @@ import {
   FiChevronUp,
   FiDownload,
   FiArrowLeft,
-  FiHome
+  FiFileText,
+  FiEdit2,
+  FiTrash2,
+  FiPlus
 } from 'react-icons/fi';
 import * as assessmentService from '../services/assessmentService';
 import {
@@ -216,6 +219,7 @@ const ReportSubtitle = styled.div`
 const Section = styled(motion.div)`
   padding: 32px 40px;
   border-bottom: 1px solid #e5e7eb;
+  position: relative;
 
   &:last-child {
     border-bottom: none;
@@ -229,6 +233,7 @@ const SectionHeader = styled.div`
   margin-bottom: 24px;
   cursor: ${props => props.$collapsible ? 'pointer' : 'default'};
   user-select: none;
+  position: relative;
 `;
 
 const SectionTitle = styled.h2`
@@ -250,6 +255,49 @@ const SectionBadge = styled.div`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+const SectionActions = styled.div`
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  margin-left: auto;
+
+  ${SectionHeader}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  @media print {
+    display: none !important;
+  }
+`;
+
+const ActionButton = styled.button`
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+
+  @media print {
+    display: none !important;
+  }
 `;
 
 const ExecutiveSummaryBox = styled.div`
@@ -308,6 +356,29 @@ const MetricCard = styled(motion.div)`
   border-left: 4px solid ${props => props.$accent || '#3b82f6'};
   border-radius: 12px;
   padding: 20px;
+  position: relative;
+`;
+
+const CardActions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${MetricCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  @media print {
+    display: none !important;
+  }
 `;
 
 const MetricLabel = styled.div`
@@ -347,11 +418,34 @@ const PillarCard = styled.div`
   border-radius: 12px;
   padding: 24px;
   transition: all 0.3s ease;
+  position: relative;
 
   &:hover {
     border-color: #3b82f6;
     box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
+  }
+`;
+
+const PillarCardActions = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${PillarCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  @media print {
+    display: none !important;
   }
 `;
 
@@ -420,6 +514,29 @@ const InsightCard = styled.div`
   border-radius: 12px;
   padding: 20px;
   margin: 16px 0;
+  position: relative;
+`;
+
+const InsightCardActions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${InsightCard}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+
+  @media print {
+    display: none !important;
+  }
 `;
 
 const InsightHeader = styled.div`
@@ -651,12 +768,12 @@ const IndustryBenchmarkingReport = () => {
             Back to Executive Command Center
           </BackButton>
           <BackButton
-            onClick={() => navigate('/')}
+            onClick={() => navigate(`/results/${assessmentId}`)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FiHome size={18} />
-            Home
+            <FiFileText size={18} />
+            Full Maturity Report
           </BackButton>
         </PageHeader>
 
@@ -681,6 +798,14 @@ const IndustryBenchmarkingReport = () => {
             <FiZap color="#fbbf24" />
             Executive Summary
           </SectionTitle>
+          <SectionActions>
+            <ActionButton title="Edit Section">
+              <FiEdit2 size={16} />
+            </ActionButton>
+            <ActionButton title="Delete Section">
+              <FiTrash2 size={16} />
+            </ActionButton>
+          </SectionActions>
         </SectionHeader>
 
         <ExecutiveSummaryBox>
@@ -706,6 +831,17 @@ const IndustryBenchmarkingReport = () => {
             <FiTarget color="#3b82f6" />
             Your Competitive Position
           </SectionTitle>
+          <SectionActions>
+            <ActionButton title="Add Metric">
+              <FiPlus size={16} />
+            </ActionButton>
+            <ActionButton title="Edit Section">
+              <FiEdit2 size={16} />
+            </ActionButton>
+            <ActionButton title="Delete Section">
+              <FiTrash2 size={16} />
+            </ActionButton>
+          </SectionActions>
         </SectionHeader>
 
         <div style={{ textAlign: 'center', margin: '32px 0' }}>
@@ -720,6 +856,14 @@ const IndustryBenchmarkingReport = () => {
 
         <MetricsGrid>
           <MetricCard $bg="#fef3c7" $border="#fbbf24" $accent="#f59e0b">
+            <CardActions>
+              <ActionButton title="Edit Metric">
+                <FiEdit2 size={14} />
+              </ActionButton>
+              <ActionButton title="Delete Metric">
+                <FiTrash2 size={14} />
+              </ActionButton>
+            </CardActions>
             <MetricLabel>Overall Percentile</MetricLabel>
             <MetricValue>{competitivePositioning?.overallRanking?.percentile}th</MetricValue>
             <MetricSubtext>
@@ -729,6 +873,14 @@ const IndustryBenchmarkingReport = () => {
           </MetricCard>
 
           <MetricCard $bg="#dbeafe" $border="#3b82f6" $accent="#2563eb">
+            <CardActions>
+              <ActionButton title="Edit Metric">
+                <FiEdit2 size={14} />
+              </ActionButton>
+              <ActionButton title="Delete Metric">
+                <FiTrash2 size={14} />
+              </ActionButton>
+            </CardActions>
             <MetricLabel>Peer Group</MetricLabel>
             <MetricValue style={{ fontSize: '1rem', lineHeight: 1.4, marginTop: '12px' }}>
               {competitivePositioning?.overallRanking?.peerGroup}
@@ -736,6 +888,14 @@ const IndustryBenchmarkingReport = () => {
           </MetricCard>
 
           <MetricCard $bg="#e0f2fe" $border="#0ea5e9" $accent="#0284c7">
+            <CardActions>
+              <ActionButton title="Edit Metric">
+                <FiEdit2 size={14} />
+              </ActionButton>
+              <ActionButton title="Delete Metric">
+                <FiTrash2 size={14} />
+              </ActionButton>
+            </CardActions>
             <MetricLabel>Maturity Score</MetricLabel>
             <MetricValue>{actualScore?.toFixed(1)}<span style={{ fontSize: '1rem', color: '#6b7280' }}>/5.0</span></MetricValue>
             <MetricSubtext $color="#0369a1">
@@ -765,13 +925,26 @@ const IndustryBenchmarkingReport = () => {
 
       {/* Pillar-by-Pillar Analysis */}
       <Section>
-        <SectionHeader $collapsible onClick={() => toggleSection('pillars')}>
-          <SectionTitle>
-            <FiBarChart2 color="#3b82f6" />
-            Detailed Pillar Analysis
-            <SectionBadge $color="#3b82f6">6 Pillars</SectionBadge>
-          </SectionTitle>
-          {collapsedSections['pillars'] ? <FiChevronDown size={24} /> : <FiChevronUp size={24} />}
+        <SectionHeader $collapsible>
+          <div onClick={() => toggleSection('pillars')} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer' }}>
+            <SectionTitle>
+              <FiBarChart2 color="#3b82f6" />
+              Detailed Pillar Analysis
+              <SectionBadge $color="#3b82f6">6 Pillars</SectionBadge>
+            </SectionTitle>
+            {collapsedSections['pillars'] ? <FiChevronDown size={24} style={{ marginLeft: 'auto' }} /> : <FiChevronUp size={24} style={{ marginLeft: 'auto' }} />}
+          </div>
+          <SectionActions>
+            <ActionButton title="Add Pillar">
+              <FiPlus size={16} />
+            </ActionButton>
+            <ActionButton title="Edit Section">
+              <FiEdit2 size={16} />
+            </ActionButton>
+            <ActionButton title="Delete Section">
+              <FiTrash2 size={16} />
+            </ActionButton>
+          </SectionActions>
         </SectionHeader>
 
         <AnimatePresence>
@@ -791,6 +964,14 @@ const IndustryBenchmarkingReport = () => {
 
                   return (
                     <PillarCard key={pillarId}>
+                      <PillarCardActions>
+                        <ActionButton title="Edit Pillar">
+                          <FiEdit2 size={14} />
+                        </ActionButton>
+                        <ActionButton title="Delete Pillar">
+                          <FiTrash2 size={14} />
+                        </ActionButton>
+                      </PillarCardActions>
                       <PillarHeader>
                         <PillarName>{data.pillar || pillarId}</PillarName>
                         <PercentileBadge $bg={percentileColor.bg} $color={percentileColor.color}>
@@ -859,6 +1040,14 @@ const IndustryBenchmarkingReport = () => {
               </h4>
               {competitiveIntelligence.strengths.map((strength, idx) => (
                 <InsightCard key={idx} $bg="#d1fae5" $border="#10b981">
+                  <InsightCardActions>
+                    <ActionButton title="Edit Strength">
+                      <FiEdit2 size={14} />
+                    </ActionButton>
+                    <ActionButton title="Delete Strength">
+                      <FiTrash2 size={14} />
+                    </ActionButton>
+                  </InsightCardActions>
                   <InsightHeader>
                     <InsightTitle $color="#065f46">{strength.area}</InsightTitle>
                   </InsightHeader>
@@ -880,6 +1069,14 @@ const IndustryBenchmarkingReport = () => {
               </h4>
               {competitiveIntelligence.vulnerabilities.map((vuln, idx) => (
                 <InsightCard key={idx} $bg="#fee2e2" $border="#ef4444">
+                  <InsightCardActions>
+                    <ActionButton title="Edit Vulnerability">
+                      <FiEdit2 size={14} />
+                    </ActionButton>
+                    <ActionButton title="Delete Vulnerability">
+                      <FiTrash2 size={14} />
+                    </ActionButton>
+                  </InsightCardActions>
                   <InsightHeader>
                     <InsightTitle $color="#991b1b">{vuln.area}</InsightTitle>
                   </InsightHeader>
@@ -904,6 +1101,17 @@ const IndustryBenchmarkingReport = () => {
               <FiTarget color="#3b82f6" />
               Strategic Recommendations
             </SectionTitle>
+            <SectionActions>
+              <ActionButton title="Add Recommendation">
+                <FiPlus size={16} />
+              </ActionButton>
+              <ActionButton title="Edit Section">
+                <FiEdit2 size={16} />
+              </ActionButton>
+              <ActionButton title="Delete Section">
+                <FiTrash2 size={16} />
+              </ActionButton>
+            </SectionActions>
           </SectionHeader>
 
           {/* Immediate Actions */}
@@ -1007,6 +1215,14 @@ const IndustryBenchmarkingReport = () => {
           <SectionTitle style={{ fontSize: '1rem' }}>
             Methodology & Data Sources
           </SectionTitle>
+          <SectionActions>
+            <ActionButton title="Edit Section">
+              <FiEdit2 size={16} />
+            </ActionButton>
+            <ActionButton title="Delete Section">
+              <FiTrash2 size={16} />
+            </ActionButton>
+          </SectionActions>
         </SectionHeader>
         <div style={{ fontSize: '0.875rem', color: '#6b7280', lineHeight: 1.6 }}>
           <p><strong>Data Source:</strong> {benchmarkData.methodology?.dataSource}</p>
