@@ -4628,7 +4628,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {/* Slide Heading - Top Left */}
                 <div style={{ 
                   position: 'absolute',
-                  top: '15px',
+                  top: '10px',
                   left: '30px',
                   fontSize: '1.5rem',
                   fontWeight: 700,
@@ -4641,8 +4641,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%', alignContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%', alignContent: 'space-between' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', justifyContent: 'space-evenly' }}>
                       {objectives.map((obj) => (
                         <div key={obj.id} style={{ 
                           background: 'white',
@@ -4658,7 +4658,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             display: 'flex',
                             alignItems: 'center',
                             marginBottom: '20px',
-                            paddingBottom: '20px',
+                            paddingBottom: '10px',
                             borderBottom: `2px solid ${obj.borderColor}`
                           }}>
                             <span style={{ fontSize: '2.5rem', marginRight: '16px' }}>{obj.icon}</span>
@@ -4687,7 +4687,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 2: Category Structure - Part 1 (First 3 Categories) */}
                 {slides[currentSlide].id === 'categories-1' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '55px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '45px' }}>
                     {categories.slice(0, 3).map((cat) => (
                       <CompactCard key={cat.id} $color={cat.color}>
                         <div style={{ 
@@ -4749,7 +4749,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Category Structure - Part 2 (Last 3 Categories) */}
                 {slides[currentSlide].id === 'categories-2' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '55px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '45px' }}>
                     {categories.slice(3, 6).map((cat) => (
                       <CompactCard key={cat.id} $color={cat.color}>
                         <div style={{ 
@@ -4811,8 +4811,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Technical Success Plan - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
                       {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <div key={plan.id} style={{ 
                           border: `4px solid ${plan.color}`,
@@ -4922,8 +4922,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 4: Technical Success Plan - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
                       {technicalSuccessPlan.slice(3, 6).map((plan) => (
                         <div key={plan.id} style={{ 
                           border: `4px solid ${plan.color}`,
@@ -5208,8 +5208,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2 centered) */}
                 {slides[currentSlide].id === 'scenarios' && (
                   <div style={{ 
-                    paddingTop: '55px',
-                    paddingBottom: '20px',
+                    paddingTop: '45px',
+                    paddingBottom: '10px',
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(6, 1fr)',
                     gridTemplateRows: 'repeat(2, 1fr)',
@@ -5308,8 +5308,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 11: Maturity Level Definitions - Part 1 (First 2 Matrices) */}
                 {slides[currentSlide].id === 'matrices-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
                       {maturityMatrices.slice(0, 2).map((matrix) => {
                         const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                         return (
@@ -5372,8 +5372,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 12: Maturity Level Definitions - Part 2 (Next 2 Matrices) */}
                 {slides[currentSlide].id === 'matrices-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
                       {maturityMatrices.slice(2, 4).map((matrix) => {
                         const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                         return (
@@ -5436,8 +5436,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 13: Maturity Level Definitions - Part 3 (Last 2 Matrices) */}
                 {slides[currentSlide].id === 'matrices-3' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '55px', paddingBottom: '20px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
                       {maturityMatrices.slice(4, 6).map((matrix) => {
                         const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                         return (
