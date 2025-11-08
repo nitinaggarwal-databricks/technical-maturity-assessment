@@ -1944,6 +1944,19 @@ const DeepDive = () => {
     }
   };
 
+  // Click navigation handler
+  const handleSlideClick = (e) => {
+    const slideWidth = e.currentTarget.offsetWidth;
+    const clickX = e.clientX;
+    
+    // If clicked on left half, go previous; right half, go next
+    if (clickX < slideWidth / 2) {
+      previousSlide();
+    } else {
+      nextSlide();
+    }
+  };
+
   // Keyboard navigation for presentation
   useEffect(() => {
     if (!presentationMode) return;
@@ -4596,6 +4609,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={handleSlideClick}
+            style={{ cursor: 'pointer' }}
           >
             <SlideContainer>
               <SlideContent
@@ -4605,9 +4620,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
-                  {slides[currentSlide].title}
-                </h1>
 
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
@@ -4659,31 +4671,31 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '16px', 
+                          padding: '20px', 
                           borderRadius: '12px 12px 0 0',
-                          marginBottom: '12px',
+                          marginBottom: '16px',
                           marginTop: '-16px',
                           marginLeft: '-16px',
                           marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                          <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '8px' }}>{cat.title}</h4>
-                          <p style={{ fontSize: '0.875rem', opacity: 0.95 }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.35rem', fontWeight: 700 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1rem', opacity: 0.95, lineHeight: '1.5' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '12px', 
-                              padding: '8px 0',
+                              gap: '14px', 
+                              padding: '10px 0',
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '8px',
                                 background: cat.bgColor,
                                 color: 'white',
@@ -4691,16 +4703,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '0.875rem',
+                                fontSize: '1.1rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '0.875rem', 
+                                fontSize: '1.05rem', 
                                 color: '#1e293b',
-                                fontWeight: 500,
-                                flex: 1
+                                fontWeight: 600,
+                                flex: 1,
+                                lineHeight: '1.4'
                               }}>
                                 {subCat.name}
                               </div>
@@ -4720,31 +4733,31 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '16px', 
+                          padding: '20px', 
                           borderRadius: '12px 12px 0 0',
-                          marginBottom: '12px',
+                          marginBottom: '16px',
                           marginTop: '-16px',
                           marginLeft: '-16px',
                           marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                          <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '8px' }}>{cat.title}</h4>
-                          <p style={{ fontSize: '0.875rem', opacity: 0.95 }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.35rem', fontWeight: 700 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1rem', opacity: 0.95, lineHeight: '1.5' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '12px', 
-                              padding: '8px 0',
+                              gap: '14px', 
+                              padding: '10px 0',
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '8px',
                                 background: cat.bgColor,
                                 color: 'white',
@@ -4752,16 +4765,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '0.875rem',
+                                fontSize: '1.1rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '0.875rem', 
+                                fontSize: '1.05rem', 
                                 color: '#1e293b',
-                                fontWeight: 500,
-                                flex: 1
+                                fontWeight: 600,
+                                flex: 1,
+                                lineHeight: '1.4'
                               }}>
                                 {subCat.name}
                               </div>
@@ -4779,7 +4793,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                     <div>
                       {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <div key={plan.id} style={{ 
-                          marginBottom: '24px',
+                          marginBottom: '28px',
                           border: `3px solid ${plan.color}`,
                           borderRadius: '12px',
                           overflow: 'hidden',
@@ -4788,9 +4802,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           <div style={{ 
                             background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
                             color: 'white',
-                            padding: '12px 20px',
+                            padding: '16px 24px',
                             fontWeight: 700,
-                            fontSize: '1.125rem'
+                            fontSize: '1.4rem'
                           }}>
                             {plan.category}
                           </div>
@@ -4800,14 +4814,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             gap: '0'
                           }}>
                             <div style={{ 
-                              padding: '16px',
+                              padding: '20px',
                               borderRight: '1px solid #e2e8f0'
                             }}>
                               <h4 style={{ 
-                                fontSize: '0.875rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '12px',
+                                marginBottom: '14px',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4815,21 +4829,21 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '0.875rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.6'
                               }}>
                                 {plan.need || 'No need defined'}
                               </div>
                             </div>
                             <div style={{ 
-                              padding: '16px',
+                              padding: '20px',
                               borderRight: '1px solid #e2e8f0'
                             }}>
                               <h4 style={{ 
-                                fontSize: '0.875rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '12px',
+                                marginBottom: '14px',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4837,22 +4851,22 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <ul style={{ 
                                 margin: 0,
-                                paddingLeft: '20px',
+                                paddingLeft: '22px',
                                 color: '#475569',
-                                fontSize: '0.875rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.6'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
-                                  <li key={idx} style={{ marginBottom: '4px' }}>{activity}</li>
+                                  <li key={idx} style={{ marginBottom: '6px' }}>{activity}</li>
                                 ))}
                               </ul>
                             </div>
-                            <div style={{ padding: '16px' }}>
+                            <div style={{ padding: '20px' }}>
                               <h4 style={{ 
-                                fontSize: '0.875rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '12px',
+                                marginBottom: '14px',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4860,7 +4874,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '0.875rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.6'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
@@ -5340,39 +5354,20 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               </SlideContent>
             </SlideContainer>
 
-            <SlideNavigation>
-              <NavButton
-                onClick={previousSlide}
-                disabled={currentSlide === 0}
-                whileHover={currentSlide > 0 ? { scale: 1.05 } : {}}
-                whileTap={currentSlide > 0 ? { scale: 0.95 } : {}}
-              >
-                <FiChevronLeft size={20} />
-                Previous
-              </NavButton>
-
-              <SlideCounter>
-                {currentSlide + 1} / {slides.length}
-              </SlideCounter>
-
-              <NavButton
-                onClick={nextSlide}
-                disabled={currentSlide === slides.length - 1}
-                whileHover={currentSlide < slides.length - 1 ? { scale: 1.05 } : {}}
-                whileTap={currentSlide < slides.length - 1 ? { scale: 0.95 } : {}}
-              >
-                Next
-                <FiChevronRight size={20} />
-              </NavButton>
-            </SlideNavigation>
-
-            <ExitButton
-              onClick={exitPresentation}
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <FiX size={24} />
-            </ExitButton>
+            {/* Slide Counter - Bottom Right */}
+            <SlideCounter style={{ 
+              position: 'absolute', 
+              bottom: '20px', 
+              right: '30px',
+              fontSize: '0.9rem',
+              color: '#64748b',
+              background: 'rgba(255, 255, 255, 0.9)',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              pointerEvents: 'none'
+            }}>
+              {currentSlide + 1} / {slides.length}
+            </SlideCounter>
           </SlideshowOverlay>
         )}
       </AnimatePresence>
