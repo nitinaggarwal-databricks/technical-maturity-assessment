@@ -2475,7 +2475,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
   const [analysisActions, setAnalysisActions] = useState([
     {
       id: 'aa-1',
-      title: 'Analysis & Actions: Platform & Governance',
+      title: 'Platform & Governance',
       color: '#f97316',
       bgColor: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
       levels: [
@@ -2508,7 +2508,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     },
     {
       id: 'aa-2',
-      title: 'Analysis & Actions: Data Engineering & Integration',
+      title: 'Data Engineering & Integration',
       color: '#3b82f6',
       bgColor: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
       levels: [
@@ -2541,7 +2541,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     },
     {
       id: 'aa-3',
-      title: 'Analysis & Actions: Analytics & BI Modernization',
+      title: 'Analytics & BI Modernization',
       color: '#10b981',
       bgColor: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       levels: [
@@ -2574,7 +2574,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     },
     {
       id: 'aa-4',
-      title: 'Analysis & Actions: Machine Learning & MLOps',
+      title: 'Machine Learning & MLOps',
       color: '#dc2626',
       bgColor: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
       levels: [
@@ -2607,7 +2607,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     },
     {
       id: 'aa-5',
-      title: 'Analysis & Actions: Generative AI & Agents',
+      title: 'Generative AI & Agents',
       color: '#8b5cf6',
       bgColor: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
       levels: [
@@ -2640,7 +2640,7 @@ Position Databricks as a trusted advisor with deep technical expertise — helpi
     },
     {
       id: 'aa-6',
-      title: 'Analysis & Actions: Operational Excellence',
+      title: 'Operational Excellence',
       color: '#c2185b',
       bgColor: 'linear-gradient(135deg, #c2185b 0%, #ad1457 100%)',
       levels: [
