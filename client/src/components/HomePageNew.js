@@ -874,13 +874,8 @@ const HomePageNew = () => {
       type: 'hero'
     },
     {
-      id: 'why-assessment',
-      title: 'Why Take This Assessment?',
-      type: 'section'
-    },
-    {
-      id: 'how-it-works',
-      title: 'How It Works',
+      id: 'why-and-how',
+      title: 'Why Take This Assessment & How It Works',
       type: 'section'
     },
     {
@@ -1553,12 +1548,12 @@ const HomePageNew = () => {
                   </div>
                 )}
 
-                {slides[currentSlide].id === 'why-assessment' && (
-                  <div style={{ padding: '20px 0' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                {slides[currentSlide].id === 'why-and-how' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
                       Why Take This Assessment?
                     </h2>
-                    <Grid style={{ marginTop: '40px' }}>
+                    <Grid style={{ marginBottom: '40px' }}>
                       <Card>
                         <CardIcon $bgColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
                           <FiTarget size={24} />
@@ -1587,15 +1582,11 @@ const HomePageNew = () => {
                         </CardDescription>
                       </Card>
                     </Grid>
-                  </div>
-                )}
-
-                {slides[currentSlide].id === 'how-it-works' && (
-                  <div style={{ padding: '20px 0' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                    
+                    <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', marginTop: '24px', textAlign: 'center' }}>
                       How It Works
                     </h2>
-                    <Grid style={{ marginTop: '40px' }}>
+                    <Grid>
                       <Card>
                         <CardIcon $bgColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
                           <FiCheckCircle size={24} />
