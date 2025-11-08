@@ -4597,15 +4597,62 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 2: Category Structure */}
                 {slides[currentSlide].id === 'categories' && (
-                  <SlideGrid $columns="1fr">
-                    <SlideSection>
-                      {categories.map((cat) => (
-                        <CompactCard key={cat.id} $color={cat.borderColor}>
-                          <h4>{cat.icon} {cat.title}</h4>
-                          <p>{cat.description || 'No description available'}</p>
-                        </CompactCard>
-                      ))}
-                    </SlideSection>
+                  <SlideGrid $columns="repeat(3, 1fr)">
+                    {categories.map((cat) => (
+                      <CompactCard key={cat.id} $color={cat.color}>
+                        <div style={{ 
+                          background: cat.bgColor, 
+                          color: 'white', 
+                          padding: '16px', 
+                          borderRadius: '12px 12px 0 0',
+                          marginBottom: '12px',
+                          marginTop: '-16px',
+                          marginLeft: '-16px',
+                          marginRight: '-16px'
+                        }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                            {cat.label}
+                          </div>
+                          <h4 style={{ color: 'white', marginBottom: '8px' }}>{cat.title}</h4>
+                          <p style={{ fontSize: '0.875rem', opacity: 0.95 }}>{cat.description}</p>
+                        </div>
+                        <div>
+                          {cat.subCategories && cat.subCategories.map((subCat, idx) => (
+                            <div key={idx} style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '12px', 
+                              padding: '8px 0',
+                              borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
+                            }}>
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '8px',
+                                background: cat.bgColor,
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '0.875rem',
+                                flexShrink: 0
+                              }}>
+                                {subCat.letter}
+                              </div>
+                              <div style={{ 
+                                fontSize: '0.875rem', 
+                                color: '#1e293b',
+                                fontWeight: 500,
+                                flex: 1
+                              }}>
+                                {subCat.name}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CompactCard>
+                    ))}
                   </SlideGrid>
                 )}
 
