@@ -5181,26 +5181,35 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2) */}
                 {slides[currentSlide].id === 'scenarios' && (
-                  <div style={{ paddingTop: '70px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', height: 'calc(100% - 70px)', alignContent: 'start' }}>
+                  <div style={{ 
+                    paddingTop: '70px', 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridTemplateRows: 'repeat(2, 1fr)',
+                    gap: '10px',
+                    height: 'calc(100% - 90px)',
+                    width: '100%'
+                  }}>
                     {engagementScenarios.map((scenario, idx) => {
                       const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                       return (
                         <div key={scenario.id} style={{ 
                           display: 'flex',
                           flexDirection: 'column',
-                          gridColumn: idx >= 3 ? 'span 1' : 'span 1',
-                          maxHeight: idx < 3 ? '48%' : '48%',
-                          overflow: 'hidden'
+                          minHeight: 0,
+                          gridColumn: idx >= 3 ? 'auto' : 'auto',
+                          gridRow: idx < 3 ? '1' : '2'
                         }}>
                           <div style={{
                             background: scenario.bgColor,
                             color: 'white',
-                            padding: '8px 12px',
+                            padding: '8px 10px',
                             borderRadius: '6px 6px 0 0',
                             border: `2px solid ${scenario.color}`,
-                            borderBottom: 'none'
+                            borderBottom: 'none',
+                            flexShrink: 0
                           }}>
-                            <div style={{ fontWeight: 700, fontSize: '0.8rem', marginBottom: '6px' }}>
+                            <div style={{ fontWeight: 700, fontSize: '0.75rem', marginBottom: '4px', lineHeight: '1.2' }}>
                               {scenario.title}
                             </div>
                             <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
@@ -5209,9 +5218,10 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                   padding: '2px 4px',
                                   background: levelIdx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
                                   color: levelIdx < scenario.maturityLevel ? scenario.color : 'white',
-                                  borderRadius: '3px',
-                                  fontSize: '0.6rem',
-                                  fontWeight: 600
+                                  borderRadius: '2px',
+                                  fontSize: '0.55rem',
+                                  fontWeight: 600,
+                                  lineHeight: '1'
                                 }}>
                                   {level.slice(0, 3)}
                                 </div>
@@ -5220,15 +5230,16 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           </div>
                           <div style={{
                             background: 'white',
-                            padding: '8px 10px',
+                            padding: '6px 8px',
                             border: `2px solid ${scenario.color}`,
                             borderTop: 'none',
                             borderRadius: '0 0 6px 6px',
-                            fontSize: '0.65rem',
+                            fontSize: '0.6rem',
                             color: '#475569',
-                            lineHeight: '1.3',
+                            lineHeight: '1.25',
                             flex: 1,
-                            overflow: 'hidden'
+                            minHeight: 0,
+                            overflow: 'auto'
                           }}>
                             {scenario.maturityDescriptions && (
                               <>
