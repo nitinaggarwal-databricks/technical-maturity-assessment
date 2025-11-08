@@ -1874,9 +1874,14 @@ const DeepDive = () => {
       type: 'single'
     },
     {
-      id: 'plans',
-      title: 'Technical Success & Engagement Plans',
-      type: 'combined'
+      id: 'success-plan',
+      title: 'Technical Success Plan',
+      type: 'single'
+    },
+    {
+      id: 'engagement-plan',
+      title: 'Targeted Engagement & Enablement Plan',
+      type: 'single'
     },
     {
       id: 'analysis-scenarios',
@@ -4656,14 +4661,10 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 3: Technical Success Plan + Engagement Plan */}
-                {slides[currentSlide].id === 'plans' && (
-                  <SlideGrid $columns="1fr" style={{ gap: '32px' }}>
-                    {/* Technical Success Plan */}
+                {/* Slide 3: Technical Success Plan */}
+                {slides[currentSlide].id === 'success-plan' && (
+                  <SlideGrid $columns="1fr">
                     <div>
-                      <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px' }}>
-                        Technical Success Plan
-                      </h3>
                       {technicalSuccessPlan.map((plan) => (
                         <div key={plan.id} style={{ 
                           marginBottom: '24px',
@@ -4757,12 +4758,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         </div>
                       ))}
                     </div>
+                  </SlideGrid>
+                )}
 
-                    {/* Engagement & Enablement Plan */}
+                {/* Slide 4: Engagement & Enablement Plan */}
+                {slides[currentSlide].id === 'engagement-plan' && (
+                  <SlideGrid $columns="1fr">
                     <div>
-                      <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px' }}>
-                        Targeted Engagement & Enablement Plan
-                      </h3>
                       <div style={{ 
                         border: '2px solid #e2e8f0',
                         borderRadius: '12px',
@@ -4805,7 +4807,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 3: Analysis & Actions + Customer Scenarios */}
+                {/* Slide 5: Analysis & Actions + Customer Scenarios */}
                 {slides[currentSlide].id === 'analysis-scenarios' && (
                   <SlideGrid $columns="repeat(2, 1fr)">
                     <SlideSection>
