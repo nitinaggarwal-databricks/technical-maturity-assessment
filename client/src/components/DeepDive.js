@@ -4245,7 +4245,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                   <FormGroup>
                     <Label>Content *</Label>
-                    <div style={{ marginBottom: '8px', fontSize: '0.875rem', color: '#6b7280' }}>
+                    <div style={{ marginBottom: '8px', fontSize: '1.175rem', color: '#6b7280' }}>
                       💡 <strong>Formatting tips:</strong> Start lines with <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>•</code> or <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>-</code> for bullets, <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>1.</code> for numbers. Press Enter for new lines.
                     </div>
                     <TextArea
@@ -4305,7 +4305,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           padding: '12px',
                           borderRadius: '8px',
                           border: '2px solid #e5e7eb',
-                          fontSize: '1rem',
+                          fontSize: '1.3rem',
                           marginBottom: '12px'
                         }}
                         onChange={(e) => {
@@ -4393,7 +4393,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       padding: '12px', 
                       background: '#eff6ff', 
                       borderRadius: '8px',
-                      fontSize: '0.875rem',
+                      fontSize: '1.175rem',
                       color: '#1e40af'
                     }}>
                       ℹ️ <strong>Note:</strong> Editing the success plan card only changes the category name and color. 
@@ -4510,7 +4510,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                          modalType === 'success plan' ? 'Initial Need (optional)' :
                          'Description'} {modalType === 'success plan' && !editingItem ? '' : '*'}
                       </Label>
-                      <div style={{ marginBottom: '8px', fontSize: '0.875rem', color: '#6b7280' }}>
+                      <div style={{ marginBottom: '8px', fontSize: '1.175rem', color: '#6b7280' }}>
                         💡 <strong>Formatting tips:</strong> Start lines with <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>•</code> or <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>-</code> for bullets, <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>1.</code> for numbers. Press Enter for new lines.
                       </div>
                       <TextArea
@@ -4539,7 +4539,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   {modalType === 'stage' && (
                     <FormGroup>
                       <Label>Helpful Tools *</Label>
-                      <div style={{ marginBottom: '8px', fontSize: '0.875rem', color: '#6b7280' }}>
+                      <div style={{ marginBottom: '8px', fontSize: '1.175rem', color: '#6b7280' }}>
                         💡 <strong>Formatting tips:</strong> Separate multiple tools with commas (e.g., Tool A, Tool B, Tool C)
                       </div>
                       <TextArea
@@ -4630,7 +4630,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   position: 'absolute',
                   top: '10px',
                   left: '30px',
-                  fontSize: '1.5rem',
+                  fontSize: '1.8rem',
                   fontWeight: 700,
                   color: '#1e293b',
                   pointerEvents: 'none',
@@ -4661,9 +4661,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             paddingBottom: '10px',
                             borderBottom: `2px solid ${obj.borderColor}`
                           }}>
-                            <span style={{ fontSize: '2.5rem', marginRight: '16px' }}>{obj.icon}</span>
+                            <span style={{ fontSize: '2.8rem', marginRight: '16px' }}>{obj.icon}</span>
                             <h3 style={{ 
-                              fontSize: '1.5rem',
+                              fontSize: '1.8rem',
                               fontWeight: 700,
                               color: '#1e293b',
                               margin: 0
@@ -4672,7 +4672,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             </h3>
                           </div>
                           <div style={{ 
-                            fontSize: '1.125rem',
+                            fontSize: '1.45rem',
                             lineHeight: '1.7',
                             color: '#475569',
                             flex: 1
@@ -4700,11 +4700,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           marginLeft: '-16px',
                           marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.35rem', fontWeight: 700 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '1rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.65rem', fontWeight: 700 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1.3rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
@@ -4725,13 +4725,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1.05rem', 
+                                fontSize: '1.65rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
@@ -4762,11 +4762,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           marginLeft: '-16px',
                           marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.35rem', fontWeight: 700 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '1rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.65rem', fontWeight: 700 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1.3rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
@@ -4787,13 +4787,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1.05rem', 
+                                fontSize: '1.65rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
@@ -4828,7 +4828,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             color: 'white',
                             padding: '22px 28px',
                             fontWeight: 700,
-                            fontSize: '1.6rem'
+                            fontSize: '1.9rem'
                           }}>
                             {plan.category}
                           </div>
@@ -4845,7 +4845,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4856,7 +4856,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.need || 'No need defined'}
@@ -4869,7 +4869,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4882,7 +4882,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 margin: 0,
                                 paddingLeft: '26px',
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
@@ -4896,7 +4896,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4907,7 +4907,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
@@ -4939,7 +4939,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             color: 'white',
                             padding: '22px 28px',
                             fontWeight: 700,
-                            fontSize: '1.6rem'
+                            fontSize: '1.9rem'
                           }}>
                             {plan.category}
                           </div>
@@ -4956,7 +4956,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4967,7 +4967,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.need || 'No need defined'}
@@ -4980,7 +4980,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4993,7 +4993,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 margin: 0,
                                 paddingLeft: '26px',
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
@@ -5007,7 +5007,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.15rem',
+                                fontSize: '1.45rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -5018,7 +5018,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.1rem',
+                                fontSize: '1.4rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
@@ -5048,7 +5048,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           color: 'white',
                           padding: '12px 0',
                           fontWeight: 700,
-                          fontSize: '0.875rem'
+                          fontSize: '1.175rem'
                         }}>
                           <div style={{ padding: '0 16px' }}>Time</div>
                           <div style={{ padding: '0 16px' }}>Engagement</div>
@@ -5061,13 +5061,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderBottom: idx < engagementPlan.length - 1 ? '1px solid #e2e8f0' : 'none',
                             padding: '12px 0'
                           }}>
-                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#1e293b', fontWeight: 600 }}>
+                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#1e293b', fontWeight: 600 }}>
                               {item.time || 'Not specified'}
                             </div>
-                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#475569' }}>
+                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#475569' }}>
                               {item.engagement || 'Not specified'}
                             </div>
-                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#475569' }}>
+                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#475569' }}>
                               {item.focusArea || 'Not specified'}
                             </div>
                           </div>
@@ -5087,7 +5087,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           color: 'white',
                           padding: '12px 20px',
                           fontWeight: 700,
-                          fontSize: '1.125rem',
+                          fontSize: '1.45rem',
                           borderRadius: '12px 12px 0 0',
                           border: `3px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5115,7 +5115,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 fontWeight: 700,
                                 color: analysis.color,
                                 marginBottom: '8px',
-                                fontSize: '0.875rem'
+                                fontSize: '1.175rem'
                               }}>
                                 {level.stage}
                               </div>
@@ -5151,7 +5151,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           color: 'white',
                           padding: '12px 20px',
                           fontWeight: 700,
-                          fontSize: '1.125rem',
+                          fontSize: '1.45rem',
                           borderRadius: '12px 12px 0 0',
                           border: `3px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5179,7 +5179,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 fontWeight: 700,
                                 color: analysis.color,
                                 marginBottom: '8px',
-                                fontSize: '0.875rem'
+                                fontSize: '1.175rem'
                               }}>
                                 {level.stage}
                               </div>
@@ -5248,7 +5248,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderBottom: 'none',
                             flexShrink: 0
                           }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px', lineHeight: '1.3' }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.4rem', marginBottom: '8px', lineHeight: '1.3' }}>
                               {scenario.title}
                             </div>
                             <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
@@ -5258,7 +5258,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                   background: levelIdx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
                                   color: levelIdx < scenario.maturityLevel ? scenario.color : 'white',
                                   borderRadius: '4px',
-                                  fontSize: '0.8rem',
+                                  fontSize: '1.1rem',
                                   fontWeight: 600,
                                   lineHeight: '1'
                                 }}>
@@ -5273,7 +5273,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             border: `3px solid ${scenario.color}`,
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
-                            fontSize: '0.875rem',
+                            fontSize: '1.175rem',
                             color: '#475569',
                             lineHeight: '1.5',
                             flex: 1,
@@ -5319,7 +5319,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               color: 'white',
                               padding: '18px 26px',
                               fontWeight: 700,
-                              fontSize: '1.5rem',
+                              fontSize: '1.8rem',
                               borderRadius: '14px 14px 0 0',
                               border: `4px solid ${matrix.color}`,
                               borderBottom: 'none'
@@ -5334,14 +5334,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               overflow: 'hidden',
                               flex: 1
                             }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
                                 <thead>
                                   <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.05rem' }}>
+                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
                                       Dimension
                                     </th>
                                     {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.05rem' }}>
+                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
                                         {level}
                                       </th>
                                     ))}
@@ -5350,11 +5350,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 <tbody>
                                   {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                     <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '0.95rem' }}>
+                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
                                         {dim.name}
                                       </td>
                                       {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '0.9rem' }}>
+                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
                                           {levelDesc}
                                         </td>
                                       ))}
@@ -5383,7 +5383,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               color: 'white',
                               padding: '18px 26px',
                               fontWeight: 700,
-                              fontSize: '1.5rem',
+                              fontSize: '1.8rem',
                               borderRadius: '14px 14px 0 0',
                               border: `4px solid ${matrix.color}`,
                               borderBottom: 'none'
@@ -5398,14 +5398,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               overflow: 'hidden',
                               flex: 1
                             }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
                                 <thead>
                                   <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.05rem' }}>
+                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
                                       Dimension
                                     </th>
                                     {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.05rem' }}>
+                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
                                         {level}
                                       </th>
                                     ))}
@@ -5414,11 +5414,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 <tbody>
                                   {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                     <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '0.95rem' }}>
+                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
                                         {dim.name}
                                       </td>
                                       {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '0.9rem' }}>
+                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
                                           {levelDesc}
                                         </td>
                                       ))}
@@ -5447,7 +5447,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               color: 'white',
                               padding: '18px 26px',
                               fontWeight: 700,
-                              fontSize: '1.5rem',
+                              fontSize: '1.8rem',
                               borderRadius: '14px 14px 0 0',
                               border: `4px solid ${matrix.color}`,
                               borderBottom: 'none'
@@ -5462,14 +5462,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               overflow: 'hidden',
                               flex: 1
                             }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
                                 <thead>
                                   <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.05rem' }}>
+                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
                                       Dimension
                                     </th>
                                     {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.05rem' }}>
+                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
                                         {level}
                                       </th>
                                     ))}
@@ -5478,11 +5478,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 <tbody>
                                   {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                     <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '0.95rem' }}>
+                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
                                         {dim.name}
                                       </td>
                                       {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '0.9rem' }}>
+                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
                                           {levelDesc}
                                         </td>
                                       ))}
@@ -5505,7 +5505,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               position: 'absolute', 
               bottom: '20px', 
               right: '30px',
-              fontSize: '0.9rem',
+              fontSize: '1.2rem',
               color: '#64748b',
               background: 'rgba(255, 255, 255, 0.9)',
               padding: '8px 16px',
