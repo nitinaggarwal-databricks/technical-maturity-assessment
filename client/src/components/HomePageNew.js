@@ -727,18 +727,15 @@ const SlideshowOverlay = styled(motion.div)`
 `;
 
 const SlideContainer = styled(motion.div)`
-  width: 90%;
-  max-width: 1400px;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
   
   @media (max-width: 768px) {
-    width: 95%;
-    height: 85%;
-    padding: 20px;
+    width: 100%;
+    height: 100%;
   }
 `;
 
@@ -746,16 +743,13 @@ const SlideContent = styled(motion.div)`
   width: 100%;
   height: 100%;
   background: white;
-  border-radius: 24px;
-  padding: 60px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: 80px 60px 120px 60px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   
   @media (max-width: 768px) {
-    padding: 32px;
-    border-radius: 16px;
+    padding: 60px 32px 100px 32px;
   }
 `;
 
