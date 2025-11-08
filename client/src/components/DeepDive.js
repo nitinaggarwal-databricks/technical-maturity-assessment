@@ -4582,9 +4582,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       {objectives.slice(0, 3).map((obj) => (
                         <CompactCard key={obj.id} $color={obj.borderColor}>
                           <h4>{obj.icon} {obj.title}</h4>
-                          <FormattedText style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                          <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: '1.5' }}>
                             {obj.content.substring(0, 150)}...
-                          </FormattedText>
+                          </p>
                         </CompactCard>
                       ))}
                     </SlideSection>
@@ -4610,9 +4610,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           <h4>{plan.category}</h4>
                           <div style={{ fontSize: '0.875rem', marginTop: '8px' }}>
                             <strong style={{ color: '#1e293b' }}>Need:</strong>
-                            <FormattedText style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px' }}>
+                            <p style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px', marginTop: '4px' }}>
                               {plan.need.substring(0, 100)}...
-                            </FormattedText>
+                            </p>
                           </div>
                         </CompactCard>
                       ))}
