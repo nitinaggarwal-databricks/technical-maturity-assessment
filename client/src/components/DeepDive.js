@@ -5182,12 +5182,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2 centered) */}
                 {slides[currentSlide].id === 'scenarios' && (
                   <div style={{ 
-                    paddingTop: '70px', 
+                    paddingTop: '80px',
+                    paddingBottom: '20px',
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(6, 1fr)',
                     gridTemplateRows: 'repeat(2, 1fr)',
-                    gap: '16px',
-                    height: 'calc(100% - 90px)',
+                    gap: '20px',
+                    height: '100%',
                     width: '100%'
                   }}>
                     {engagementScenarios.map((scenario, idx) => {
