@@ -4583,7 +4583,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <CompactCard key={obj.id} $color={obj.borderColor}>
                           <h4>{obj.icon} {obj.title}</h4>
                           <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: '1.5' }}>
-                            {obj.content.substring(0, 150)}...
+                            {obj.content ? obj.content.substring(0, 150) + '...' : 'No content available'}
                           </p>
                         </CompactCard>
                       ))}
@@ -4593,7 +4593,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       {categories.slice(0, 3).map((cat) => (
                         <CompactCard key={cat.id} $color={cat.borderColor}>
                           <h4>{cat.icon} {cat.title}</h4>
-                          <p>{cat.description}</p>
+                          <p>{cat.description || 'No description available'}</p>
                         </CompactCard>
                       ))}
                     </SlideSection>
@@ -4607,11 +4607,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       <h3>Technical Success Plan</h3>
                       {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <CompactCard key={plan.id} $color={plan.color}>
-                          <h4>{plan.category}</h4>
+                          <h4>{plan.category || 'Untitled'}</h4>
                           <div style={{ fontSize: '0.875rem', marginTop: '8px' }}>
                             <strong style={{ color: '#1e293b' }}>Need:</strong>
                             <p style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px', marginTop: '4px' }}>
-                              {plan.need.substring(0, 100)}...
+                              {plan.need ? plan.need.substring(0, 100) + '...' : 'No need defined'}
                             </p>
                           </div>
                         </CompactCard>
@@ -4621,9 +4621,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       <h3>Engagement & Enablement</h3>
                       {engagementPlan.slice(0, 3).map((plan) => (
                         <CompactCard key={plan.id} $color="#10b981">
-                          <h4>{plan.time}</h4>
-                          <p><strong>Engagement:</strong> {plan.engagement}</p>
-                          <p style={{ marginTop: '4px' }}><strong>Focus:</strong> {plan.focusArea}</p>
+                          <h4>{plan.time || 'Timeframe'}</h4>
+                          <p><strong>Engagement:</strong> {plan.engagement || 'Not specified'}</p>
+                          <p style={{ marginTop: '4px' }}><strong>Focus:</strong> {plan.focusArea || 'Not specified'}</p>
                         </CompactCard>
                       ))}
                     </SlideSection>
@@ -4637,10 +4637,10 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       <h3>Analysis & Actions</h3>
                       {analysisActions.slice(0, 3).map((analysis) => (
                         <CompactCard key={analysis.id} $color={analysis.color}>
-                          <h4>{analysis.title}</h4>
+                          <h4>{analysis.title || 'Untitled'}</h4>
                           {analysis.stages && analysis.stages.length > 0 && (
                             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description.substring(0, 80)}...
+                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description ? analysis.stages[0].description.substring(0, 80) + '...' : 'No description'}
                             </div>
                           )}
                         </CompactCard>
@@ -4650,9 +4650,9 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       <h3>Customer Scenarios</h3>
                       {engagementScenarios.slice(0, 3).map((scenario) => (
                         <CompactCard key={scenario.id} $color={scenario.color}>
-                          <h4>{scenario.title}</h4>
+                          <h4>{scenario.title || 'Untitled Scenario'}</h4>
                           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                            {scenario.description.substring(0, 120)}...
+                            {scenario.description ? scenario.description.substring(0, 120) + '...' : 'No description available'}
                           </div>
                         </CompactCard>
                       ))}
