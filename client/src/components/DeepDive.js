@@ -1910,32 +1910,32 @@ const DeepDive = () => {
     },
     {
       id: 'matrices-1',
-      title: '1. Platform & Governance',
+      title: 'Maturity Level Definition',
       type: 'single'
     },
     {
       id: 'matrices-2',
-      title: '2. Data Engineering & Integration',
+      title: 'Maturity Level Definition',
       type: 'single'
     },
     {
       id: 'matrices-3',
-      title: '3. Analytics & BI Modernization',
+      title: 'Maturity Level Definition',
       type: 'single'
     },
     {
       id: 'matrices-4',
-      title: '4. Machine Learning & MLOps',
+      title: 'Maturity Level Definition',
       type: 'single'
     },
     {
       id: 'matrices-5',
-      title: '5. Generative AI & Agentic Capabilities',
+      title: 'Maturity Level Definition',
       type: 'single'
     },
     {
       id: 'matrices-6',
-      title: '6. Operational Excellence & Adoption',
+      title: 'Maturity Level Definition',
       type: 'single'
     }
   ];
