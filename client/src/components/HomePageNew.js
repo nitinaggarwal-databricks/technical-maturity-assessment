@@ -1504,13 +1504,14 @@ const HomePageNew = () => {
               >
                 {/* Render current slide content */}
                 {slides[currentSlide].id === 'hero' && (
-                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', padding: '0' }}>
                     <motion.h1
                       style={{
                         fontSize: '3rem',
                         fontWeight: 800,
                         color: '#1e293b',
-                        marginBottom: '24px'
+                        marginBottom: '16px',
+                        textAlign: 'center'
                       }}
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
@@ -1522,7 +1523,8 @@ const HomePageNew = () => {
                       style={{
                         fontSize: '1.5rem',
                         color: '#64748b',
-                        marginBottom: '32px'
+                        marginBottom: '32px',
+                        textAlign: 'center'
                       }}
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
@@ -1534,12 +1536,24 @@ const HomePageNew = () => {
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.4 }}
-                      style={{ marginTop: '48px' }}
+                      style={{ 
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        maxHeight: '500px'
+                      }}
                     >
                       <img 
                         src="/maturity-scale.png" 
                         alt="Maturity Scale" 
-                        style={{ maxWidth: '80%', height: 'auto', margin: '0 auto' }}
+                        style={{ 
+                          maxWidth: '100%', 
+                          maxHeight: '100%',
+                          width: 'auto',
+                          height: 'auto',
+                          objectFit: 'contain'
+                        }}
                       />
                     </motion.div>
                   </div>
