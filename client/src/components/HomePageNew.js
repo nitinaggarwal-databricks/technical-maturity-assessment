@@ -749,31 +749,13 @@ const SlideContent = styled(motion.div)`
   border-radius: 24px;
   padding: 60px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   
   @media (max-width: 768px) {
     padding: 32px;
     border-radius: 16px;
-  }
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
   }
 `;
 
@@ -908,8 +890,13 @@ const HomePageNew = () => {
       type: 'section'
     },
     {
-      id: 'pillars',
-      title: 'Assessment Pillars',
+      id: 'pillars-1',
+      title: 'Assessment Pillars (Part 1)',
+      type: 'section'
+    },
+    {
+      id: 'pillars-2',
+      title: 'Assessment Pillars (Part 2)',
       type: 'section'
     }
   ];
@@ -1632,7 +1619,7 @@ const HomePageNew = () => {
                   </div>
                 )}
 
-                {slides[currentSlide].id === 'pillars' && (
+                {slides[currentSlide].id === 'pillars-1' && (
                   <div style={{ padding: '20px 0' }}>
                     <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
                       Assessment Pillars
@@ -1686,6 +1673,16 @@ const HomePageNew = () => {
                           <span className="dimension-tag">Collaboration</span>
                         </div>
                       </PillarCard>
+                    </Grid>
+                  </div>
+                )}
+
+                {slides[currentSlide].id === 'pillars-2' && (
+                  <div style={{ padding: '20px 0' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                      Assessment Pillars
+                    </h2>
+                    <Grid className="three-columns" style={{ marginTop: '40px' }}>
                       <PillarCard>
                         <div className="pillar-header">
                           <span className="icon">🤖</span>
