@@ -1910,17 +1910,32 @@ const DeepDive = () => {
     },
     {
       id: 'matrices-1',
-      title: 'Maturity Level Definitions (Part 1)',
+      title: '1. Platform & Governance',
       type: 'single'
     },
     {
       id: 'matrices-2',
-      title: 'Maturity Level Definitions (Part 2)',
+      title: '2. Data Engineering & Integration',
       type: 'single'
     },
     {
       id: 'matrices-3',
-      title: 'Maturity Level Definitions (Part 3)',
+      title: '3. Analytics & BI Modernization',
+      type: 'single'
+    },
+    {
+      id: 'matrices-4',
+      title: '4. Machine Learning & MLOps',
+      type: 'single'
+    },
+    {
+      id: 'matrices-5',
+      title: '5. Generative AI & Agentic Capabilities',
+      type: 'single'
+    },
+    {
+      id: 'matrices-6',
+      title: '6. Operational Excellence & Adoption',
       type: 'single'
     }
   ];
@@ -4828,7 +4843,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             color: 'white',
                             padding: '22px 28px',
                             fontWeight: 700,
-                            fontSize: '1.9rem'
+                            fontSize: '1.5rem'
                           }}>
                             {plan.category}
                           </div>
@@ -4845,7 +4860,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4856,7 +4871,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.need || 'No need defined'}
@@ -4869,7 +4884,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4882,7 +4897,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 margin: 0,
                                 paddingLeft: '26px',
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
@@ -4896,7 +4911,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4907,7 +4922,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
@@ -4939,7 +4954,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             color: 'white',
                             padding: '22px 28px',
                             fontWeight: 700,
-                            fontSize: '1.9rem'
+                            fontSize: '1.5rem'
                           }}>
                             {plan.category}
                           </div>
@@ -4956,7 +4971,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4967,7 +4982,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.need || 'No need defined'}
@@ -4980,7 +4995,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -4993,7 +5008,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 margin: 0,
                                 paddingLeft: '26px',
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
@@ -5007,7 +5022,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.45rem',
+                                fontSize: '1.05rem',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: '16px',
@@ -5018,7 +5033,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1.4rem',
+                                fontSize: '1rem',
                                 lineHeight: '1.7'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
@@ -5079,15 +5094,15 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 7: Analysis & Actions - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-1' && (
-                  <SlideGrid $columns="1fr">
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px' }}>
                     {analysisActions.slice(0, 3).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '20px' }}>
+                      <div key={analysis.id} style={{ marginBottom: '12px' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: '12px 20px',
+                          padding: '14px 22px',
                           fontWeight: 700,
-                          fontSize: '1.45rem',
+                          fontSize: '1.65rem',
                           borderRadius: '12px 12px 0 0',
                           border: `3px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5097,8 +5112,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '12px',
-                          padding: '16px',
+                          gap: '8px',
+                          padding: '12px',
                           background: 'white',
                           border: `3px solid ${analysis.color}`,
                           borderTop: 'none',
@@ -5108,27 +5123,27 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             <div key={idx} style={{
                               background: '#f8fafc',
                               borderRadius: '8px',
-                              padding: '12px',
+                              padding: '10px',
                               border: `2px solid ${analysis.color}20`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: '8px',
-                                fontSize: '1.175rem'
+                                marginBottom: '6px',
+                                fontSize: '1.375rem'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: '0.75rem',
+                                fontSize: '0.95rem',
                                 color: '#475569',
                                 lineHeight: '1.5',
-                                marginBottom: '8px'
+                                marginBottom: '6px'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: '0.625rem',
+                                fontSize: '0.825rem',
                                 color: '#64748b'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
@@ -5143,15 +5158,15 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 8: Analysis & Actions - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-2' && (
-                  <SlideGrid $columns="1fr">
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px' }}>
                     {analysisActions.slice(3, 6).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '20px' }}>
+                      <div key={analysis.id} style={{ marginBottom: '12px' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: '12px 20px',
+                          padding: '14px 22px',
                           fontWeight: 700,
-                          fontSize: '1.45rem',
+                          fontSize: '1.65rem',
                           borderRadius: '12px 12px 0 0',
                           border: `3px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5161,8 +5176,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '12px',
-                          padding: '16px',
+                          gap: '8px',
+                          padding: '12px',
                           background: 'white',
                           border: `3px solid ${analysis.color}`,
                           borderTop: 'none',
@@ -5172,27 +5187,27 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             <div key={idx} style={{
                               background: '#f8fafc',
                               borderRadius: '8px',
-                              padding: '12px',
+                              padding: '10px',
                               border: `2px solid ${analysis.color}20`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: '8px',
-                                fontSize: '1.175rem'
+                                marginBottom: '6px',
+                                fontSize: '1.375rem'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: '0.75rem',
+                                fontSize: '0.95rem',
                                 color: '#475569',
                                 lineHeight: '1.5',
-                                marginBottom: '8px'
+                                marginBottom: '6px'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: '0.625rem',
+                                fontSize: '0.825rem',
                                 color: '#64748b'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
@@ -5306,195 +5321,376 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </div>
                 )}
 
-                {/* Slide 11: Maturity Level Definitions - Part 1 (First 2 Matrices) */}
-                {slides[currentSlide].id === 'matrices-1' && (
+                {/* Matrix Slides - One per Pillar */}
+                {slides[currentSlide].id === 'matrices-1' && maturityMatrices[0] && (
                   <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
-                      {maturityMatrices.slice(0, 2).map((matrix) => {
-                        const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
-                        return (
-                          <div key={matrix.id} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{
-                              background: matrix.bgColor,
-                              color: 'white',
-                              padding: '18px 26px',
-                              fontWeight: 700,
-                              fontSize: '1.8rem',
-                              borderRadius: '14px 14px 0 0',
-                              border: `4px solid ${matrix.color}`,
-                              borderBottom: 'none'
-                            }}>
-                              {matrix.title}
-                            </div>
-                            <div style={{
-                              background: 'white',
-                              border: `4px solid ${matrix.color}`,
-                              borderTop: 'none',
-                              borderRadius: '0 0 14px 14px',
-                              overflow: 'hidden',
-                              flex: 1
-                            }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
-                                <thead>
-                                  <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
-                                      Dimension
+                    {(() => {
+                      const matrix = maturityMatrices[0];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
                                     </th>
-                                    {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
-                                        {level}
-                                      </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
                                     ))}
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
-                                    <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
-                                        {dim.name}
-                                      </td>
-                                      {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
-                                          {levelDesc}
-                                        </td>
-                                      ))}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })()}
                   </SlideGrid>
                 )}
 
-                {/* Slide 12: Maturity Level Definitions - Part 2 (Next 2 Matrices) */}
-                {slides[currentSlide].id === 'matrices-2' && (
+                {slides[currentSlide].id === 'matrices-2' && maturityMatrices[1] && (
                   <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
-                      {maturityMatrices.slice(2, 4).map((matrix) => {
-                        const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
-                        return (
-                          <div key={matrix.id} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{
-                              background: matrix.bgColor,
-                              color: 'white',
-                              padding: '18px 26px',
-                              fontWeight: 700,
-                              fontSize: '1.8rem',
-                              borderRadius: '14px 14px 0 0',
-                              border: `4px solid ${matrix.color}`,
-                              borderBottom: 'none'
-                            }}>
-                              {matrix.title}
-                            </div>
-                            <div style={{
-                              background: 'white',
-                              border: `4px solid ${matrix.color}`,
-                              borderTop: 'none',
-                              borderRadius: '0 0 14px 14px',
-                              overflow: 'hidden',
-                              flex: 1
-                            }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
-                                <thead>
-                                  <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
-                                      Dimension
+                    {(() => {
+                      const matrix = maturityMatrices[1];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
                                     </th>
-                                    {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
-                                        {level}
-                                      </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
                                     ))}
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
-                                    <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
-                                        {dim.name}
-                                      </td>
-                                      {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
-                                          {levelDesc}
-                                        </td>
-                                      ))}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })()}
                   </SlideGrid>
                 )}
 
-                {/* Slide 13: Maturity Level Definitions - Part 3 (Last 2 Matrices) */}
-                {slides[currentSlide].id === 'matrices-3' && (
+                {slides[currentSlide].id === 'matrices-3' && maturityMatrices[2] && (
                   <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
-                      {maturityMatrices.slice(4, 6).map((matrix) => {
-                        const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
-                        return (
-                          <div key={matrix.id} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{
-                              background: matrix.bgColor,
-                              color: 'white',
-                              padding: '18px 26px',
-                              fontWeight: 700,
-                              fontSize: '1.8rem',
-                              borderRadius: '14px 14px 0 0',
-                              border: `4px solid ${matrix.color}`,
-                              borderBottom: 'none'
-                            }}>
-                              {matrix.title}
-                            </div>
-                            <div style={{
-                              background: 'white',
-                              border: `4px solid ${matrix.color}`,
-                              borderTop: 'none',
-                              borderRadius: '0 0 14px 14px',
-                              overflow: 'hidden',
-                              flex: 1
-                            }}>
-                              <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1.25rem' }}>
-                                <thead>
-                                  <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%', fontSize: '1.65rem' }}>
-                                      Dimension
+                    {(() => {
+                      const matrix = maturityMatrices[2];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
                                     </th>
-                                    {maturityLevels.map((level, idx) => (
-                                      <th key={idx} style={{ padding: '14px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%', fontSize: '1.65rem' }}>
-                                        {level}
-                                      </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
                                     ))}
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
-                                    <tr key={dimIdx}>
-                                      <td style={{ padding: '14px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.25rem' }}>
-                                        {dim.name}
-                                      </td>
-                                      {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                        <td key={levelIdx} style={{ padding: '14px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
-                                          {levelDesc}
-                                        </td>
-                                      ))}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })()}
+                  </SlideGrid>
+                )}
+
+                {slides[currentSlide].id === 'matrices-4' && maturityMatrices[3] && (
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    {(() => {
+                      const matrix = maturityMatrices[3];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </SlideGrid>
+                )}
+
+                {slides[currentSlide].id === 'matrices-5' && maturityMatrices[4] && (
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    {(() => {
+                      const matrix = maturityMatrices[4];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </SlideGrid>
+                )}
+
+                {slides[currentSlide].id === 'matrices-6' && maturityMatrices[5] && (
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                    {(() => {
+                      const matrix = maturityMatrices[5];
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '16px 24px',
+                            fontWeight: 700,
+                            fontSize: '1.8rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `4px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `4px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden',
+                            flex: 1
+                          }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                      {level}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                        {levelDesc}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </SlideGrid>
                 )}
               </SlideContent>
