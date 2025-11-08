@@ -1874,8 +1874,13 @@ const DeepDive = () => {
       type: 'single'
     },
     {
-      id: 'success-plan',
-      title: 'Technical Success Plan',
+      id: 'success-plan-1',
+      title: 'Technical Success Plan (Part 1)',
+      type: 'single'
+    },
+    {
+      id: 'success-plan-2',
+      title: 'Technical Success Plan (Part 2)',
       type: 'single'
     },
     {
@@ -4661,11 +4666,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 3: Technical Success Plan */}
-                {slides[currentSlide].id === 'success-plan' && (
+                {/* Slide 3: Technical Success Plan - Part 1 (First 3 Pillars) */}
+                {slides[currentSlide].id === 'success-plan-1' && (
                   <SlideGrid $columns="1fr">
                     <div>
-                      {technicalSuccessPlan.map((plan) => (
+                      {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <div key={plan.id} style={{ 
                           marginBottom: '24px',
                           border: `3px solid ${plan.color}`,
@@ -4761,7 +4766,107 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 4: Engagement & Enablement Plan */}
+                {/* Slide 4: Technical Success Plan - Part 2 (Last 3 Pillars) */}
+                {slides[currentSlide].id === 'success-plan-2' && (
+                  <SlideGrid $columns="1fr">
+                    <div>
+                      {technicalSuccessPlan.slice(3, 6).map((plan) => (
+                        <div key={plan.id} style={{ 
+                          marginBottom: '24px',
+                          border: `3px solid ${plan.color}`,
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          background: 'white'
+                        }}>
+                          <div style={{ 
+                            background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
+                            color: 'white',
+                            padding: '12px 20px',
+                            fontWeight: 700,
+                            fontSize: '1.125rem'
+                          }}>
+                            {plan.category}
+                          </div>
+                          <div style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: '0'
+                          }}>
+                            <div style={{ 
+                              padding: '16px',
+                              borderRight: '1px solid #e2e8f0'
+                            }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Need
+                              </h4>
+                              <div style={{ 
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.need || 'No need defined'}
+                              </div>
+                            </div>
+                            <div style={{ 
+                              padding: '16px',
+                              borderRight: '1px solid #e2e8f0'
+                            }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Activities (High-Level Ideas)
+                              </h4>
+                              <ul style={{ 
+                                margin: 0,
+                                paddingLeft: '20px',
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.activities && plan.activities.map((activity, idx) => (
+                                  <li key={idx} style={{ marginBottom: '4px' }}>{activity}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div style={{ padding: '16px' }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Outcome
+                              </h4>
+                              <div style={{ 
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.outcome || 'No outcome defined'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </SlideGrid>
+                )}
+
+                {/* Slide 5: Engagement & Enablement Plan */}
                 {slides[currentSlide].id === 'engagement-plan' && (
                   <SlideGrid $columns="1fr">
                     <div>
