@@ -5186,7 +5186,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(6, 1fr)',
                     gridTemplateRows: 'repeat(2, 1fr)',
-                    gap: '12px',
+                    gap: '16px',
                     height: 'calc(100% - 90px)',
                     width: '100%'
                   }}>
@@ -5215,23 +5215,23 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           <div style={{
                             background: scenario.bgColor,
                             color: 'white',
-                            padding: '10px 12px',
-                            borderRadius: '8px 8px 0 0',
-                            border: `2px solid ${scenario.color}`,
+                            padding: '14px 16px',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${scenario.color}`,
                             borderBottom: 'none',
                             flexShrink: 0
                           }}>
-                            <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '6px', lineHeight: '1.3' }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px', lineHeight: '1.3' }}>
                               {scenario.title}
                             </div>
-                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                               {maturityLevels.map((level, levelIdx) => (
                                 <div key={levelIdx} style={{
-                                  padding: '3px 6px',
+                                  padding: '4px 8px',
                                   background: levelIdx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
                                   color: levelIdx < scenario.maturityLevel ? scenario.color : 'white',
-                                  borderRadius: '3px',
-                                  fontSize: '0.7rem',
+                                  borderRadius: '4px',
+                                  fontSize: '0.8rem',
                                   fontWeight: 600,
                                   lineHeight: '1'
                                 }}>
@@ -5242,29 +5242,29 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           </div>
                           <div style={{
                             background: 'white',
-                            padding: '10px 12px',
-                            border: `2px solid ${scenario.color}`,
+                            padding: '14px 16px',
+                            border: `3px solid ${scenario.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 8px 8px',
-                            fontSize: '0.75rem',
+                            borderRadius: '0 0 10px 10px',
+                            fontSize: '0.875rem',
                             color: '#475569',
-                            lineHeight: '1.4',
+                            lineHeight: '1.5',
                             flex: 1,
                             minHeight: 0,
                             overflow: 'auto'
                           }}>
                             {scenario.maturityDescriptions && (
                               <>
-                                <div style={{ marginBottom: '4px' }}>
+                                <div style={{ marginBottom: '6px' }}>
                                   <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
                                 </div>
-                                <div style={{ marginBottom: '4px' }}>
+                                <div style={{ marginBottom: '6px' }}>
                                   <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
                                 </div>
-                                <div style={{ marginBottom: '4px' }}>
+                                <div style={{ marginBottom: '6px' }}>
                                   <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
                                 </div>
-                                <div style={{ marginBottom: '4px' }}>
+                                <div style={{ marginBottom: '6px' }}>
                                   <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
                                 </div>
                                 <div>
