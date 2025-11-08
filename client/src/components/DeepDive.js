@@ -5179,12 +5179,12 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2) */}
+                {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2 centered) */}
                 {slides[currentSlide].id === 'scenarios' && (
                   <div style={{ 
                     paddingTop: '70px', 
                     display: 'grid', 
-                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridTemplateColumns: 'repeat(6, 1fr)',
                     gridTemplateRows: 'repeat(2, 1fr)',
                     gap: '12px',
                     height: 'calc(100% - 90px)',
@@ -5192,12 +5192,24 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   }}>
                     {engagementScenarios.map((scenario, idx) => {
                       const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      
+                      // First row: 3 cards (each spans 2 columns)
+                      // Second row: 2 cards centered (each spans 2 columns, with 1 column offset)
+                      let gridColumn;
+                      if (idx < 3) {
+                        gridColumn = `${idx * 2 + 1} / span 2`;
+                      } else if (idx === 3) {
+                        gridColumn = '2 / span 2'; // Start at column 2
+                      } else {
+                        gridColumn = '4 / span 2'; // Start at column 4
+                      }
+                      
                       return (
                         <div key={scenario.id} style={{ 
                           display: 'flex',
                           flexDirection: 'column',
                           minHeight: 0,
-                          gridColumn: idx >= 3 ? 'auto' : 'auto',
+                          gridColumn: gridColumn,
                           gridRow: idx < 3 ? '1' : '2'
                         }}>
                           <div style={{
