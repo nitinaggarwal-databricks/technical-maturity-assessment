@@ -195,7 +195,7 @@ const SlideContent = styled(motion.div)`
   height: 100%;
   background: white;
   padding: 80px 60px 120px 60px;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   
