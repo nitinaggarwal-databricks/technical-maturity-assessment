@@ -1914,6 +1914,11 @@ const DeepDive = () => {
       type: 'single'
     },
     {
+      id: 'scenarios-3',
+      title: 'Customer Engagement Scenarios (Part 3)',
+      type: 'single'
+    },
+    {
       id: 'matrices-1',
       title: 'Maturity Level Definitions (Part 1)',
       type: 'single'
@@ -5253,10 +5258,79 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 10: Customer Scenarios - Part 2 (Last Scenario) */}
+                {/* Slide 10: Customer Scenarios - Part 2 (Next 2 Scenarios) */}
                 {slides[currentSlide].id === 'scenarios-2' && (
                   <SlideGrid $columns="1fr" style={{ paddingTop: '70px' }}>
-                    {engagementScenarios.slice(2, 3).map((scenario) => {
+                    {engagementScenarios.slice(2, 4).map((scenario) => {
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div key={scenario.id} style={{ marginBottom: '20px' }}>
+                          <div style={{
+                            background: scenario.bgColor,
+                            color: 'white',
+                            padding: '16px 20px',
+                            borderRadius: '12px 12px 0 0',
+                            border: `3px solid ${scenario.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '12px' }}>
+                              {scenario.title}
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              {maturityLevels.map((level, idx) => (
+                                <div key={idx} style={{
+                                  padding: '4px 8px',
+                                  background: idx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
+                                  color: idx < scenario.maturityLevel ? scenario.color : 'white',
+                                  borderRadius: '4px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600
+                                }}>
+                                  {level.slice(0, 3)}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            padding: '16px 20px',
+                            border: `3px solid ${scenario.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            fontSize: '0.875rem',
+                            color: '#475569',
+                            lineHeight: '1.6'
+                          }}>
+                            {scenario.maturityDescriptions && (
+                              <>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
+                                </div>
+                                <div>
+                                  <strong>Transform:</strong> {scenario.maturityDescriptions.transform}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </SlideGrid>
+                )}
+
+                {/* Slide 11: Customer Scenarios - Part 3 (Last Scenario) */}
+                {slides[currentSlide].id === 'scenarios-3' && (
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '70px' }}>
+                    {engagementScenarios.slice(4, 5).map((scenario) => {
                       const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                       return (
                         <div key={scenario.id} style={{ marginBottom: '20px' }}>
