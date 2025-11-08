@@ -5096,11 +5096,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {slides[currentSlide].id === 'analysis-1' && (
                   <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px' }}>
                     {analysisActions.slice(0, 3).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '12px' }}>
+                      <div key={analysis.id} style={{ marginBottom: '6px' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: '14px 22px',
+                          padding: '10px 18px',
                           fontWeight: 700,
                           fontSize: '1.65rem',
                           borderRadius: '12px 12px 0 0',
@@ -5112,8 +5112,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '8px',
-                          padding: '12px',
+                          gap: '6px',
+                          padding: '8px',
                           background: 'white',
                           border: `3px solid ${analysis.color}`,
                           borderTop: 'none',
@@ -5123,13 +5123,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             <div key={idx} style={{
                               background: '#f8fafc',
                               borderRadius: '8px',
-                              padding: '10px',
+                              padding: '8px',
                               border: `2px solid ${analysis.color}20`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: '6px',
+                                marginBottom: '4px',
                                 fontSize: '1.375rem'
                               }}>
                                 {level.stage}
@@ -5138,7 +5138,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 fontSize: '0.95rem',
                                 color: '#475569',
                                 lineHeight: '1.5',
-                                marginBottom: '6px'
+                                marginBottom: '4px'
                               }}>
                                 {level.description}
                               </div>
