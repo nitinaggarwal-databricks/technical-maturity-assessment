@@ -4641,26 +4641,29 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
-                  <SlideGrid $columns="1fr">
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '80px', paddingBottom: '20px', height: '100%', alignContent: 'space-between' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', height: '100%', justifyContent: 'space-evenly' }}>
                       {objectives.map((obj) => (
                         <div key={obj.id} style={{ 
                           background: 'white',
                           borderRadius: '12px',
                           border: `3px solid ${obj.borderColor}`,
-                          padding: '24px',
-                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                          padding: '28px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column'
                         }}>
                           <div style={{ 
                             display: 'flex',
                             alignItems: 'center',
-                            marginBottom: '16px',
-                            paddingBottom: '16px',
+                            marginBottom: '20px',
+                            paddingBottom: '20px',
                             borderBottom: `2px solid ${obj.borderColor}`
                           }}>
-                            <span style={{ fontSize: '2rem', marginRight: '12px' }}>{obj.icon}</span>
+                            <span style={{ fontSize: '2.5rem', marginRight: '16px' }}>{obj.icon}</span>
                             <h3 style={{ 
-                              fontSize: '1.25rem',
+                              fontSize: '1.5rem',
                               fontWeight: 700,
                               color: '#1e293b',
                               margin: 0
@@ -4669,9 +4672,10 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             </h3>
                           </div>
                           <div style={{ 
-                            fontSize: '0.9375rem',
+                            fontSize: '1.125rem',
                             lineHeight: '1.7',
-                            color: '#475569'
+                            color: '#475569',
+                            flex: 1
                           }}>
                             {obj.content || 'No content available'}
                           </div>
