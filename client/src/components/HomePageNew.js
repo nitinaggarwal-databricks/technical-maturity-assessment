@@ -879,13 +879,8 @@ const HomePageNew = () => {
       type: 'section'
     },
     {
-      id: 'pillars-1',
-      title: 'Assessment Pillars (Part 1)',
-      type: 'section'
-    },
-    {
-      id: 'pillars-2',
-      title: 'Assessment Pillars (Part 2)',
+      id: 'pillars-all',
+      title: 'Assessment Pillars',
       type: 'section'
     }
   ];
@@ -1618,12 +1613,12 @@ const HomePageNew = () => {
                   </div>
                 )}
 
-                {slides[currentSlide].id === 'pillars-1' && (
-                  <div style={{ padding: '20px 0' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                {slides[currentSlide].id === 'pillars-all' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
                       Assessment Pillars
                     </h2>
-                    <Grid className="three-columns" style={{ marginTop: '40px' }}>
+                    <Grid className="two-rows" style={{ flex: 1, gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', gap: '20px' }}>
                       <PillarCard>
                         <div className="pillar-header">
                           <span className="icon">🧱</span>
@@ -1672,16 +1667,6 @@ const HomePageNew = () => {
                           <span className="dimension-tag">Collaboration</span>
                         </div>
                       </PillarCard>
-                    </Grid>
-                  </div>
-                )}
-
-                {slides[currentSlide].id === 'pillars-2' && (
-                  <div style={{ padding: '20px 0' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
-                      Assessment Pillars
-                    </h2>
-                    <Grid className="three-columns" style={{ marginTop: '40px' }}>
                       <PillarCard>
                         <div className="pillar-header">
                           <span className="icon">🤖</span>
