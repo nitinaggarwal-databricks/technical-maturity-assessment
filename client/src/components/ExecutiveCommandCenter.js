@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2 } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2, FiMonitor } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
@@ -746,6 +746,60 @@ const CancelButton = styled.button`
   }
 `;
 
+// 🎬 Slideshow Styled Components
+const SlideContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SlideContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 45px 60px 20px 60px;
+`;
+
+const SlideHeading = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  pointer-events: none;
+`;
+
+const SlideCounter = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 60px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  pointer-events: none;
+`;
+
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
+  z-index: 1;
+  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
 // =====================
 // COMPONENT
 // =====================
@@ -768,6 +822,10 @@ const ExecutiveCommandCenter = () => {
   const [modalType, setModalType] = useState(''); // 'phase', 'metric', 'section', etc.
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
+
+  // 🎬 Presentation Mode State
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -940,6 +998,74 @@ const ExecutiveCommandCenter = () => {
     toast.success(`${modalType} ${editingItem ? 'updated' : 'added'} successfully!`);
   };
 
+  // 🎬 Presentation Mode Handlers
+  const startPresentation = () => {
+    setPresentationMode(true);
+    setCurrentSlide(0);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    setCurrentSlide(0);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape') exitPresentation();
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') previousSlide();
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentSlide]);
+
+  // Define slides for Executive Command Center
+  const slides = [
+    {
+      id: 'title',
+      title: 'Executive Command Center',
+      type: 'title'
+    },
+    {
+      id: 'strategic-roadmap',
+      title: 'Strategic Roadmap & Next Steps',
+      type: 'single'
+    },
+    {
+      id: 'business-impact',
+      title: 'Expected Business Impact',
+      type: 'single'
+    },
+    {
+      id: 'roi',
+      title: 'Interactive ROI Calculator',
+      type: 'single'
+    },
+    {
+      id: 'risk-heatmap',
+      title: 'Risk Heatmap',
+      type: 'single'
+    }
+  ];
+
   if (loading) {
     return (
       <PageContainer>
@@ -1066,6 +1192,16 @@ const ExecutiveCommandCenter = () => {
           >
             <FiShare2 />
             Share
+          </ActionButton>
+          <ActionButton
+            onClick={startPresentation}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+            title="View Executive Command Center in presentation slideshow mode"
+          >
+            <FiMonitor />
+            Start Slideshow
           </ActionButton>
         </ActionButtons>
       </PageHeader>
@@ -1354,6 +1490,245 @@ const ExecutiveCommandCenter = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* 🎬 Presentation Slideshow Overlay */}
+      <AnimatePresence>
+        {presentationMode && (
+          <SlideContainer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ClickArea $direction="left" onClick={previousSlide} />
+            <ClickArea $direction="right" onClick={nextSlide} />
+            
+            <SlideHeading>{slides[currentSlide]?.title}</SlideHeading>
+            <SlideCounter>{currentSlide + 1} / {slides.length}</SlideCounter>
+
+            <SlideContent>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                >
+                  {/* Title Slide */}
+                  {slides[currentSlide].id === 'title' && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      textAlign: 'center',
+                      gap: '32px'
+                    }}>
+                      <div style={{
+                        fontSize: '4.5rem',
+                        fontWeight: 700,
+                        color: 'white',
+                        marginBottom: '24px'
+                      }}>
+                        Executive Command Center
+                      </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        maxWidth: '900px'
+                      }}>
+                        Strategic Insights & Decision Intelligence
+                      </div>
+                      {customerLogo && (
+                        <img 
+                          src={customerLogo} 
+                          alt="Customer Logo" 
+                          style={{
+                            maxHeight: '120px',
+                            maxWidth: '400px',
+                            objectFit: 'contain',
+                            marginTop: '40px'
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {/* Strategic Roadmap Slide */}
+                  {slides[currentSlide].id === 'strategic-roadmap' && results?.strategicRoadmap && (
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '24px',
+                      height: '100%',
+                      alignItems: 'start'
+                    }}>
+                      {results.strategicRoadmap.map((phase, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: '4px solid #3b82f6',
+                            height: 'fit-content'
+                          }}
+                        >
+                          <div style={{
+                            fontSize: '1.8rem',
+                            fontWeight: 700,
+                            color: '#1e293b',
+                            marginBottom: '16px'
+                          }}>
+                            {phase.phase}
+                          </div>
+                          <div style={{
+                            fontSize: '1.35rem',
+                            color: '#64748b',
+                            marginBottom: '20px'
+                          }}>
+                            {phase.timeframe}
+                          </div>
+                          <div style={{
+                            fontSize: '1.2rem',
+                            color: '#475569',
+                            lineHeight: '1.8'
+                          }}>
+                            {phase.priorities?.map((priority, pIdx) => (
+                              <div key={pIdx} style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
+                                <span style={{ color: '#3b82f6', fontWeight: 600 }}>•</span>
+                                <span>{priority}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Business Impact Slide */}
+                  {slides[currentSlide].id === 'business-impact' && results?.businessImpact && (
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '24px',
+                      height: '100%',
+                      alignItems: 'start'
+                    }}>
+                      {results.businessImpact.map((impact, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: '4px solid #10b981',
+                            height: 'fit-content'
+                          }}
+                        >
+                          <div style={{
+                            fontSize: '1.8rem',
+                            fontWeight: 700,
+                            color: '#1e293b',
+                            marginBottom: '16px'
+                          }}>
+                            {impact.category}
+                          </div>
+                          <div style={{
+                            fontSize: '1.35rem',
+                            color: '#64748b',
+                            marginBottom: '20px'
+                          }}>
+                            {impact.metric}
+                          </div>
+                          <div style={{
+                            fontSize: '1.2rem',
+                            color: '#475569',
+                            lineHeight: '1.8'
+                          }}>
+                            {impact.description}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ROI Calculator Slide */}
+                  {slides[currentSlide].id === 'roi' && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%'
+                    }}>
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '16px',
+                        padding: '48px',
+                        maxWidth: '1200px',
+                        textAlign: 'center'
+                      }}>
+                        <div style={{
+                          fontSize: '3rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          marginBottom: '24px'
+                        }}>
+                          Interactive ROI Calculator
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          color: '#64748b',
+                          lineHeight: '1.8'
+                        }}>
+                          Calculate your return on investment with Databricks platform maturity improvements
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Risk Heatmap Slide */}
+                  {slides[currentSlide].id === 'risk-heatmap' && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%'
+                    }}>
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '16px',
+                        padding: '48px',
+                        maxWidth: '1200px',
+                        textAlign: 'center'
+                      }}>
+                        <div style={{
+                          fontSize: '3rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          marginBottom: '24px'
+                        }}>
+                          Risk Heatmap
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          color: '#64748b',
+                          lineHeight: '1.8'
+                        }}>
+                          Visualize and prioritize risks across your Databricks implementation
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </SlideContent>
+          </SlideContainer>
+        )}
+      </AnimatePresence>
     </PageContainer>
   );
 };

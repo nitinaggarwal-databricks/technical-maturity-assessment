@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiMonitor, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -1846,6 +1847,8 @@ const ResizableCard = ({ objective, onResize, children, ...props }) => {
 // =======================
 
 const DeepDive = () => {
+  const location = useLocation();
+  
   // Section ordering state
   const [sectionOrder, setSectionOrder] = useState([
     'objectives',
@@ -1860,6 +1863,14 @@ const DeepDive = () => {
   // Presentation Mode State
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Auto-start slideshow if URL parameter is present
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('slideshow') === 'true') {
+      startPresentation();
+    }
+  }, [location.search]);
 
   // Define slides - combining sections to maximize space
   const slides = [

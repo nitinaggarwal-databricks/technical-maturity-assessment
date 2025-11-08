@@ -21,7 +21,8 @@ import {
   FiFileText,
   FiEdit2,
   FiTrash2,
-  FiPlus
+  FiPlus,
+  FiMonitor
 } from 'react-icons/fi';
 import * as assessmentService from '../services/assessmentService';
 import {

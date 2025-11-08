@@ -1359,6 +1359,71 @@ const ScoreValue = styled.div`
   text-align: right;
 `;
 
+// 🎬 Slideshow Styled Components
+const SlideContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SlideContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 45px 60px 20px 60px;
+`;
+
+const SlideHeading = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  pointer-events: none;
+`;
+
+const SlideCounter = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 60px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  pointer-events: none;
+`;
+
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
+  z-index: 1;
+  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
+const SlideGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${props => props.$columns || '1fr 1fr'};
+  gap: ${props => props.$gap || '24px'};
+  height: fit-content;
+  max-height: 92%;
+  overflow: hidden;
+  padding-top: ${props => props.$paddingTop || '45px'};
+  padding-bottom: ${props => props.$paddingBottom || '10px'};
+`;
+
 // =======================
 // COMPONENT
 // =======================
@@ -1375,6 +1440,10 @@ const AssessmentResultsNew = () => {
   const [framework, setFramework] = useState(null);
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [benchmarkLoading, setBenchmarkLoading] = useState(false);
+  
+  // Slideshow mode state
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   
   // Edit state management
   const [editMode, setEditMode] = useState(false); // Global edit mode toggle
@@ -1742,6 +1811,40 @@ const AssessmentResultsNew = () => {
       setExporting(false);
     }
   };
+
+  // 🎬 Presentation Mode Handlers
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    setCurrentSlide(0);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextSlide = () => {
+    const totalSlides = results?.pillars?.length + 1 || 1; // +1 for title slide
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape') exitPresentation();
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') previousSlide();
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentSlide, results]);
 
   // Edit handlers for Good Items ("What's Working")
   const handleEditGoodItem = (pillarId, itemIndex, text) => {
@@ -2838,11 +2941,11 @@ const AssessmentResultsNew = () => {
                   Print Report
                 </ActionButton>
                 <ActionButton
-                  onClick={() => navigate(`/deep-dive`)}
+                  onClick={() => { setPresentationMode(true); setCurrentSlide(0); document.body.style.overflow = 'hidden'; }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
-                  title="View content in presentation slideshow mode"
+                  title="View Maturity Report in presentation slideshow mode"
                 >
                   <FiMonitor size={16} />
                   Start Slideshow
@@ -5202,6 +5305,263 @@ const AssessmentResultsNew = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* 🎬 Presentation Slideshow Overlay */}
+      <AnimatePresence>
+        {presentationMode && results && (
+          <SlideContainer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ClickArea $direction="left" onClick={previousSlide} />
+            <ClickArea $direction="right" onClick={nextSlide} />
+            
+            <SlideHeading>
+              {currentSlide === 0 ? 'Maturity Assessment Report' : results.pillars?.[currentSlide - 1]?.name}
+            </SlideHeading>
+            <SlideCounter>{currentSlide + 1} / {(results?.pillars?.length || 0) + 1}</SlideCounter>
+
+            <SlideContent>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                >
+                  {/* Title Slide */}
+                  {currentSlide === 0 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      textAlign: 'center',
+                      gap: '32px'
+                    }}>
+                      <div style={{
+                        fontSize: '4.5rem',
+                        fontWeight: 700,
+                        color: 'white',
+                        marginBottom: '24px'
+                      }}>
+                        {results.assessmentInfo?.assessmentName || 'Databricks Maturity Assessment'}
+                      </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        maxWidth: '900px'
+                      }}>
+                        Comprehensive Platform Maturity Analysis
+                      </div>
+                      <div style={{
+                        fontSize: '1.8rem',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginTop: '40px'
+                      }}>
+                        Overall Score: <strong>{calculateOverallScore().toFixed(1)}</strong> / 5.0
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pillar Slides */}
+                  {currentSlide > 0 && results.pillars?.[currentSlide - 1] && (() => {
+                    const pillar = results.pillars[currentSlide - 1];
+                    return (
+                      <SlideGrid $columns="1fr 1fr" $gap="20px" $paddingTop="50px">
+                        {/* Left Column: Score & Recommendations */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                          {/* Score Card */}
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '32px',
+                            border: `4px solid ${pillar.color}`,
+                            textAlign: 'center'
+                          }}>
+                            <div style={{
+                              fontSize: '2.2rem',
+                              fontWeight: 700,
+                              color: '#1e293b',
+                              marginBottom: '16px'
+                            }}>
+                              Maturity Score
+                            </div>
+                            <div style={{
+                              fontSize: '5rem',
+                              fontWeight: 700,
+                              color: pillar.color,
+                              lineHeight: '1'
+                            }}>
+                              {pillar.score.toFixed(1)}
+                            </div>
+                            <div style={{
+                              fontSize: '1.6rem',
+                              color: '#64748b',
+                              marginTop: '16px'
+                            }}>
+                              {pillar.maturityLevel || 'N/A'}
+                            </div>
+                          </div>
+
+                          {/* Top Recommendations */}
+                          {pillar.recommendations && pillar.recommendations.length > 0 && (
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.95)',
+                              borderRadius: '16px',
+                              padding: '28px',
+                              border: `4px solid ${pillar.color}`,
+                              flex: 1
+                            }}>
+                              <div style={{
+                                fontSize: '1.8rem',
+                                fontWeight: 700,
+                                color: '#1e293b',
+                                marginBottom: '20px'
+                              }}>
+                                Key Recommendations
+                              </div>
+                              <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '14px'
+                              }}>
+                                {pillar.recommendations.slice(0, 3).map((rec, idx) => (
+                                  <div key={idx} style={{
+                                    display: 'flex',
+                                    gap: '12px',
+                                    alignItems: 'flex-start'
+                                  }}>
+                                    <span style={{
+                                      color: pillar.color,
+                                      fontWeight: 700,
+                                      fontSize: '1.4rem',
+                                      minWidth: '24px'
+                                    }}>
+                                      {idx + 1}.
+                                    </span>
+                                    <span style={{
+                                      fontSize: '1.25rem',
+                                      color: '#475569',
+                                      lineHeight: '1.6'
+                                    }}>
+                                      {rec.message || rec}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Right Column: What's Working & Challenges */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                          {/* What's Working */}
+                          {pillar.good && pillar.good.length > 0 && (
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.95)',
+                              borderRadius: '16px',
+                              padding: '28px',
+                              border: '4px solid #10b981',
+                              flex: 1
+                            }}>
+                              <div style={{
+                                fontSize: '1.8rem',
+                                fontWeight: 700,
+                                color: '#1e293b',
+                                marginBottom: '20px'
+                              }}>
+                                ✓ What's Working
+                              </div>
+                              <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px'
+                              }}>
+                                {pillar.good.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{
+                                    display: 'flex',
+                                    gap: '10px',
+                                    alignItems: 'flex-start'
+                                  }}>
+                                    <span style={{
+                                      color: '#10b981',
+                                      fontSize: '1.3rem',
+                                      fontWeight: 600
+                                    }}>•</span>
+                                    <span style={{
+                                      fontSize: '1.2rem',
+                                      color: '#475569',
+                                      lineHeight: '1.6'
+                                    }}>
+                                      {item}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Key Challenges */}
+                          {pillar.bad && pillar.bad.length > 0 && (
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.95)',
+                              borderRadius: '16px',
+                              padding: '28px',
+                              border: '4px solid #ef4444',
+                              flex: 1
+                            }}>
+                              <div style={{
+                                fontSize: '1.8rem',
+                                fontWeight: 700,
+                                color: '#1e293b',
+                                marginBottom: '20px'
+                              }}>
+                                ⚠ Key Challenges
+                              </div>
+                              <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px'
+                              }}>
+                                {pillar.bad.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{
+                                    display: 'flex',
+                                    gap: '10px',
+                                    alignItems: 'flex-start'
+                                  }}>
+                                    <span style={{
+                                      color: '#ef4444',
+                                      fontSize: '1.3rem',
+                                      fontWeight: 600
+                                    }}>•</span>
+                                    <span style={{
+                                      fontSize: '1.2rem',
+                                      color: '#475569',
+                                      lineHeight: '1.6'
+                                    }}>
+                                      {item}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </SlideGrid>
+                    );
+                  })()}
+                </motion.div>
+              </AnimatePresence>
+            </SlideContent>
+          </SlideContainer>
+        )}
+      </AnimatePresence>
     </PageContainer>
   );
 };
