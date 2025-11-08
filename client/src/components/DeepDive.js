@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiMonitor, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Footer from './Footer';
 
@@ -130,6 +130,222 @@ const PageHeader = styled.div`
   margin-bottom: 60px;
   position: relative;
 `;
+
+// Slideshow/Presentation Mode Styles
+const PresentationButton = styled(motion.button)`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 999;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+`;
+
+const SlideshowOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.98);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SlideContainer = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const SlideContent = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  background: white;
+  padding: 80px 60px 120px 60px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  @media (max-width: 768px) {
+    padding: 60px 32px 100px 32px;
+  }
+`;
+
+const SlideNavigation = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(15, 23, 42, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 10001;
+  
+  @media (max-width: 768px) {
+    height: 60px;
+    gap: 16px;
+  }
+`;
+
+const NavButton = styled(motion.button)`
+  background: ${props => props.disabled ? 'rgba(100, 116, 139, 0.5)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'};
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    ${props => !props.disabled && `
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    `}
+  }
+  
+  @media (max-width: 768px) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+`;
+
+const SlideCounter = styled.div`
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+    padding: 10px 16px;
+  }
+`;
+
+const ExitButton = styled(motion.button)`
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
+  }
+  
+  @media (max-width: 768px) {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+// Slideshow Content Styles
+const SlideGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${props => props.$columns || 'repeat(2, 1fr)'};
+  gap: 24px;
+  height: 100%;
+  
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SlideSection = styled.div`
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  padding: 24px;
+  overflow-y: auto;
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #8b5cf6;
+  }
+`;
+
+const CompactCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-left: 4px solid ${props => props.$color || '#8b5cf6'};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.5;
+  }
+`;
+
+
 
 const ExpandCollapseControls = styled.div`
   position: absolute;
@@ -1640,6 +1856,79 @@ const DeepDive = () => {
     'scenarios',
     'matrices'
   ]);
+
+  // Presentation Mode State
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Define slides - combining sections to maximize space
+  const slides = [
+    {
+      id: 'objectives-categories',
+      title: 'Strategic Objectives & Category Structure',
+      type: 'combined'
+    },
+    {
+      id: 'plans',
+      title: 'Technical Success & Engagement Plans',
+      type: 'combined'
+    },
+    {
+      id: 'analysis-scenarios',
+      title: 'Analysis & Actions + Customer Scenarios',
+      type: 'combined'
+    },
+    {
+      id: 'matrices',
+      title: 'Maturity Level Definitions',
+      type: 'single'
+    }
+  ];
+
+  // Presentation mode handlers
+  const startPresentation = () => {
+    setCurrentSlide(0);
+    setPresentationMode(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation for presentation
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      } else if (e.key === 'Escape') {
+        exitPresentation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentSlide]);
+
 
   // Section collapse state (all sections expanded by default)
   const [collapsedSections, setCollapsedSections] = useState({
@@ -4250,6 +4539,180 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               )}
             </ModalContent>
           </ModalOverlay>
+        )}
+      </AnimatePresence>
+
+      {/* Presentation Mode Button */}
+      {!presentationMode && (
+        <PresentationButton
+          onClick={startPresentation}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FiMonitor size={20} />
+          Start Slideshow
+        </PresentationButton>
+      )}
+
+      {/* Slideshow/Presentation Mode */}
+      <AnimatePresence>
+        {presentationMode && (
+          <SlideshowOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <SlideContainer>
+              <SlideContent
+                key={currentSlide}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
+                  {slides[currentSlide].title}
+                </h1>
+
+                {/* Slide 1: Strategic Objectives + Category Structure */}
+                {slides[currentSlide].id === 'objectives-categories' && (
+                  <SlideGrid $columns="repeat(2, 1fr)">
+                    <SlideSection>
+                      <h3>Strategic Objectives</h3>
+                      {objectives.slice(0, 3).map((obj) => (
+                        <CompactCard key={obj.id} $color={obj.borderColor}>
+                          <h4>{obj.icon} {obj.title}</h4>
+                          <FormattedText style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                            {obj.content.substring(0, 150)}...
+                          </FormattedText>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                    <SlideSection>
+                      <h3>Category Structure</h3>
+                      {categories.slice(0, 3).map((cat) => (
+                        <CompactCard key={cat.id} $color={cat.borderColor}>
+                          <h4>{cat.icon} {cat.title}</h4>
+                          <p>{cat.description}</p>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                  </SlideGrid>
+                )}
+
+                {/* Slide 2: Technical Success Plan + Engagement Plan */}
+                {slides[currentSlide].id === 'plans' && (
+                  <SlideGrid $columns="repeat(2, 1fr)">
+                    <SlideSection>
+                      <h3>Technical Success Plan</h3>
+                      {technicalSuccessPlan.slice(0, 3).map((plan) => (
+                        <CompactCard key={plan.id} $color={plan.color}>
+                          <h4>{plan.category}</h4>
+                          <div style={{ fontSize: '0.875rem', marginTop: '8px' }}>
+                            <strong style={{ color: '#1e293b' }}>Need:</strong>
+                            <FormattedText style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px' }}>
+                              {plan.need.substring(0, 100)}...
+                            </FormattedText>
+                          </div>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                    <SlideSection>
+                      <h3>Engagement & Enablement</h3>
+                      {engagementPlan.slice(0, 3).map((plan) => (
+                        <CompactCard key={plan.id} $color="#10b981">
+                          <h4>{plan.time}</h4>
+                          <p><strong>Engagement:</strong> {plan.engagement}</p>
+                          <p style={{ marginTop: '4px' }}><strong>Focus:</strong> {plan.focusArea}</p>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                  </SlideGrid>
+                )}
+
+                {/* Slide 3: Analysis & Actions + Customer Scenarios */}
+                {slides[currentSlide].id === 'analysis-scenarios' && (
+                  <SlideGrid $columns="repeat(2, 1fr)">
+                    <SlideSection>
+                      <h3>Analysis & Actions</h3>
+                      {analysisActions.slice(0, 3).map((analysis) => (
+                        <CompactCard key={analysis.id} $color={analysis.color}>
+                          <h4>{analysis.title}</h4>
+                          {analysis.stages && analysis.stages.length > 0 && (
+                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
+                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description.substring(0, 80)}...
+                            </div>
+                          )}
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                    <SlideSection>
+                      <h3>Customer Scenarios</h3>
+                      {engagementScenarios.slice(0, 3).map((scenario) => (
+                        <CompactCard key={scenario.id} $color={scenario.color}>
+                          <h4>{scenario.title}</h4>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
+                            {scenario.description.substring(0, 120)}...
+                          </div>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                  </SlideGrid>
+                )}
+
+                {/* Slide 4: Maturity Level Definitions */}
+                {slides[currentSlide].id === 'matrices' && (
+                  <SlideGrid $columns="1fr">
+                    <SlideSection>
+                      <h3>Maturity Level Definitions</h3>
+                      {maturityMatrices.slice(0, 2).map((matrix) => (
+                        <CompactCard key={matrix.id} $color="#8b5cf6">
+                          <h4>{matrix.title}</h4>
+                          <p style={{ fontSize: '0.875rem', marginTop: '8px' }}>
+                            Dimensions: {matrix.dimensions.map(d => d.name).join(', ')}
+                          </p>
+                        </CompactCard>
+                      ))}
+                    </SlideSection>
+                  </SlideGrid>
+                )}
+              </SlideContent>
+            </SlideContainer>
+
+            <SlideNavigation>
+              <NavButton
+                onClick={previousSlide}
+                disabled={currentSlide === 0}
+                whileHover={currentSlide > 0 ? { scale: 1.05 } : {}}
+                whileTap={currentSlide > 0 ? { scale: 0.95 } : {}}
+              >
+                <FiChevronLeft size={20} />
+                Previous
+              </NavButton>
+
+              <SlideCounter>
+                {currentSlide + 1} / {slides.length}
+              </SlideCounter>
+
+              <NavButton
+                onClick={nextSlide}
+                disabled={currentSlide === slides.length - 1}
+                whileHover={currentSlide < slides.length - 1 ? { scale: 1.05 } : {}}
+                whileTap={currentSlide < slides.length - 1 ? { scale: 0.95 } : {}}
+              >
+                Next
+                <FiChevronRight size={20} />
+              </NavButton>
+            </SlideNavigation>
+
+            <ExitButton
+              onClick={exitPresentation}
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <FiX size={24} />
+            </ExitButton>
+          </SlideshowOverlay>
         )}
       </AnimatePresence>
 
