@@ -22,7 +22,8 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiClock,
-  FiBarChart2
+  FiBarChart2,
+  FiMonitor
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -2835,6 +2836,16 @@ const AssessmentResultsNew = () => {
                 >
                   <FiPrinter size={16} />
                   Print Report
+                </ActionButton>
+                <ActionButton
+                  onClick={() => navigate(`/deep-dive`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+                  title="View content in presentation slideshow mode"
+                >
+                  <FiMonitor size={16} />
+                  Start Slideshow
                 </ActionButton>
               </ButtonGroup>
             </ActionButtons>
