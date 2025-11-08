@@ -4658,31 +4658,150 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Technical Success Plan + Engagement Plan */}
                 {slides[currentSlide].id === 'plans' && (
-                  <SlideGrid $columns="repeat(2, 1fr)">
-                    <SlideSection>
-                      <h3>Technical Success Plan</h3>
-                      {technicalSuccessPlan.slice(0, 3).map((plan) => (
-                        <CompactCard key={plan.id} $color={plan.color}>
-                          <h4>{plan.category || 'Untitled'}</h4>
-                          <div style={{ fontSize: '0.875rem', marginTop: '8px' }}>
-                            <strong style={{ color: '#1e293b' }}>Need:</strong>
-                            <p style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px', marginTop: '4px' }}>
-                              {plan.need || 'No need defined'}
-                            </p>
+                  <SlideGrid $columns="1fr" style={{ gap: '32px' }}>
+                    {/* Technical Success Plan */}
+                    <div>
+                      <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px' }}>
+                        Technical Success Plan
+                      </h3>
+                      {technicalSuccessPlan.map((plan) => (
+                        <div key={plan.id} style={{ 
+                          marginBottom: '24px',
+                          border: `3px solid ${plan.color}`,
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          background: 'white'
+                        }}>
+                          <div style={{ 
+                            background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
+                            color: 'white',
+                            padding: '12px 20px',
+                            fontWeight: 700,
+                            fontSize: '1.125rem'
+                          }}>
+                            {plan.category}
                           </div>
-                        </CompactCard>
+                          <div style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: '0'
+                          }}>
+                            <div style={{ 
+                              padding: '16px',
+                              borderRight: '1px solid #e2e8f0'
+                            }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Need
+                              </h4>
+                              <div style={{ 
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.need || 'No need defined'}
+                              </div>
+                            </div>
+                            <div style={{ 
+                              padding: '16px',
+                              borderRight: '1px solid #e2e8f0'
+                            }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Activities (High-Level Ideas)
+                              </h4>
+                              <ul style={{ 
+                                margin: 0,
+                                paddingLeft: '20px',
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.activities && plan.activities.map((activity, idx) => (
+                                  <li key={idx} style={{ marginBottom: '4px' }}>{activity}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div style={{ padding: '16px' }}>
+                              <h4 style={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                color: plan.color,
+                                marginBottom: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}>
+                                Outcome
+                              </h4>
+                              <div style={{ 
+                                color: '#475569',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6'
+                              }}>
+                                {plan.outcome || 'No outcome defined'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       ))}
-                    </SlideSection>
-                    <SlideSection>
-                      <h3>Engagement & Enablement</h3>
-                      {engagementPlan.slice(0, 3).map((plan) => (
-                        <CompactCard key={plan.id} $color="#10b981">
-                          <h4>{plan.time || 'Timeframe'}</h4>
-                          <p><strong>Engagement:</strong> {plan.engagement || 'Not specified'}</p>
-                          <p style={{ marginTop: '4px' }}><strong>Focus:</strong> {plan.focusArea || 'Not specified'}</p>
-                        </CompactCard>
-                      ))}
-                    </SlideSection>
+                    </div>
+
+                    {/* Engagement & Enablement Plan */}
+                    <div>
+                      <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px' }}>
+                        Targeted Engagement & Enablement Plan
+                      </h3>
+                      <div style={{ 
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        background: 'white'
+                      }}>
+                        <div style={{ 
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                          color: 'white',
+                          padding: '12px 0',
+                          fontWeight: 700,
+                          fontSize: '0.875rem'
+                        }}>
+                          <div style={{ padding: '0 16px' }}>Time</div>
+                          <div style={{ padding: '0 16px' }}>Engagement</div>
+                          <div style={{ padding: '0 16px' }}>Focus Area</div>
+                        </div>
+                        {engagementPlan.map((item, idx) => (
+                          <div key={item.id} style={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            borderBottom: idx < engagementPlan.length - 1 ? '1px solid #e2e8f0' : 'none',
+                            padding: '12px 0'
+                          }}>
+                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#1e293b', fontWeight: 600 }}>
+                              {item.time || 'Not specified'}
+                            </div>
+                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#475569' }}>
+                              {item.engagement || 'Not specified'}
+                            </div>
+                            <div style={{ padding: '0 16px', fontSize: '0.875rem', color: '#475569' }}>
+                              {item.focusArea || 'Not specified'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </SlideGrid>
                 )}
 
