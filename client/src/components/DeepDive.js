@@ -4592,16 +4592,42 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
                   <SlideGrid $columns="1fr">
-                    <SlideSection>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                       {objectives.map((obj) => (
-                        <CompactCard key={obj.id} $color={obj.borderColor}>
-                          <h4>{obj.icon} {obj.title}</h4>
-                          <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: '1.5' }}>
+                        <div key={obj.id} style={{ 
+                          background: 'white',
+                          borderRadius: '12px',
+                          border: `3px solid ${obj.borderColor}`,
+                          padding: '24px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                        }}>
+                          <div style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '16px',
+                            paddingBottom: '16px',
+                            borderBottom: `2px solid ${obj.borderColor}`
+                          }}>
+                            <span style={{ fontSize: '2rem', marginRight: '12px' }}>{obj.icon}</span>
+                            <h3 style={{ 
+                              fontSize: '1.25rem',
+                              fontWeight: 700,
+                              color: '#1e293b',
+                              margin: 0
+                            }}>
+                              {obj.title}
+                            </h3>
+                          </div>
+                          <div style={{ 
+                            fontSize: '0.9375rem',
+                            lineHeight: '1.7',
+                            color: '#475569'
+                          }}>
                             {obj.content || 'No content available'}
-                          </p>
-                        </CompactCard>
+                          </div>
+                        </div>
                       ))}
-                    </SlideSection>
+                    </div>
                   </SlideGrid>
                 )}
 
