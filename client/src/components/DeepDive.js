@@ -1864,9 +1864,14 @@ const DeepDive = () => {
   // Define slides - combining sections to maximize space
   const slides = [
     {
-      id: 'objectives-categories',
-      title: 'Strategic Objectives & Category Structure',
-      type: 'combined'
+      id: 'objectives',
+      title: 'Strategic Objectives',
+      type: 'single'
+    },
+    {
+      id: 'categories',
+      title: 'Category Structure and Definitions',
+      type: 'single'
     },
     {
       id: 'plans',
@@ -4574,12 +4579,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   {slides[currentSlide].title}
                 </h1>
 
-                {/* Slide 1: Strategic Objectives + Category Structure */}
-                {slides[currentSlide].id === 'objectives-categories' && (
-                  <SlideGrid $columns="repeat(2, 1fr)">
+                {/* Slide 1: Strategic Objectives */}
+                {slides[currentSlide].id === 'objectives' && (
+                  <SlideGrid $columns="1fr">
                     <SlideSection>
-                      <h3>Strategic Objectives</h3>
-                      {objectives.slice(0, 3).map((obj) => (
+                      {objectives.map((obj) => (
                         <CompactCard key={obj.id} $color={obj.borderColor}>
                           <h4>{obj.icon} {obj.title}</h4>
                           <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: '1.5' }}>
@@ -4588,9 +4592,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         </CompactCard>
                       ))}
                     </SlideSection>
+                  </SlideGrid>
+                )}
+
+                {/* Slide 2: Category Structure */}
+                {slides[currentSlide].id === 'categories' && (
+                  <SlideGrid $columns="1fr">
                     <SlideSection>
-                      <h3>Category Structure</h3>
-                      {categories.slice(0, 3).map((cat) => (
+                      {categories.map((cat) => (
                         <CompactCard key={cat.id} $color={cat.borderColor}>
                           <h4>{cat.icon} {cat.title}</h4>
                           <p>{cat.description || 'No description available'}</p>
@@ -4600,7 +4609,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 2: Technical Success Plan + Engagement Plan */}
+                {/* Slide 3: Technical Success Plan + Engagement Plan */}
                 {slides[currentSlide].id === 'plans' && (
                   <SlideGrid $columns="repeat(2, 1fr)">
                     <SlideSection>
