@@ -1904,18 +1904,8 @@ const DeepDive = () => {
       type: 'single'
     },
     {
-      id: 'scenarios-1',
-      title: 'Customer Engagement Scenarios (Part 1)',
-      type: 'single'
-    },
-    {
-      id: 'scenarios-2',
-      title: 'Customer Engagement Scenarios (Part 2)',
-      type: 'single'
-    },
-    {
-      id: 'scenarios-3',
-      title: 'Customer Engagement Scenarios (Part 3)',
+      id: 'scenarios',
+      title: 'Customer Engagement Scenarios',
       type: 'single'
     },
     {
@@ -5189,32 +5179,38 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 9: Customer Scenarios - Part 1 (First 2 Scenarios) */}
-                {slides[currentSlide].id === 'scenarios-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '70px' }}>
-                    {engagementScenarios.slice(0, 2).map((scenario) => {
+                {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2) */}
+                {slides[currentSlide].id === 'scenarios' && (
+                  <div style={{ paddingTop: '70px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', height: 'calc(100% - 70px)', alignContent: 'start' }}>
+                    {engagementScenarios.map((scenario, idx) => {
                       const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
                       return (
-                        <div key={scenario.id} style={{ marginBottom: '20px' }}>
+                        <div key={scenario.id} style={{ 
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gridColumn: idx >= 3 ? 'span 1' : 'span 1',
+                          maxHeight: idx < 3 ? '48%' : '48%',
+                          overflow: 'hidden'
+                        }}>
                           <div style={{
                             background: scenario.bgColor,
                             color: 'white',
-                            padding: '16px 20px',
-                            borderRadius: '12px 12px 0 0',
-                            border: `3px solid ${scenario.color}`,
+                            padding: '8px 12px',
+                            borderRadius: '6px 6px 0 0',
+                            border: `2px solid ${scenario.color}`,
                             borderBottom: 'none'
                           }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '12px' }}>
+                            <div style={{ fontWeight: 700, fontSize: '0.8rem', marginBottom: '6px' }}>
                               {scenario.title}
                             </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              {maturityLevels.map((level, idx) => (
-                                <div key={idx} style={{
-                                  padding: '4px 8px',
-                                  background: idx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
-                                  color: idx < scenario.maturityLevel ? scenario.color : 'white',
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
+                            <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
+                              {maturityLevels.map((level, levelIdx) => (
+                                <div key={levelIdx} style={{
+                                  padding: '2px 4px',
+                                  background: levelIdx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
+                                  color: levelIdx < scenario.maturityLevel ? scenario.color : 'white',
+                                  borderRadius: '3px',
+                                  fontSize: '0.6rem',
                                   fontWeight: 600
                                 }}>
                                   {level.slice(0, 3)}
@@ -5224,26 +5220,28 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           </div>
                           <div style={{
                             background: 'white',
-                            padding: '16px 20px',
-                            border: `3px solid ${scenario.color}`,
+                            padding: '8px 10px',
+                            border: `2px solid ${scenario.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            fontSize: '0.875rem',
+                            borderRadius: '0 0 6px 6px',
+                            fontSize: '0.65rem',
                             color: '#475569',
-                            lineHeight: '1.6'
+                            lineHeight: '1.3',
+                            flex: 1,
+                            overflow: 'hidden'
                           }}>
                             {scenario.maturityDescriptions && (
                               <>
-                                <div style={{ marginBottom: '8px' }}>
+                                <div style={{ marginBottom: '3px' }}>
                                   <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
                                 </div>
-                                <div style={{ marginBottom: '8px' }}>
+                                <div style={{ marginBottom: '3px' }}>
                                   <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
                                 </div>
-                                <div style={{ marginBottom: '8px' }}>
+                                <div style={{ marginBottom: '3px' }}>
                                   <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
                                 </div>
-                                <div style={{ marginBottom: '8px' }}>
+                                <div style={{ marginBottom: '3px' }}>
                                   <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
                                 </div>
                                 <div>
@@ -5255,145 +5253,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         </div>
                       );
                     })}
-                  </SlideGrid>
-                )}
-
-                {/* Slide 10: Customer Scenarios - Part 2 (Next 2 Scenarios) */}
-                {slides[currentSlide].id === 'scenarios-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '70px' }}>
-                    {engagementScenarios.slice(2, 4).map((scenario) => {
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
-                      return (
-                        <div key={scenario.id} style={{ marginBottom: '20px' }}>
-                          <div style={{
-                            background: scenario.bgColor,
-                            color: 'white',
-                            padding: '16px 20px',
-                            borderRadius: '12px 12px 0 0',
-                            border: `3px solid ${scenario.color}`,
-                            borderBottom: 'none'
-                          }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '12px' }}>
-                              {scenario.title}
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              {maturityLevels.map((level, idx) => (
-                                <div key={idx} style={{
-                                  padding: '4px 8px',
-                                  background: idx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
-                                  color: idx < scenario.maturityLevel ? scenario.color : 'white',
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 600
-                                }}>
-                                  {level.slice(0, 3)}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div style={{
-                            background: 'white',
-                            padding: '16px 20px',
-                            border: `3px solid ${scenario.color}`,
-                            borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            fontSize: '0.875rem',
-                            color: '#475569',
-                            lineHeight: '1.6'
-                          }}>
-                            {scenario.maturityDescriptions && (
-                              <>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
-                                </div>
-                                <div>
-                                  <strong>Transform:</strong> {scenario.maturityDescriptions.transform}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </SlideGrid>
-                )}
-
-                {/* Slide 11: Customer Scenarios - Part 3 (Last Scenario) */}
-                {slides[currentSlide].id === 'scenarios-3' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '70px' }}>
-                    {engagementScenarios.slice(4, 5).map((scenario) => {
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
-                      return (
-                        <div key={scenario.id} style={{ marginBottom: '20px' }}>
-                          <div style={{
-                            background: scenario.bgColor,
-                            color: 'white',
-                            padding: '16px 20px',
-                            borderRadius: '12px 12px 0 0',
-                            border: `3px solid ${scenario.color}`,
-                            borderBottom: 'none'
-                          }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '12px' }}>
-                              {scenario.title}
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              {maturityLevels.map((level, idx) => (
-                                <div key={idx} style={{
-                                  padding: '4px 8px',
-                                  background: idx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
-                                  color: idx < scenario.maturityLevel ? scenario.color : 'white',
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 600
-                                }}>
-                                  {level.slice(0, 3)}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div style={{
-                            background: 'white',
-                            padding: '16px 20px',
-                            border: `3px solid ${scenario.color}`,
-                            borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            fontSize: '0.875rem',
-                            color: '#475569',
-                            lineHeight: '1.6'
-                          }}>
-                            {scenario.maturityDescriptions && (
-                              <>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
-                                </div>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
-                                </div>
-                                <div>
-                                  <strong>Transform:</strong> {scenario.maturityDescriptions.transform}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </SlideGrid>
+                  </div>
                 )}
 
                 {/* Slide 11: Maturity Level Definitions - Part 1 (First 2 Matrices) */}
