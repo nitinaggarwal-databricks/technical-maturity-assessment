@@ -1869,8 +1869,13 @@ const DeepDive = () => {
       type: 'single'
     },
     {
-      id: 'categories',
-      title: 'Category Structure and Definitions',
+      id: 'categories-1',
+      title: 'Category Structure (Part 1)',
+      type: 'single'
+    },
+    {
+      id: 'categories-2',
+      title: 'Category Structure (Part 2)',
       type: 'single'
     },
     {
@@ -1889,13 +1894,28 @@ const DeepDive = () => {
       type: 'single'
     },
     {
-      id: 'analysis-scenarios',
-      title: 'Analysis & Actions + Customer Scenarios',
-      type: 'combined'
+      id: 'analysis-1',
+      title: 'Analysis & Actions (Part 1)',
+      type: 'single'
     },
     {
-      id: 'matrices',
-      title: 'Maturity Level Definitions',
+      id: 'analysis-2',
+      title: 'Analysis & Actions (Part 2)',
+      type: 'single'
+    },
+    {
+      id: 'scenarios',
+      title: 'Customer Engagement Scenarios',
+      type: 'single'
+    },
+    {
+      id: 'matrices-1',
+      title: 'Maturity Level Definitions (Part 1)',
+      type: 'single'
+    },
+    {
+      id: 'matrices-2',
+      title: 'Maturity Level Definitions (Part 2)',
       type: 'single'
     }
   ];
@@ -4631,10 +4651,71 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 2: Category Structure */}
-                {slides[currentSlide].id === 'categories' && (
+                {/* Slide 2: Category Structure - Part 1 (First 3 Categories) */}
+                {slides[currentSlide].id === 'categories-1' && (
                   <SlideGrid $columns="repeat(3, 1fr)">
-                    {categories.map((cat) => (
+                    {categories.slice(0, 3).map((cat) => (
+                      <CompactCard key={cat.id} $color={cat.color}>
+                        <div style={{ 
+                          background: cat.bgColor, 
+                          color: 'white', 
+                          padding: '16px', 
+                          borderRadius: '12px 12px 0 0',
+                          marginBottom: '12px',
+                          marginTop: '-16px',
+                          marginLeft: '-16px',
+                          marginRight: '-16px'
+                        }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                            {cat.label}
+                          </div>
+                          <h4 style={{ color: 'white', marginBottom: '8px' }}>{cat.title}</h4>
+                          <p style={{ fontSize: '0.875rem', opacity: 0.95 }}>{cat.description}</p>
+                        </div>
+                        <div>
+                          {cat.subCategories && cat.subCategories.map((subCat, idx) => (
+                            <div key={idx} style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '12px', 
+                              padding: '8px 0',
+                              borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
+                            }}>
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '8px',
+                                background: cat.bgColor,
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '0.875rem',
+                                flexShrink: 0
+                              }}>
+                                {subCat.letter}
+                              </div>
+                              <div style={{ 
+                                fontSize: '0.875rem', 
+                                color: '#1e293b',
+                                fontWeight: 500,
+                                flex: 1
+                              }}>
+                                {subCat.name}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CompactCard>
+                    ))}
+                  </SlideGrid>
+                )}
+
+                {/* Slide 3: Category Structure - Part 2 (Last 3 Categories) */}
+                {slides[currentSlide].id === 'categories-2' && (
+                  <SlideGrid $columns="repeat(3, 1fr)">
+                    {categories.slice(3, 6).map((cat) => (
                       <CompactCard key={cat.id} $color={cat.color}>
                         <div style={{ 
                           background: cat.bgColor, 
@@ -4938,50 +5019,322 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   </SlideGrid>
                 )}
 
-                {/* Slide 5: Analysis & Actions + Customer Scenarios */}
-                {slides[currentSlide].id === 'analysis-scenarios' && (
-                  <SlideGrid $columns="repeat(2, 1fr)">
-                    <SlideSection>
-                      <h3>Analysis & Actions</h3>
-                      {analysisActions.slice(0, 3).map((analysis) => (
-                        <CompactCard key={analysis.id} $color={analysis.color}>
-                          <h4>{analysis.title || 'Untitled'}</h4>
-                          {analysis.stages && analysis.stages.length > 0 && (
-                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description || 'No description'}
+                {/* Slide 7: Analysis & Actions - Part 1 (First 3 Pillars) */}
+                {slides[currentSlide].id === 'analysis-1' && (
+                  <SlideGrid $columns="1fr">
+                    {analysisActions.slice(0, 3).map((analysis) => (
+                      <div key={analysis.id} style={{ marginBottom: '20px' }}>
+                        <div style={{
+                          background: analysis.bgColor,
+                          color: 'white',
+                          padding: '12px 20px',
+                          fontWeight: 700,
+                          fontSize: '1.125rem',
+                          borderRadius: '12px 12px 0 0',
+                          border: `3px solid ${analysis.color}`,
+                          borderBottom: 'none'
+                        }}>
+                          {analysis.title}
+                        </div>
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(5, 1fr)',
+                          gap: '12px',
+                          padding: '16px',
+                          background: 'white',
+                          border: `3px solid ${analysis.color}`,
+                          borderTop: 'none',
+                          borderRadius: '0 0 12px 12px'
+                        }}>
+                          {analysis.levels && analysis.levels.map((level, idx) => (
+                            <div key={idx} style={{
+                              background: '#f8fafc',
+                              borderRadius: '8px',
+                              padding: '12px',
+                              border: `2px solid ${analysis.color}20`
+                            }}>
+                              <div style={{
+                                fontWeight: 700,
+                                color: analysis.color,
+                                marginBottom: '8px',
+                                fontSize: '0.875rem'
+                              }}>
+                                {level.stage}
+                              </div>
+                              <div style={{
+                                fontSize: '0.75rem',
+                                color: '#475569',
+                                lineHeight: '1.5',
+                                marginBottom: '8px'
+                              }}>
+                                {level.description}
+                              </div>
+                              <div style={{
+                                fontSize: '0.625rem',
+                                color: '#64748b'
+                              }}>
+                                <strong>Helpful Tools:</strong> {level.tools}
+                              </div>
                             </div>
-                          )}
-                        </CompactCard>
-                      ))}
-                    </SlideSection>
-                    <SlideSection>
-                      <h3>Customer Scenarios</h3>
-                      {engagementScenarios.slice(0, 3).map((scenario) => (
-                        <CompactCard key={scenario.id} $color={scenario.color}>
-                          <h4>{scenario.title || 'Untitled Scenario'}</h4>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                            {scenario.description || 'No description available'}
-                          </div>
-                        </CompactCard>
-                      ))}
-                    </SlideSection>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </SlideGrid>
                 )}
 
-                {/* Slide 4: Maturity Level Definitions */}
-                {slides[currentSlide].id === 'matrices' && (
+                {/* Slide 8: Analysis & Actions - Part 2 (Last 3 Pillars) */}
+                {slides[currentSlide].id === 'analysis-2' && (
                   <SlideGrid $columns="1fr">
-                    <SlideSection>
-                      <h3>Maturity Level Definitions</h3>
-                      {maturityMatrices.slice(0, 2).map((matrix) => (
-                        <CompactCard key={matrix.id} $color="#8b5cf6">
-                          <h4>{matrix.title}</h4>
-                          <p style={{ fontSize: '0.875rem', marginTop: '8px' }}>
-                            Dimensions: {matrix.dimensions.map(d => d.name).join(', ')}
-                          </p>
-                        </CompactCard>
-                      ))}
-                    </SlideSection>
+                    {analysisActions.slice(3, 6).map((analysis) => (
+                      <div key={analysis.id} style={{ marginBottom: '20px' }}>
+                        <div style={{
+                          background: analysis.bgColor,
+                          color: 'white',
+                          padding: '12px 20px',
+                          fontWeight: 700,
+                          fontSize: '1.125rem',
+                          borderRadius: '12px 12px 0 0',
+                          border: `3px solid ${analysis.color}`,
+                          borderBottom: 'none'
+                        }}>
+                          {analysis.title}
+                        </div>
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(5, 1fr)',
+                          gap: '12px',
+                          padding: '16px',
+                          background: 'white',
+                          border: `3px solid ${analysis.color}`,
+                          borderTop: 'none',
+                          borderRadius: '0 0 12px 12px'
+                        }}>
+                          {analysis.levels && analysis.levels.map((level, idx) => (
+                            <div key={idx} style={{
+                              background: '#f8fafc',
+                              borderRadius: '8px',
+                              padding: '12px',
+                              border: `2px solid ${analysis.color}20`
+                            }}>
+                              <div style={{
+                                fontWeight: 700,
+                                color: analysis.color,
+                                marginBottom: '8px',
+                                fontSize: '0.875rem'
+                              }}>
+                                {level.stage}
+                              </div>
+                              <div style={{
+                                fontSize: '0.75rem',
+                                color: '#475569',
+                                lineHeight: '1.5',
+                                marginBottom: '8px'
+                              }}>
+                                {level.description}
+                              </div>
+                              <div style={{
+                                fontSize: '0.625rem',
+                                color: '#64748b'
+                              }}>
+                                <strong>Helpful Tools:</strong> {level.tools}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </SlideGrid>
+                )}
+
+                {/* Slide 9: Customer Scenarios */}
+                {slides[currentSlide].id === 'scenarios' && (
+                  <SlideGrid $columns="1fr">
+                    {engagementScenarios.map((scenario) => {
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div key={scenario.id} style={{ marginBottom: '20px' }}>
+                          <div style={{
+                            background: scenario.bgColor,
+                            color: 'white',
+                            padding: '16px 20px',
+                            borderRadius: '12px 12px 0 0',
+                            border: `3px solid ${scenario.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '12px' }}>
+                              {scenario.title}
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              {maturityLevels.map((level, idx) => (
+                                <div key={idx} style={{
+                                  padding: '4px 8px',
+                                  background: idx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
+                                  color: idx < scenario.maturityLevel ? scenario.color : 'white',
+                                  borderRadius: '4px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600
+                                }}>
+                                  {level.slice(0, 3)}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            padding: '16px 20px',
+                            border: `3px solid ${scenario.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            fontSize: '0.875rem',
+                            color: '#475569',
+                            lineHeight: '1.6'
+                          }}>
+                            {scenario.maturityDescriptions && (
+                              <>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Explore:</strong> {scenario.maturityDescriptions.explore}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Experiment:</strong> {scenario.maturityDescriptions.experiment}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Formalize:</strong> {scenario.maturityDescriptions.formalize}
+                                </div>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong>Optimize:</strong> {scenario.maturityDescriptions.optimize}
+                                </div>
+                                <div>
+                                  <strong>Transform:</strong> {scenario.maturityDescriptions.transform}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </SlideGrid>
+                )}
+
+                {/* Slide 10: Maturity Level Definitions - Part 1 (First 3 Matrices) */}
+                {slides[currentSlide].id === 'matrices-1' && (
+                  <SlideGrid $columns="1fr">
+                    {maturityMatrices.slice(0, 3).map((matrix) => {
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div key={matrix.id} style={{ marginBottom: '24px' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '12px 20px',
+                            fontWeight: 700,
+                            fontSize: '1.125rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `3px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `3px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden'
+                          }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%' }}>
+                                      {level}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '8px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '8px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.4', verticalAlign: 'top' }}>
+                                        {levelDesc}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </SlideGrid>
+                )}
+
+                {/* Slide 11: Maturity Level Definitions - Part 2 (Last 3 Matrices) */}
+                {slides[currentSlide].id === 'matrices-2' && (
+                  <SlideGrid $columns="1fr">
+                    {maturityMatrices.slice(3, 6).map((matrix) => {
+                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      return (
+                        <div key={matrix.id} style={{ marginBottom: '24px' }}>
+                          <div style={{
+                            background: matrix.bgColor,
+                            color: 'white',
+                            padding: '12px 20px',
+                            fontWeight: 700,
+                            fontSize: '1.125rem',
+                            borderRadius: '12px 12px 0 0',
+                            border: `3px solid ${matrix.color}`,
+                            borderBottom: 'none'
+                          }}>
+                            {matrix.title}
+                          </div>
+                          <div style={{
+                            background: 'white',
+                            border: `3px solid ${matrix.color}`,
+                            borderTop: 'none',
+                            borderRadius: '0 0 12px 12px',
+                            overflow: 'hidden'
+                          }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
+                              <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                  <th style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '20%' }}>
+                                    Dimension
+                                  </th>
+                                  {maturityLevels.map((level, idx) => (
+                                    <th key={idx} style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '16%' }}>
+                                      {level}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
+                                  <tr key={dimIdx}>
+                                    <td style={{ padding: '8px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
+                                      {dim.name}
+                                    </td>
+                                    {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
+                                      <td key={levelIdx} style={{ padding: '8px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.4', verticalAlign: 'top' }}>
+                                        {levelDesc}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </SlideGrid>
                 )}
               </SlideContent>
