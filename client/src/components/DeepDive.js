@@ -4583,7 +4583,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <CompactCard key={obj.id} $color={obj.borderColor}>
                           <h4>{obj.icon} {obj.title}</h4>
                           <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: '1.5' }}>
-                            {obj.content ? obj.content.substring(0, 150) + '...' : 'No content available'}
+                            {obj.content || 'No content available'}
                           </p>
                         </CompactCard>
                       ))}
@@ -4611,7 +4611,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           <div style={{ fontSize: '0.875rem', marginTop: '8px' }}>
                             <strong style={{ color: '#1e293b' }}>Need:</strong>
                             <p style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: '8px', marginTop: '4px' }}>
-                              {plan.need ? plan.need.substring(0, 100) + '...' : 'No need defined'}
+                              {plan.need || 'No need defined'}
                             </p>
                           </div>
                         </CompactCard>
@@ -4640,7 +4640,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           <h4>{analysis.title || 'Untitled'}</h4>
                           {analysis.stages && analysis.stages.length > 0 && (
                             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description ? analysis.stages[0].description.substring(0, 80) + '...' : 'No description'}
+                              <strong>{analysis.stages[0].stage}:</strong> {analysis.stages[0].description || 'No description'}
                             </div>
                           )}
                         </CompactCard>
@@ -4652,7 +4652,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <CompactCard key={scenario.id} $color={scenario.color}>
                           <h4>{scenario.title || 'Untitled Scenario'}</h4>
                           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                            {scenario.description ? scenario.description.substring(0, 120) + '...' : 'No description available'}
+                            {scenario.description || 'No description available'}
                           </div>
                         </CompactCard>
                       ))}
