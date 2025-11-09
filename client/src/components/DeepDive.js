@@ -266,9 +266,9 @@ const SlideCounter = styled.div`
 `;
 
 const ExitButton = styled(motion.button)`
-  position: fixed;
-  top: 32px;
-  right: 32px;
+  position: absolute;
+  top: 20px;
+  right: 30px;
   background: rgba(239, 68, 68, 0.9);
   color: white;
   border: none;
@@ -280,12 +280,19 @@ const ExitButton = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1;
   z-index: 10002;
-  transition: all 0.2s ease;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  pointer-events: auto;
 
   &:hover {
-    background: rgba(220, 38, 38, 1);
-    transform: scale(1.1);
+    opacity: 1;
+    transform: scale(1.15);
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
   }
   
   @media (max-width: 768px) {
@@ -5729,17 +5736,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                   e.stopPropagation();
                   exitPresentation();
                 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '30px',
-                  opacity: 0,
-                  pointerEvents: 'auto'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+                whileTap={{ scale: 0.9 }}
               >
                 ×
               </ExitButton>

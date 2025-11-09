@@ -814,14 +814,19 @@ const ExitButton = styled(motion.button)`
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
   cursor: pointer;
   z-index: 10;
   pointer-events: auto;
+  opacity: 0.4;
   transition: all 0.3s ease;
 
   &:hover {
+    opacity: 1;
+    transform: scale(1.15);
     background: rgba(239, 68, 68, 1);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
   }
 `;
 
@@ -1538,11 +1543,7 @@ const ExecutiveCommandCenter = () => {
                   e.stopPropagation();
                   exitPresentation();
                 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                style={{ opacity: 0 }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+                whileTap={{ scale: 0.9 }}
               >
                 ×
               </ExitButton>
