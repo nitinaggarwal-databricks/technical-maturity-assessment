@@ -1424,6 +1424,31 @@ const SlideGrid = styled.div`
   padding-bottom: ${props => props.$paddingBottom || '10px'};
 `;
 
+const ExitButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+`;
+
 // =======================
 // COMPONENT
 // =======================
@@ -1830,6 +1855,13 @@ const AssessmentResultsNew = () => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
     }
+  };
+
+  // Calculate overall score from all pillars
+  const calculateOverallScore = () => {
+    if (!results?.pillars || results.pillars.length === 0) return 0;
+    const totalScore = results.pillars.reduce((sum, pillar) => sum + (pillar.score || 0), 0);
+    return totalScore / results.pillars.length;
   };
 
   // Keyboard navigation for slideshow
@@ -5322,6 +5354,23 @@ const AssessmentResultsNew = () => {
               {currentSlide === 0 ? 'Maturity Assessment Report' : results.pillars?.[currentSlide - 1]?.name}
             </SlideHeading>
             <SlideCounter>{currentSlide + 1} / {(results?.pillars?.length || 0) + 1}</SlideCounter>
+
+            {/* Exit Button - Shows on hover on last slide */}
+            {currentSlide === (results?.pillars?.length || 0) && (
+              <ExitButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  exitPresentation();
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                style={{ opacity: 0 }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+              >
+                ×
+              </ExitButton>
+            )}
 
             <SlideContent>
               <AnimatePresence mode="wait">

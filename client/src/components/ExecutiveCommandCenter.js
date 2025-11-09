@@ -800,6 +800,31 @@ const ClickArea = styled.div`
   ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
 `;
 
+const ExitButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+`;
+
 // =====================
 // COMPONENT
 // =====================
@@ -1505,6 +1530,23 @@ const ExecutiveCommandCenter = () => {
             
             <SlideHeading>{slides[currentSlide]?.title}</SlideHeading>
             <SlideCounter>{currentSlide + 1} / {slides.length}</SlideCounter>
+
+            {/* Exit Button - Shows on hover on last slide */}
+            {currentSlide === slides.length - 1 && (
+              <ExitButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  exitPresentation();
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                style={{ opacity: 0 }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+              >
+                ×
+              </ExitButton>
+            )}
 
             <SlideContent>
               <AnimatePresence mode="wait">

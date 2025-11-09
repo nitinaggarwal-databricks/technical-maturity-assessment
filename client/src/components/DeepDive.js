@@ -5721,6 +5721,29 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }}>
               {currentSlide + 1} / {slides.length}
             </SlideCounter>
+
+            {/* Exit Button - Shows on hover on last slide */}
+            {currentSlide === slides.length - 1 && (
+              <ExitButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  exitPresentation();
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '30px',
+                  opacity: 0,
+                  pointerEvents: 'auto'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+              >
+                ×
+              </ExitButton>
+            )}
           </SlideshowOverlay>
         )}
       </AnimatePresence>
