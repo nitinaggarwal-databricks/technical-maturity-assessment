@@ -5545,29 +5545,33 @@ const AssessmentResultsNew = () => {
                                 flexDirection: 'column',
                                 gap: '14px'
                               }}>
-                                {pillar.recommendations.slice(0, 3).map((rec, idx) => (
-                                  <div key={idx} style={{
-                                    display: 'flex',
-                                    gap: '12px',
-                                    alignItems: 'flex-start'
-                                  }}>
-                                    <span style={{
-                                      color: pillar.color,
-                                      fontWeight: 700,
-                                      fontSize: '1.4rem',
-                                      minWidth: '24px'
+                                {pillar.recommendations.slice(0, 3).map((rec, idx) => {
+                                  // Handle both string and object recommendations
+                                  const recText = typeof rec === 'string' ? rec : (rec.message || rec.recommendationText || rec.title || '');
+                                  return (
+                                    <div key={idx} style={{
+                                      display: 'flex',
+                                      gap: '12px',
+                                      alignItems: 'flex-start'
                                     }}>
-                                      {idx + 1}.
-                                    </span>
-                                    <span style={{
-                                      fontSize: '1.25rem',
-                                      color: '#475569',
-                                      lineHeight: '1.6'
-                                    }}>
-                                      {rec.message || rec}
-                                    </span>
-                                  </div>
-                                ))}
+                                      <span style={{
+                                        color: pillar.color,
+                                        fontWeight: 700,
+                                        fontSize: '1.4rem',
+                                        minWidth: '24px'
+                                      }}>
+                                        {idx + 1}.
+                                      </span>
+                                      <span style={{
+                                        fontSize: '1.25rem',
+                                        color: '#475569',
+                                        lineHeight: '1.6'
+                                      }}>
+                                        {recText}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             ) : (
                               <div style={{
