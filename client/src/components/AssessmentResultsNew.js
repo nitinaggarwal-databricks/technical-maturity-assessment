@@ -5477,13 +5477,29 @@ const AssessmentResultsNew = () => {
                     const resultsData = results?.data || results;
                     const categoryData = resultsData?.categoryDetails?.[pillarDef.id];
                     
+                    // Get prioritizedActions for this pillar (contains theGood/theBad)
+                    const prioritized = Array.isArray(resultsData?.prioritizedActions) 
+                      ? resultsData.prioritizedActions.find(pa => pa.area === pillarDef.id || pa.pillar === pillarDef.id || pa.pillarId === pillarDef.id)
+                      : null;
+                    
+                    // Calculate maturity level from score
+                    const score = categoryData?.score || 0;
+                    const getMaturityLevel = (score) => {
+                      if (score === 0) return 'Not Assessed';
+                      if (score < 1.5) return 'Explore';
+                      if (score < 2.5) return 'Experiment';
+                      if (score < 3.5) return 'Formalize';
+                      if (score < 4.5) return 'Optimize';
+                      return 'Transform';
+                    };
+                    
                     const pillar = {
                       ...pillarDef,
-                      score: categoryData?.score || 0,
-                      maturityLevel: categoryData?.maturityLevel || 'Not Assessed',
-                      recommendations: categoryData?.recommendations || [],
-                      good: categoryData?.good || [],
-                      bad: categoryData?.bad || []
+                      score: score,
+                      maturityLevel: getMaturityLevel(score),
+                      recommendations: prioritized?.databricksFeatures || prioritized?.actions || categoryData?.recommendations || [],
+                      good: prioritized?.theGood || categoryData?.theGood || [],
+                      bad: prioritized?.theBad || categoryData?.theBad || []
                     };
                     
                     return (
