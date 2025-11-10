@@ -1850,7 +1850,15 @@ const AssessmentResultsNew = () => {
   };
 
   const nextSlide = () => {
-    const totalSlides = results?.pillars?.length + 1 || 1; // +1 for title slide
+    const pillarsArray = [
+      { id: 'platform_governance', name: 'Platform & Governance' },
+      { id: 'data_engineering', name: 'Data Engineering & Integration' },
+      { id: 'analytics_bi', name: 'Analytics & BI Modernization' },
+      { id: 'machine_learning', name: 'Machine Learning & MLOps' },
+      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
+      { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
+    ];
+    const totalSlides = pillarsArray.length + 1; // +1 for title slide
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
     }
@@ -1864,9 +1872,9 @@ const AssessmentResultsNew = () => {
 
   // Calculate overall score from all pillars
   const calculateOverallScore = () => {
-    if (!results?.pillars || results.pillars.length === 0) return 0;
-    const totalScore = results.pillars.reduce((sum, pillar) => sum + (pillar.score || 0), 0);
-    return totalScore / results.pillars.length;
+    if (!results?.data?.pillarResults || results.data.pillarResults.length === 0) return 0;
+    const totalScore = results.data.pillarResults.reduce((sum, pillar) => sum + (pillar.score || 0), 0);
+    return totalScore / results.data.pillarResults.length;
   };
 
   // Keyboard navigation for slideshow
@@ -5356,12 +5364,22 @@ const AssessmentResultsNew = () => {
             <ClickArea $direction="right" onClick={nextSlide} />
             
             <SlideHeading>
-              {currentSlide === 0 ? 'Maturity Assessment Report' : results.pillars?.[currentSlide - 1]?.name}
+              {currentSlide === 0 ? 'Maturity Assessment Report' : (() => {
+                const pillarsArray = [
+                  { id: 'platform_governance', name: 'Platform & Governance' },
+                  { id: 'data_engineering', name: 'Data Engineering & Integration' },
+                  { id: 'analytics_bi', name: 'Analytics & BI Modernization' },
+                  { id: 'machine_learning', name: 'Machine Learning & MLOps' },
+                  { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
+                  { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
+                ];
+                return pillarsArray[currentSlide - 1]?.name || '';
+              })()}
             </SlideHeading>
-            <SlideCounter>{currentSlide + 1} / {(results?.pillars?.length || 0) + 1}</SlideCounter>
+            <SlideCounter>{currentSlide + 1} / 7</SlideCounter>
 
             {/* Exit Button - Shows on hover on last slide */}
-            {currentSlide === (results?.pillars?.length || 0) && (
+            {currentSlide === 6 && (
               <ExitButton
                 onClick={(e) => {
                   e.stopPropagation();
@@ -5420,8 +5438,29 @@ const AssessmentResultsNew = () => {
                   )}
 
                   {/* Pillar Slides */}
-                  {currentSlide > 0 && results.pillars?.[currentSlide - 1] && (() => {
-                    const pillar = results.pillars[currentSlide - 1];
+                  {currentSlide > 0 && (() => {
+                    const pillarsArray = [
+                      { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
+                      { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
+                      { id: 'analytics_bi', name: 'Analytics & BI Modernization', color: '#ec4899' },
+                      { id: 'machine_learning', name: 'Machine Learning & MLOps', color: '#f59e0b' },
+                      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
+                      { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
+                    ];
+                    const pillarDef = pillarsArray[currentSlide - 1];
+                    if (!pillarDef) return null;
+                    
+                    // Get pillar data from results
+                    const pillarData = results?.data?.pillarResults?.find(p => p.id === pillarDef.id) || {};
+                    const pillar = {
+                      ...pillarDef,
+                      score: pillarData.score || 0,
+                      maturityLevel: pillarData.maturityLevel || 'Not Assessed',
+                      recommendations: pillarData.recommendations || [],
+                      good: pillarData.good || [],
+                      bad: pillarData.bad || []
+                    };
+                    
                     return (
                       <SlideGrid $columns="1fr 1fr" $gap="20px" $paddingTop="50px">
                         {/* Left Column: Score & Recommendations */}
