@@ -5778,14 +5778,20 @@ const AssessmentResultsNew = () => {
                       return 'Transform';
                     };
                     
+                    // Get full pillar data using getPillarData (same as main report)
+                    const pillarData = getPillarData(pillarDef.id);
+                    console.log(`[Slideshow] Pillar data for ${pillarDef.id}:`, pillarData);
+                    
                     const pillar = {
                       ...pillarDef,
                       score: score,
                       maturityLevel: getMaturityLevel(score),
-                      recommendations: prioritized?.databricksFeatures || prioritized?.actions || categoryData?.recommendations || [],
-                      good: prioritized?.theGood || categoryData?.theGood || [],
-                      bad: prioritized?.theBad || categoryData?.theBad || []
+                      recommendations: pillarData?.databricksFeatures || pillarData?.recommendations || [],
+                      good: pillarData?.theGood || [],
+                      bad: pillarData?.theBad || []
                     };
+                    
+                    console.log(`[Slideshow] Pillar ${pillarDef.id} recommendations:`, pillar.recommendations?.length || 0);
                     
                     return (
                       <SlideGrid $columns="1fr 1fr" $gap="20px" $paddingTop="50px">
@@ -5847,8 +5853,23 @@ const AssessmentResultsNew = () => {
                                 gap: '14px'
                               }}>
                                 {pillar.recommendations.slice(0, 3).map((rec, idx) => {
-                                  // Handle both string and object recommendations
-                                  const recText = typeof rec === 'string' ? rec : (rec.message || rec.recommendationText || rec.title || '');
+                                  // Handle different recommendation formats:
+                                  // 1. String: plain text
+                                  // 2. Object with 'name' (databricksFeatures format)
+                                  // 3. Object with 'message' or 'recommendationText'
+                                  let recText = '';
+                                  if (typeof rec === 'string') {
+                                    recText = rec;
+                                  } else if (rec.name) {
+                                    // Databricks feature format
+                                    recText = rec.name;
+                                    if (rec.description) {
+                                      recText += ` - ${rec.description}`;
+                                    }
+                                  } else {
+                                    recText = rec.message || rec.recommendationText || rec.title || '';
+                                  }
+                                  
                                   return (
                                     <div key={idx} style={{
                                       display: 'flex',
