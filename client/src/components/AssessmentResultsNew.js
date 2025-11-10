@@ -1858,7 +1858,7 @@ const AssessmentResultsNew = () => {
       { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
       { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
     ];
-    const totalSlides = pillarsArray.length + 1; // +1 for title slide
+    const totalSlides = pillarsArray.length + 3; // +1 title, +1 overview, +1 chart, +6 pillars = 9 total
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
     }
@@ -5387,7 +5387,9 @@ const AssessmentResultsNew = () => {
             <ClickArea $direction="right" onClick={nextSlide} />
             
             <SlideHeading>
-              {currentSlide === 0 ? 'Maturity Assessment Report' : (() => {
+              {currentSlide === 0 ? 'Maturity Assessment Report' : 
+               currentSlide === 1 ? 'Maturity Overview' :
+               currentSlide === 2 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
                   { id: 'data_engineering', name: 'Data Engineering & Integration' },
@@ -5396,13 +5398,13 @@ const AssessmentResultsNew = () => {
                   { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
                   { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
                 ];
-                return pillarsArray[currentSlide - 1]?.name || '';
+                return pillarsArray[currentSlide - 3]?.name || '';
               })()}
             </SlideHeading>
-            <SlideCounter>{currentSlide + 1} / 7</SlideCounter>
+            <SlideCounter>{currentSlide + 1} / 9</SlideCounter>
 
             {/* Exit Button - Shows on hover on last slide */}
-            {currentSlide === 6 && (
+            {currentSlide === 8 && (
               <ExitButton
                 onClick={(e) => {
                   e.stopPropagation();
@@ -5460,8 +5462,291 @@ const AssessmentResultsNew = () => {
                     </div>
                   )}
 
-                  {/* Pillar Slides */}
-                  {currentSlide > 0 && (() => {
+                  {/* Maturity Overview Slide (Slide 2) */}
+                  {currentSlide === 1 && (
+                    <SlideGrid $columns="1fr 1fr 1fr" $gap="24px" $paddingTop="60px">
+                      {/* Current Maturity Card */}
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '20px',
+                        padding: '40px',
+                        border: '4px solid #3b82f6',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        gap: '20px'
+                      }}>
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '50%',
+                          background: 'rgba(59, 130, 246, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '2.5rem'
+                        }}>
+                          🎯
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          fontWeight: 600,
+                          color: '#64748b',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px'
+                        }}>
+                          Current Maturity
+                        </div>
+                        <div style={{
+                          fontSize: '3.5rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          lineHeight: '1.2'
+                        }}>
+                          Level {currentMaturity}
+                        </div>
+                        <div style={{
+                          fontSize: '1.8rem',
+                          fontWeight: 600,
+                          color: '#3b82f6'
+                        }}>
+                          {resultsData?.maturitySummary?.current?.level || 'Defined'}
+                        </div>
+                        <div style={{
+                          fontSize: '1.3rem',
+                          color: '#64748b',
+                          lineHeight: '1.6',
+                          marginTop: '10px'
+                        }}>
+                          {resultsData?.maturitySummary?.current?.description || 
+                           'Standardized processes across key domains, limited automation.'}
+                        </div>
+                      </div>
+
+                      {/* Target Maturity Card */}
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '20px',
+                        padding: '40px',
+                        border: '4px solid #10b981',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        gap: '20px'
+                      }}>
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '50%',
+                          background: 'rgba(16, 185, 129, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '2.5rem'
+                        }}>
+                          📈
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          fontWeight: 600,
+                          color: '#64748b',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px'
+                        }}>
+                          Target Maturity
+                        </div>
+                        <div style={{
+                          fontSize: '3.5rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          lineHeight: '1.2'
+                        }}>
+                          Level {targetMaturity}
+                        </div>
+                        <div style={{
+                          fontSize: '1.8rem',
+                          fontWeight: 600,
+                          color: '#10b981'
+                        }}>
+                          {resultsData?.maturitySummary?.target?.level || 'Managed'}
+                        </div>
+                        <div style={{
+                          fontSize: '1.3rem',
+                          color: '#64748b',
+                          lineHeight: '1.6',
+                          marginTop: '10px'
+                        }}>
+                          {resultsData?.maturitySummary?.target?.description || 
+                           'Governed, measurable maturity with continuous optimization.'}
+                        </div>
+                      </div>
+
+                      {/* Improvement Potential Card */}
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '20px',
+                        padding: '40px',
+                        border: '4px solid #f59e0b',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        gap: '20px'
+                      }}>
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '50%',
+                          background: 'rgba(245, 158, 11, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '2.5rem'
+                        }}>
+                          ⚡
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          fontWeight: 600,
+                          color: '#64748b',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px'
+                        }}>
+                          Improvement Potential
+                        </div>
+                        <div style={{
+                          fontSize: '3.5rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          lineHeight: '1.2'
+                        }}>
+                          +{improvementLevel} Level
+                        </div>
+                        <div style={{
+                          fontSize: '1.8rem',
+                          fontWeight: 600,
+                          color: '#f59e0b'
+                        }}>
+                          Growth Opportunity
+                        </div>
+                        <div style={{
+                          fontSize: '1.3rem',
+                          color: '#64748b',
+                          lineHeight: '1.6',
+                          marginTop: '10px'
+                        }}>
+                          {resultsData?.maturitySummary?.improvement?.description || 
+                           'Achievable through automation, governance integration, and AI enablement.'}
+                        </div>
+                      </div>
+                    </SlideGrid>
+                  )}
+
+                  {/* Maturity Snapshot Chart Slide (Slide 3) */}
+                  {currentSlide === 2 && (() => {
+                    const pillarsArray = [
+                      { id: 'platform_governance', name: 'Platform & Governance', icon: '🧱' },
+                      { id: 'data_engineering', name: 'Data Engineering & Integration', icon: '📊' },
+                      { id: 'analytics_bi', name: 'Analytics & BI Modernization', icon: '📈' },
+                      { id: 'machine_learning', name: 'Machine Learning & MLOps', icon: '🤖' },
+                      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', icon: '💡' },
+                      { id: 'operational_excellence', name: 'Operational Excellence & Adoption', icon: '⚙️' }
+                    ];
+                    
+                    return (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '30px',
+                        paddingTop: '60px',
+                        paddingBottom: '40px'
+                      }}>
+                        {/* Legend */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          gap: '40px',
+                          marginBottom: '20px'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: 24, height: 24, borderRadius: 6, background: '#3b82f6', border: '2px solid #3b82f6' }} />
+                            <span style={{ fontSize: '1.4rem', color: 'white', fontWeight: 600 }}>Today</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: 24, height: 24, borderRadius: 6, background: 'transparent', border: '2px solid #10b981' }} />
+                            <span style={{ fontSize: '1.4rem', color: 'white', fontWeight: 600 }}>Target</span>
+                          </div>
+                        </div>
+
+                        {/* Chart Bars */}
+                        {pillarsArray.map((pillar) => {
+                          const resultsData = results?.data || results;
+                          const categoryData = resultsData?.categoryDetails?.[pillar.id];
+                          const currentScore = categoryData?.score || 0;
+                          const targetScore = Math.min(5, currentScore + 1.5); // Example target
+                          
+                          return (
+                            <div key={pillar.id} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '16px',
+                                fontSize: '1.4rem',
+                                fontWeight: 600,
+                                color: 'white'
+                              }}>
+                                <span style={{ fontSize: '1.8rem' }}>{pillar.icon}</span>
+                                <span style={{ minWidth: '350px' }}>{pillar.name}</span>
+                              </div>
+                              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                {/* Current Score Bar */}
+                                <div style={{
+                                  height: '40px',
+                                  width: `${(currentScore / 5) * 100}%`,
+                                  background: '#3b82f6',
+                                  borderRadius: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'flex-end',
+                                  paddingRight: '12px',
+                                  fontSize: '1.3rem',
+                                  fontWeight: 700,
+                                  color: 'white',
+                                  minWidth: '80px',
+                                  border: '2px solid #3b82f6'
+                                }}>
+                                  {currentScore.toFixed(1)}
+                                </div>
+                                {/* Target Score Bar */}
+                                <div style={{
+                                  height: '40px',
+                                  width: `${((targetScore - currentScore) / 5) * 100}%`,
+                                  background: 'transparent',
+                                  borderRadius: '8px',
+                                  border: '2px solid #10b981',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'flex-end',
+                                  paddingRight: '12px',
+                                  fontSize: '1.3rem',
+                                  fontWeight: 700,
+                                  color: '#10b981',
+                                  minWidth: targetScore > currentScore ? '60px' : '0'
+                                }}>
+                                  {targetScore > currentScore ? targetScore.toFixed(1) : ''}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Pillar Slides (Slides 4-9) */}
+                  {currentSlide >= 3 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -5470,7 +5755,7 @@ const AssessmentResultsNew = () => {
                       { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
                       { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
                     ];
-                    const pillarDef = pillarsArray[currentSlide - 1];
+                    const pillarDef = pillarsArray[currentSlide - 3]; // Adjust for new slides
                     if (!pillarDef) return null;
                     
                     // Get pillar data from results using the same logic as getPillarData
