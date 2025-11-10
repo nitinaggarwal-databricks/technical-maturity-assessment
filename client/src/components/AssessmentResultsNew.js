@@ -1872,9 +1872,32 @@ const AssessmentResultsNew = () => {
 
   // Calculate overall score from all pillars
   const calculateOverallScore = () => {
-    if (!results?.data?.pillarResults || results.data.pillarResults.length === 0) return 0;
-    const totalScore = results.data.pillarResults.reduce((sum, pillar) => sum + (pillar.score || 0), 0);
-    return totalScore / results.data.pillarResults.length;
+    const resultsData = results?.data || results;
+    const categoryDetails = resultsData?.categoryDetails;
+    
+    if (!categoryDetails) return 0;
+    
+    const pillarsArray = [
+      'platform_governance',
+      'data_engineering',
+      'analytics_bi',
+      'machine_learning',
+      'generative_ai',
+      'operational_excellence'
+    ];
+    
+    let totalScore = 0;
+    let count = 0;
+    
+    pillarsArray.forEach(pillarId => {
+      const pillarData = categoryDetails[pillarId];
+      if (pillarData && pillarData.score !== undefined) {
+        totalScore += pillarData.score;
+        count++;
+      }
+    });
+    
+    return count > 0 ? totalScore / count : 0;
   };
 
   // Keyboard navigation for slideshow
@@ -5450,15 +5473,17 @@ const AssessmentResultsNew = () => {
                     const pillarDef = pillarsArray[currentSlide - 1];
                     if (!pillarDef) return null;
                     
-                    // Get pillar data from results
-                    const pillarData = results?.data?.pillarResults?.find(p => p.id === pillarDef.id) || {};
+                    // Get pillar data from results using the same logic as getPillarData
+                    const resultsData = results?.data || results;
+                    const categoryData = resultsData?.categoryDetails?.[pillarDef.id];
+                    
                     const pillar = {
                       ...pillarDef,
-                      score: pillarData.score || 0,
-                      maturityLevel: pillarData.maturityLevel || 'Not Assessed',
-                      recommendations: pillarData.recommendations || [],
-                      good: pillarData.good || [],
-                      bad: pillarData.bad || []
+                      score: categoryData?.score || 0,
+                      maturityLevel: categoryData?.maturityLevel || 'Not Assessed',
+                      recommendations: categoryData?.recommendations || [],
+                      good: categoryData?.good || [],
+                      bad: categoryData?.bad || []
                     };
                     
                     return (
