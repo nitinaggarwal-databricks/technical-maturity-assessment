@@ -5499,22 +5499,22 @@ const AssessmentResultsNew = () => {
                           </div>
 
                           {/* Top Recommendations */}
-                          {pillar.recommendations && pillar.recommendations.length > 0 && (
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: `4px solid ${pillar.color}`,
+                            flex: 1
+                          }}>
                             <div style={{
-                              background: 'rgba(255, 255, 255, 0.95)',
-                              borderRadius: '16px',
-                              padding: '28px',
-                              border: `4px solid ${pillar.color}`,
-                              flex: 1
+                              fontSize: '1.8rem',
+                              fontWeight: 700,
+                              color: '#1e293b',
+                              marginBottom: '20px'
                             }}>
-                              <div style={{
-                                fontSize: '1.8rem',
-                                fontWeight: 700,
-                                color: '#1e293b',
-                                marginBottom: '20px'
-                              }}>
-                                Key Recommendations
-                              </div>
+                              Key Recommendations
+                            </div>
+                            {pillar.recommendations && pillar.recommendations.length > 0 ? (
                               <div style={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -5544,29 +5544,39 @@ const AssessmentResultsNew = () => {
                                   </div>
                                 ))}
                               </div>
-                            </div>
-                          )}
+                            ) : (
+                              <div style={{
+                                fontSize: '1.2rem',
+                                color: '#94a3b8',
+                                fontStyle: 'italic',
+                                textAlign: 'center',
+                                padding: '20px'
+                              }}>
+                                Complete the assessment to see personalized recommendations
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Right Column: What's Working & Challenges */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                           {/* What's Working */}
-                          {pillar.good && pillar.good.length > 0 && (
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: '4px solid #10b981',
+                            flex: 1
+                          }}>
                             <div style={{
-                              background: 'rgba(255, 255, 255, 0.95)',
-                              borderRadius: '16px',
-                              padding: '28px',
-                              border: '4px solid #10b981',
-                              flex: 1
+                              fontSize: '1.8rem',
+                              fontWeight: 700,
+                              color: '#1e293b',
+                              marginBottom: '20px'
                             }}>
-                              <div style={{
-                                fontSize: '1.8rem',
-                                fontWeight: 700,
-                                color: '#1e293b',
-                                marginBottom: '20px'
-                              }}>
-                                ✓ What's Working
-                              </div>
+                              ✓ What's Working
+                            </div>
+                            {pillar.good && pillar.good.length > 0 ? (
                               <div style={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -5593,26 +5603,36 @@ const AssessmentResultsNew = () => {
                                   </div>
                                 ))}
                               </div>
-                            </div>
-                          )}
+                            ) : (
+                              <div style={{
+                                fontSize: '1.2rem',
+                                color: '#94a3b8',
+                                fontStyle: 'italic',
+                                textAlign: 'center',
+                                padding: '20px'
+                              }}>
+                                Complete the assessment to identify strengths
+                              </div>
+                            )}
+                          </div>
 
                           {/* Key Challenges */}
-                          {pillar.bad && pillar.bad.length > 0 && (
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: '4px solid #ef4444',
+                            flex: 1
+                          }}>
                             <div style={{
-                              background: 'rgba(255, 255, 255, 0.95)',
-                              borderRadius: '16px',
-                              padding: '28px',
-                              border: '4px solid #ef4444',
-                              flex: 1
+                              fontSize: '1.8rem',
+                              fontWeight: 700,
+                              color: '#1e293b',
+                              marginBottom: '20px'
                             }}>
-                              <div style={{
-                                fontSize: '1.8rem',
-                                fontWeight: 700,
-                                color: '#1e293b',
-                                marginBottom: '20px'
-                              }}>
-                                ⚠ Key Challenges
-                              </div>
+                              ⚠ Key Challenges
+                            </div>
+                            {pillar.bad && pillar.bad.length > 0 ? (
                               <div style={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -5639,8 +5659,18 @@ const AssessmentResultsNew = () => {
                                   </div>
                                 ))}
                               </div>
-                            </div>
-                          )}
+                            ) : (
+                              <div style={{
+                                fontSize: '1.2rem',
+                                color: '#94a3b8',
+                                fontStyle: 'italic',
+                                textAlign: 'center',
+                                padding: '20px'
+                              }}>
+                                Complete the assessment to identify challenges
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </SlideGrid>
                     );
