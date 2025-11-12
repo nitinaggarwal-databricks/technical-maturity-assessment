@@ -840,7 +840,10 @@ const GlobalNav = () => {
                     onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
                   >
                     <FiUser size={14} />
-                    {currentUser.firstName || currentUser.email.split('@')[0]}
+                    {currentUser.testMode 
+                      ? `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} (Test Mode)`
+                      : (currentUser.firstName || currentUser.email.split('@')[0])
+                    }
                     <FiChevronDown size={14} className="chevron" />
                   </DropdownButton>
                   <DropdownMenu $isOpen={adminDropdownOpen}>
