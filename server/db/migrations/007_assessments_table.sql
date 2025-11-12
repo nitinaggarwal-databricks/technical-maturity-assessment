@@ -48,3 +48,4 @@ COMMENT ON COLUMN assessments.responses IS 'JSON object containing all assessmen
 COMMENT ON COLUMN assessments.completed_categories IS 'Array of completed pillar/category IDs';
 COMMENT ON COLUMN assessments.edit_history IS 'Array of edit history entries';
 
+

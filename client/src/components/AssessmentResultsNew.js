@@ -34,22 +34,29 @@ import Footer from './Footer';
 // STYLED COMPONENTS
 // =======================
 
-// Print slide container
+// Print slide container - EXACTLY matches slideshow SlideContainer styling
 const PrintSlide = styled.div`
   @media print {
     page-break-after: always;
     page-break-inside: avoid;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100vh;
-    position: relative;
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+    padding: 80px;
     overflow: hidden;
+    
+    /* Enable background graphics */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   @media screen {
@@ -2932,81 +2939,17 @@ const AssessmentResultsNew = () => {
   const completedPillars = resultsData?.assessmentInfo?.completedPillars || 0;
   const hasNoCompletedPillars = completedPillars === 0;
 
-  // 🖨️ Comprehensive slide rendering component for print mode
-  const SlideRenderer = ({ slideIndex }) => {
-    // Set currentSlide temporarily for this render
-    const tempCurrentSlide = slideIndex;
-    
-    // Generate slide title based on index
-    const getSlideTitle = (index) => {
-      if (index === 0) return ''; // No title on first slide
-      if (index === 1) return 'Maturity Snapshot by Pillar';
-      
-      const pillarsArray = [
-        { id: 'platform_governance', name: 'Platform & Governance' },
-        { id: 'data_engineering', name: 'Data Engineering & Integration' },
-        { id: 'analytics_bi', name: 'Analytics & BI Modernization' },
-        { id: 'machine_learning', name: 'Machine Learning & MLOps' },
-        { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
-        { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
-      ];
-      
-      // Slides 2-19: 6 pillars x 3 slides each (dimensions, overview, next steps)
-      if (index >= 2 && index <= 19) {
-        const pillarIndex = Math.floor((index - 2) / 3);
-        const slideType = (index - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
-        const pillarName = pillarsArray[pillarIndex]?.name || '';
-        // All slide types just show pillar name (no suffix)
-        return pillarName;
-      }
-      return '';
-    };
-    
-    return (
-      <div style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        padding: '50px 60px 40px 60px'
-      }}>
-        {/* Slide Header with Title */}
-        <div style={{
-          fontSize: '2rem',
-          fontWeight: 700,
-          marginBottom: '25px',
-          color: '#1e293b'
-        }}>
-          {getSlideTitle(tempCurrentSlide)}
-        </div>
-        
-        {/* Slide Content */}
-        <div style={{
-          flex: 1,
-          overflow: 'hidden',
-          width: '100%',
-          maxWidth: '100%'
-        }}>
-          <SlideRendererContent slideIndex={tempCurrentSlide} />
-        </div>
-      </div>
-    );
-  };
-
-  // Slide content renderer
-  const SlideRendererContent = ({ slideIndex: targetSlide }) => {
-    // Use targetSlide instead of currentSlide for rendering
-    const slideIndex = targetSlide;
-    
-    // Copy all the slideshow rendering logic here
+  // 🖨️ Unified slide content renderer - returns JSX for a given slide
+  // This is used by both slideshow and print modes to ensure they look identical
+  // 🖨️ Print slide content renderer - copies exact slideshow rendering
+  const renderPrintSlideContent = (slideIndex) => {
     const pillarsArray = [
-      { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
-      { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
-      { id: 'analytics_bi', name: 'Analytics & BI Modernization', color: '#ec4899' },
-      { id: 'machine_learning', name: 'Machine Learning & MLOps', color: '#f59e0b' },
-      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
-      { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
+      { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6', icon: '🧱' },
+      { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981', icon: '💾' },
+      { id: 'analytics_bi', name: 'Analytics & BI Modernization', color: '#ec4899', icon: '📈' },
+      { id: 'machine_learning', name: 'Machine Learning & MLOps', color: '#f59e0b', icon: '🤖' },
+      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6', icon: '💡' },
+      { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4', icon: '⚙️' }
     ];
 
     const resultsData = results?.data || results;
@@ -3014,7 +2957,7 @@ const AssessmentResultsNew = () => {
     const targetMaturity = resultsData?.overall?.futureScore || 0;
     const improvementLevel = targetMaturity - currentMaturity;
 
-    // Slide 0: Title slide
+    // Slide 0: Title slide (EXACT COPY from slideshow line 6248+)
     if (slideIndex === 0) {
       return (
         <div style={{
@@ -3024,53 +2967,80 @@ const AssessmentResultsNew = () => {
           alignItems: 'center',
           height: '100%',
           textAlign: 'center',
-          gap: '12px',
-          padding: '0 60px'
+          gap: '20px',
+          padding: '0 80px'
         }}>
           <div style={{
-            fontSize: '3.5rem',
+            fontSize: '4.5rem',
             fontWeight: 700,
             color: 'white',
-            marginBottom: '8px',
-            lineHeight: '1.1'
+            marginBottom: '16px',
+            lineHeight: '1.2'
           }}>
             {results.assessmentInfo?.assessmentName || 'Enterprise Data & AI Maturity Report'}
           </div>
           <div style={{
-            fontSize: '1.3rem',
+            fontSize: '1.6rem',
             color: 'rgba(255, 255, 255, 0.9)',
-            marginBottom: '20px'
+            marginBottom: '40px'
           }}>
             Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'} | {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </div>
 
-          {/* Three Cards Section */}
+          {/* Three Cards Section - Like Report Header */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
+            gap: '24px',
             width: '100%',
-            maxWidth: '1200px',
-            marginTop: '20px'
+            maxWidth: '1300px',
+            marginTop: '40px'
           }}>
             {/* Current Maturity Card */}
             <div style={{
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '2px solid rgba(255, 255, 255, 0.25)',
               borderRadius: '12px',
-              padding: '20px',
-              minHeight: '160px',
-              maxHeight: '180px',
+              padding: '28px 24px',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              gap: '12px',
+              minHeight: '280px',
+              maxHeight: '320px',
+              overflow: 'hidden'
             }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                background: 'rgba(59, 130, 246, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.3rem',
+                marginBottom: '4px',
+                flexShrink: 0
+              }}>
+                🎯
+              </div>
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.85)',
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                flexShrink: 0
+              }}>
                 CURRENT MATURITY
               </div>
-              <div style={{ fontSize: '2.8rem', fontWeight: 700, color: '#3b82f6', marginBottom: '4px' }}>
-                Level {Math.round(currentMaturity)}
-              </div>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>
-                {resultsData?.maturitySummary?.current?.level || 'Defined'}
+              <div style={{
+                fontSize: '1.6rem',
+                fontWeight: 800,
+                color: 'white',
+                lineHeight: '1.2',
+                flexShrink: 0
+              }}>
+                Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
               </div>
               <div style={{
                 fontSize: '0.8rem',
@@ -3641,7 +3611,7 @@ const AssessmentResultsNew = () => {
   return (
     <PageContainer>
       <ReportContainer>
-        {/* 🖨️ PRINT MODE: Render all slides for printing */}
+        {/* 🖨️ PRINT MODE: Render all slides exactly as they appear in slideshow */}
         {printMode && results && (
           <div style={{ display: 'none' }} className="print-slides-container">
             <style>{`
@@ -3663,13 +3633,54 @@ const AssessmentResultsNew = () => {
                 .report-container {
                   display: none !important;
                 }
+                
+                /* Slide header styling for print */
+                .print-slide-header {
+                  position: absolute;
+                  top: 40px;
+                  left: 80px;
+                  right: 80px;
+                  font-size: 2rem;
+                  font-weight: 700;
+                  color: white;
+                  z-index: 10;
+                }
               }
             `}</style>
-            {Array.from({ length: 20 }).map((_, slideIndex) => (
-              <PrintSlide key={slideIndex}>
-                <SlideRenderer slideIndex={slideIndex} />
-              </PrintSlide>
-            ))}
+            {Array.from({ length: 20 }).map((_, slideIndex) => {
+              // Generate slide header/title
+              const getSlideTitle = (index) => {
+                if (index === 0) return ''; // No title on first slide
+                if (index === 1) return 'Maturity Snapshot by Pillar';
+                
+                const pillarsArray = [
+                  { id: 'platform_governance', name: 'Platform & Governance' },
+                  { id: 'data_engineering', name: 'Data Engineering & Integration' },
+                  { id: 'analytics_bi', name: 'Analytics & BI Modernization' },
+                  { id: 'machine_learning', name: 'Machine Learning & MLOps' },
+                  { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
+                  { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
+                ];
+                
+                if (index >= 2 && index <= 19) {
+                  const pillarIndex = Math.floor((index - 2) / 3);
+                  const pillarName = pillarsArray[pillarIndex]?.name || '';
+                  return pillarName;
+                }
+                return '';
+              };
+
+              return (
+                <PrintSlide key={slideIndex}>
+                  {getSlideTitle(slideIndex) && (
+                    <div className="print-slide-header">{getSlideTitle(slideIndex)}</div>
+                  )}
+                  <div style={{ width: '100%', height: '100%', paddingTop: getSlideTitle(slideIndex) ? '80px' : '0' }}>
+                    {renderPrintSlideContent(slideIndex)}
+                  </div>
+                </PrintSlide>
+              );
+            })}
           </div>
         )}
         

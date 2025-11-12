@@ -38,3 +38,4 @@ ORDER BY role;
 -- author@databricks.com      | author   | Author     | User      | Databricks   | t
 -- consumer@example.com       | consumer | Consumer   | User      | Example Corp | t
 
+
