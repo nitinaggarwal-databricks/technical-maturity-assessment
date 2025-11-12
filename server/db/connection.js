@@ -101,9 +101,63 @@ class DatabaseConnection {
       await this.pool.query(schema);
       console.log('✅ Database schema initialized');
 
+      // Run migrations
+      await this.runMigrations();
+
     } catch (error) {
       console.error('❌ Failed to initialize schema:', error.message);
       throw error;
+    }
+  }
+
+  /**
+   * Run all SQL migration files in the migrations/ directory
+   */
+  async runMigrations() {
+    try {
+      const migrationsDir = path.join(__dirname, 'migrations');
+      
+      // Check if migrations directory exists
+      if (!fs.existsSync(migrationsDir)) {
+        console.log('ℹ️  No migrations directory found, skipping migrations');
+        return;
+      }
+
+      // Get all .sql files in migrations directory
+      const files = fs.readdirSync(migrationsDir)
+        .filter(f => f.endsWith('.sql'))
+        .sort(); // Run in alphabetical order (001, 002, etc.)
+
+      if (files.length === 0) {
+        console.log('ℹ️  No migration files found');
+        return;
+      }
+
+      console.log(`🔄 Running ${files.length} migration(s)...`);
+
+      for (const file of files) {
+        const migrationPath = path.join(migrationsDir, file);
+        const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+        
+        try {
+          await this.pool.query(migrationSQL);
+          console.log(`  ✅ ${file}`);
+        } catch (error) {
+          // If error is "already exists", it's okay - migration was already run
+          if (error.message.includes('already exists') || error.message.includes('duplicate key')) {
+            console.log(`  ⏭️  ${file} (already applied)`);
+          } else {
+            console.error(`  ❌ ${file}: ${error.message}`);
+            // Continue with other migrations even if one fails
+          }
+        }
+      }
+
+      console.log('✅ Migrations completed');
+
+    } catch (error) {
+      console.error('❌ Failed to run migrations:', error.message);
+      // Don't throw - allow app to continue even if migrations fail
     }
   }
 
