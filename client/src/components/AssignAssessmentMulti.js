@@ -341,13 +341,22 @@ const AssignAssessmentMulti = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (selectedUserIds.length === 0) {
-      toast.error('Please select at least one consumer');
+    // Validation for consumers
+    if (!isCreatingNewConsumer && selectedUserIds.length === 0) {
+      toast.error('Please select at least one consumer or create a new one');
       return;
     }
 
+    if (isCreatingNewConsumer) {
+      if (!formData.newConsumerFirstName || !formData.newConsumerLastName || !formData.newConsumerEmail) {
+        toast.error('Please fill in all required consumer fields (First Name, Last Name, Email)');
+        return;
+      }
+    }
+
+    // Validation for assessments
     if (!isCreatingNewAssessment && selectedAssessmentIds.length === 0) {
-      toast.error('Please select at least one assessment');
+      toast.error('Please select at least one assessment or create a new one');
       return;
     }
 
@@ -362,36 +371,65 @@ const AssignAssessmentMulti = () => {
       let successCount = 0;
       let failCount = 0;
 
-      // For each selected user
-      for (const userId of selectedUserIds) {
-        const consumer = consumers.find(c => c.id === userId);
-        
+      // Determine which consumers to process
+      let consumersToProcess = [];
+      
+      if (isCreatingNewConsumer) {
+        // Creating a new consumer - will be created during assignment
+        consumersToProcess = [{
+          email: formData.newConsumerEmail,
+          firstName: formData.newConsumerFirstName,
+          lastName: formData.newConsumerLastName,
+          organization: formData.newConsumerOrganization,
+          isNew: true
+        }];
+      } else {
+        // Using existing consumers
+        consumersToProcess = selectedUserIds.map(userId => ({
+          ...consumers.find(c => c.id === userId),
+          isNew: false
+        }));
+      }
+
+      // For each consumer
+      for (const consumer of consumersToProcess) {
         if (isCreatingNewAssessment) {
-          // Create new assessment for this user
+          // Create new assessment for this consumer
           try {
             await assignmentService.assignAssessment({
               consumerEmail: consumer.email,
               assessmentName: formData.newAssessmentName,
               organizationName: formData.newAssessmentOrganization || consumer.organization,
-              assessmentDescription: formData.newAssessmentDescription
+              assessmentDescription: formData.newAssessmentDescription,
+              message: formData.message
             });
             successCount++;
           } catch (error) {
-            console.error(`Failed to assign new assessment to user ${userId}:`, error);
+            console.error(`Failed to assign new assessment to ${consumer.email}:`, error);
             failCount++;
           }
         } else {
-          // Assign each selected assessment to this user
+          // Assign each selected assessment to this consumer
           for (const assessmentId of selectedAssessmentIds) {
             try {
-              await assignmentService.assignAssessment({
-                consumerId: userId,
-                assessmentId: assessmentId,
-                message: formData.message
-              });
+              if (consumer.isNew) {
+                // For new consumers, use email-based assignment
+                await assignmentService.assignAssessment({
+                  consumerEmail: consumer.email,
+                  assessmentId: assessmentId,
+                  message: formData.message
+                });
+              } else {
+                // For existing consumers, use ID-based assignment
+                await assignmentService.assignAssessment({
+                  consumerId: consumer.id,
+                  assessmentId: assessmentId,
+                  message: formData.message
+                });
+              }
               successCount++;
             } catch (error) {
-              console.error(`Failed to assign assessment ${assessmentId} to user ${userId}:`, error);
+              console.error(`Failed to assign assessment ${assessmentId} to ${consumer.email}:`, error);
               failCount++;
             }
           }
@@ -399,9 +437,6 @@ const AssignAssessmentMulti = () => {
       }
 
       if (successCount > 0) {
-        const totalAssignments = isCreatingNewAssessment 
-          ? selectedUserIds.length 
-          : selectedUserIds.length * selectedAssessmentIds.length;
         toast.success(`Successfully created ${successCount} assignment(s)`);
         navigate('/my-assignments');
       }
@@ -643,16 +678,29 @@ const AssignAssessmentMulti = () => {
 
             <SubmitButton
               type="submit"
-              disabled={submitting || selectedUserIds.length === 0}
+              disabled={
+                submitting || 
+                (!isCreatingNewConsumer && selectedUserIds.length === 0) ||
+                (!isCreatingNewAssessment && selectedAssessmentIds.length === 0)
+              }
               whileHover={{ scale: submitting ? 1 : 1.02 }}
               whileTap={{ scale: submitting ? 1 : 0.98 }}
             >
               <FiSend size={18} />
-              {submitting ? 'Assigning...' : 
-                isCreatingNewAssessment 
-                  ? `Create & Assign to ${selectedUserIds.length} Consumer(s)`
-                  : `Assign ${selectedAssessmentIds.length} Assessment(s) to ${selectedUserIds.length} Consumer(s)`
-              }
+              {submitting ? 'Assigning...' : (() => {
+                const consumerCount = isCreatingNewConsumer ? 1 : selectedUserIds.length;
+                const assessmentCount = isCreatingNewAssessment ? 1 : selectedAssessmentIds.length;
+                
+                if (isCreatingNewAssessment && isCreatingNewConsumer) {
+                  return 'Create Consumer, Assessment & Assign';
+                } else if (isCreatingNewAssessment) {
+                  return `Create Assessment & Assign to ${consumerCount} Consumer(s)`;
+                } else if (isCreatingNewConsumer) {
+                  return `Create Consumer & Assign ${assessmentCount} Assessment(s)`;
+                } else {
+                  return `Assign ${assessmentCount} Assessment(s) to ${consumerCount} Consumer(s)`;
+                }
+              })()}
             </SubmitButton>
           </form>
         </Card>
