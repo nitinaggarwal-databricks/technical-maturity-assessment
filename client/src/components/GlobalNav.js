@@ -844,7 +844,7 @@ const GlobalNav = () => {
                     <FiChevronDown size={14} className="chevron" />
                   </DropdownButton>
                   <DropdownMenu $isOpen={adminDropdownOpen}>
-                    {currentUser.role === 'admin' && (
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
                       <>
                         <DropdownItem onClick={() => {
                           const testUser = { ...currentUser, role: 'author', testMode: true, originalRole: 'admin' };
