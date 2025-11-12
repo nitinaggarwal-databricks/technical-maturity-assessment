@@ -10,12 +10,35 @@ class DatabaseConnection {
   constructor() {
     this.pool = null;
     this.isInitialized = false;
+    this.isInitializing = false;
+    this.schemaInitialized = false;
+    this.initPromise = null;
   }
 
   /**
    * Initialize database connection pool
    */
   async initialize() {
+    if (this.isInitialized) {
+      return;
+    }
+
+    // If already initializing, wait for that to complete
+    if (this.isInitializing && this.initPromise) {
+      return this.initPromise;
+    }
+
+    this.isInitializing = true;
+    this.initPromise = this._doInitialize();
+    
+    try {
+      await this.initPromise;
+    } finally {
+      this.isInitializing = false;
+    }
+  }
+
+  async _doInitialize() {
     if (this.isInitialized) {
       return;
     }
@@ -48,8 +71,11 @@ class DatabaseConnection {
       console.log('✅ PostgreSQL connected successfully');
       console.log(`⏰ Database time: ${result.rows[0].now}`);
 
-      // Run schema initialization
-      await this.initializeSchema();
+      // Run schema initialization (only once)
+      if (!this.schemaInitialized) {
+        await this.initializeSchema();
+        this.schemaInitialized = true;
+      }
 
       this.isInitialized = true;
       return true;
@@ -57,6 +83,8 @@ class DatabaseConnection {
     } catch (error) {
       console.error('❌ Failed to connect to PostgreSQL:', error.message);
       console.error('⚠️  Falling back to file-based storage');
+      // Mark as initialized even when PostgreSQL fails (file-based fallback)
+      this.isInitialized = true;
       return false;
     }
   }
@@ -83,8 +111,8 @@ class DatabaseConnection {
    * Execute a query
    */
   async query(text, params) {
-    if (!this.isInitialized) {
-      throw new Error('Database not initialized. Call initialize() first.');
+    if (!this.isInitialized || !this.pool) {
+      throw new Error('PostgreSQL not available. Using file-based storage.');
     }
 
     const start = Date.now();

@@ -103,12 +103,12 @@ const PillarHeader = styled(motion.div)`
     background: #f3f4f6;
   }
 
-  ${props => props.isActive && `
+  ${props => props.$isActive && `
     background: #eff6ff;
     border-left-color: #3b82f6;
   `}
 
-  ${props => props.isCompleted && `
+  ${props => props.$isCompleted && `
     background: #f0fdf4;
     border-left-color: #10b981;
   `}
@@ -321,7 +321,7 @@ const DialogTitle = styled.h2`
   font-weight: 700;
 `;
 
-const DialogMessage = styled.p`
+const DialogMessage = styled.div`
   margin: 0 0 24px 0;
   color: #6b7280;
   font-size: 16px;
@@ -599,8 +599,8 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           return (
             <PillarItem key={pillar.id}>
               <PillarHeader
-                isActive={isActive}
-                isCompleted={isCompleted}
+                $isActive={isActive}
+                $isCompleted={isCompleted}
                 onClick={() => togglePillar(pillar.id)}
                 whileHover={{ x: 2 }}
                 whileTap={{ scale: 0.98 }}
@@ -738,9 +738,21 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
           disabled={!isSubmitted}
           whileHover={{ scale: isSubmitted ? 1.05 : 1 }}
           whileTap={{ scale: isSubmitted ? 0.95 : 1 }}
+          title={!isSubmitted ? "Complete and submit the assessment to view your report" : "View your maturity assessment report"}
         >
           <FiBarChart2 size={18} />
           <span style={{ flex: 1, textAlign: 'left' }}>View Report</span>
+          {!isSubmitted && (
+            <span style={{ 
+              fontSize: '11px', 
+              padding: '2px 8px', 
+              background: 'rgba(0,0,0,0.1)', 
+              borderRadius: '12px',
+              color: '#9ca3af'
+            }}>
+              Locked
+            </span>
+          )}
         </ActionButton>
       </ActionButtonsContainer>
 

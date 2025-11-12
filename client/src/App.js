@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { createGlobalStyle } from 'styled-components';
 
 // Components
 import GlobalNav from './components/GlobalNav';
@@ -20,14 +21,71 @@ import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
 import AssessmentHistory from './components/AssessmentHistory';
 import DeepDive from './components/DeepDive';
 import IndustryBenchmarkingReport from './components/IndustryBenchmarkingReport';
+import MyAssessments from './components/MyAssessments';
+import UserManagement from './components/UserManagement';
+import AssignAssessmentMulti from './components/AssignAssessmentMulti';
+import AuthorAssignments from './components/AuthorAssignments';
+import UserDetails from './components/UserDetails';
+import AssessmentDetails from './components/AssessmentDetails';
 
 // Services
 import * as assessmentService from './services/assessmentService';
 
+// Global Print Styles - Applied across all components
+const GlobalPrintStyles = createGlobalStyle`
+  @media print {
+    /* Force background graphics to print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    /* Remove browser headers and footers by setting page margins to 0 */
+    @page {
+      margin: 0;
+      size: letter landscape;
+    }
+    
+    /* Add custom margins to content to prevent clipping */
+    body {
+      margin: 0.5in !important;
+    }
+    
+    /* Ensure gradient backgrounds print */
+    [style*="gradient"],
+    [style*="linear-gradient"],
+    [style*="radial-gradient"] {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    /* Ensure colored backgrounds print */
+    [style*="background"],
+    [class*="background"] {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+`;
+
 function App() {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [currentAssessment, setCurrentAssessment] = useState(null);
   const [assessmentFramework, setAssessmentFramework] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Track pathname changes
+  useEffect(() => {
+    const updatePath = () => setCurrentPath(window.location.pathname);
+    window.addEventListener('popstate', updatePath);
+    // Also check on every render for pushState/replaceState
+    const interval = setInterval(updatePath, 100);
+    return () => {
+      window.removeEventListener('popstate', updatePath);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     loadAssessmentFramework();
@@ -64,7 +122,7 @@ function App() {
   // Load current assessment when URL changes
   useEffect(() => {
     const loadCurrentAssessment = async () => {
-      const path = window.location.pathname;
+      const path = currentPath; // ✅ Use tracked pathname state
       const assessmentMatch = path.match(/\/assessment\/([^\/]+)|\/results\/([^\/]+)|\/pillar-results\/([^\/]+)|\/executive-summary\/([^\/]+)|\/dashboard/);
       
       if (assessmentMatch) {
@@ -139,7 +197,7 @@ function App() {
     if (assessmentFramework) {
       loadCurrentAssessment();
     }
-  }, [window.location.pathname, assessmentFramework]);
+  }, [currentPath, assessmentFramework]); // ✅ currentPath is reactive state
 
   const loadAssessmentFramework = async () => {
     try {
@@ -188,19 +246,24 @@ function App() {
 
   if (loading) {
     return (
-      <Router>
-        <div className="App">
-          <GlobalNav />
-          <LoadingSpinner message="Loading assessment framework..." />
-        </div>
-      </Router>
+      <>
+        <GlobalPrintStyles />
+        <Router>
+          <div className="App">
+            <GlobalNav />
+            <LoadingSpinner message="Loading assessment framework..." />
+          </div>
+        </Router>
+      </>
     );
   }
 
   return (
-    <Router>
-      <div className="App">
-        <GlobalNav />
+    <>
+      <GlobalPrintStyles />
+      <Router>
+        <div className="App">
+          <GlobalNav />
         
         <Routes>
           <Route 
@@ -293,6 +356,36 @@ function App() {
           />
           
           <Route 
+            path="/my-assessments" 
+            element={<MyAssessments />}
+          />
+          
+          <Route 
+            path="/user-management" 
+            element={<UserManagement />}
+          />
+          
+          <Route 
+            path="/assign-assessment" 
+            element={<AssignAssessmentMulti />}
+          />
+          
+          <Route 
+            path="/my-assignments" 
+            element={<AuthorAssignments />}
+          />
+          
+          <Route 
+            path="/user-details/:userId" 
+            element={<UserDetails />}
+          />
+          
+          <Route 
+            path="/assessment-details/:assessmentId" 
+            element={<AssessmentDetails />}
+          />
+          
+          <Route 
             path="*" 
             element={<Navigate to="/" replace />} 
           />
@@ -322,6 +415,7 @@ function App() {
         />
       </div>
     </Router>
+    </>
   );
 }
 

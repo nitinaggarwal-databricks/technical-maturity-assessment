@@ -153,3 +153,4 @@ INSERT INTO databricks_features (name, category, short_description, release_date
 ('Model Lineage', 'machine_learning', 'Track data-to-model lineage', '2025-4-15', 'Q2 2024', 'GA', 'https://docs.databricks.com/en/machine-learning/ml-lineage.html', false, true, 2);
 
 
+

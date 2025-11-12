@@ -69,7 +69,7 @@ const AutoSaveStatus = styled.div`
   gap: 8px;
   font-size: 0.9rem;
   color: ${props => {
-    switch (props.status) {
+    switch (props.$status) {
       case 'saving': return '#ff8800';
       case 'saved': return '#00cc44';
       case 'error': return '#ff4444';
@@ -128,7 +128,7 @@ const ProgressBar = styled.div`
 const ProgressFill = styled.div`
   height: 100%;
   background: linear-gradient(90deg, #ff6b35, #f7931e);
-  width: ${props => props.progress}%;
+  width: ${props => props.$progress}%;
   transition: width 0.5s ease;
 `;
 
@@ -568,10 +568,10 @@ const FilterLabel = styled.span`
 const FilterButton = styled.button`
   padding: 8px 16px;
   border-radius: 8px;
-  border: 2px solid ${props => props.active ? '#ff6b35' : '#e5e7eb'};
-  background: ${props => props.active ? '#ff6b35' : 'white'};
-  color: ${props => props.active ? 'white' : '#666'};
-  font-weight: ${props => props.active ? '600' : '500'};
+  border: 2px solid ${props => props.$active ? '#ff6b35' : '#e5e7eb'};
+  background: ${props => props.$active ? '#ff6b35' : 'white'};
+  color: ${props => props.$active ? 'white' : '#666'};
+  font-weight: ${props => props.$active ? '600' : '500'};
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -581,13 +581,13 @@ const FilterButton = styled.button`
 
   &:hover {
     border-color: #ff6b35;
-    ${props => !props.active && 'background: #fff5f2;'}
+    ${props => !props.$active && 'background: #fff5f2;'}
   }
 `;
 
 const FilterBadge = styled.span`
-  background: ${props => props.active ? 'rgba(255,255,255,0.3)' : '#f3f4f6'};
-  color: ${props => props.active ? 'white' : '#666'};
+  background: ${props => props.$active ? 'rgba(255,255,255,0.3)' : '#f3f4f6'};
+  color: ${props => props.$active ? 'white' : '#666'};
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -617,14 +617,14 @@ const MiniMapDot = styled.button`
   height: 28px;
   border-radius: 50%;
   border: 2px solid ${props => 
-    props.isComplete ? '#10b981' : 
-    props.isPartial ? '#fbbf24' : 
-    props.isCurrent ? '#ff6b35' : '#e5e7eb'};
+    props.$isComplete ? '#10b981' : 
+    props.$isPartial ? '#fbbf24' : 
+    props.$isCurrent ? '#ff6b35' : '#e5e7eb'};
   background: ${props => 
-    props.isComplete ? '#10b981' : 
-    props.isPartial ? '#fef3c7' :
-    props.isCurrent ? '#ff6b35' : 'white'};
-  color: ${props => props.isComplete || props.isCurrent ? 'white' : props.isPartial ? '#92400e' : '#9ca3af'};
+    props.$isComplete ? '#10b981' : 
+    props.$isPartial ? '#fef3c7' :
+    props.$isCurrent ? '#ff6b35' : 'white'};
+  color: ${props => props.$isComplete || props.$isCurrent ? 'white' : props.$isPartial ? '#92400e' : '#9ca3af'};
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
@@ -1427,11 +1427,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         // Go to previous pillar
         const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
         navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
-        toast.info(`Navigating back to ${previousPillar.name}...`);
+        toast(`Navigating back to ${previousPillar.name}...`, { icon: 'ℹ️' });
       } else {
         // First question of first pillar - go to assessment list
         navigate('/assessments');
-        toast.info('Returning to assessments list...');
+        toast('Returning to assessments list...', { icon: 'ℹ️' });
       }
     }
   };
@@ -1624,32 +1624,32 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             }}>
               {/* Filter Buttons - Compact */}
               <FilterButton 
-                active={questionFilter === 'all'} 
+                $active={questionFilter === 'all'} 
                 onClick={() => setQuestionFilter('all')}
                 style={{ padding: '4px 8px', fontSize: '0.75rem' }}
               >
                 All
-                <FilterBadge active={questionFilter === 'all'} style={{ fontSize: '0.7rem' }}>
+                <FilterBadge $active={questionFilter === 'all'} style={{ fontSize: '0.7rem' }}>
                   {filterStats.total}
                 </FilterBadge>
               </FilterButton>
               <FilterButton 
-                active={questionFilter === 'completed'} 
+                $active={questionFilter === 'completed'} 
                 onClick={() => setQuestionFilter('completed')}
                 style={{ padding: '4px 8px', fontSize: '0.75rem' }}
               >
                 Done
-                <FilterBadge active={questionFilter === 'completed'} style={{ fontSize: '0.7rem' }}>
+                <FilterBadge $active={questionFilter === 'completed'} style={{ fontSize: '0.7rem' }}>
                   {filterStats.completed}
                 </FilterBadge>
               </FilterButton>
               <FilterButton 
-                active={questionFilter === 'not_started'} 
+                $active={questionFilter === 'not_started'} 
                 onClick={() => setQuestionFilter('not_started')}
                 style={{ padding: '4px 8px', fontSize: '0.75rem' }}
               >
                 Todo
-                <FilterBadge active={questionFilter === 'not_started'} style={{ fontSize: '0.7rem' }}>
+                <FilterBadge $active={questionFilter === 'not_started'} style={{ fontSize: '0.7rem' }}>
                   {filterStats.notStarted}
                 </FilterBadge>
               </FilterButton>
@@ -1669,9 +1669,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 return (
                   <MiniMapDot
                     key={q.id}
-                    isComplete={isComplete}
-                    isPartial={isPartial}
-                    isCurrent={isCurrent}
+                    $isComplete={isComplete}
+                    $isPartial={isPartial}
+                    $isCurrent={isCurrent}
                     onClick={() => handleJumpToQuestion(idx)}
                     title={`Q${idx + 1}: ${q.topic}`}
                     style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}
@@ -1684,7 +1684,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             
             {/* Right: Status indicators */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-              <AutoSaveStatus status={autoSaveStatus}>
+              <AutoSaveStatus $status={autoSaveStatus}>
                 {autoSaveStatus === 'saved' && (
                   <>
                     <FiCheckCircle size={14} className="save-icon" />
@@ -1734,7 +1734,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           
           {/* Progress Bar - Thin */}
           <ProgressBar style={{ marginBottom: '8px', height: '4px' }}>
-            <ProgressFill progress={progress} />
+            <ProgressFill $progress={progress} />
           </ProgressBar>
         </ProgressSection>
 

@@ -16,7 +16,6 @@ const DatabricksFeatureMapper = require('./services/databricksFeatureMapper');
 const ContextAwareRecommendationEngine = require('./services/contextAwareRecommendationEngine');
 const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine_v2');
 const featureDB = require('./services/databricksFeatureDatabase');
-const StorageAdapter = require('./utils/storageAdapter');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 const industryBenchmarkingService = require('./services/industryBenchmarkingService');
 
@@ -27,6 +26,18 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// Import routes
+const authRoutes = require('./routes/auth');
+const assignmentRoutes = require('./routes/assignments');
+const notificationRoutes = require('./routes/notifications');
+
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -65,22 +76,11 @@ try {
   console.error('⚠️  ALL DATA WILL BE LOST ON RESTART!');
 }
 
-// Initialize storage adapter (PostgreSQL with file-based fallback)
-const assessments = new StorageAdapter(dataFilePath);
+// Initialize engines
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
 const liveDataEnhancer = new LiveDataEnhancer();
 const openAIContentGenerator = new OpenAIContentGenerator();
-
-// Initialize storage asynchronously
-let storageReady = false;
-assessments.initialize().then(() => {
-  storageReady = true;
-  console.log(`✅ Storage ready: ${assessments.getStorageType()}`);
-}).catch(error => {
-  console.error('❌ Failed to initialize storage:', error);
-  process.exit(1);
-});
 
 // Routes
 
@@ -88,9 +88,10 @@ assessments.initialize().then(() => {
 app.get('/status', async (req, res) => {
   try {
     const fs = require('fs');
-    const assessmentCount = await assessments.size();
-    const stats = await assessments.getStats();
-    const storageType = assessments.getStorageType();
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessmentCount = await assessmentRepo.count();
+    const stats = await assessmentRepo.getStats();
+    const storageType = 'postgresql';
     const dataFileExists = fs.existsSync(dataFilePath);
     
     res.json({
@@ -349,27 +350,24 @@ app.post('/api/assessment/start', async (req, res) => {
       });
     }
 
+    const assessmentRepo = require('./db/assessmentRepository');
     const assessmentId = uuidv4();
-    const assessment = {
+    
+    await assessmentRepo.create({
       id: assessmentId,
-      organizationName: organizationName || 'Not specified',
-      contactEmail,
-      contactName: contactName || '',
-      contactRole: contactRole || '',
-      industry: industry || 'Not specified',
       assessmentName,
       assessmentDescription: assessmentDescription || '',
-      startedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      organizationName: organizationName || 'Not specified',
+      contactEmail,
+      industry: industry || 'Not specified',
       status: 'in_progress',
-      responses: {},
-      completedCategories: [],
+      progress: 0,
       currentCategory: assessmentFramework.assessmentAreas[0].id,
-      editHistory: []
-    };
-
-    await assessments.set(assessmentId, assessment);
+      completedCategories: [],
+      responses: {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
 
     res.json({
       success: true,
@@ -394,14 +392,18 @@ app.post('/api/assessment/start', async (req, res) => {
 app.get('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
-
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
+      console.log(`❌ [API /assessment/:id] Assessment ${id} not found`);
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
+    
+    console.log(`✅ [API /assessment/:id] Found assessment ${id}`);
 
     // Return the raw assessment data
     res.json(assessment);
@@ -419,7 +421,8 @@ app.get('/api/assessment/:id', async (req, res) => {
 app.get('/api/assessment/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -428,13 +431,8 @@ app.get('/api/assessment/:id/status', async (req, res) => {
       });
     }
 
-        const progress = (assessment.completedCategories.length / assessmentFramework.assessmentAreas.length) * 100;
-
-    // Ensure legacy assessments have default names
-    if (!assessment.assessmentName) {
-      assessment.assessmentName = `Databricks Maturity Assessment ${new Date(assessment.startedAt).toLocaleDateString()}`;
-      await assessments.set(id, assessment);
-    }
+    const completedCats = assessment.completedCategories || [];
+    const progress = (completedCats.length / assessmentFramework.assessmentAreas.length) * 100;
 
     res.json({
       success: true,
@@ -451,7 +449,7 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
-        completedCategories: assessment.completedCategories,
+        completedCategories: completedCats,
         startedAt: assessment.startedAt,
         createdAt: assessment.createdAt || assessment.startedAt,
         updatedAt: assessment.updatedAt || assessment.startedAt,
@@ -471,7 +469,8 @@ app.get('/api/assessment/:id/status', async (req, res) => {
 app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
   try {
     const { id, categoryId } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -490,6 +489,7 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
 
     // Get existing responses for this area
     const areaResponses = {};
+    const assessmentResponses = assessment.responses || {};
     
     // Handle new pillar structure with dimensions
     const questions = [];
@@ -508,18 +508,19 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
       // Get responses for all perspectives of this question
       question.perspectives.forEach(perspective => {
         const responseKey = `${question.id}_${perspective.id}`;
-        if (assessment.responses[responseKey]) {
-          areaResponses[responseKey] = assessment.responses[responseKey];
+        if (assessmentResponses[responseKey]) {
+          areaResponses[responseKey] = assessmentResponses[responseKey];
         }
       });
       
       // Get comment responses
       const commentKey = `${question.id}_comment`;
-      if (assessment.responses[commentKey]) {
-        areaResponses[commentKey] = assessment.responses[commentKey];
+      if (assessmentResponses[commentKey]) {
+        areaResponses[commentKey] = assessmentResponses[commentKey];
       }
     });
 
+    const completedCats = assessment.completedCategories || [];
     res.json({
       success: true,
       data: {
@@ -528,7 +529,7 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
           questions // Flatten questions for frontend compatibility
         },
         existingResponses: areaResponses,
-        isCompleted: assessment.completedCategories.includes(categoryId)
+        isCompleted: completedCats.includes(categoryId)
       }
     });
   } catch (error) {
@@ -546,7 +547,9 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
     const { id, categoryId } = req.params;
     const { responses } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -562,79 +565,48 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
       });
     }
 
-    // Validate responses - check that all perspectives have responses
-    const requiredResponses = [];
-    
-    // Handle new pillar structure with dimensions
-    const questions = [];
-    if (area.dimensions) {
-      area.dimensions.forEach(dimension => {
-        if (dimension.questions) {
-          questions.push(...dimension.questions);
-        }
-      });
-    } else if (area.questions) {
-      // Fallback for old structure
-      questions.push(...area.questions);
-    }
-    
-    questions.forEach(question => {
-      question.perspectives.forEach(perspective => {
-        requiredResponses.push(`${question.id}_${perspective.id}`);
-      });
-    });
-
-    console.log('Received responses:', JSON.stringify(responses, null, 2));
-    console.log('Required responses:', requiredResponses);
-
-    // More lenient validation - just check if we have some responses
+    // Validate responses
     const hasAnyResponses = Object.keys(responses).length > 0;
-    
     if (!hasAnyResponses) {
       return res.status(400).json({
         success: false,
-        message: 'No responses provided',
-        receivedResponses: Object.keys(responses)
+        message: 'No responses provided'
       });
     }
 
-    // Log missing responses for debugging but don't fail
-    const missingResponses = requiredResponses.filter(responseKey => {
-      const response = responses[responseKey];
-      return !response || (Array.isArray(response) && response.length === 0);
-    });
-    
-    if (missingResponses.length > 0) {
-      console.log('Missing responses (but allowing submission):', missingResponses);
-    }
-
-    // Save responses
+    // Save responses and update assessment
+    const currentResponses = assessment.responses || {};
     Object.keys(responses).forEach(questionId => {
-      assessment.responses[questionId] = responses[questionId];
+      currentResponses[questionId] = responses[questionId];
     });
 
     // Mark category as completed
-    if (!assessment.completedCategories.includes(categoryId)) {
-      assessment.completedCategories.push(categoryId);
+    const completedCategories = assessment.completedCategories || [];
+    if (!completedCategories.includes(categoryId)) {
+      completedCategories.push(categoryId);
     }
 
-    // Update current category to next uncompleted one
+    // Calculate progress
+    const progress = Math.round((completedCategories.length / assessmentFramework.assessmentAreas.length) * 100);
+
+    // Determine next category and status
     const nextArea = assessmentFramework.assessmentAreas.find(a => 
-      !assessment.completedCategories.includes(a.id)
+      !completedCategories.includes(a.id)
     );
     
-    if (nextArea) {
-      assessment.currentCategory = nextArea.id;
-    } else {
-      assessment.status = 'completed';
-      assessment.completedAt = new Date().toISOString();
+    const updateData = {
+      responses: currentResponses,
+      completedCategories: completedCategories,
+      progress: progress,
+      currentCategory: nextArea ? nextArea.id : null
+    };
+
+    if (!nextArea) {
+      updateData.status = 'completed';
+      updateData.completedAt = new Date().toISOString();
     }
 
-    // Update assessment metadata for tracking
-    assessment.lastModified = new Date().toISOString();
-    assessment.updatedAt = new Date().toISOString();
-
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -659,7 +631,9 @@ app.post('/api/assessment/:id/bulk-submit', async (req, res) => {
     const { id } = req.params;
     const { responses, completedCategories, status } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -669,27 +643,27 @@ app.post('/api/assessment/:id/bulk-submit', async (req, res) => {
 
     console.log(`[Bulk Submit] Submitting ${Object.keys(responses).length} responses for assessment ${id}`);
 
-    // Save all responses
-    assessment.responses = { ...assessment.responses, ...responses };
+    // Prepare update data
+    const currentResponses = assessment.responses || {};
+    const updateData = {
+      responses: { ...currentResponses, ...responses }
+    };
 
     // Mark all categories as completed
     if (completedCategories && Array.isArray(completedCategories)) {
-      assessment.completedCategories = completedCategories;
+      updateData.completedCategories = completedCategories;
+      updateData.progress = Math.round((completedCategories.length / 6) * 100);
     }
 
     // Update assessment status
     if (status) {
-      assessment.status = status;
+      updateData.status = status;
       if (status === 'completed') {
-        assessment.completedAt = new Date().toISOString();
+        updateData.completedAt = new Date().toISOString();
       }
     }
 
-    // Update assessment metadata
-    assessment.lastModified = new Date().toISOString();
-    assessment.updatedAt = new Date().toISOString();
-
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     console.log(`[Bulk Submit] Successfully saved ${Object.keys(responses).length} responses`);
 
@@ -717,7 +691,9 @@ app.patch('/api/assessment/:id/metadata', async (req, res) => {
     const { id } = req.params;
     const { assessmentName, organizationName, contactEmail, industry, assessmentDescription, editorEmail } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -725,46 +701,43 @@ app.patch('/api/assessment/:id/metadata', async (req, res) => {
       });
     }
 
-    // Initialize edit history if it doesn't exist
-    if (!assessment.editHistory) {
-      assessment.editHistory = [];
-    }
-
-    // Track what changed
+    // Prepare update data
+    const updateData = {};
     const changes = {};
+    
     if (assessmentName && assessmentName !== assessment.assessmentName) {
       changes.assessmentName = { from: assessment.assessmentName, to: assessmentName };
-      assessment.assessmentName = assessmentName;
+      updateData.assessmentName = assessmentName;
     }
     if (organizationName && organizationName !== assessment.organizationName) {
       changes.organizationName = { from: assessment.organizationName, to: organizationName };
-      assessment.organizationName = organizationName;
+      updateData.organizationName = organizationName;
     }
     if (contactEmail && contactEmail !== assessment.contactEmail) {
       changes.contactEmail = { from: assessment.contactEmail, to: contactEmail };
-      assessment.contactEmail = contactEmail;
+      updateData.contactEmail = contactEmail;
     }
     if (industry && industry !== assessment.industry) {
       changes.industry = { from: assessment.industry, to: industry };
-      assessment.industry = industry;
+      updateData.industry = industry;
     }
     if (assessmentDescription !== undefined && assessmentDescription !== assessment.assessmentDescription) {
       changes.assessmentDescription = { from: assessment.assessmentDescription, to: assessmentDescription };
-      assessment.assessmentDescription = assessmentDescription;
+      updateData.assessmentDescription = assessmentDescription;
     }
 
     // Add to edit history
     if (Object.keys(changes).length > 0) {
-      assessment.editHistory.push({
+      const editHistory = assessment.editHistory || [];
+      editHistory.push({
         timestamp: new Date().toISOString(),
         editorEmail: editorEmail || contactEmail || 'Unknown',
         changes: changes
       });
+      updateData.editHistory = editHistory;
     }
 
-    // Update last modified
-    assessment.lastModified = new Date().toISOString();
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -796,7 +769,9 @@ app.put('/api/assessment/:id/edited-executive-summary', async (req, res) => {
     const { id } = req.params;
     const editedContent = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -804,21 +779,18 @@ app.put('/api/assessment/:id/edited-executive-summary', async (req, res) => {
       });
     }
 
-    // Store edited content
-    assessment.editedExecutiveSummary = editedContent;
-    assessment.lastModified = new Date().toISOString();
-    
     // Track edit in history
-    if (!assessment.editHistory) {
-      assessment.editHistory = [];
-    }
-    assessment.editHistory.push({
+    const editHistory = assessment.editHistory || [];
+    editHistory.push({
       timestamp: new Date().toISOString(),
       action: 'Executive Summary Edited',
       editor: req.body.editorEmail || assessment.contactEmail || 'SME'
     });
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, {
+      editedExecutiveSummary: editedContent,
+      editHistory: editHistory
+    });
 
     console.log(`✅ Executive Summary edited for assessment: ${id}`);
 
@@ -846,73 +818,28 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
     const { id } = req.params;
     const { questionId, perspectiveId, value, comment, isSkipped, editorEmail } = req.body;
     
-    const assessment = await assessments.get(id);
-    if (!assessment) {
-      return res.status(404).json({
-        success: false,
-        message: 'Assessment not found'
-      });
-    }
-
-    // Track who made this edit
-    if (editorEmail) {
-      if (!assessment.editors) {
-        assessment.editors = [];
-      }
-      if (!assessment.editors.includes(editorEmail)) {
-        assessment.editors.push(editorEmail);
-      }
-      assessment.lastEditor = editorEmail;
-      assessment.lastEditedAt = new Date().toISOString();
-    }
-
-    // Handle skipped questions
-    if (isSkipped !== undefined) {
-      const skipKey = `${questionId}_skipped`;
-      assessment.responses[skipKey] = isSkipped;
-      
-      // If question is being skipped, clear any existing responses
-      if (isSkipped) {
-        const perspectives = ['current_state', 'future_state', 'technical_pain', 'business_pain'];
-        perspectives.forEach(perspective => {
-          const responseKey = `${questionId}_${perspective}`;
-          delete assessment.responses[responseKey];
-        });
-        const commentKey = `${questionId}_comment`;
-        delete assessment.responses[commentKey];
-      }
-    }
-
-    // Save the response (only if not skipped)
-    if (questionId && perspectiveId && !assessment.responses[`${questionId}_skipped`]) {
-      const responseKey = `${questionId}_${perspectiveId}`;
-      assessment.responses[responseKey] = value;
-    }
-
-    // Save comment if provided (only if not skipped)
-    if (comment !== undefined && !assessment.responses[`${questionId}_skipped`]) {
-      const commentKey = `${questionId}_comment`;
-      assessment.responses[commentKey] = comment;
-    }
-
-    // Update last saved timestamp
-    assessment.lastSaved = new Date().toISOString();
-    
-    // CRITICAL: Clear cached results when responses change
-    delete assessment.results;
-    
-    await assessments.set(id, assessment);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const updatedAssessment = await assessmentRepo.saveProgress(
+      id, 
+      questionId, 
+      perspectiveId, 
+      value, 
+      comment, 
+      isSkipped, 
+      editorEmail
+    );
 
     res.json({
       success: true,
       message: 'Progress saved',
-      lastSaved: assessment.lastSaved
+      lastSaved: updatedAssessment.updatedAt
     });
   } catch (error) {
     console.error('Error saving progress:', error);
-    res.status(500).json({
+    const statusCode = error.message === 'Assessment not found' ? 404 : 500;
+    res.status(statusCode).json({
       success: false,
-      message: 'Error saving progress',
+      message: error.message || 'Error saving progress',
       error: error.message
     });
   }
@@ -922,7 +849,8 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
 app.post('/api/assessment/:id/submit', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -940,11 +868,10 @@ app.post('/api/assessment/:id/submit', async (req, res) => {
     }
 
     // Update status to submitted
-    assessment.status = 'submitted';
-    assessment.submittedAt = new Date().toISOString();
-    assessment.updatedAt = new Date().toISOString();
-
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, {
+      status: 'submitted',
+      completedAt: new Date().toISOString()
+    });
 
     console.log(`✅ Assessment ${id} submitted successfully`);
 
@@ -972,7 +899,8 @@ app.post('/api/assessment/:id/submit', async (req, res) => {
 app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -1071,7 +999,12 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     });
 
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    
+    // Try PostgreSQL first, then fallback to file storage
+    const assessmentRepo = require('./db/assessmentRepository');
+    let assessment = null;
+    
+    assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       console.log(`❌ [RESULTS ENDPOINT] Assessment ${id} not found`);
@@ -1081,7 +1014,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       });
     }
     
-    console.log(`✅ [RESULTS ENDPOINT] Assessment ${id} found, has ${Object.keys(assessment.responses || {}).length} responses`);
+    console.log(`✅ [RESULTS ENDPOINT] Found assessment ${id}, has ${Object.keys(assessment.responses || {}).length} responses`);
 
     // DEBUG: Log what we retrieved
     console.log('🔍 Results endpoint - Retrieved assessment:', id);
@@ -1630,7 +1563,8 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
     });
 
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       console.log(`❌ [BENCHMARK ENDPOINT] Assessment ${id} not found`);
@@ -1779,7 +1713,9 @@ app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
       });
     }
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -1788,14 +1724,14 @@ app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
     }
     
     // Add NPS feedback to assessment
-    assessment.npsFeedback = {
+    const npsFeedback = {
       score: parseInt(score, 10),
       comment: comment || '',
       submittedAt: new Date().toISOString(),
       category: score >= 9 ? 'Promoter' : score >= 7 ? 'Passive' : 'Detractor'
     };
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, { npsFeedback });
     
     console.log(`[NPS Feedback] Saved successfully for ${id}`);
     
@@ -1878,7 +1814,8 @@ function getNPSBreakdown(assessments) {
 // Dashboard statistics endpoint - ALL DYNAMIC DATA
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
-    const allAssessments = await assessments.values();
+    const assessmentRepo = require('./db/assessmentRepository');
+    const allAssessments = await assessmentRepo.findAll();
     console.log(`[Dashboard Stats] Processing ${allAssessments.length} assessments`);
     
     // Sort assessments by date for trend calculations
@@ -2216,10 +2153,13 @@ app.get('/api/dashboard/stats', async (req, res) => {
         'generative_ai': 'Generative AI',
         'operational_excellence': 'Operational Excellence'
       };
+      const current = pillarMaturityCurrent[pillarIds.indexOf(pillarId)] || 0;
+      const target = pillarMaturityTarget[pillarIds.indexOf(pillarId)] || 0;
       pillarBreakdown[pillarId] = {
         name: pillarNames[pillarId],
-        avgCurrent: pillarMaturityCurrent[pillarIds.indexOf(pillarId)],
-        avgTarget: pillarMaturityTarget[pillarIds.indexOf(pillarId)]
+        avgCurrent: current,
+        avgTarget: target,
+        gap: target - current
       };
     });
     
@@ -2357,31 +2297,58 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Get all assessments (for past assessments management)
+// Get all assessments (PostgreSQL only)
 app.get('/api/assessments', async (req, res) => {
   try {
-    const allAssessments = await assessments.values(); // Await the async call
-    const assessmentsList = allAssessments.map(assessment => ({
-      id: assessment.id,
-      organizationName: assessment.organizationName,
-      contactEmail: assessment.contactEmail,
-      contactName: assessment.contactName || '',
-      contactRole: assessment.contactRole || '',
-      industry: assessment.industry,
-      assessmentName: assessment.assessmentName || 'Untitled Assessment',
-      assessmentDescription: assessment.assessmentDescription || '',
-      status: assessment.status,
-      startedAt: assessment.startedAt,
-      createdAt: assessment.createdAt || assessment.startedAt,
-      updatedAt: assessment.updatedAt || assessment.lastModified || assessment.startedAt,
-      completedAt: assessment.completedAt,
-      completedCategories: assessment.completedCategories,
-      totalCategories: assessmentFramework.assessmentAreas.length,
-      progress: Math.round((assessment.completedCategories.length / assessmentFramework.assessmentAreas.length) * 100)
-    }));
+    const assessmentRepo = require('./db/assessmentRepository');
+    const userRepo = require('./db/userRepository');
+    
+    let assessmentsList = [];
+    
+    // Query PostgreSQL assessments with user info
+    const pgAssessments = await assessmentRepo.findAll();
+    
+    for (const assessment of pgAssessments) {
+      let creatorName = 'Unknown';
+      const userId = assessment.user_id || assessment.userId;
+      if (userId) {
+        try {
+          const user = await userRepo.findById(userId);
+          if (user) {
+            creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+          }
+        } catch (err) {
+          console.warn('Could not fetch user:', err.message);
+        }
+      }
+      
+      assessmentsList.push({
+        id: assessment.id,
+        organization_name: assessment.organizationName || '',
+        contact_email: assessment.contactEmail || '',
+        contact_name: '',
+        contact_role: '',
+        industry: assessment.industry || '',
+        assessment_name: assessment.assessmentName || 'Untitled Assessment',
+        assessment_description: assessment.assessmentDescription || '',
+        status: assessment.status || 'in_progress',
+        started_at: assessment.startedAt,
+        created_at: assessment.createdAt,
+        updated_at: assessment.updatedAt,
+        completed_at: assessment.completedAt,
+        completedCategories: assessment.completedCategories || [],
+        completed_categories: assessment.completedCategories || [],
+        total_categories: assessmentFramework.assessmentAreas.length,
+        progress: assessment.progress || 0,
+        creator_name: creatorName,
+        user_id: userId
+      });
+    }
+    
+    console.log(`✅ Fetched ${assessmentsList.length} assessments from PostgreSQL`);
 
     // Sort by most recent first
-    assessmentsList.sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
+    assessmentsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json({
       success: true,
@@ -2397,13 +2364,60 @@ app.get('/api/assessments', async (req, res) => {
   }
 });
 
+// Get single assessment by ID
+app.get('/api/assessments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    const completedCats = assessment.completedCategories || [];
+    const progress = Math.round((completedCats.length / assessmentFramework.assessmentAreas.length) * 100);
+
+    res.json({
+      success: true,
+      assessment: {
+        id: assessment.id,
+        assessment_name: assessment.assessmentName || 'Untitled Assessment',
+        assessment_description: assessment.assessmentDescription || '',
+        organization_name: assessment.organizationName,
+        contact_email: assessment.contactEmail,
+        industry: assessment.industry,
+        status: assessment.status,
+        progress: progress,
+        started_at: assessment.startedAt,
+        created_at: assessment.createdAt || assessment.startedAt,
+        completed_at: assessment.completedAt,
+        responses: assessment.responses,
+        completed_categories: completedCats
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving assessment',
+      error: error.message
+    });
+  }
+});
+
 // Clone an existing assessment
 app.post('/api/assessment/:id/clone', async (req, res) => {
   try {
     const { id } = req.params;
     const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
     
-    const originalAssessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const originalAssessment = await assessmentRepo.findById(id);
+    
     if (!originalAssessment) {
       return res.status(404).json({
         success: false,
@@ -2420,23 +2434,24 @@ app.post('/api/assessment/:id/clone', async (req, res) => {
 
     // Create new assessment with cloned data
     const newAssessmentId = uuidv4();
-    const clonedAssessment = {
+    const completedCats = originalAssessment.completedCategories || [];
+    const progress = Math.round((completedCats.length / 6) * 100);
+    
+    await assessmentRepo.create({
       id: newAssessmentId,
+      assessmentName,
+      assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || originalAssessment.organizationName,
       contactEmail: contactEmail || originalAssessment.contactEmail,
       industry: industry || originalAssessment.industry,
-      assessmentName,
-      assessmentDescription: assessmentDescription || '',
-      startedAt: new Date().toISOString(),
       status: 'in_progress',
-      responses: { ...originalAssessment.responses }, // Clone responses
-      completedCategories: [...originalAssessment.completedCategories], // Clone completed categories
+      progress: progress,
       currentCategory: originalAssessment.currentCategory,
-      clonedFrom: id,
-      clonedAt: new Date().toISOString()
-    };
-
-    await assessments.set(newAssessmentId, clonedAssessment);
+      completedCategories: completedCats,
+      responses: originalAssessment.responses || {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
 
     res.json({
       success: true,
@@ -2466,8 +2481,8 @@ app.delete('/api/assessments/all', async (req, res) => {
   try {
     console.log('🗑️  Deleting all assessments...');
     
-    // Get all assessments as array
-    const allAssessments = await assessments.values();
+    const assessmentRepo = require('./db/assessmentRepository');
+    const allAssessments = await assessmentRepo.findAll();
     const assessmentIds = allAssessments.map(a => a.id);
     
     console.log(`Found ${assessmentIds.length} assessments to delete`);
@@ -2476,7 +2491,7 @@ app.delete('/api/assessments/all', async (req, res) => {
     let deletedCount = 0;
     for (const id of assessmentIds) {
       try {
-        await assessments.delete(id);
+        await assessmentRepo.delete(id);
         deletedCount++;
       } catch (error) {
         console.error(`Failed to delete assessment ${id}:`, error);
@@ -2505,14 +2520,17 @@ app.delete('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    if (!await assessments.has(id)) {
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
 
-    assessments.delete(id);
+    await assessmentRepo.delete(id);
 
     res.json({
       success: true,
@@ -2540,7 +2558,8 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
     });
 
     const { id, pillarId } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -2720,7 +2739,8 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
 app.post('/api/assessment/:id/debug/complete', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -2729,9 +2749,12 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
       });
     }
 
+    const updateData = {};
+    const currentResponses = assessment.responses || {};
+    
     // Add some sample responses if none exist
-    if (Object.keys(assessment.responses).length === 0) {
-      assessment.responses = {
+    if (Object.keys(currentResponses).length === 0) {
+      updateData.responses = {
         'env_standardization_current_state': 3,
         'env_standardization_future_state': 4,
         'scaling_effectiveness_current_state': 2,
@@ -2740,11 +2763,12 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
     }
 
     // Mark all categories as completed
-    assessment.completedCategories = assessmentFramework.assessmentAreas.map(a => a.id);
-    assessment.status = 'completed';
-    assessment.completedAt = new Date().toISOString();
+    updateData.completedCategories = assessmentFramework.assessmentAreas.map(a => a.id);
+    updateData.status = 'completed';
+    updateData.progress = 100;
+    updateData.completedAt = new Date().toISOString();
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -2775,30 +2799,33 @@ app.post('/api/assessment', async (req, res) => {
       });
     }
     
-    const newAssessment = {
-      id: `assessment_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+    const assessmentRepo = require('./db/assessmentRepository');
+    const newId = `assessment_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    
+    await assessmentRepo.create({
+      id: newId,
       assessmentName,
+      assessmentDescription: '',
       organizationName,
-      industry: industry || '',
       contactEmail: contactEmail || '',
+      industry: industry || '',
       status: 'in_progress',
-      startedAt: new Date().toISOString(),
-      lastModified: new Date().toISOString(),
-      responses: {},
+      progress: 0,
+      currentCategory: null,
       completedCategories: [],
-      editHistory: []
-    };
+      responses: {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
     
-    await assessments.set(newAssessment.id, newAssessment);
-    
-    console.log(`✅ New assessment created: ${newAssessment.id} (${newAssessment.assessmentName})`);
+    console.log(`✅ New assessment created: ${newId} (${assessmentName})`);
     
     res.json({
       success: true,
       message: 'Assessment created successfully',
-      id: newAssessment.id,
-      assessmentName: newAssessment.assessmentName,
-      organizationName: newAssessment.organizationName
+      id: newId,
+      assessmentName: assessmentName,
+      organizationName: organizationName
     });
   } catch (error) {
     console.error('❌ Error creating assessment:', error);
@@ -2823,10 +2850,25 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       specificPillars
     });
     
-    // Save to storage (use set method, not save)
-    await assessments.set(sampleAssessment.id, sampleAssessment);
+    // Save to PostgreSQL
+    const assessmentRepo = require('./db/assessmentRepository');
+    await assessmentRepo.create({
+      id: sampleAssessment.id,
+      assessmentName: sampleAssessment.assessmentName,
+      assessmentDescription: sampleAssessment.assessmentDescription || '',
+      organizationName: sampleAssessment.organizationName,
+      contactEmail: sampleAssessment.contactEmail,
+      industry: sampleAssessment.industry,
+      status: sampleAssessment.status,
+      progress: sampleAssessment.progress || Math.round((sampleAssessment.completedCategories.length / 6) * 100),
+      currentCategory: sampleAssessment.currentCategory || null,
+      completedCategories: sampleAssessment.completedCategories,
+      responses: sampleAssessment.responses,
+      editHistory: sampleAssessment.editHistory || [],
+      startedAt: sampleAssessment.startedAt || new Date().toISOString()
+    });
     
-    console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
+    console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
     console.log(`   Completed pillars: ${sampleAssessment.completedCategories.length}/6`);
     console.log(`   Total responses: ${Object.keys(sampleAssessment.responses).length}`);
     
@@ -2867,7 +2909,9 @@ app.get('/api/assessment/:id/audit-trail', async (req, res) => {
     const { id } = req.params;
     const { limit = 100, offset = 0 } = req.query;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -3050,7 +3094,9 @@ app.post('/api/assessment/:id/audit-event', async (req, res) => {
     const { id } = req.params;
     const { eventType, userEmail, userName, changes, metadata } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -3058,13 +3104,9 @@ app.post('/api/assessment/:id/audit-event', async (req, res) => {
       });
     }
     
-    // Initialize edit history if needed
-    if (!assessment.editHistory) {
-      assessment.editHistory = [];
-    }
-    
     // Add event to edit history
-    assessment.editHistory.push({
+    const editHistory = assessment.editHistory || [];
+    editHistory.push({
       timestamp: new Date().toISOString(),
       eventType,
       editorEmail: userEmail,
@@ -3074,7 +3116,7 @@ app.post('/api/assessment/:id/audit-event', async (req, res) => {
     });
     
     // Save assessment
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, { editHistory });
     
     res.json({
       success: true,
@@ -3117,23 +3159,32 @@ if (process.env.NODE_ENV === 'production') {
 
 // Start server (only if not in serverless environment)
 if (process.env.VERCEL !== '1') {
-  app.listen(PORT, async () => {
-    console.log(`🚀 Databricks Maturity Assessment API running on port ${PORT}`);
-    console.log(`📊 Assessment framework loaded with ${assessmentFramework.assessmentAreas.length} areas`);
+  // Initialize database connection BEFORE starting the server
+  const db = require('./db/connection');
+  
+  (async () => {
+    await db.initialize();
     
-    // Get assessment count asynchronously
-    try {
-      const count = await assessments.size();
-      console.log(`💾 ${count} assessment(s) loaded from persistent storage`);
-    } catch (error) {
-      console.log(`💾 Assessment storage initialized (count unavailable)`);
-    }
-    
-    console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
-  });
+    app.listen(PORT, async () => {
+      console.log(`🚀 Databricks Maturity Assessment API running on port ${PORT}`);
+      console.log(`📊 Assessment framework loaded with ${assessmentFramework.assessmentAreas.length} areas`);
+      
+      // Get assessment count asynchronously
+      try {
+        const assessmentRepo = require('./db/assessmentRepository');
+        const count = await assessmentRepo.count();
+        console.log(`💾 ${count} assessment(s) in PostgreSQL database`);
+      } catch (error) {
+        console.log(`💾 Assessment storage initialized (count unavailable)`);
+      }
+      
+      console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
+    });
+  })();
 }
 
 module.exports = app;
+
 
 
 

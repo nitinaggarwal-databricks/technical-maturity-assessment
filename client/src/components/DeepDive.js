@@ -124,12 +124,25 @@ const ContentWrapper = styled.div`
   @media (max-width: 768px) {
     padding: 40px 16px;
   }
+
+  @media print {
+    display: none !important;
+  }
 `;
 
 const PageHeader = styled.div`
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 60px;
   position: relative;
+  gap: 24px;
+  
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
 `;
 
 // Slideshow/Presentation Mode Styles
@@ -179,22 +192,22 @@ const SlideshowOverlay = styled(motion.div)`
 `;
 
 const SlideContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 100%;
-  }
 `;
 
 const SlideContent = styled(motion.div)`
   width: 100%;
   height: 100%;
-  background: white;
+  background: transparent;
   padding: 80px 60px 120px 60px;
   overflow-y: auto;
   display: flex;
@@ -303,6 +316,95 @@ const ExitButton = styled(motion.button)`
   }
 `;
 
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
+  z-index: 1;
+  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
+const NavigationButton = styled(motion.button)`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${props => props.$direction === 'left' ? 'left: 32px;' : 'right: 32px;'}
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-50%) scale(1);
+    }
+  }
+`;
+
+const PrintSlide = styled.div`
+  @media print {
+    page-break-after: always;
+    page-break-inside: avoid;
+    width: 11in;
+    height: 8.5in;
+    max-height: 8.5in;
+    min-height: 8.5in;
+    position: relative;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    background-attachment: local;
+    display: block;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
+  @media screen {
+    display: none;
+  }
+`;
+
+const SlideHeading = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  pointer-events: none;
+  z-index: 10001;
+`;
+
 // Slideshow Content Styles
 const SlideGrid = styled.div`
   display: grid;
@@ -333,10 +435,10 @@ const SlideSection = styled.div`
 
 const CompactCard = styled.div`
   background: white;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  border-left: 4px solid ${props => props.$color || '#8b5cf6'};
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 0;
+  border-left: 3px solid ${props => props.$color || '#8b5cf6'};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   
   h4 {
@@ -356,14 +458,12 @@ const CompactCard = styled.div`
 
 
 const ExpandCollapseControls = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
+  flex-shrink: 0;
   
   @media (max-width: 768px) {
-    position: static;
     justify-content: center;
     margin-top: 24px;
   }
@@ -402,26 +502,33 @@ const ToggleAllButton = styled.button`
 `;
 
 const PageTitle = styled.h1`
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 `;
 
 const PageSubtitle = styled.p`
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: #475569;
-  max-width: 800px;
-  margin: 0 auto;
-  line-height: 1.6;
+  margin: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
+  @media (max-width: 1200px) {
+    white-space: normal;
+    font-size: 0.95rem;
+  }
+  
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -606,16 +713,9 @@ const Card = styled(motion.div)`
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  ${props => props.$height ? `
-    height: ${props.$height}; 
-    overflow: auto;
-    resize: both;
-  ` : `
-    height: auto;
-    overflow: visible;
-    resize: none;
-  `}
-  ${props => props.$width ? `width: ${props.$width};` : 'width: 100%;'}
+  height: auto;
+  overflow: visible;
+  width: 100%;
   min-width: 280px;
   min-height: 180px;
   cursor: default;
@@ -678,7 +778,7 @@ const CardHeader = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -729,8 +829,8 @@ const IconButton = styled.button`
 
 const CardContent = styled.div`
   color: #475569;
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 0.875rem;
+  line-height: 1.6;
   margin-bottom: 20px;
   flex: 1;
   display: flex;
@@ -768,47 +868,14 @@ const CategoryCard = styled(motion.div)`
   padding: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  overflow: auto;
+  overflow: visible;
   border: 2px solid transparent;
-  resize: both;
   min-width: 300px;
-  min-height: 200px;
   position: relative;
 
   &:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     border-color: ${props => props.$color || '#e5e7eb'};
-  }
-
-  /* Resize handle indicator */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 40%,
-      ${props => props.$color || '#94a3b8'} 45%,
-      transparent 50%,
-      transparent 55%,
-      ${props => props.$color || '#94a3b8'} 60%,
-      transparent 65%,
-      transparent 70%,
-      ${props => props.$color || '#94a3b8'} 75%,
-      transparent 80%
-    );
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-  }
-
-  &:hover::after {
-    opacity: 0.8;
   }
 `;
 
@@ -934,48 +1001,15 @@ const MaturityCard = styled.div`
   padding: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 40px;
-  overflow: auto;
+  overflow: visible;
   border: 2px solid transparent;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  resize: both;
   min-width: 300px;
-  min-height: 250px;
   position: relative;
 
   &:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     border-color: ${props => props.$borderColor || '#e5e7eb'};
-  }
-
-  /* Resize handle indicator */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 40%,
-      ${props => props.$borderColor || '#94a3b8'} 45%,
-      transparent 50%,
-      transparent 55%,
-      ${props => props.$borderColor || '#94a3b8'} 60%,
-      transparent 65%,
-      transparent 70%,
-      ${props => props.$borderColor || '#94a3b8'} 75%,
-      transparent 80%
-    );
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-  }
-
-  &:hover::after {
-    opacity: 0.8;
   }
 `;
 
@@ -1115,48 +1149,15 @@ const SuccessPlanCard = styled.div`
   border-radius: 16px;
   padding: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: auto;
+  overflow: visible;
   margin-bottom: 20px;
   border-left: 4px solid ${props => props.color || '#e5e7eb'};
   transition: box-shadow 0.3s ease;
-  resize: both;
   min-width: 300px;
-  min-height: 200px;
   position: relative;
 
   &:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
-
-  /* Resize handle indicator */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 40%,
-      ${props => props.color || '#94a3b8'} 45%,
-      transparent 50%,
-      transparent 55%,
-      ${props => props.color || '#94a3b8'} 60%,
-      transparent 65%,
-      transparent 70%,
-      ${props => props.color || '#94a3b8'} 75%,
-      transparent 80%
-    );
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-  }
-
-  &:hover::after {
-    opacity: 0.8;
   }
 `;
 
@@ -1303,48 +1304,15 @@ const AnalysisCard = styled.div`
   padding: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 40px;
-  overflow: auto;
+  overflow: visible;
   border: 2px solid transparent;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  resize: both;
   min-width: 300px;
-  min-height: 200px;
   position: relative;
 
   &:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     border-color: ${props => props.$borderColor || '#e5e7eb'};
-  }
-
-  /* Resize handle indicator */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 40%,
-      ${props => props.$borderColor || '#94a3b8'} 45%,
-      transparent 50%,
-      transparent 55%,
-      ${props => props.$borderColor || '#94a3b8'} 60%,
-      transparent 65%,
-      transparent 70%,
-      ${props => props.$borderColor || '#94a3b8'} 75%,
-      transparent 80%
-    );
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-  }
-
-  &:hover::after {
-    opacity: 0.8;
   }
 `;
 
@@ -1444,47 +1412,14 @@ const ScenarioCard = styled.div`
   padding: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 40px;
-  overflow: auto;
+  overflow: visible;
   border-left: 6px solid ${props => props.$color || '#e5e7eb'};
   transition: box-shadow 0.3s ease;
-  resize: both;
   min-width: 300px;
-  min-height: 200px;
   position: relative;
 
   &:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
-
-  /* Resize handle indicator */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 40%,
-      ${props => props.$color || '#94a3b8'} 45%,
-      transparent 50%,
-      transparent 55%,
-      ${props => props.$color || '#94a3b8'} 60%,
-      transparent 65%,
-      transparent 70%,
-      ${props => props.$color || '#94a3b8'} 75%,
-      transparent 80%
-    );
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-  }
-
-  &:hover::after {
-    opacity: 0.8;
   }
 `;
 
@@ -1786,62 +1721,12 @@ const Button = styled.button`
 // RESIZABLE CARD WRAPPER
 // =======================
 
+// Simplified card wrapper - no more resize tracking
 const ResizableCard = ({ objective, onResize, children, ...props }) => {
-  const cardRef = useRef(null);
-  const resizeTimeoutRef = useRef(null);
-  const initialSizeRef = useRef(null);
-
-  useEffect(() => {
-    const cardElement = cardRef.current;
-    if (!cardElement) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const { width, height } = entry.contentRect;
-        
-        // Store initial size on first observation
-        if (!initialSizeRef.current) {
-          initialSizeRef.current = { width, height };
-          return; // Don't save initial size
-        }
-        
-        // Only save if size has changed from initial
-        const hasChanged = 
-          Math.abs(width - initialSizeRef.current.width) > 5 || 
-          Math.abs(height - initialSizeRef.current.height) > 5;
-        
-        if (!hasChanged) return;
-        
-        // Debounce the resize callback to avoid too many updates
-        if (resizeTimeoutRef.current) {
-          clearTimeout(resizeTimeoutRef.current);
-        }
-        
-        resizeTimeoutRef.current = setTimeout(() => {
-          onResize(objective.id, width, height);
-          // Update initial size reference after user resize
-          initialSizeRef.current = { width, height };
-        }, 150);
-      }
-    });
-
-    resizeObserver.observe(cardElement);
-
-    return () => {
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-      resizeObserver.disconnect();
-    };
-  }, [objective.id, onResize]);
-
   return (
     <Card
-      ref={cardRef}
       className="objective-card"
       $borderColor={objective.borderColor}
-      $width={objective.width}
-      $height={objective.height}
       {...props}
     >
       {children}
@@ -1870,6 +1755,7 @@ const DeepDive = () => {
   // Presentation Mode State
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [printMode, setPrintMode] = useState(false);
   
   // Auto-start slideshow if URL parameter is present
   useEffect(() => {
@@ -1973,6 +1859,9 @@ const DeepDive = () => {
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
+    } else {
+      // Exit slideshow when trying to go past the last slide
+      exitPresentation();
     }
   };
 
@@ -1980,6 +1869,54 @@ const DeepDive = () => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
     }
+  };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        exitPresentation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'auto';
+    };
+  }, [presentationMode, currentSlide]);
+
+  // Print handler
+  const handlePrint = () => {
+    // Show brief toast
+    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    
+    // Set print mode to render all slides
+    setPrintMode(true);
+    
+    // Dismiss the toast and open print dialog
+    setTimeout(() => {
+      toast.dismiss(toastId);
+      toast.dismiss();
+      setTimeout(() => {
+        window.print();
+        // Exit print mode after printing
+        setTimeout(() => {
+          setPrintMode(false);
+        }, 500);
+      }, 500);
+    }, 1000);
   };
 
   // Click navigation handler
@@ -2132,9 +2069,7 @@ const DeepDive = () => {
 
 The Technical Maturity Model enables Databricks to provide customers with a structured framework to benchmark their platform readiness and operational excellence across the Lakehouse.`,
       icon: '🏗️',
-      borderColor: '#f97316',
-      width: null,
-      height: null
+      borderColor: '#f97316'
     },
     {
       id: 'obj-2',
@@ -2143,9 +2078,7 @@ The Technical Maturity Model enables Databricks to provide customers with a stru
 
 The Technical Maturity Model enables us to elevate discussions beyond workloads and clusters — helping customers align technology, processes, and people for long-term scalability and reliability.`,
       icon: '🎯',
-      borderColor: '#3b82f6',
-      width: null,
-      height: null
+      borderColor: '#3b82f6'
     },
     {
       id: 'obj-3',
@@ -2154,20 +2087,9 @@ The Technical Maturity Model enables us to elevate discussions beyond workloads 
 
 Position Databricks as a trusted advisor with deep technical expertise — helping customers accelerate their journey toward platform maturity through best practices, Value Acceleration, Partner Solutions, and Technical Account engagements.`,
       icon: '🤝',
-      borderColor: '#8b5cf6',
-      width: null,
-      height: null
+      borderColor: '#8b5cf6'
     }
   ]);
-
-  // Handle card resize
-  const handleCardResize = useCallback((objectiveId, width, height) => {
-    setObjectives(prev => prev.map(obj => 
-      obj.id === objectiveId 
-        ? { ...obj, width: `${width}px`, height: `${height}px` }
-        : obj
-    ));
-  }, []);
 
   // Category structure data
   const [categories, setCategories] = useState([
@@ -3531,8 +3453,612 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
   };
 
 
+  // Helper function to render slide content for print
+  const renderSlideContentForPrint = (slide) => {
+    // Strategic Objectives
+    if (slide.id === 'objectives') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', height: '100%' }}>
+          {objectives.map((obj) => (
+            <div key={obj.id} style={{ 
+              background: 'white',
+              borderRadius: '10px',
+              border: `2px solid ${obj.borderColor}`,
+              padding: '18px 20px',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
+            }}>
+              <div style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '12px',
+                paddingBottom: '10px',
+                borderBottom: `2px solid ${obj.borderColor}`
+              }}>
+                <span style={{ fontSize: '1.8rem', marginRight: '14px' }}>{obj.icon}</span>
+                <h3 style={{ 
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  margin: 0
+                }}>
+                  {obj.title}
+                </h3>
+              </div>
+              <div style={{ 
+                fontSize: '1.05rem',
+                lineHeight: '1.5',
+                color: '#475569'
+              }}>
+                {obj.content || 'No content available'}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    // Categories Part 1
+    if (slide.id === 'categories-1') {
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          {categories.slice(0, 3).map((cat) => (
+            <div key={cat.id} style={{ 
+              background: 'white', 
+              borderRadius: '12px', 
+              padding: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+            }}>
+              <div style={{ 
+                background: cat.bgColor, 
+                color: 'white', 
+                padding: '16px', 
+                borderRadius: '12px 12px 0 0',
+                marginBottom: '12px',
+                marginTop: '-16px',
+                marginLeft: '-16px',
+                marginRight: '-16px'
+              }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  {cat.label}
+                </div>
+                <h4 style={{ color: 'white', marginBottom: '8px', fontSize: '1.1rem', fontWeight: 700 }}>{cat.title}</h4>
+                <p style={{ fontSize: '0.9rem', opacity: 1, lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+              </div>
+              <div>
+                {cat.subCategories && cat.subCategories.map((subCat, idx) => (
+                  <div key={idx} style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '10px', 
+                    padding: '8px 0',
+                    borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
+                  }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: cat.bgColor,
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: '1rem',
+                      flexShrink: 0
+                    }}>
+                      {subCat.letter}
+                    </div>
+                    <div style={{ 
+                      fontSize: '1rem', 
+                      color: '#1e293b',
+                      fontWeight: 600,
+                      flex: 1,
+                      lineHeight: '1.3'
+                    }}>
+                      {subCat.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    // Categories Part 2
+    if (slide.id === 'categories-2') {
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          {categories.slice(3, 6).map((cat) => (
+            <div key={cat.id} style={{ 
+              background: 'white', 
+              borderRadius: '12px', 
+              padding: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+            }}>
+              <div style={{ 
+                background: cat.bgColor, 
+                color: 'white', 
+                padding: '16px', 
+                borderRadius: '12px 12px 0 0',
+                marginBottom: '12px',
+                marginTop: '-16px',
+                marginLeft: '-16px',
+                marginRight: '-16px'
+              }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  {cat.label}
+                </div>
+                <h4 style={{ color: 'white', marginBottom: '8px', fontSize: '1.1rem', fontWeight: 700 }}>{cat.title}</h4>
+                <p style={{ fontSize: '0.9rem', opacity: 1, lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+              </div>
+              <div>
+                {cat.subCategories && cat.subCategories.map((subCat, idx) => (
+                  <div key={idx} style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '10px', 
+                    padding: '8px 0',
+                    borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
+                  }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: cat.bgColor,
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: '1rem',
+                      flexShrink: 0
+                    }}>
+                      {subCat.letter}
+                    </div>
+                    <div style={{ 
+                      fontSize: '1rem', 
+                      color: '#1e293b',
+                      fontWeight: 600,
+                      flex: 1,
+                      lineHeight: '1.3'
+                    }}>
+                      {subCat.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    // Technical Success Plan Part 1
+    if (slide.id === 'success-plan-1') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {technicalSuccessPlan.slice(0, 3).map((item) => (
+            <div key={item.id} style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              padding: '0',
+              borderLeft: `4px solid ${item.color}`,
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                background: item.color,
+                color: 'white',
+                padding: '16px 20px',
+                fontSize: '1.1rem',
+                fontWeight: 700
+              }}>
+                {item.category}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '20px', padding: '20px' }}>
+                <div>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: '10px' }}>
+                    NEEDS
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.5', margin: 0 }}>{item.need}</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: '10px' }}>
+                    ACTIVITIES
+                  </h4>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    {item.activities.map((activity, idx) => (
+                      <li key={idx} style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.5', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                        <span style={{ color: item.color, fontWeight: 700, fontSize: '1.1rem' }}>•</span>
+                        <span>{activity}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: '10px' }}>
+                    OUTCOME
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.5', margin: 0 }}>{item.outcome}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Technical Success Plan Part 2
+    if (slide.id === 'success-plan-2') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {technicalSuccessPlan.slice(3, 6).map((item) => (
+            <div key={item.id} style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              padding: '0',
+              border: `3px solid ${item.color}`,
+              borderRadius: '10px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                background: item.color,
+                color: 'white',
+                padding: 'clamp(8px, 1.2vh, 16px) clamp(12px, 1.5vw, 20px)',
+                fontSize: 'clamp(1rem, 1.3vw, 1.5rem)',
+                fontWeight: 700
+              }}>
+                {item.category}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: 'clamp(12px, 1.5vw, 20px)', padding: 'clamp(12px, 1.5vw, 20px)' }}>
+                <div>
+                  <h4 style={{ fontSize: 'clamp(0.7rem, 0.8vw, 1rem)', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: 'clamp(6px, 0.8vh, 10px)' }}>
+                    NEEDS
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: 'clamp(0.75rem, 0.85vw, 1rem)', lineHeight: '1.5', margin: 0 }}>{item.need}</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 'clamp(0.7rem, 0.8vw, 1rem)', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: 'clamp(6px, 0.8vh, 10px)' }}>
+                    ACTIVITIES
+                  </h4>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    {item.activities.map((activity, idx) => (
+                      <li key={idx} style={{ color: '#475569', fontSize: 'clamp(0.75rem, 0.85vw, 1rem)', lineHeight: '1.5', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                        <span style={{ color: item.color, fontWeight: 700, fontSize: 'clamp(0.9rem, 1vw, 1.2rem)' }}>•</span>
+                        <span>{activity}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 'clamp(0.7rem, 0.8vw, 1rem)', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: 'clamp(6px, 0.8vh, 10px)' }}>
+                    OUTCOME
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: 'clamp(0.75rem, 0.85vw, 1rem)', lineHeight: '1.5', margin: 0 }}>{item.outcome}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Engagement Plan
+    if (slide.id === 'engagement-plan') {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+            <div style={{ padding: '16px', fontWeight: 700, fontSize: '0.9rem', color: '#1e293b', textAlign: 'center' }}>TIMELINE</div>
+            <div style={{ padding: '16px', fontWeight: 700, fontSize: '0.9rem', color: '#1e293b', borderLeft: '1px solid #e5e7eb' }}>ENGAGEMENT</div>
+            <div style={{ padding: '16px', fontWeight: 700, fontSize: '0.9rem', color: '#1e293b', borderLeft: '1px solid #e5e7eb' }}>FOCUS AREA</div>
+          </div>
+          {engagementPlan.map((item, idx) => (
+            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', borderBottom: idx < engagementPlan.length - 1 ? '1px solid #e5e7eb' : 'none', transition: 'all 0.2s' }}>
+              <div style={{ padding: '16px', background: '#fef3c7', fontWeight: 700, fontSize: '0.9rem', color: '#92400e', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.time}</div>
+              <div style={{ padding: '16px', fontSize: '0.9rem', color: '#1e293b', lineHeight: '1.5', borderLeft: '1px solid #e5e7eb', display: 'flex', alignItems: 'center' }}>{item.engagement}</div>
+              <div style={{ padding: '16px', fontSize: '0.9rem', color: '#64748b', lineHeight: '1.5', borderLeft: '1px solid #e5e7eb', display: 'flex', alignItems: 'center' }}>{item.focusArea}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Analysis & Actions Part 1
+    if (slide.id === 'analysis-1') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {analysisActions.slice(0, 3).map((item) => (
+            <div key={item.id} style={{ marginBottom: '0' }}>
+              <div style={{
+                background: item.bgColor,
+                color: 'white',
+                padding: '8px 14px',
+                fontWeight: 700,
+                fontSize: '1.2rem',
+                borderRadius: '8px 8px 0 0',
+                border: `2px solid ${item.color}`,
+                borderBottom: 'none'
+              }}>
+                {item.title}
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: '4px',
+                padding: '8px',
+                background: 'white',
+                border: `2px solid ${item.color}`,
+                borderTop: 'none',
+                borderRadius: '0 0 8px 8px'
+              }}>
+                {item.levels && item.levels.map((level, idx) => (
+                  <div key={idx} style={{
+                    background: '#f8fafc',
+                    borderRadius: '6px',
+                    padding: '6px',
+                    border: `1px solid ${item.color}30`
+                  }}>
+                    <div style={{
+                      fontWeight: 700,
+                      color: item.color,
+                      marginBottom: '3px',
+                      fontSize: '1rem'
+                    }}>
+                      {level.stage}
+                    </div>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#475569',
+                      lineHeight: '1.35',
+                      marginBottom: '3px'
+                    }}>
+                      {level.description}
+                    </div>
+                    <div style={{
+                      fontSize: '0.72rem',
+                      color: '#64748b',
+                      lineHeight: '1.3'
+                    }}>
+                      <strong>Helpful Tools:</strong> {level.tools}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Analysis & Actions Part 2
+    if (slide.id === 'analysis-2') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {analysisActions.slice(3, 6).map((item) => (
+            <div key={item.id} style={{ marginBottom: '0' }}>
+              <div style={{
+                background: item.bgColor,
+                color: 'white',
+                padding: '8px 14px',
+                fontWeight: 700,
+                fontSize: '1.2rem',
+                borderRadius: '8px 8px 0 0',
+                border: `2px solid ${item.color}`,
+                borderBottom: 'none'
+              }}>
+                {item.title}
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: '4px',
+                padding: '8px',
+                background: 'white',
+                border: `2px solid ${item.color}`,
+                borderTop: 'none',
+                borderRadius: '0 0 8px 8px'
+              }}>
+                {item.levels && item.levels.map((level, idx) => (
+                  <div key={idx} style={{
+                    background: '#f8fafc',
+                    borderRadius: '6px',
+                    padding: '6px',
+                    border: `1px solid ${item.color}30`
+                  }}>
+                    <div style={{
+                      fontWeight: 700,
+                      color: item.color,
+                      marginBottom: '3px',
+                      fontSize: '1rem'
+                    }}>
+                      {level.stage}
+                    </div>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#475569',
+                      lineHeight: '1.35',
+                      marginBottom: '3px'
+                    }}>
+                      {level.description}
+                    </div>
+                    <div style={{
+                      fontSize: '0.72rem',
+                      color: '#64748b',
+                      lineHeight: '1.3'
+                    }}>
+                      <strong>Helpful Tools:</strong> {level.tools}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Customer Engagement Scenarios
+    if (slide.id === 'scenarios') {
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {engagementScenarios.slice(0, 4).map((scenario) => (
+            <div key={scenario.id} style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '0', overflow: 'hidden', borderLeft: `4px solid ${scenario.color}` }}>
+              <div style={{ background: scenario.bgColor, color: 'white', padding: '16px', fontWeight: 700, fontSize: '1rem' }}>{scenario.title}</div>
+              <div style={{ padding: '16px' }}>
+                <div style={{ fontSize: '0.85rem', color: '#475569', lineHeight: '1.5', marginBottom: '12px' }}>{scenario.scenario}</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginBottom: '8px' }}>KEY ACTIONS</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {scenario.approach.slice(0, 3).map((action, idx) => (
+                    <li key={idx} style={{ fontSize: '0.8rem', color: '#475569', lineHeight: '1.4', padding: '4px 0', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                      <span style={{ color: scenario.color, fontWeight: 700, fontSize: '1rem' }}>•</span>
+                      <span>{action}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Maturity matrices slides (6 pillars)
+    if (slide.id.startsWith('matrices-')) {
+      const matrixIndex = parseInt(slide.id.split('-')[1]) - 1;
+      const matrix = maturityMatrices[matrixIndex];
+      
+      if (!matrix) return <div>No data</div>;
+
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '20px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: matrix.color, marginBottom: '20px', margin: '0 0 20px 0' }}>{matrix.title}</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', tableLayout: 'fixed' }}>
+            <thead>
+              <tr style={{ background: '#f9fafb' }}>
+                <th style={{ padding: '8px', textAlign: 'left', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', width: '18%', wordWrap: 'break-word' }}>Dimension</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', fontSize: '0.7rem', wordWrap: 'break-word' }}>1. Explore</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', fontSize: '0.7rem', wordWrap: 'break-word' }}>2. Experiment</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', fontSize: '0.7rem', wordWrap: 'break-word' }}>3. Formalize</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', fontSize: '0.7rem', wordWrap: 'break-word' }}>4. Optimize</th>
+                <th style={{ padding: '8px', textAlign: 'center', fontWeight: 700, color: '#1e293b', border: '1px solid #e5e7eb', fontSize: '0.7rem', wordWrap: 'break-word' }}>5. Transform</th>
+              </tr>
+            </thead>
+            <tbody>
+              {matrix.dimensions.map((dim, idx) => (
+                <tr key={idx}>
+                  <td style={{ padding: '8px', fontWeight: 600, color: matrix.color, border: '1px solid #e5e7eb', background: '#f9fafb', wordWrap: 'break-word', fontSize: '0.75rem' }}>{dim.name}</td>
+                  {dim.levels.map((level, levelIdx) => (
+                    <td key={levelIdx} style={{ padding: '8px', color: '#475569', lineHeight: '1.3', border: '1px solid #e5e7eb', verticalAlign: 'top', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      {level}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    // Fallback for any undefined slides
+    return (
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1.5rem',
+        color: 'rgba(255, 255, 255, 0.9)',
+        textAlign: 'center',
+        padding: '40px',
+        fontWeight: 600
+      }}>
+        {slide.title}
+      </div>
+    );
+  };
+
   return (
     <PageContainer>
+      {/* 🖨️ PRINT MODE: Render all slides for printing */}
+      {printMode && (
+        <div style={{ display: 'none' }} className="print-slides-container">
+          <style>{`
+            @media print {
+              @page {
+                margin: 0;
+                size: letter landscape;
+              }
+              * {
+                box-sizing: border-box;
+              }
+              body {
+                margin: 0 !important;
+                padding: 0 !important;
+              }
+              body * {
+                visibility: hidden;
+              }
+              .print-slides-container,
+              .print-slides-container * {
+                visibility: visible !important;
+              }
+              .print-slides-container {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                z-index: 99999;
+                margin: 0;
+                padding: 0;
+              }
+              footer {
+                display: none !important;
+              }
+            }
+          `}</style>
+          {slides.map((slide, slideIndex) => (
+            <PrintSlide key={slideIndex}>
+              <div style={{
+                width: '100%',
+                height: '8.5in',
+                maxHeight: '8.5in',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                padding: '25px 35px',
+                color: 'white',
+                boxSizing: 'border-box',
+                overflow: 'hidden'
+              }}>
+                {/* Slide Header */}
+                <div style={{
+                  fontSize: '1.8rem',
+                  fontWeight: 700,
+                  marginBottom: '16px',
+                  color: 'white',
+                  flexShrink: 0
+                }}>
+                  {slide.title}
+                </div>
+
+                {/* Slide Content */}
+                <div style={{
+                  width: '100%',
+                  maxWidth: '100%',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'hidden'
+                }}>
+                  {renderSlideContentForPrint(slide)}
+                </div>
+              </div>
+            </PrintSlide>
+          ))}
+        </div>
+      )}
+      
       <ContentWrapper>
         <PageHeader>
           <ExpandCollapseControls>
@@ -3553,10 +4079,37 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               );
             })()}
           </ExpandCollapseControls>
-          <PageTitle>The Objective of a Technical Maturity Assessment</PageTitle>
-          <PageSubtitle>
-            Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
-          </PageSubtitle>
+          
+          <div style={{ flex: 1 }}>
+            <PageTitle>The Objective of a Technical Maturity Assessment</PageTitle>
+            <PageSubtitle>
+              Understand the strategic goals and comprehensive framework behind Databricks maturity assessments
+            </PageSubtitle>
+          </div>
+          
+          <motion.button
+            onClick={handlePrint}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{ 
+              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
+              color: 'white', 
+              border: 'none', 
+              padding: '14px 28px', 
+              borderRadius: '8px', 
+              fontWeight: 600, 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+              marginLeft: 'auto'
+            }}
+          >
+            <FiMonitor size={18} />
+            <span>Print / Save PDF</span>
+          </motion.button>
         </PageHeader>
 
         {/* Objectives Section */}
@@ -3594,7 +4147,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               <ResizableCard
                 key={objective.id}
                 objective={objective}
-                onResize={handleCardResize}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -4647,68 +5199,91 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={handleSlideClick}
-            style={{ cursor: 'pointer' }}
           >
             <SlideContainer>
+              <ClickArea $direction="left" onClick={previousSlide} />
+              <ClickArea $direction="right" onClick={nextSlide} />
+              
+              {/* Navigation Buttons - Show on hover */}
+              <NavigationButton
+                $direction="left"
+                onClick={previousSlide}
+                disabled={currentSlide === 0}
+                whileTap={{ scale: 0.9 }}
+              >
+                ←
+              </NavigationButton>
+              
+              <NavigationButton
+                $direction="right"
+                onClick={nextSlide}
+                whileTap={{ scale: 0.9 }}
+              >
+                →
+              </NavigationButton>
+              
+              <SlideHeading>{slides[currentSlide].title}</SlideHeading>
+              <SlideCounter style={{ position: 'absolute', bottom: '20px', right: '60px', color: 'white' }}>
+                {currentSlide + 1} / {slides.length}
+              </SlideCounter>
+              
+              <ExitButton
+                onClick={exitPresentation}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                ×
+              </ExitButton>
+              
               <SlideContent
                 key={currentSlide}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
+                style={{ overflow: 'auto' }}
               >
-                {/* Slide Heading - Top Left */}
-                <div style={{ 
-                  position: 'absolute',
-                  top: '10px',
-                  left: '30px',
-                  fontSize: '1.8rem',
-                  fontWeight: 700,
-                  color: '#1e293b',
-                  pointerEvents: 'none',
-                  zIndex: 10
-                }}>
-                  {slides[currentSlide].title}
-                </div>
 
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%', alignContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '20px', paddingBottom: '10px', height: '100%', alignContent: 'space-between' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', justifyContent: 'space-evenly' }}>
                       {objectives.map((obj) => (
                         <div key={obj.id} style={{ 
                           background: 'white',
                           borderRadius: '12px',
                           border: `3px solid ${obj.borderColor}`,
-                          padding: '28px',
+                          padding: '20px',
                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                           flex: 1,
                           display: 'flex',
-                          flexDirection: 'column'
+                          flexDirection: 'column',
+                          minHeight: 0
                         }}>
                           <div style={{ 
                             display: 'flex',
                             alignItems: 'center',
-                            marginBottom: '20px',
+                            marginBottom: '14px',
                             paddingBottom: '10px',
                             borderBottom: `2px solid ${obj.borderColor}`
                           }}>
-                            <span style={{ fontSize: '2.8rem', marginRight: '16px' }}>{obj.icon}</span>
+                            <span style={{ fontSize: '2.2rem', marginRight: '12px' }}>{obj.icon}</span>
                             <h3 style={{ 
-                              fontSize: '1.8rem',
+                              fontSize: '1.35rem',
                               fontWeight: 700,
                               color: '#1e293b',
-                              margin: 0
+                              margin: 0,
+                              lineHeight: 1.3
                             }}>
                               {obj.title}
                             </h3>
                           </div>
                           <div style={{ 
-                            fontSize: '1.45rem',
-                            lineHeight: '1.7',
+                            fontSize: '1.1rem',
+                            lineHeight: '1.55',
                             color: '#475569',
-                            flex: 1
+                            flex: 1,
+                            overflow: 'auto'
                           }}>
                             {obj.content || 'No content available'}
                           </div>
@@ -4720,55 +5295,55 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 2: Category Structure - Part 1 (First 3 Categories) */}
                 {slides[currentSlide].id === 'categories-1' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '45px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '20px', gap: '14px' }}>
                     {categories.slice(0, 3).map((cat) => (
                       <CompactCard key={cat.id} $color={cat.color}>
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '20px', 
-                          borderRadius: '12px 12px 0 0',
-                          marginBottom: '16px',
-                          marginTop: '-16px',
-                          marginLeft: '-16px',
-                          marginRight: '-16px'
+                          padding: '16px', 
+                          borderRadius: '10px 10px 0 0',
+                          marginBottom: '12px',
+                          marginTop: '-12px',
+                          marginLeft: '-12px',
+                          marginRight: '-12px'
                         }}>
-                          <div style={{ fontSize: '1.2rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.65rem', fontWeight: 700 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '1.3rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '10px', fontSize: '1.2rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '0.95rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '14px', 
-                              padding: '10px 0',
+                              gap: '10px', 
+                              padding: '8px 0',
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '8px',
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '7px',
                                 background: cat.bgColor,
                                 color: 'white',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.4rem',
+                                fontSize: '1.05rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1.65rem', 
+                                fontSize: '1rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
-                                lineHeight: '1.4'
+                                lineHeight: '1.35'
                               }}>
                                 {subCat.name}
                               </div>
@@ -4782,55 +5357,55 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Category Structure - Part 2 (Last 3 Categories) */}
                 {slides[currentSlide].id === 'categories-2' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '45px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '20px', gap: '14px' }}>
                     {categories.slice(3, 6).map((cat) => (
                       <CompactCard key={cat.id} $color={cat.color}>
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '20px', 
-                          borderRadius: '12px 12px 0 0',
-                          marginBottom: '16px',
-                          marginTop: '-16px',
-                          marginLeft: '-16px',
-                          marginRight: '-16px'
+                          padding: '16px', 
+                          borderRadius: '10px 10px 0 0',
+                          marginBottom: '12px',
+                          marginTop: '-12px',
+                          marginLeft: '-12px',
+                          marginRight: '-12px'
                         }}>
-                          <div style={{ fontSize: '1.2rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.65rem', fontWeight: 700 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '1.3rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '10px', fontSize: '1.2rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '0.95rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
                         <div>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '14px', 
-                              padding: '10px 0',
+                              gap: '10px', 
+                              padding: '8px 0',
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '8px',
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '7px',
                                 background: cat.bgColor,
                                 color: 'white',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.4rem',
+                                fontSize: '1.05rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1.65rem', 
+                                fontSize: '1rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
-                                lineHeight: '1.4'
+                                lineHeight: '1.35'
                               }}>
                                 {subCat.name}
                               </div>
@@ -4844,44 +5419,42 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Technical Success Plan - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '6px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <div key={plan.id} style={{ 
-                          border: `4px solid ${plan.color}`,
-                          borderRadius: '14px',
+                          border: `3px solid ${plan.color}`,
+                          borderRadius: '10px',
                           overflow: 'hidden',
                           background: 'white',
-                          flex: 1,
                           display: 'flex',
                           flexDirection: 'column'
                         }}>
                           <div style={{ 
                             background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
                             color: 'white',
-                            padding: '22px 28px',
+                            padding: 'clamp(10px, 1.2vh, 14px) clamp(14px, 1.6vw, 20px)',
                             fontWeight: 700,
-                            fontSize: '1.5rem'
+                            fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)'
                           }}>
                             {plan.category}
                           </div>
                           <div style={{ 
                             display: 'grid',
                             gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '0',
-                            flex: 1
+                            gap: '0'
                           }}>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(12px, 1.6vh, 18px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1vh, 12px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4889,23 +5462,23 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.need || 'No need defined'}
                               </div>
                             </div>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(12px, 1.6vh, 18px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1vh, 12px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4913,26 +5486,26 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <ul style={{ 
                                 margin: 0,
-                                paddingLeft: '26px',
+                                paddingLeft: 'clamp(16px, 1.8vw, 22px)',
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
-                                  <li key={idx} style={{ marginBottom: '8px' }}>{activity}</li>
+                                  <li key={idx} style={{ marginBottom: 'clamp(4px, 0.6vh, 6px)' }}>{activity}</li>
                                 ))}
                               </ul>
                             </div>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(12px, 1.6vh, 18px)',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1vh, 12px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -4940,8 +5513,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
                               </div>
@@ -4955,44 +5528,42 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 4: Technical Success Plan - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', height: '100%', justifyContent: 'space-evenly' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '15px', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {technicalSuccessPlan.slice(3, 6).map((plan) => (
                         <div key={plan.id} style={{ 
                           border: `4px solid ${plan.color}`,
                           borderRadius: '14px',
-                          overflow: 'hidden',
+                          overflow: 'visible',
                           background: 'white',
-                          flex: 1,
                           display: 'flex',
                           flexDirection: 'column'
                         }}>
                           <div style={{ 
                             background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
                             color: 'white',
-                            padding: '22px 28px',
+                            padding: 'clamp(10px, 1.5vh, 18px) clamp(16px, 2vw, 24px)',
                             fontWeight: 700,
-                            fontSize: '1.5rem'
+                            fontSize: 'clamp(1.2rem, 1.8vw, 2rem)'
                           }}>
                             {plan.category}
                           </div>
                           <div style={{ 
                             display: 'grid',
                             gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '0',
-                            flex: 1
+                            gap: '0'
                           }}>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(14px, 2vh, 26px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5000,23 +5571,23 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.need || 'No need defined'}
                               </div>
                             </div>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(14px, 2vh, 26px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5024,26 +5595,26 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <ul style={{ 
                                 margin: 0,
-                                paddingLeft: '26px',
+                                paddingLeft: 'clamp(18px, 2vw, 26px)',
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
-                                  <li key={idx} style={{ marginBottom: '8px' }}>{activity}</li>
+                                  <li key={idx} style={{ marginBottom: 'clamp(5px, 0.7vh, 9px)' }}>{activity}</li>
                                 ))}
                               </ul>
                             </div>
                             <div style={{ 
-                              padding: '26px',
+                              padding: 'clamp(14px, 2vh, 26px)',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: '1.05rem',
+                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: '16px',
+                                marginBottom: 'clamp(8px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5051,8 +5622,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: '1rem',
-                                lineHeight: '1.7'
+                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
+                                lineHeight: '1.5'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
                               </div>
@@ -5112,17 +5683,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 7: Analysis & Actions - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '8px', paddingBottom: '4px', gap: '6px' }}>
                     {analysisActions.slice(0, 3).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '6px' }}>
+                      <div key={analysis.id} style={{ marginBottom: '0' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: '10px 18px',
+                          padding: 'clamp(8px, 1vh, 12px) clamp(12px, 1.4vw, 18px)',
                           fontWeight: 700,
-                          fontSize: '1.65rem',
-                          borderRadius: '12px 12px 0 0',
-                          border: `3px solid ${analysis.color}`,
+                          fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)',
+                          borderRadius: '8px 8px 0 0',
+                          border: `2px solid ${analysis.color}`,
                           borderBottom: 'none'
                         }}>
                           {analysis.title}
@@ -5130,39 +5701,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '6px',
-                          padding: '8px',
+                          gap: 'clamp(4px, 0.6vw, 8px)',
+                          padding: 'clamp(8px, 1vh, 12px)',
                           background: 'white',
-                          border: `3px solid ${analysis.color}`,
+                          border: `2px solid ${analysis.color}`,
                           borderTop: 'none',
-                          borderRadius: '0 0 12px 12px'
+                          borderRadius: '0 0 8px 8px'
                         }}>
                           {analysis.levels && analysis.levels.map((level, idx) => (
                             <div key={idx} style={{
                               background: '#f8fafc',
-                              borderRadius: '8px',
-                              padding: '8px',
-                              border: `2px solid ${analysis.color}20`
+                              borderRadius: '6px',
+                              padding: 'clamp(6px, 0.9vh, 10px)',
+                              border: `1px solid ${analysis.color}30`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: '4px',
-                                fontSize: '1.375rem'
+                                marginBottom: 'clamp(3px, 0.5vh, 6px)',
+                                fontSize: 'clamp(0.95rem, 1.2vw, 1.4rem)'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: '0.95rem',
+                                fontSize: 'clamp(0.75rem, 0.9vw, 1rem)',
                                 color: '#475569',
-                                lineHeight: '1.5',
-                                marginBottom: '4px'
+                                lineHeight: '1.35',
+                                marginBottom: 'clamp(3px, 0.5vh, 6px)'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: '0.825rem',
-                                color: '#64748b'
+                                fontSize: 'clamp(0.7rem, 0.85vw, 0.95rem)',
+                                color: '#64748b',
+                                lineHeight: '1.3'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
                               </div>
@@ -5176,17 +5748,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 8: Analysis & Actions - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '8px', paddingBottom: '4px', gap: '6px' }}>
                     {analysisActions.slice(3, 6).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '12px' }}>
+                      <div key={analysis.id} style={{ marginBottom: '0' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: '14px 22px',
+                          padding: 'clamp(8px, 1vh, 12px) clamp(12px, 1.4vw, 18px)',
                           fontWeight: 700,
-                          fontSize: '1.65rem',
-                          borderRadius: '12px 12px 0 0',
-                          border: `3px solid ${analysis.color}`,
+                          fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)',
+                          borderRadius: '8px 8px 0 0',
+                          border: `2px solid ${analysis.color}`,
                           borderBottom: 'none'
                         }}>
                           {analysis.title}
@@ -5194,39 +5766,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '8px',
-                          padding: '12px',
+                          gap: 'clamp(4px, 0.6vw, 8px)',
+                          padding: 'clamp(8px, 1vh, 12px)',
                           background: 'white',
-                          border: `3px solid ${analysis.color}`,
+                          border: `2px solid ${analysis.color}`,
                           borderTop: 'none',
-                          borderRadius: '0 0 12px 12px'
+                          borderRadius: '0 0 8px 8px'
                         }}>
                           {analysis.levels && analysis.levels.map((level, idx) => (
                             <div key={idx} style={{
                               background: '#f8fafc',
-                              borderRadius: '8px',
-                              padding: '10px',
-                              border: `2px solid ${analysis.color}20`
+                              borderRadius: '6px',
+                              padding: 'clamp(6px, 0.9vh, 10px)',
+                              border: `1px solid ${analysis.color}30`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: '6px',
-                                fontSize: '1.375rem'
+                                marginBottom: 'clamp(3px, 0.5vh, 6px)',
+                                fontSize: 'clamp(0.95rem, 1.2vw, 1.4rem)'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: '0.95rem',
+                                fontSize: 'clamp(0.75rem, 0.9vw, 1rem)',
                                 color: '#475569',
-                                lineHeight: '1.5',
-                                marginBottom: '6px'
+                                lineHeight: '1.35',
+                                marginBottom: 'clamp(3px, 0.5vh, 6px)'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: '0.825rem',
-                                color: '#64748b'
+                                fontSize: 'clamp(0.7rem, 0.85vw, 0.95rem)',
+                                color: '#64748b',
+                                lineHeight: '1.3'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
                               </div>
@@ -5241,7 +5814,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 {/* Slide 9: Customer Scenarios - ALL 5 in Compact Grid (3 + 2 centered) */}
                 {slides[currentSlide].id === 'scenarios' && (
                   <div style={{ 
-                    paddingTop: '45px',
+                    paddingTop: '15px',
                     paddingBottom: '10px',
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(6, 1fr)',
@@ -5251,7 +5824,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                     width: '100%'
                   }}>
                     {engagementScenarios.map((scenario, idx) => {
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       
                       // First row: 3 cards (each spans 2 columns)
                       // Second row: 2 cards centered (each spans 2 columns, with 1 column offset)
@@ -5341,40 +5914,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Matrix Slides - One per Pillar */}
                 {slides[currentSlide].id === 'matrices-1' && maturityMatrices[0] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[0];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5383,11 +5956,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5403,40 +5976,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-2' && maturityMatrices[1] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[1];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5445,11 +6018,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5465,40 +6038,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-3' && maturityMatrices[2] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[2];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5507,11 +6080,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5527,40 +6100,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-4' && maturityMatrices[3] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[3];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5569,11 +6142,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5589,40 +6162,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-5' && maturityMatrices[4] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[4];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5631,11 +6204,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5651,40 +6224,40 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-6' && maturityMatrices[5] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '45px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[5];
-                      const maturityLevels = ['Explore', 'Experiment', 'Formalize', 'Optimize', 'Transform'];
+                      const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
                       return (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <div style={{
                             background: matrix.bgColor,
                             color: 'white',
-                            padding: '16px 24px',
+                            padding: '16px 20px',
                             fontWeight: 700,
-                            fontSize: '1.8rem',
-                            borderRadius: '12px 12px 0 0',
-                            border: `4px solid ${matrix.color}`,
+                            fontSize: '1.75rem',
+                            borderRadius: '10px 10px 0 0',
+                            border: `3px solid ${matrix.color}`,
                             borderBottom: 'none'
                           }}>
                             {matrix.title}
                           </div>
                           <div style={{
                             background: 'white',
-                            border: `4px solid ${matrix.color}`,
+                            border: `3px solid ${matrix.color}`,
                             borderTop: 'none',
-                            borderRadius: '0 0 12px 12px',
-                            overflow: 'hidden',
+                            borderRadius: '0 0 10px 10px',
+                            overflow: 'auto',
                             flex: 1
                           }}>
-                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                  <th style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '18%', fontSize: '1.45rem' }}>
+                                  <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
                                     Dimension
                                   </th>
                                   {maturityLevels.map((level, idx) => (
-                                    <th key={idx} style={{ padding: '16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', fontSize: '1.45rem' }}>
+                                    <th key={idx} style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b' }}>
                                       {level}
                                     </th>
                                   ))}
@@ -5693,11 +6266,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               <tbody>
                                 {matrix.dimensions && matrix.dimensions.map((dim, dimIdx) => (
                                   <tr key={dimIdx}>
-                                    <td style={{ padding: '16px', border: '2px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top', fontSize: '1.3rem' }}>
+                                    <td style={{ padding: '10px 12px', border: '1px solid #e2e8f0', fontWeight: 600, color: '#475569', verticalAlign: 'top' }}>
                                       {dim.name}
                                     </td>
                                     {dim.levels && dim.levels.map((levelDesc, levelIdx) => (
-                                      <td key={levelIdx} style={{ padding: '16px', border: '2px solid #e2e8f0', color: '#64748b', lineHeight: '1.6', verticalAlign: 'top', fontSize: '1.2rem' }}>
+                                      <td key={levelIdx} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', color: '#64748b', lineHeight: '1.5', verticalAlign: 'top' }}>
                                         {levelDesc}
                                       </td>
                                     ))}
@@ -5713,34 +6286,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
               </SlideContent>
             </SlideContainer>
-
-            {/* Slide Counter - Bottom Right */}
-            <SlideCounter style={{ 
-              position: 'absolute', 
-              bottom: '20px', 
-              right: '30px',
-              fontSize: '1.2rem',
-              color: '#64748b',
-              background: 'rgba(255, 255, 255, 0.9)',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              pointerEvents: 'none'
-            }}>
-              {currentSlide + 1} / {slides.length}
-            </SlideCounter>
-
-            {/* Exit Button - Shows on hover on last slide */}
-            {currentSlide === slides.length - 1 && (
-              <ExitButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  exitPresentation();
-                }}
-                whileTap={{ scale: 0.9 }}
-              >
-                ×
-              </ExitButton>
-            )}
           </SlideshowOverlay>
         )}
       </AnimatePresence>

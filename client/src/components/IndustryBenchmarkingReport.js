@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import Footer from './Footer';
 import {
   FiAward,
@@ -788,6 +789,155 @@ const CancelButton = styled.button`
   }
 `;
 
+// 🎬 Slideshow Styled Components
+const SlideContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SlideContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 45px 60px 20px 60px;
+`;
+
+const SlideHeading = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  font-size: 1.8rem;
+  fontWeight: 700;
+  color: white;
+  pointer-events: none;
+`;
+
+const SlideCounter = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 60px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  pointer-events: none;
+`;
+
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
+  z-index: 1;
+  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
+const NavigationButton = styled(motion.button)`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${props => props.$direction === 'left' ? 'left: 32px;' : 'right: 32px;'}
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-50%) scale(1);
+    }
+  }
+`;
+
+const PrintSlide = styled.div`
+  @media print {
+    page-break-after: always;
+    page-break-inside: avoid;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+  
+  @media screen {
+    display: none;
+  }
+`;
+
+const ExitButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+`;
+
 const IndustryBenchmarkingReport = () => {
   const { assessmentId } = useParams();
   const navigate = useNavigate();
@@ -802,6 +952,11 @@ const IndustryBenchmarkingReport = () => {
   const [modalType, setModalType] = useState(''); // 'section', 'metric', 'pillar', 'insight', etc.
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
+
+  // 🎬 Presentation Mode State
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [printMode, setPrintMode] = useState(false);
 
   useEffect(() => {
     // Fetch assessment results
@@ -861,9 +1016,74 @@ const IndustryBenchmarkingReport = () => {
   };
 
   const handleDownloadReport = () => {
-    // Trigger browser print dialog (user can save as PDF)
-    window.print();
+    // Show brief toast
+    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    
+    // Set print mode to render all slides
+    setPrintMode(true);
+    
+    // Dismiss the toast and open print dialog
+    setTimeout(() => {
+      toast.dismiss(toastId);
+      toast.dismiss();
+      setTimeout(() => {
+        window.print();
+        // Exit print mode after printing
+        setTimeout(() => {
+          setPrintMode(false);
+        }, 500);
+      }, 500);
+    }, 1000);
   };
+
+  // 🎬 Slideshow Navigation Functions
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    setCurrentSlide(0);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextSlide = () => {
+    const totalSlides = 5; // Update this based on actual slide count
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(currentSlide + 1);
+    } else {
+      // Exit slideshow when trying to go past the last slide
+      exitPresentation();
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        exitPresentation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'auto';
+    };
+  }, [presentationMode, currentSlide]);
 
   // 🎨 CRUD Handlers
   const handleEdit = (type, item) => {
@@ -970,24 +1190,117 @@ const IndustryBenchmarkingReport = () => {
   return (
     <>
       <GlobalPrintStyles />
+      
+      {/* 🖨️ PRINT MODE: Render all slides for printing */}
+      {printMode && benchmarkData && (
+        <div style={{ display: 'none' }} className="print-slides-container">
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-slides-container,
+              .print-slides-container * {
+                visibility: visible !important;
+              }
+              .print-slides-container {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+              }
+            }
+          `}</style>
+          {/* Industry Benchmarking Report Slides */}
+          {[0, 1, 2, 3, 4].map((slideIndex) => (
+            <PrintSlide key={slideIndex}>
+              <div style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                padding: '50px 60px 40px 60px',
+                color: 'white'
+              }}>
+                {/* Slide Header */}
+                <div style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '25px', color: 'white' }}>
+                  {slideIndex === 0 ? 'Industry Benchmarking Report' :
+                   slideIndex === 1 ? 'Executive Summary' :
+                   slideIndex === 2 ? 'Competitive Analysis' :
+                   slideIndex === 3 ? 'Pillar Comparison' :
+                   'Strategic Recommendations'}
+                </div>
+                
+                {/* Slide Content */}
+                <div style={{ flex: 1, overflow: 'hidden', width: '100%', maxWidth: '100%' }}>
+                  {slideIndex === 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', textAlign: 'center' }}>
+                      <div style={{ fontSize: '4rem', fontWeight: 700, color: 'white', marginBottom: '24px' }}>
+                        Industry Benchmarking Report
+                      </div>
+                      <div style={{ fontSize: '1.5rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+                        Competitive Analysis & Market Positioning
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+                      <div style={{ fontSize: '1.1rem', color: '#475569', textAlign: 'center' }}>
+                        {slideIndex === 1 ? 'Benchmark Summary and Key Insights' :
+                         slideIndex === 2 ? 'How you compare to industry peers' :
+                         slideIndex === 3 ? 'Pillar-by-pillar performance comparison' :
+                         'Recommended actions based on benchmarks'}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </PrintSlide>
+          ))}
+        </div>
+      )}
+      
       <PageContainer>
         <PageHeader>
-          <BackButton
-            onClick={() => navigate(`/executive/${assessmentId}`)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiArrowLeft size={18} />
-            Full Report
-          </BackButton>
-          <BenchmarkButton
-            onClick={() => navigate(`/executive/${assessmentId}`)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiBarChart2 size={18} />
-            Executive Command Center
-          </BenchmarkButton>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <BackButton
+              onClick={() => navigate(`/executive/${assessmentId}`)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiArrowLeft size={18} />
+              Full Report
+            </BackButton>
+            <BenchmarkButton
+              onClick={() => navigate(`/executive/${assessmentId}`)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiBarChart2 size={18} />
+              Executive Command Center
+            </BenchmarkButton>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <ActionButton
+              onClick={() => { setPresentationMode(true); setCurrentSlide(0); document.body.style.overflow = 'hidden'; }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', color: 'white', border: 'none', padding: '0 16px', height: '40px' }}
+            >
+              <FiMonitor size={18} />
+              <span style={{ marginLeft: '8px' }}>Slideshow</span>
+            </ActionButton>
+            <ActionButton
+              onClick={handleDownloadReport}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: 'white', border: 'none', padding: '0 16px', height: '40px' }}
+            >
+              <FiDownload size={18} />
+              <span style={{ marginLeft: '8px' }}>Print / Save PDF</span>
+            </ActionButton>
+          </div>
         </PageHeader>
 
       <ReportContainer
@@ -1589,6 +1902,80 @@ const IndustryBenchmarkingReport = () => {
                 </form>
               </ModalContent>
             </ModalOverlay>
+          )}
+        </AnimatePresence>
+        
+        {/* 🎬 Presentation Slideshow Overlay */}
+        <AnimatePresence>
+          {presentationMode && benchmarkData && (
+            <SlideContainer
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ClickArea $direction="left" onClick={previousSlide} />
+              <ClickArea $direction="right" onClick={nextSlide} />
+              
+              {/* Navigation Buttons - Show on hover */}
+              <NavigationButton
+                $direction="left"
+                onClick={previousSlide}
+                disabled={currentSlide === 0}
+                whileTap={{ scale: 0.9 }}
+              >
+                ←
+              </NavigationButton>
+              
+              <NavigationButton
+                $direction="right"
+                onClick={nextSlide}
+                whileTap={{ scale: 0.9 }}
+              >
+                →
+              </NavigationButton>
+              
+              <SlideHeading>
+                {currentSlide === 0 ? 'Industry Benchmarking Report' :
+                 currentSlide === 1 ? 'Executive Summary' :
+                 currentSlide === 2 ? 'Competitive Analysis' :
+                 currentSlide === 3 ? 'Pillar Comparison' :
+                 'Strategic Recommendations'}
+              </SlideHeading>
+              <SlideCounter>{currentSlide + 1} / 5</SlideCounter>
+              
+              <ExitButton
+                onClick={exitPresentation}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                ×
+              </ExitButton>
+              
+              <SlideContent>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentSlide}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '2rem' }}
+                  >
+                    {currentSlide === 0 && (
+                      <div style={{ textAlign: 'center' }}>
+                        <h1 style={{ fontSize: '3.5rem', marginBottom: '20px' }}>Industry Benchmarking Report</h1>
+                        <p style={{ fontSize: '1.5rem', color: 'rgba(255,255,255,0.8)' }}>Data Platform Maturity Analysis</p>
+                      </div>
+                    )}
+                    {currentSlide === 1 && <div>Executive Summary Slide Content</div>}
+                    {currentSlide === 2 && <div>Competitive Analysis Slide Content</div>}
+                    {currentSlide === 3 && <div>Pillar Comparison Slide Content</div>}
+                    {currentSlide === 4 && <div>Strategic Recommendations Slide Content</div>}
+                  </motion.div>
+                </AnimatePresence>
+              </SlideContent>
+            </SlideContainer>
           )}
         </AnimatePresence>
       </PageContainer>

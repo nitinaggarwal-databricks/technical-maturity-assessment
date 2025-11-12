@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -933,6 +933,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [activeTab, setActiveTab] = useState('fastest');
+  const fetchingRef = useRef(false);
+  const abortControllerRef = useRef(null);
 
   // Animated counters
   const [animatedTotal, setAnimatedTotal] = useState(0);
@@ -940,11 +942,21 @@ const Dashboard = () => {
   const [animatedAvgScore, setAnimatedAvgScore] = useState(0);
   const [animatedAvgTime, setAnimatedAvgTime] = useState(0);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const fetchDashboardData = useCallback(async () => {
+    // Prevent duplicate requests
+    if (fetchingRef.current) {
+      console.log('[Dashboard] Request already in progress, skipping...');
+      return;
+    }
 
-  const fetchDashboardData = async () => {
+    // Cancel any existing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
+    fetchingRef.current = true;
     try {
       setLoading(true);
       const response = await assessmentService.getDashboardStats();
@@ -1003,33 +1015,60 @@ const Dashboard = () => {
             completionTime: a.completionTime || null
           }));
         }
+        
+        // Transform pillarBreakdown to match expected format
+        if (data.pillarBreakdown && Array.isArray(data.pillarBreakdown)) {
+          const pillarConfig = {
+            'platform_governance': { name: 'Platform & Governance', icon: '🏛️', color: '#3b82f6', gradient: '#dbeafe, #bfdbfe' },
+            'data_engineering': { name: 'Data Engineering', icon: '⚙️', color: '#8b5cf6', gradient: '#ede9fe, #ddd6fe' },
+            'analytics_bi': { name: 'Analytics & BI', icon: '📊', color: '#10b981', gradient: '#d1fae5, #a7f3d0' },
+            'machine_learning': { name: 'Machine Learning', icon: '🤖', color: '#f59e0b', gradient: '#fef3c7, #fde68a' },
+            'generative_ai': { name: 'Generative AI', icon: '✨', color: '#ec4899', gradient: '#fce7f3, #fbcfe8' },
+            'operational_excellence': { name: 'Operational Excellence', icon: '🎯', color: '#06b6d4', gradient: '#cffafe, #a5f3fc' }
+          };
+          
+          data.pillarBreakdown = data.pillarBreakdown.map(p => ({
+            pillarId: p.pillar,
+            name: pillarConfig[p.pillar]?.name || p.pillar,
+            icon: pillarConfig[p.pillar]?.icon || '📊',
+            avgScore: parseFloat(p.avgCurrent || 0),
+            count: totalAssessments,
+            avgGap: parseFloat(p.gap || 0),
+            color: pillarConfig[p.pillar]?.color || '#3b82f6',
+            gradient: pillarConfig[p.pillar]?.gradient || '#dbeafe, #bfdbfe'
+          }));
+        }
+        
         setDashboardData(data);
       }
     } catch (error) {
-      console.error('[Dashboard] Error:', error);
-      // Even on error, try to show real assessments
-      try {
-        const assessmentsResponse = await assessmentService.getAllAssessments();
-        const realAssessments = assessmentsResponse?.data || assessmentsResponse || [];
-        const sampleData = getSampleDashboardData();
-        sampleData.recentAssessments = realAssessments.slice(0, 5).map(a => ({
-          id: a.id,
-          organizationName: a.organizationName || a.assessmentName || 'Unnamed Assessment',
-          industry: a.industry || 'Not specified',
-          status: a.status || 'in_progress',
-          overallScore: a.overallScore || 0,
-          startedAt: a.startedAt || a.createdAt,
-          completionTime: a.completionTime || null
-        }));
-        setDashboardData(sampleData);
-      } catch (err) {
-        console.error('[Dashboard] Failed to fetch assessments:', err);
-        setDashboardData(getSampleDashboardData());
+      // Ignore abort errors
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        console.log('[Dashboard] Request aborted');
+        return;
       }
+      
+      console.error('[Dashboard] Error:', error);
+      // On error, use sample data instead of making more API calls
+      setDashboardData(getSampleDashboardData());
     } finally {
       setLoading(false);
+      fetchingRef.current = false;
     }
-  };
+  }, []);
+
+  // Fetch data on mount with cleanup
+  useEffect(() => {
+    fetchDashboardData();
+    
+    // Cleanup function
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      fetchingRef.current = false;
+    };
+  }, [fetchDashboardData]);
 
   // Animate numbers
   useEffect(() => {
@@ -1441,16 +1480,16 @@ const Dashboard = () => {
                       {pillar.icon} {pillar.name}
                     </PillarName>
                     <PillarScore $color={pillar.color}>
-                      {pillar.avgScore.toFixed(1)}
+                      {(pillar.avgScore || 0).toFixed(1)}
                     </PillarScore>
                   </PillarHeader>
                   <PillarMetric>
                     <span className="label">Assessments</span>
-                    <span className="value">{pillar.count}</span>
+                    <span className="value">{pillar.count || 0}</span>
                   </PillarMetric>
                   <PillarMetric>
                     <span className="label">Avg Gap</span>
-                    <span className="value">{pillar.avgGap.toFixed(1)}</span>
+                    <span className="value">{(pillar.avgGap || 0).toFixed(1)}</span>
                   </PillarMetric>
                 </PillarCard>
               ))}

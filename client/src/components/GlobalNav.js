@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import authService from '../services/authService';
+import LoginModal from './LoginModal';
 
 // Fixed: Added mobile navigation with hamburger menu
 
@@ -303,10 +305,147 @@ const CTAButton = styled.button`
   }
 `;
 
+const DropdownContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const DropdownButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  @media (max-width: 1200px) {
+    font-size: 0.875rem;
+    padding: 8px 16px;
+  }
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg.chevron {
+    transition: transform 0.3s ease;
+    ${props => props.$isOpen && 'transform: rotate(180deg);'}
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  padding: 8px 0;
+  z-index: 1000;
+  opacity: ${props => props.$isOpen ? 1 : 0};
+  visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
+  transform: translateY(${props => props.$isOpen ? '0' : '-10px'});
+  transition: all 0.3s ease;
+`;
+
+const DropdownItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+  }
+
+  svg {
+    font-size: 16px;
+    color: #6b7280;
+  }
+
+  &:hover svg {
+    color: #3b82f6;
+  }
+`;
+
+const DropdownDivider = styled.div`
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+`;
+
 const GlobalNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(authService.getUser());
+  const [assessmentsDropdownOpen, setAssessmentsDropdownOpen] = useState(false);
+  const [assignmentsDropdownOpen, setAssignmentsDropdownOpen] = useState(false);
+  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      setCurrentUser(authService.getUser());
+    }
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.dropdown-container')) {
+        setAssessmentsDropdownOpen(false);
+        setAssignmentsDropdownOpen(false);
+        setAdminDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    authService.logout();
+    setCurrentUser(null);
+    toast.success('Logged out successfully');
+    navigate('/');
+    closeMobileMenu();
+  };
+
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    // Redirect based on role
+    if (user.role === 'consumer') {
+      navigate('/my-assessments');
+    } else if (user.role === 'author' || user.role === 'admin') {
+      navigate('/insights-dashboard');
+    }
+  };
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -340,185 +479,31 @@ const GlobalNav = () => {
   const handleTrySample = async () => {
     closeMobileMenu();
     try {
-      toast.loading('Creating fully populated sample assessment...', { id: 'sample-assessment' });
+      toast.loading('Generating sample assessment...', { id: 'sample-assessment' });
+      const result = await assessmentService.generateSampleAssessment();
       
-      // Generate unique, realistic sample data
-      const timestamp = Date.now();
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-      
-      // Realistic company names
-      const companies = [
-        'Acme Healthcare Systems', 'TechVision Financial Services', 'Global Retail Analytics Corp',
-        'Premier Insurance Group', 'NextGen Manufacturing', 'Unified Telecom Solutions',
-        'Apex Pharmaceuticals', 'MetroBank Financial', 'Summit Energy Corporation',
-        'Velocity Logistics Group', 'Horizon Media Networks', 'CoreTech Industries',
-        'Pinnacle Healthcare Partners', 'Atlas Supply Chain', 'Quantum Financial Analytics'
-      ];
-      
-      // Realistic industries
-      const industries = [
-        'Healthcare', 'Financial Services', 'Retail', 'Insurance', 'Manufacturing',
-        'Telecommunications', 'Pharmaceuticals', 'Banking', 'Energy', 'Logistics',
-        'Media & Entertainment', 'Technology', 'Life Sciences', 'Supply Chain'
-      ];
-      
-      // Realistic contact names and roles
-      const firstNames = ['Sarah', 'Michael', 'Jennifer', 'David', 'Emily', 'Robert', 'Lisa', 'James', 'Maria', 'John'];
-      const lastNames = ['Chen', 'Patel', 'Johnson', 'Garcia', 'Smith', 'Williams', 'Brown', 'Davis', 'Martinez', 'Anderson'];
-      const roles = ['CDO', 'VP Data & Analytics', 'Director of Data Engineering', 'Head of ML/AI', 'Chief Analytics Officer'];
-      
-      // Pick random values
-      const company = companies[Math.floor(Math.random() * companies.length)];
-      const industry = industries[Math.floor(Math.random() * industries.length)];
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const role = roles[Math.floor(Math.random() * roles.length)];
-      
-      // Create realistic email domain from company name
-      const emailDomain = company.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .split(' ')
-        .slice(0, 2)
-        .join('') + '.com';
-      
-      const sampleData = {
-        assessmentName: `${company} - Data Platform Maturity Assessment`,
-        organizationName: company,
-        industry: industry,
-        contactEmail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${emailDomain}`,
-        contactName: `${firstName} ${lastName}`,
-        contactRole: role,
-        assessmentDescription: `Comprehensive assessment of data platform capabilities and maturity across all six pillars for ${company}`
-      };
-      
-      const result = await assessmentService.startAssessment(sampleData);
       console.log('[GlobalNav] Sample assessment result:', result);
       
-      // Handle both wrapped and direct response formats
-      const assessmentId = result?.data?.assessmentId || result?.assessmentId;
+      // Extract assessmentId from various possible response structures
+      const assessmentId = result?.assessment?.id || result?.data?.assessmentId || result?.assessmentId || result?.id;
       
       if (!assessmentId) {
-        console.error('[GlobalNav] Invalid response format:', result);
-        throw new Error('Invalid response format');
+        console.error('[GlobalNav] No assessment ID found in result:', result);
+        throw new Error('No assessment ID returned from server');
       }
-
-      // Get assessment framework to populate all questions
-      toast.loading('Populating assessment with realistic data...', { id: 'sample-assessment' });
-      const framework = await assessmentService.getAssessmentFramework();
       
-      // Generate fully populated responses for all categories
-      const allResponses = {};
-      const completedCategories = [];
-      let firstCategoryId = null;
+      console.log('[GlobalNav] Assessment ID:', assessmentId);
+      toast.success('Sample assessment created!', { id: 'sample-assessment' });
       
-      // Populate ALL pillars with realistic sample data for full demo experience
-      framework.assessmentAreas.forEach((area, areaIdx) => {
-        // Capture first category for navigation
-        if (areaIdx === 0) {
-          firstCategoryId = area.id;
-        }
-        
-        // 🔥 CRITICAL: Vary maturity baseline per pillar for uniqueness
-        // Some pillars might be slightly more mature than others
-        const pillarBaseline = Math.random() < 0.7 ? 1 : 2; // 70% start at level 1, 30% at level 2
-        const pillarVariance = Math.random() < 0.5 ? 0 : 1; // 50% chance of +1 variation
-        
-        area.dimensions.forEach((dimension, dimIdx) => {
-          dimension.questions.forEach((question, qIdx) => {
-            // Current state: Use pillar baseline with per-question variance
-            // Range: 1-3, weighted toward lower maturity (1-2)
-            const questionVariance = Math.floor(Math.random() * 2); // 0 or 1
-            const currentState = Math.min(3, pillarBaseline + pillarVariance + questionVariance);
-            
-            // Future state: At least current + 1, can be higher (up to 5)
-            // This gives a range of possible future states: currentState+1 to 5
-            const minFuture = currentState + 1; // Minimum is +1
-            const maxFuture = 5;
-            const futureState = Math.floor(Math.random() * (maxFuture - minFuture + 1)) + minFuture;
-            
-            allResponses[`${question.id}_current_state`] = currentState;
-            allResponses[`${question.id}_future_state`] = futureState;
-            
-            // Generate realistic customer comment specific to this question
-            // 🔥 PASS timestamp for TRUE randomness
-            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.id, question.id, currentState, timestamp);
-            
-            // Randomly select technical pain points
-            const technicalPainPerspective = question.perspectives?.find(p => p.id === 'technical_pain');
-            if (technicalPainPerspective) {
-              const availablePains = technicalPainPerspective.options || [];
-              const numPains = Math.min(
-                Math.floor(Math.random() * 3) + 2, // 2-4 pain points
-                availablePains.length
-              );
-              
-              // Fisher-Yates shuffle
-              const shuffled = [...availablePains];
-              for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-              }
-              
-              const selectedPains = shuffled.slice(0, numPains).map(p => p.value);
-              allResponses[`${question.id}_technical_pain`] = selectedPains;
-            }
-            
-            // Randomly select business pain points
-            const businessPainPerspective = question.perspectives?.find(p => p.id === 'business_pain');
-            if (businessPainPerspective) {
-              const availablePains = businessPainPerspective.options || [];
-              const numPains = Math.min(
-                Math.floor(Math.random() * 3) + 2, // 2-4 pain points
-                availablePains.length
-              );
-              
-              // Fisher-Yates shuffle
-              const shuffled = [...availablePains];
-              for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-              }
-              
-              const selectedPains = shuffled.slice(0, numPains).map(p => p.value);
-              allResponses[`${question.id}_business_pain`] = selectedPains;
-            }
-          });
-        });
-        completedCategories.push(area.id);
-      });
-
-      // Submit all responses
-      console.log('[GlobalNav] Submitting bulk responses for assessment:', assessmentId);
-      console.log('[GlobalNav] Total responses to submit:', Object.keys(allResponses).length);
-      console.log('[GlobalNav] Completed categories:', completedCategories);
-      console.log('[GlobalNav] Sample data variance check - First 5 scores:', 
-        Object.keys(allResponses)
-          .filter(k => k.includes('current_state'))
-          .slice(0, 5)
-          .map(k => ({ [k]: allResponses[k] }))
-      );
-      
-      const bulkResult = await assessmentService.submitBulkResponses(assessmentId, allResponses, completedCategories);
-      console.log('[GlobalNav] Bulk responses submitted successfully. Result:', bulkResult);
-      
-      // Verify the responses were actually saved
-      const statusCheck = await assessmentService.getAssessmentStatus(assessmentId);
-      console.log('[GlobalNav] Status check - Responses saved:', Object.keys(statusCheck.responses || {}).length);
-      
-      // Wait for file I/O to complete (critical for local file storage)
+      // Longer delay to ensure assessment is fully saved
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success('Sample assessment created! Review your selections...', { id: 'sample-assessment' });
-      
-      // Navigate to the first question to show the user the pre-filled assessment
-      // They can then navigate to results when ready
-      setTimeout(() => {
-        navigate(`/assessment/${assessmentId}/${firstCategoryId}`);
-      }, 500);
-      
+      // Navigate to the first question page
+      console.log('[GlobalNav] Navigating to:', `/assessment/${assessmentId}/platform_governance`);
+      navigate(`/assessment/${assessmentId}/platform_governance`);
     } catch (error) {
       console.error('[GlobalNav] Error creating sample assessment:', error);
-      toast.error('Failed to create sample assessment. Please try Start Assessment instead.', { id: 'sample-assessment' });
+      toast.error(error.message || 'Failed to create sample assessment', { id: 'sample-assessment' });
     }
   };
 
@@ -737,33 +722,164 @@ const GlobalNav = () => {
   };
 
   return (
-    <Nav>
-      <NavContainer>
-        {/* Desktop Navigation */}
-        <TopNav>
-          <NavLink onClick={handleLogoClick}>Home</NavLink>
-          <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
-          <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
-          <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
-          <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
-        </TopNav>
+    <>
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      
+      <Nav>
+        <NavContainer>
+          {/* Desktop Navigation */}
+          <TopNav>
+            <NavLink onClick={handleLogoClick}>Home</NavLink>
+            <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
+            <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
+            <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
+            <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
+          </TopNav>
 
-        <ActionButtons>
-          <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
-            Dashboard
-          </SecondaryCTAButton>
-          <SecondaryCTAButton onClick={() => navigate('/assessments')}>
-            <FiList size={14} />
-            My Assessments
-          </SecondaryCTAButton>
-          <SecondaryCTAButton onClick={handleTrySample}>
-            <FiPlay size={14} />
-            Try Sample
-          </SecondaryCTAButton>
-          <CTAButton onClick={() => navigate('/start')}>
-            Start Assessment →
-          </CTAButton>
-        </ActionButtons>
+          <ActionButtons>
+            {currentUser ? (
+              <>
+                {/* Assessments Dropdown */}
+                <DropdownContainer className="dropdown-container">
+                  <DropdownButton 
+                    $isOpen={assessmentsDropdownOpen}
+                    onClick={() => setAssessmentsDropdownOpen(!assessmentsDropdownOpen)}
+                  >
+                    <FiFileText size={14} />
+                    Assessments
+                    <FiChevronDown size={14} className="chevron" />
+                  </DropdownButton>
+                  <DropdownMenu $isOpen={assessmentsDropdownOpen}>
+                    <DropdownItem onClick={() => {
+                      navigate('/start');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiPlay />
+                      Start Assessment
+                    </DropdownItem>
+                    {currentUser.role !== 'consumer' && (
+                      <DropdownItem onClick={() => {
+                        handleTrySample();
+                        setAssessmentsDropdownOpen(false);
+                      }}>
+                        <FiPlay />
+                        Try Sample
+                      </DropdownItem>
+                    )}
+                    <DropdownItem onClick={() => {
+                      navigate('/my-assessments');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiFileText />
+                      My Assessments
+                    </DropdownItem>
+                    <DropdownItem onClick={() => {
+                      navigate('/assessments');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiList />
+                      All Assessments
+                    </DropdownItem>
+                  </DropdownMenu>
+                </DropdownContainer>
+
+                {/* Assignments Dropdown (Admin/Author only) */}
+                {(currentUser.role === 'admin' || currentUser.role === 'author') && (
+                  <DropdownContainer className="dropdown-container">
+                    <DropdownButton 
+                      $isOpen={assignmentsDropdownOpen}
+                      onClick={() => setAssignmentsDropdownOpen(!assignmentsDropdownOpen)}
+                    >
+                      <FiList size={14} />
+                      Assignments
+                      <FiChevronDown size={14} className="chevron" />
+                    </DropdownButton>
+                    <DropdownMenu $isOpen={assignmentsDropdownOpen}>
+                      <DropdownItem onClick={() => {
+                        navigate('/my-assignments');
+                        setAssignmentsDropdownOpen(false);
+                      }}>
+                        <FiFileText />
+                        Assignments
+                      </DropdownItem>
+                      <DropdownItem onClick={() => {
+                        navigate('/assign-assessment');
+                        setAssignmentsDropdownOpen(false);
+                      }}>
+                        <FiUserPlus />
+                        Assign Users
+                      </DropdownItem>
+                      {currentUser.role === 'admin' && (
+                        <DropdownItem onClick={() => {
+                          navigate('/user-management');
+                          setAssignmentsDropdownOpen(false);
+                        }}>
+                          <FiUsers />
+                          Manage Users
+                        </DropdownItem>
+                      )}
+                    </DropdownMenu>
+                  </DropdownContainer>
+                )}
+
+                {currentUser.role !== 'consumer' && (
+                  <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+                    Dashboard
+                  </SecondaryCTAButton>
+                )}
+
+                {/* Admin/User Dropdown */}
+                <DropdownContainer className="dropdown-container">
+                  <DropdownButton 
+                    $isOpen={adminDropdownOpen}
+                    onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
+                  >
+                    <FiUser size={14} />
+                    {currentUser.firstName || currentUser.email.split('@')[0]}
+                    <FiChevronDown size={14} className="chevron" />
+                  </DropdownButton>
+                  <DropdownMenu $isOpen={adminDropdownOpen}>
+                <DropdownItem onClick={() => {
+                  setAdminDropdownOpen(false);
+                  toast('Change password feature coming soon!', { icon: 'ℹ️' });
+                }}>
+                      <FiLock />
+                      Change Password
+                    </DropdownItem>
+                    <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      handleLogout();
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiLogOut />
+                      Logout
+                    </DropdownItem>
+                  </DropdownMenu>
+                </DropdownContainer>
+              </>
+            ) : (
+              <>
+                <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+                  Dashboard
+                </SecondaryCTAButton>
+                <SecondaryCTAButton onClick={handleTrySample}>
+                  <FiPlay size={14} />
+                  Try Sample
+                </SecondaryCTAButton>
+                <SecondaryCTAButton onClick={() => setShowLoginModal(true)}>
+                  <FiLogIn size={14} />
+                  Login
+                </SecondaryCTAButton>
+                <CTAButton onClick={() => navigate('/start')}>
+                  Start Assessment →
+                </CTAButton>
+              </>
+            )}
+          </ActionButtons>
 
         {/* Mobile Menu Button */}
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -778,22 +894,68 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
-        <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
-          Dashboard
-        </MobileSecondaryCTAButton>
-        <MobileSecondaryCTAButton onClick={() => handleNavigate('/assessments')}>
-          <FiList size={16} />
-          My Assessments
-        </MobileSecondaryCTAButton>
-        <MobileSecondaryCTAButton onClick={handleTrySample}>
-          <FiPlay size={16} />
-          Try Sample Assessment
-        </MobileSecondaryCTAButton>
-        <MobileCTAButton onClick={() => handleNavigate('/start')}>
-          Start Assessment →
-        </MobileCTAButton>
+        
+        {currentUser ? (
+          <>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assessments')}>
+              <FiFileText size={16} />
+              My Assessments
+            </MobileSecondaryCTAButton>
+            {currentUser.role !== 'consumer' && (
+              <>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+                  Dashboard
+                </MobileSecondaryCTAButton>
+                <MobileSecondaryCTAButton onClick={handleTrySample}>
+                  <FiPlay size={16} />
+                  Try Sample
+                </MobileSecondaryCTAButton>
+              </>
+            )}
+            {(currentUser.role === 'admin' || currentUser.role === 'author') && (
+              <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assignments')}>
+                <FiFileText size={16} />
+                My Assignments
+              </MobileSecondaryCTAButton>
+            )}
+            {currentUser.role === 'admin' && (
+              <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
+                <FiUsers size={16} />
+                Manage Users
+              </MobileSecondaryCTAButton>
+            )}
+            <MobileCTAButton onClick={() => handleNavigate('/start')}>
+              Start Assessment →
+            </MobileCTAButton>
+            <MobileSecondaryCTAButton onClick={handleLogout}>
+              <FiLogOut size={16} />
+              Logout ({currentUser.email})
+            </MobileSecondaryCTAButton>
+          </>
+        ) : (
+          <>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+              Dashboard
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={handleTrySample}>
+              <FiPlay size={16} />
+              Try Sample
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              setShowLoginModal(true);
+            }}>
+              <FiLogIn size={16} />
+              Login
+            </MobileSecondaryCTAButton>
+            <MobileCTAButton onClick={() => handleNavigate('/start')}>
+              Start Assessment →
+            </MobileCTAButton>
+          </>
+        )}
       </MobileMenu>
     </Nav>
+    </>
   );
 };
 

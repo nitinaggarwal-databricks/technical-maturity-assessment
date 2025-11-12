@@ -753,7 +753,7 @@ const SlideContainer = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -798,6 +798,71 @@ const ClickArea = styled.div`
   cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
   z-index: 1;
   ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
+const NavigationButton = styled(motion.button)`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${props => props.$direction === 'left' ? 'left: 32px;' : 'right: 32px;'}
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-50%) scale(1);
+    }
+  }
+`;
+
+const PrintSlide = styled.div`
+  @media print {
+    page-break-after: always;
+    page-break-inside: avoid;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+  
+  @media screen {
+    display: none;
+  }
 `;
 
 const ExitButton = styled(motion.button)`
@@ -856,6 +921,7 @@ const ExecutiveCommandCenter = () => {
   // 🎬 Presentation Mode State
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [printMode, setPrintMode] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -895,7 +961,24 @@ const ExecutiveCommandCenter = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    // Show brief toast
+    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    
+    // Set print mode to render all slides
+    setPrintMode(true);
+    
+    // Dismiss the toast and open print dialog
+    setTimeout(() => {
+      toast.dismiss(toastId);
+      toast.dismiss();
+      setTimeout(() => {
+        window.print();
+        // Exit print mode after printing
+        setTimeout(() => {
+          setPrintMode(false);
+        }, 500);
+      }, 500);
+    }, 1000);
   };
 
   const handleShare = () => {
@@ -1044,6 +1127,9 @@ const ExecutiveCommandCenter = () => {
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
+    } else {
+      // Exit slideshow when trying to go past the last slide
+      exitPresentation();
     }
   };
 
@@ -1095,6 +1181,83 @@ const ExecutiveCommandCenter = () => {
       type: 'single'
     }
   ];
+
+  // Render slide content for print
+  const renderSlideContentForPrint = (slide) => {
+    if (slide.id === 'title') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', fontWeight: 700, color: 'white', marginBottom: '24px' }}>
+            Executive Command Center
+          </div>
+          <div style={{ fontSize: '1.5rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+            Strategic Insights & Action Plan
+          </div>
+        </div>
+      );
+    }
+
+    if (slide.id === 'strategic-roadmap' && results?.roadmap) {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div style={{ fontSize: '1rem', color: '#64748b', marginBottom: '20px' }}>
+            {results.roadmap.roadmapIntro || 'This roadmap outlines key phases to accelerate your data platform maturity.'}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {(results.roadmap.phases || []).slice(0, 3).map((phase) => (
+              <div key={phase.id} style={{
+                background: phase.bgColor || '#f3f4f6',
+                borderLeft: `4px solid ${phase.borderColor || '#3b82f6'}`,
+                padding: '20px'
+              }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>
+                  {phase.title || phase.phase}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '12px' }}>
+                  {phase.duration} | {phase.effort}
+                </div>
+                <div style={{ fontSize: '0.95rem', color: '#475569', lineHeight: '1.6' }}>
+                  {phase.description}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (slide.id === 'business-impact') {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div style={{ fontSize: '1.1rem', color: '#475569', textAlign: 'center' }}>
+            Business impact metrics and projections
+          </div>
+        </div>
+      );
+    }
+
+    if (slide.id === 'roi') {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div style={{ fontSize: '1.1rem', color: '#475569', textAlign: 'center' }}>
+            ROI Calculator Summary
+          </div>
+        </div>
+      );
+    }
+
+    if (slide.id === 'risk-heatmap') {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <div style={{ fontSize: '1.1rem', color: '#475569', textAlign: 'center' }}>
+            Risk Assessment Overview
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   if (loading) {
     return (
@@ -1161,6 +1324,63 @@ const ExecutiveCommandCenter = () => {
 
   return (
     <PageContainer>
+      {/* 🖨️ PRINT MODE: Render all slides for printing */}
+      {printMode && results && (
+        <div style={{ display: 'none' }} className="print-slides-container">
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-slides-container,
+              .print-slides-container * {
+                visibility: visible !important;
+              }
+              .print-slides-container {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+              }
+            }
+          `}</style>
+          {slides.map((slide, slideIndex) => (
+            <PrintSlide key={slideIndex}>
+              <div style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                padding: '50px 60px 40px 60px',
+                color: 'white'
+              }}>
+                {/* Slide Header */}
+                <div style={{
+                  fontSize: '2rem',
+                  fontWeight: 700,
+                  marginBottom: '25px',
+                  color: 'white'
+                }}>
+                  {slide.title}
+                </div>
+
+                {/* Slide Content */}
+                <div style={{
+                  flex: 1,
+                  overflow: 'hidden',
+                  width: '100%',
+                  maxWidth: '100%'
+                }}>
+                  {renderSlideContentForPrint(slide)}
+                </div>
+              </div>
+            </PrintSlide>
+          ))}
+        </div>
+      )}
+      
       <PageHeader>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <BackButton
@@ -1532,6 +1752,24 @@ const ExecutiveCommandCenter = () => {
           >
             <ClickArea $direction="left" onClick={previousSlide} />
             <ClickArea $direction="right" onClick={nextSlide} />
+            
+            {/* Navigation Buttons - Show on hover */}
+            <NavigationButton
+              $direction="left"
+              onClick={previousSlide}
+              disabled={currentSlide === 0}
+              whileTap={{ scale: 0.9 }}
+            >
+              ←
+            </NavigationButton>
+            
+            <NavigationButton
+              $direction="right"
+              onClick={nextSlide}
+              whileTap={{ scale: 0.9 }}
+            >
+              →
+            </NavigationButton>
             
             <SlideHeading>{slides[currentSlide]?.title}</SlideHeading>
             <SlideCounter>{currentSlide + 1} / {slides.length}</SlideCounter>

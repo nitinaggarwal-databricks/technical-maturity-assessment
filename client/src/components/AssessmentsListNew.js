@@ -674,10 +674,10 @@ const AssessmentsListNew = () => {
       
       // Clone with new name
       const clonedData = {
-        organizationName: assessment.organizationName,
-        contactEmail: assessment.contactEmail,
+        organizationName: assessment.organization_name,
+        contactEmail: assessment.contact_email,
         industry: assessment.industry,
-        assessmentName: `${assessment.assessmentName} (Copy)`,
+        assessmentName: `${assessment.assessment_name} (Copy)`,
         assessmentDescription: assessment.assessmentDescription
       };
       
@@ -717,9 +717,9 @@ const AssessmentsListNew = () => {
   const filteredAssessments = assessments.filter(assessment => {
     const matchesSearch = 
       searchTerm === '' ||
-      (assessment.assessmentName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (assessment.organizationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (assessment.contactEmail || '').toLowerCase().includes(searchTerm.toLowerCase());
+      (assessment.assessment_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (assessment.organization_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (assessment.contact_email || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = 
       statusFilter === 'all' ||
@@ -1063,7 +1063,7 @@ const AssessmentsListNew = () => {
               console.log('[AssessmentsListNew] Assessment:', {
                 id: assessment.id,
                 assessmentId: assessment.assessmentId,
-                name: assessment.assessmentName,
+                name: assessment.assessment_name,
                 finalId: assessmentId
               });
 
@@ -1080,10 +1080,13 @@ const AssessmentsListNew = () => {
                 >
                   <div className="header">
                     <div>
+                      <div className="title">
+                        {assessment.assessment_name || 'Untitled Assessment'}
+                      </div>
                       <div className="meta">
                         <div className="meta-item">
                           <span>🏢</span>
-                          <span>{assessment.organizationName || 'Unknown Org'}</span>
+                          <span>{assessment.organization_name || 'Unknown Org'}</span>
                         </div>
                         <span>›</span>
                         <div className="meta-item">
@@ -1094,23 +1097,23 @@ const AssessmentsListNew = () => {
                       <div className="meta" style={{ marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>
                         <div className="meta-item">
                           <span>📝</span>
-                          <span>Created by: {assessment.contactName || assessment.contactEmail?.split('@')[0] || 'Unknown'}</span>
+                          <span>Created by: {assessment.creator_name || assessment.contact_email?.split('@')[0] || 'Unknown'}</span>
                         </div>
                         <span>•</span>
                         <div className="meta-item">
                           <span>📅</span>
-                          <span>{formatDateTime(assessment.createdAt)}</span>
+                          <span>{formatDateTime(assessment.created_at)}</span>
                         </div>
                       </div>
                       <div className="meta" style={{ marginTop: '4px', fontSize: '0.85rem', color: '#64748b' }}>
                         <div className="meta-item">
                           <span>✏️</span>
-                          <span>Updated by: {assessment.contactName || assessment.contactEmail?.split('@')[0] || 'Unknown'}</span>
+                          <span>Updated by: {assessment.creator_name || assessment.contact_email?.split('@')[0] || 'Unknown'}</span>
                         </div>
                         <span>•</span>
                         <div className="meta-item">
                           <span>🕐</span>
-                          <span>{formatDateTime(assessment.updatedAt)}</span>
+                          <span>{formatDateTime(assessment.updated_at)}</span>
                         </div>
                       </div>
                     </div>
@@ -1149,7 +1152,7 @@ const AssessmentsListNew = () => {
                         Clone
                       </ActionButton>
                       <ActionButton
-                        onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessmentName, e)}
+                        onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessment_name, e)}
                         title="Delete this assessment"
                         style={{ color: '#ef4444' }}
                       >

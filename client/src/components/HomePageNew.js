@@ -971,19 +971,13 @@ const HomePageNew = () => {
       const assessmentId = result?.assessment?.id || result?.id;
       
       if (assessmentId) {
-        // Get the first category from the framework to navigate to first question
-        const framework = await assessmentService.getAssessmentFramework();
-        const firstCategoryId = framework?.assessmentAreas?.[0]?.id;
+        toast.success('Sample assessment created!', { id: 'sample-gen' });
         
-        if (firstCategoryId) {
-          toast.success('Sample assessment ready! Review your selections...', { id: 'sample-gen' });
-          setTimeout(() => {
-            // Navigate to first question, not directly to results
-            navigate(`/assessment/${assessmentId}/${firstCategoryId}`);
-          }, 500);
-        } else {
-          throw new Error('Could not determine first category');
-        }
+        // Small delay to ensure assessment is saved to disk
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Navigate to the first question page
+        navigate(`/assessment/${assessmentId}/platform_governance`);
       } else {
         console.error('Invalid response structure:', result);
         throw new Error('Invalid response from server');

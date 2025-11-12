@@ -309,6 +309,54 @@ class AssessmentRepository {
   }
 
   /**
+   * Save progress for a single question (auto-save)
+   */
+  async saveProgress(id, questionId, perspectiveId, value, comment, isSkipped, editorEmail) {
+    // First, get the current assessment
+    const assessment = await this.findById(id);
+    if (!assessment) {
+      throw new Error('Assessment not found');
+    }
+
+    const responses = assessment.responses || {};
+
+    // Handle skipped questions
+    if (isSkipped !== undefined) {
+      const skipKey = `${questionId}_skipped`;
+      responses[skipKey] = isSkipped;
+      
+      // If question is being skipped, clear any existing responses
+      if (isSkipped) {
+        const perspectives = ['current_state', 'future_state', 'technical_pain', 'business_pain'];
+        perspectives.forEach(perspective => {
+          const responseKey = `${questionId}_${perspective}`;
+          delete responses[responseKey];
+        });
+        const commentKey = `${questionId}_comment`;
+        delete responses[commentKey];
+      }
+    }
+
+    // Save the response (only if not skipped)
+    if (questionId && perspectiveId && !responses[`${questionId}_skipped`]) {
+      const responseKey = `${questionId}_${perspectiveId}`;
+      responses[responseKey] = value;
+    }
+
+    // Save comment if provided (only if not skipped)
+    if (comment !== undefined && !responses[`${questionId}_skipped`]) {
+      const commentKey = `${questionId}_comment`;
+      responses[commentKey] = comment;
+    }
+
+    // Update the assessment with new responses
+    await this.update(id, { responses });
+
+    // Return updated assessment
+    return await this.findById(id);
+  }
+
+  /**
    * Map database row to assessment object
    */
   mapRowToAssessment(row) {
@@ -331,6 +379,7 @@ class AssessmentRepository {
       completedAt: row.completed_at,
       updatedAt: row.updated_at,
       createdAt: row.created_at,
+      user_id: row.user_id,
       // For backwards compatibility
       lastSaved: row.updated_at,
     };
