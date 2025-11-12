@@ -42,7 +42,7 @@ const PrintSlide = styled.div`
     width: 100%;
     height: 100vh;
     position: relative;
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
