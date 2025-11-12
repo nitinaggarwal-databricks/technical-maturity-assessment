@@ -40,18 +40,24 @@ const PrintSlide = styled.div`
     page-break-after: always;
     page-break-inside: avoid;
     width: 100%;
-    min-height: 100vh;
-    max-height: 100vh;
-    height: auto;
+    height: 100vh;
     position: relative;
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 0;
     margin: 0;
     box-sizing: border-box;
     overflow: hidden;
+    
+    /* Scale content to fit page */
+    > * {
+      transform: scale(0.9);
+      transform-origin: center center;
+      width: 100%;
+      height: 100%;
+    }
   }
   
   @media screen {
