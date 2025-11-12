@@ -539,6 +539,30 @@ const ActionButton = styled.button`
     }
   }
 
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #e2e8f0;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+
+    &:hover {
+      background: #e2e8f0;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+    }
+
+    &.primary {
+      background: #cbd5e1;
+      color: #94a3b8;
+      border-color: #cbd5e1;
+
+      &:hover {
+        background: #cbd5e1;
+      }
+    }
+  }
+
   svg {
     width: 14px;
     height: 14px;
@@ -1161,11 +1185,16 @@ const AssessmentsListNew = () => {
                       </ActionButton>
                       <ActionButton
                         className="primary"
+                        disabled={progress === 0 || status === 'not_started'}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (progress === 0 || status === 'not_started') {
+                            return;
+                          }
                           console.log(`[AssessmentsListNew] View Report clicked, navigating to: /results/${assessmentId}`);
                           navigate(`/results/${assessmentId}`);
                         }}
+                        title={progress === 0 || status === 'not_started' ? 'Complete at least one pillar to view report' : 'View assessment report'}
                       >
                         <FiStar />
                         View Report

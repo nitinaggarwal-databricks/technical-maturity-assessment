@@ -373,7 +373,7 @@ app.post('/api/assessment/start', async (req, res) => {
       success: true,
       data: {
       assessmentId,
-      currentCategory: assessment.currentCategory,
+      currentCategory: assessmentFramework.assessmentAreas[0].id,
       totalCategories: assessmentFramework.assessmentAreas.length,
       assessmentName,
       assessmentDescription
@@ -2224,9 +2224,15 @@ app.get('/api/dashboard/stats', async (req, res) => {
         })),
         pillarBreakdown: Object.entries(pillarBreakdown).map(([pillar, data]) => ({
           pillar,
-          avgCurrent: parseFloat(data.avgCurrent.toFixed(1)),
-          avgTarget: parseFloat(data.avgTarget.toFixed(1)),
-          gap: parseFloat(data.gap.toFixed(1))
+          name: data.name,
+          avgScore: parseFloat((data.avgCurrent || 0).toString()),
+          avgCurrent: parseFloat((data.avgCurrent || 0).toString()),
+          avgTarget: parseFloat((data.avgTarget || 0).toString()),
+          current: parseFloat((data.avgCurrent || 0).toString()),
+          target: parseFloat((data.avgTarget || 0).toString()),
+          gap: parseFloat(((data.avgTarget || 0) - (data.avgCurrent || 0)).toString()),
+          count: allAssessments.length,
+          avgGap: parseFloat(((data.avgTarget || 0) - (data.avgCurrent || 0)).toString())
         })),
         recentAssessments: recentAssessmentsFormatted
       }

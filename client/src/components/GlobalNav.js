@@ -743,6 +743,13 @@ const GlobalNav = () => {
           <ActionButtons>
             {currentUser ? (
               <>
+                {/* Dashboard Button */}
+                {currentUser.role !== 'consumer' && (
+                  <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+                    Dashboard
+                  </SecondaryCTAButton>
+                )}
+
                 {/* Assessments Dropdown */}
                 <DropdownContainer className="dropdown-container">
                   <DropdownButton 
@@ -826,12 +833,6 @@ const GlobalNav = () => {
                   </DropdownContainer>
                 )}
 
-                {currentUser.role !== 'consumer' && (
-                  <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
-                    Dashboard
-                  </SecondaryCTAButton>
-                )}
-
                 {/* Admin/User Dropdown */}
                 <DropdownContainer className="dropdown-container">
                   <DropdownButton 
@@ -843,6 +844,50 @@ const GlobalNav = () => {
                     <FiChevronDown size={14} className="chevron" />
                   </DropdownButton>
                   <DropdownMenu $isOpen={adminDropdownOpen}>
+                    {currentUser.role === 'admin' && (
+                      <>
+                        <DropdownItem onClick={() => {
+                          const testUser = { ...currentUser, role: 'author', testMode: true, originalRole: 'admin' };
+                          localStorage.setItem('user', JSON.stringify(testUser));
+                          setCurrentUser(testUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched to Author role (Test Mode)');
+                          window.location.reload();
+                        }}>
+                          <FiUsers />
+                          Switch to Author
+                        </DropdownItem>
+                        <DropdownItem onClick={() => {
+                          const testUser = { ...currentUser, role: 'consumer', testMode: true, originalRole: 'admin' };
+                          localStorage.setItem('user', JSON.stringify(testUser));
+                          setCurrentUser(testUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched to Consumer role (Test Mode)');
+                          window.location.reload();
+                        }}>
+                          <FiUsers />
+                          Switch to Consumer
+                        </DropdownItem>
+                        <DropdownDivider />
+                      </>
+                    )}
+                    {currentUser.testMode && (
+                      <>
+                        <DropdownItem onClick={() => {
+                          const originalUser = { ...currentUser, role: currentUser.originalRole, testMode: false };
+                          delete originalUser.originalRole;
+                          localStorage.setItem('user', JSON.stringify(originalUser));
+                          setCurrentUser(originalUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched back to Admin role');
+                          window.location.reload();
+                        }}>
+                          <FiUser />
+                          Switch Back to Admin
+                        </DropdownItem>
+                        <DropdownDivider />
+                      </>
+                    )}
                 <DropdownItem onClick={() => {
                   setAdminDropdownOpen(false);
                   toast('Change password feature coming soon!', { icon: 'ℹ️' });
