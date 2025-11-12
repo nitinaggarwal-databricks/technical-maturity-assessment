@@ -50,14 +50,6 @@ const PrintSlide = styled.div`
     margin: 0;
     box-sizing: border-box;
     overflow: hidden;
-    
-    /* Scale content to fit page */
-    > * {
-      transform: scale(0.9);
-      transform-origin: center center;
-      width: 100%;
-      height: 100%;
-    }
   }
   
   @media screen {
@@ -3039,22 +3031,22 @@ const AssessmentResultsNew = () => {
           alignItems: 'center',
           height: '100%',
           textAlign: 'center',
-          gap: '20px',
-          padding: '0 80px'
+          gap: '12px',
+          padding: '0 60px'
         }}>
           <div style={{
-            fontSize: '4.5rem',
+            fontSize: '3.5rem',
             fontWeight: 700,
             color: 'white',
-            marginBottom: '16px',
-            lineHeight: '1.2'
+            marginBottom: '8px',
+            lineHeight: '1.1'
           }}>
             {results.assessmentInfo?.assessmentName || 'Enterprise Data & AI Maturity Report'}
           </div>
           <div style={{
-            fontSize: '1.6rem',
+            fontSize: '1.3rem',
             color: 'rgba(255, 255, 255, 0.9)',
-            marginBottom: '40px'
+            marginBottom: '20px'
           }}>
             Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'} | {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </div>
@@ -3063,36 +3055,36 @@ const AssessmentResultsNew = () => {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
+            gap: '20px',
             width: '100%',
-            maxWidth: '1300px',
-            marginTop: '40px'
+            maxWidth: '1200px',
+            marginTop: '20px'
           }}>
             {/* Current Maturity Card */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.95)',
-              borderRadius: '16px',
-              padding: '28px',
-              minHeight: '200px',
-              maxHeight: '250px',
+              borderRadius: '12px',
+              padding: '20px',
+              minHeight: '160px',
+              maxHeight: '180px',
               display: 'flex',
               flexDirection: 'column'
             }}>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#64748b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
                 CURRENT MATURITY
               </div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 700, color: '#3b82f6', marginBottom: '8px' }}>
+              <div style={{ fontSize: '2.8rem', fontWeight: 700, color: '#3b82f6', marginBottom: '4px' }}>
                 Level {Math.round(currentMaturity)}
               </div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>
                 {resultsData?.maturitySummary?.current?.level || 'Defined'}
               </div>
               <div style={{
-                fontSize: '0.95rem',
+                fontSize: '0.8rem',
                 color: '#475569',
                 overflow: 'hidden',
                 display: '-webkit-box',
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 textOverflow: 'ellipsis'
               }}>
@@ -3103,28 +3095,28 @@ const AssessmentResultsNew = () => {
             {/* Target Maturity Card */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.95)',
-              borderRadius: '16px',
-              padding: '28px',
-              minHeight: '200px',
-              maxHeight: '250px',
+              borderRadius: '12px',
+              padding: '20px',
+              minHeight: '160px',
+              maxHeight: '180px',
               display: 'flex',
               flexDirection: 'column'
             }}>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#64748b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
                 TARGET MATURITY
               </div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 700, color: '#10b981', marginBottom: '8px' }}>
+              <div style={{ fontSize: '2.8rem', fontWeight: 700, color: '#10b981', marginBottom: '4px' }}>
                 Level {Math.round(targetMaturity)}
               </div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>
                 {resultsData?.maturitySummary?.future?.level || 'Optimize'}
               </div>
               <div style={{
-                fontSize: '0.95rem',
+                fontSize: '0.8rem',
                 color: '#475569',
                 overflow: 'hidden',
                 display: '-webkit-box',
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 textOverflow: 'ellipsis'
               }}>
@@ -3135,32 +3127,32 @@ const AssessmentResultsNew = () => {
             {/* Improvement Level Card */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.95)',
-              borderRadius: '16px',
-              padding: '28px',
-              minHeight: '200px',
-              maxHeight: '250px',
+              borderRadius: '12px',
+              padding: '20px',
+              minHeight: '160px',
+              maxHeight: '180px',
               display: 'flex',
               flexDirection: 'column'
             }}>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#64748b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
                 IMPROVEMENT POTENTIAL
               </div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 700, color: '#f59e0b', marginBottom: '8px' }}>
+              <div style={{ fontSize: '2.8rem', fontWeight: 700, color: '#f59e0b', marginBottom: '4px' }}>
                 +{improvementLevel.toFixed(1)}
               </div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', marginBottom: '12px' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>
                 Levels
               </div>
               <div style={{
-                fontSize: '0.95rem',
+                fontSize: '0.8rem',
                 color: '#475569',
                 overflow: 'hidden',
                 display: '-webkit-box',
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 textOverflow: 'ellipsis'
               }}>
-                Roadmap to achieve your digital transformation goals through strategic adoption of Databricks capabilities.
+                Roadmap to achieve your digital transformation goals
               </div>
             </div>
           </div>
