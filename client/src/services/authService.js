@@ -109,27 +109,33 @@ class AuthService {
 
   // Check if user is authenticated
   isAuthenticated() {
-    return !!this.sessionId && !!this.user;
+    const sessionId = localStorage.getItem('sessionId');
+    const user = this.getUser();
+    return !!sessionId && !!user;
   }
 
   // Get user role
   getRole() {
-    return this.user?.role || null;
+    const user = this.getUser();
+    return user?.role || null;
   }
 
   // Check if user is admin
   isAdmin() {
-    return this.user?.role === 'admin';
+    const user = this.getUser();
+    return user?.role === 'admin';
   }
 
   // Check if user is author
   isAuthor() {
-    return this.user?.role === 'author';
+    const user = this.getUser();
+    return user?.role === 'author';
   }
 
   // Check if user is consumer
   isConsumer() {
-    return this.user?.role === 'consumer';
+    const user = this.getUser();
+    return user?.role === 'consumer';
   }
 
   // Check if user is author or admin
@@ -139,7 +145,9 @@ class AuthService {
 
   // Get current user
   getUser() {
-    return this.user;
+    // Always read from localStorage to get the latest user data (including role switches)
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
   }
 
   // Get all users (admin only)
