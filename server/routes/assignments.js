@@ -85,11 +85,8 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
         return res.status(404).json({ error: 'Consumer not found' });
       }
       
-      // Get existing assessment
-      const StorageAdapter = require('../utils/storageAdapter');
-      const assessments = new StorageAdapter(dataFilePath);
-      await assessments.initialize();
-      assessmentData = await assessments.get(existingAssessmentId);
+      // Get existing assessment from PostgreSQL
+      assessmentData = await assessmentRepository.findById(existingAssessmentId);
       
       if (!assessmentData) {
         return res.status(404).json({ error: 'Assessment not found' });
@@ -122,11 +119,8 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
         // TODO: Send welcome email with temporary password
       }
       
-      // Create assessment record
+      // Create assessment record in PostgreSQL only
       assessmentId = uuidv4();
-      const StorageAdapter = require('../utils/storageAdapter');
-      const assessments = new StorageAdapter(dataFilePath);
-      await assessments.initialize();
       
       assessmentData = {
         id: assessmentId,
@@ -145,16 +139,12 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
         updatedAt: new Date().toISOString()
       };
       
-      // Save to file storage
-      await assessments.set(assessmentId, assessmentData);
-      
-      // Also save to PostgreSQL (required for assignments)
+      // Save to PostgreSQL
       try {
         await assessmentRepository.create(assessmentData);
         console.log('[Assignment] Assessment saved to PostgreSQL:', assessmentId);
       } catch (error) {
         console.error('[Assignment] Failed to save assessment to PostgreSQL:', error.message);
-        // If PostgreSQL save fails, we can't create an assignment
         return res.status(500).json({ 
           error: 'Failed to create assessment in database. Please ensure PostgreSQL is configured.' 
         });
