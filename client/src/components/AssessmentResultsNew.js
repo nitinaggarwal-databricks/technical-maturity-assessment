@@ -179,14 +179,7 @@ const ReportHeader = styled.div`
 
   /* 🖨️ PRINT OPTIMIZATION */
   @media print {
-    background: white !important;
-    color: #1a1a1a !important;
-    padding: 24px 32px !important;
-    border-bottom: 3px solid #ff6b35;
-    
-    &::before {
-      display: none !important;
-    }
+    display: none !important;
   }
 `;
 
