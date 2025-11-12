@@ -888,19 +888,54 @@ const NavigationButton = styled(motion.button)`
   }
 `;
 
+// Global print styles
+const PrintStyles = styled.div`
+  @media print {
+    /* Enable background graphics */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    
+    /* Page margins - zero to prevent content cutoff */
+    @page {
+      margin: 0;
+      size: letter;
+    }
+    
+    /* Keep sections together */
+    section,
+    div[style*="background"],
+    [class*="Card"],
+    [class*="Container"] {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    
+    /* Headings stay with content */
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid !important;
+      break-after: avoid-page !important;
+    }
+  }
+`;
+
 const PrintSlide = styled.div`
   @media print {
     page-break-after: always;
     page-break-inside: avoid;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100vh;
+    height: auto;
     position: relative;
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 40px;
     margin: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   
   @media screen {

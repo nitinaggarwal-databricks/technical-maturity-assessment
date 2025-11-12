@@ -216,6 +216,12 @@ const SlideContent = styled(motion.div)`
   @media (max-width: 768px) {
     padding: 60px 32px 100px 32px;
   }
+  
+  @media print {
+    overflow: hidden !important;
+    padding: 60px 40px !important;
+    page-break-inside: avoid !important;
+  }
 `;
 
 const SlideNavigation = styled.div`
@@ -383,7 +389,7 @@ const PrintSlide = styled.div`
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
     background-attachment: local;
     display: block;
-    padding: 0 !important;
+    padding: 40px !important;
     margin: 0 !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
