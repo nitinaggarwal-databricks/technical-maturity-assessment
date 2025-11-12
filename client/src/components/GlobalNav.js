@@ -876,6 +876,32 @@ const GlobalNav = () => {
                     )}
                     {currentUser.testMode && (
                       <>
+                        {currentUser.role !== 'author' && (
+                          <DropdownItem onClick={() => {
+                            const testUser = { ...currentUser, role: 'author' };
+                            localStorage.setItem('user', JSON.stringify(testUser));
+                            setCurrentUser(testUser);
+                            setAdminDropdownOpen(false);
+                            toast.success('Switched to Author role (Test Mode)');
+                            window.location.reload();
+                          }}>
+                            <FiUsers />
+                            Switch to Author
+                          </DropdownItem>
+                        )}
+                        {currentUser.role !== 'consumer' && (
+                          <DropdownItem onClick={() => {
+                            const testUser = { ...currentUser, role: 'consumer' };
+                            localStorage.setItem('user', JSON.stringify(testUser));
+                            setCurrentUser(testUser);
+                            setAdminDropdownOpen(false);
+                            toast.success('Switched to Consumer role (Test Mode)');
+                            window.location.reload();
+                          }}>
+                            <FiUsers />
+                            Switch to Consumer
+                          </DropdownItem>
+                        )}
                         <DropdownItem onClick={() => {
                           const originalUser = { ...currentUser, role: currentUser.originalRole, testMode: false };
                           delete originalUser.originalRole;
