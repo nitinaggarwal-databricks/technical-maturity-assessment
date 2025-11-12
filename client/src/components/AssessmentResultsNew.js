@@ -39,15 +39,19 @@ const PrintSlide = styled.div`
   @media print {
     page-break-after: always;
     page-break-inside: avoid;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100vh;
+    height: auto;
     position: relative;
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 40px;
     margin: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   
   @media screen {
@@ -102,9 +106,9 @@ const PrintStyles = styled.div`
       print-color-adjust: exact;
     }
     
-    /* Page margins for headers/footers */
+    /* Page margins - minimal to prevent content cutoff */
     @page {
-      margin: 0.75in 0.5in;
+      margin: 0;
       size: letter;
     }
   }
