@@ -3,21 +3,12 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 class AssignmentService {
-  // Create new assignment (assign assessment to consumer) - Legacy method
+  // Create new assignment (assign assessment to consumer)
   async assignAssessment(data) {
     try {
-      // Support both old and new formats
-      const payload = data.consumerEmail ? {
-        // Old format
-        consumerEmail: data.consumerEmail || data,
-        assessmentName: data.assessmentName,
-        organizationName: data.organizationName,
-        assessmentDescription: data.assessmentDescription
-      } : {
-        // New format
-        consumerId: data.consumerId,
-        assessmentId: data.assessmentId,
-        message: data.message
+      // Build payload with all provided fields
+      const payload = {
+        ...data
       };
       
       const response = await axios.post(`${API_URL}/assignments/assign`, payload);
