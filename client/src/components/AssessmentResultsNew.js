@@ -2954,7 +2954,7 @@ const AssessmentResultsNew = () => {
     
     // Generate slide title based on index
     const getSlideTitle = (index) => {
-      if (index === 0) return 'Enterprise Data & AI Maturity Report';
+      if (index === 0) return ''; // No title on first slide
       if (index === 1) return 'Maturity Snapshot by Pillar';
       
       const pillarsArray = [
@@ -2971,9 +2971,8 @@ const AssessmentResultsNew = () => {
         const pillarIndex = Math.floor((index - 2) / 3);
         const slideType = (index - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
         const pillarName = pillarsArray[pillarIndex]?.name || '';
-        if (slideType === 0) return `${pillarName} - Capability Maturity`;
-        if (slideType === 1) return pillarName;
-        if (slideType === 2) return `${pillarName} - Next Steps`;
+        // All slide types just show pillar name (no suffix)
+        return pillarName;
       }
       return '';
     };
@@ -6272,7 +6271,7 @@ const AssessmentResultsNew = () => {
             </NavigationButton>
             
             <SlideHeading>
-              {currentSlide === 0 ? 'Enterprise Data & AI Maturity Report' : 
+              {currentSlide === 0 ? '' : 
                currentSlide === 1 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
@@ -6287,9 +6286,8 @@ const AssessmentResultsNew = () => {
                   const pillarIndex = Math.floor((currentSlide - 2) / 3);
                   const slideType = (currentSlide - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
                   const pillarName = pillarsArray[pillarIndex]?.name || '';
-                  if (slideType === 0) return `${pillarName} - Capability Maturity`;
-                  if (slideType === 1) return pillarName;
-                  if (slideType === 2) return `${pillarName} - Next Steps`;
+                  // All slide types just show pillar name (no suffix)
+                  return pillarName;
                 }
                 return '';
               })()}
