@@ -78,12 +78,28 @@ function App() {
   // Track pathname changes
   useEffect(() => {
     const updatePath = () => setCurrentPath(window.location.pathname);
+    
+    // Listen to popstate (back/forward buttons)
     window.addEventListener('popstate', updatePath);
-    // Also check on every render for pushState/replaceState
-    const interval = setInterval(updatePath, 100);
+    
+    // Intercept pushState and replaceState for React Router navigation
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+    
+    window.history.pushState = function(...args) {
+      originalPushState.apply(this, args);
+      updatePath();
+    };
+    
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(this, args);
+      updatePath();
+    };
+    
     return () => {
       window.removeEventListener('popstate', updatePath);
-      clearInterval(interval);
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
     };
   }, []);
 
