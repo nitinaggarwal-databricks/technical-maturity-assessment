@@ -92,31 +92,14 @@ function App() {
     loadCurrentSession();
   }, []);
 
-  // Load current session from localStorage
+  // REMOVED: localStorage caching was causing stale data issues
+  // Assessment data is now always fetched fresh from the server based on URL
   const loadCurrentSession = () => {
-    try {
-      const savedAssessment = localStorage.getItem('currentAssessment');
-      if (savedAssessment) {
-        const assessment = JSON.parse(savedAssessment);
-        setCurrentAssessment(assessment);
-      }
-    } catch (error) {
-      console.error('Error loading current session:', error);
-      localStorage.removeItem('currentAssessment');
-    }
+    // No-op: kept for compatibility
   };
 
-  // Save current session to localStorage
   const saveCurrentSession = (assessment) => {
-    try {
-      if (assessment) {
-        localStorage.setItem('currentAssessment', JSON.stringify(assessment));
-      } else {
-        localStorage.removeItem('currentAssessment');
-      }
-    } catch (error) {
-      console.error('Error saving current session:', error);
-    }
+    // No-op: kept for compatibility
   };
 
   // Load current assessment when URL changes
