@@ -74,12 +74,14 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
     const { consumerEmail, assessmentName, organizationName, assessmentDescription, consumerId, assessmentId: existingAssessmentId, message } = req.body;
     
     // Determine which format we're using
-    const useExistingAssessment = consumerId && existingAssessmentId;
+    const useExistingConsumerAndAssessment = consumerId && existingAssessmentId;
+    const useExistingAssessmentWithEmail = consumerEmail && existingAssessmentId && !assessmentName;
+    const createNewAssessment = consumerEmail && assessmentName;
     
     let consumer, assessmentId, assessmentData;
     
-    if (useExistingAssessment) {
-      // NEW FORMAT: Assign existing assessment to existing consumer
+    if (useExistingConsumerAndAssessment) {
+      // FORMAT 1: Assign existing assessment to existing consumer (by ID)
       consumer = await userRepository.findById(consumerId);
       if (!consumer) {
         return res.status(404).json({ error: 'Consumer not found' });
@@ -94,12 +96,8 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
       
       assessmentId = existingAssessmentId;
       
-    } else {
-      // OLD FORMAT: Create new assessment and optionally new consumer
-      if (!consumerEmail || !assessmentName) {
-        return res.status(400).json({ error: 'Consumer email and assessment name are required' });
-      }
-      
+    } else if (useExistingAssessmentWithEmail) {
+      // FORMAT 2: Assign existing assessment to consumer (by email, may create consumer)
       // Check if consumer exists, if not create them
       consumer = await userRepository.findByEmail(consumerEmail);
       
@@ -110,12 +108,44 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
           email: consumerEmail,
           password: tempPassword,
           role: 'consumer',
-          firstName: '',
-          lastName: '',
-          organization: organizationName || '',
+          firstName: req.body.firstName || '',
+          lastName: req.body.lastName || '',
+          organization: organizationName || req.body.organization || '',
           createdBy: req.user.id
         });
         
+        console.log('[Assignment] Created new consumer:', consumer.email);
+        // TODO: Send welcome email with temporary password
+      }
+      
+      // Get existing assessment from PostgreSQL
+      assessmentData = await assessmentRepository.findById(existingAssessmentId);
+      
+      if (!assessmentData) {
+        return res.status(404).json({ error: 'Assessment not found' });
+      }
+      
+      assessmentId = existingAssessmentId;
+      
+    } else if (createNewAssessment) {
+      // FORMAT 3: Create new assessment and optionally new consumer
+      // Check if consumer exists, if not create them
+      consumer = await userRepository.findByEmail(consumerEmail);
+      
+      if (!consumer) {
+        // Create new consumer user
+        const tempPassword = Math.random().toString(36).slice(-8);
+        consumer = await userRepository.createUser({
+          email: consumerEmail,
+          password: tempPassword,
+          role: 'consumer',
+          firstName: req.body.firstName || '',
+          lastName: req.body.lastName || '',
+          organization: organizationName || req.body.organization || '',
+          createdBy: req.user.id
+        });
+        
+        console.log('[Assignment] Created new consumer:', consumer.email);
         // TODO: Send welcome email with temporary password
       }
       
@@ -149,6 +179,10 @@ router.post('/assign', requireAuthorOrAdmin, async (req, res) => {
           error: 'Failed to create assessment in database. Please ensure PostgreSQL is configured.' 
         });
       }
+    } else {
+      return res.status(400).json({ 
+        error: 'Invalid request. Provide either: (consumerId + assessmentId) or (consumerEmail + assessmentId) or (consumerEmail + assessmentName)' 
+      });
     }
     
     // Create assignment (only if assessment exists in PostgreSQL)

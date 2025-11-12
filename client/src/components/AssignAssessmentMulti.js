@@ -396,13 +396,22 @@ const AssignAssessmentMulti = () => {
         if (isCreatingNewAssessment) {
           // Create new assessment for this consumer
           try {
-            await assignmentService.assignAssessment({
+            const assignmentData = {
               consumerEmail: consumer.email,
               assessmentName: formData.newAssessmentName,
               organizationName: formData.newAssessmentOrganization || consumer.organization,
               assessmentDescription: formData.newAssessmentDescription,
               message: formData.message
-            });
+            };
+            
+            // If creating a new consumer, include their details
+            if (consumer.isNew) {
+              assignmentData.firstName = consumer.firstName;
+              assignmentData.lastName = consumer.lastName;
+              assignmentData.organization = consumer.organization;
+            }
+            
+            await assignmentService.assignAssessment(assignmentData);
             successCount++;
           } catch (error) {
             console.error(`Failed to assign new assessment to ${consumer.email}:`, error);
@@ -413,9 +422,12 @@ const AssignAssessmentMulti = () => {
           for (const assessmentId of selectedAssessmentIds) {
             try {
               if (consumer.isNew) {
-                // For new consumers, use email-based assignment
+                // For new consumers, use email-based assignment with full details
                 await assignmentService.assignAssessment({
                   consumerEmail: consumer.email,
+                  firstName: consumer.firstName,
+                  lastName: consumer.lastName,
+                  organization: consumer.organization,
                   assessmentId: assessmentId,
                   message: formData.message
                 });
