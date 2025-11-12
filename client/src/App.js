@@ -30,6 +30,19 @@ import AssessmentDetails from './components/AssessmentDetails';
 
 // Services
 import * as assessmentService from './services/assessmentService';
+import authService from './services/authService';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = authService.isAuthenticated();
+  
+  if (!isAuthenticated) {
+    toast.error('Please login to access this page');
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
 
 // Global Print Styles - Applied across all components
 const GlobalPrintStyles = createGlobalStyle`
@@ -272,7 +285,11 @@ function App() {
           
           <Route 
             path="/insights-dashboard" 
-            element={<Dashboard />} 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
@@ -307,81 +324,127 @@ function App() {
           <Route 
             path="/start" 
             element={
-              <AssessmentStart 
-                onStart={startAssessment}
-              />
+              <ProtectedRoute>
+                <AssessmentStart 
+                  onStart={startAssessment}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/assessment/:assessmentId/:categoryId" 
             element={
-              <AssessmentQuestion 
-                framework={assessmentFramework}
-                currentAssessment={currentAssessment}
-                onUpdateStatus={updateAssessmentStatus}
-              />
+              <ProtectedRoute>
+                <AssessmentQuestion 
+                  framework={assessmentFramework}
+                  currentAssessment={currentAssessment}
+                  onUpdateStatus={updateAssessmentStatus}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/results/:assessmentId" 
             element={
-              <AssessmentResults 
-                currentAssessment={currentAssessment}
-                framework={assessmentFramework}
-              />
+              <ProtectedRoute>
+                <AssessmentResults 
+                  currentAssessment={currentAssessment}
+                  framework={assessmentFramework}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/executive/:assessmentId" 
-            element={<ExecutiveCommandCenter />} 
+            element={
+              <ProtectedRoute>
+                <ExecutiveCommandCenter />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
             path="/benchmarks/:assessmentId" 
-            element={<IndustryBenchmarkingReport />} 
+            element={
+              <ProtectedRoute>
+                <IndustryBenchmarkingReport />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
             path="/history/:assessmentId" 
-            element={<AssessmentHistory />} 
+            element={
+              <ProtectedRoute>
+                <AssessmentHistory />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
             path="/assessments" 
-            element={<AssessmentManagement />} 
+            element={
+              <ProtectedRoute>
+                <AssessmentManagement />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
             path="/my-assessments" 
-            element={<MyAssessments />}
+            element={
+              <ProtectedRoute>
+                <MyAssessments />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
             path="/user-management" 
-            element={<UserManagement />}
+            element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
             path="/assign-assessment" 
-            element={<AssignAssessmentMulti />}
+            element={
+              <ProtectedRoute>
+                <AssignAssessmentMulti />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
             path="/my-assignments" 
-            element={<AuthorAssignments />}
+            element={
+              <ProtectedRoute>
+                <AuthorAssignments />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
             path="/user-details/:userId" 
-            element={<UserDetails />}
+            element={
+              <ProtectedRoute>
+                <UserDetails />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
             path="/assessment-details/:assessmentId" 
-            element={<AssessmentDetails />}
+            element={
+              <ProtectedRoute>
+                <AssessmentDetails />
+              </ProtectedRoute>
+            }
           />
           
           <Route 

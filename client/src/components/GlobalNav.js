@@ -911,10 +911,16 @@ const GlobalNav = () => {
               </>
             ) : (
               <>
-                <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+                <SecondaryCTAButton onClick={() => {
+                  toast.error('Please login to access the Dashboard');
+                  setShowLoginModal(true);
+                }}>
                   Dashboard
                 </SecondaryCTAButton>
-                <SecondaryCTAButton onClick={handleTrySample}>
+                <SecondaryCTAButton onClick={() => {
+                  toast.error('Please login to try a sample assessment');
+                  setShowLoginModal(true);
+                }}>
                   <FiPlay size={14} />
                   Try Sample
                 </SecondaryCTAButton>
@@ -922,7 +928,10 @@ const GlobalNav = () => {
                   <FiLogIn size={14} />
                   Login
                 </SecondaryCTAButton>
-                <CTAButton onClick={() => navigate('/start')}>
+                <CTAButton onClick={() => {
+                  toast.error('Please login to start an assessment');
+                  setShowLoginModal(true);
+                }}>
                   Start Assessment →
                 </CTAButton>
               </>
@@ -982,10 +991,18 @@ const GlobalNav = () => {
           </>
         ) : (
           <>
-            <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to access the Dashboard');
+              setShowLoginModal(true);
+            }}>
               Dashboard
             </MobileSecondaryCTAButton>
-            <MobileSecondaryCTAButton onClick={handleTrySample}>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to try a sample assessment');
+              setShowLoginModal(true);
+            }}>
               <FiPlay size={16} />
               Try Sample
             </MobileSecondaryCTAButton>
@@ -996,7 +1013,11 @@ const GlobalNav = () => {
               <FiLogIn size={16} />
               Login
             </MobileSecondaryCTAButton>
-            <MobileCTAButton onClick={() => handleNavigate('/start')}>
+            <MobileCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to start an assessment');
+              setShowLoginModal(true);
+            }}>
               Start Assessment →
             </MobileCTAButton>
           </>
