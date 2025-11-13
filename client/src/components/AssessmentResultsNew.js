@@ -34,15 +34,14 @@ import Footer from './Footer';
 // STYLED COMPONENTS
 // =======================
 
-// Print slide container - EXACTLY matches slideshow SlideContainer styling
+// Print slide container - one page per slide
 const PrintSlide = styled.div`
   @media print {
     page-break-after: always;
     page-break-inside: avoid;
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
+    min-height: 100vh;
     height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -51,6 +50,7 @@ const PrintSlide = styled.div`
     align-items: center;
     justify-content: center;
     padding: 80px;
+    box-sizing: border-box;
     overflow: hidden;
     
     /* Enable background graphics */
@@ -3615,6 +3615,11 @@ const AssessmentResultsNew = () => {
         {printMode && results && (
           <div style={{ display: 'none' }} className="print-slides-container">
             <style>{`
+              @page {
+                size: letter;
+                margin: 0;
+              }
+              
               @media print {
                 body * {
                   visibility: hidden;
