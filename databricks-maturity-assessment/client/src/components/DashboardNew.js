@@ -25,10 +25,16 @@ import {
   FiArrowRight,
   FiRefreshCw,
   FiEye,
-  FiPlay
+  FiPlay,
+  FiPrinter,
+  FiChevronLeft,
+  FiChevronRight,
+  FiX
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // =====================
 // STYLED COMPONENTS
@@ -762,6 +768,165 @@ const LoadingText = styled.div`
   color: #1e293b;
 `;
 
+// Slideshow Styled Components
+const SlideContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #1e3a8a;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`;
+
+const SlideContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 60px 60px 60px;
+  position: relative;
+  overflow: auto;
+`;
+
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 1;
+  
+  &.left {
+    left: 0;
+  }
+  
+  &.right {
+    right: 0;
+  }
+`;
+
+const NavigationButton = styled(motion.button)`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  opacity: 0;
+
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &.prev {
+    left: 32px;
+  }
+
+  &.next {
+    right: 32px;
+  }
+`;
+
+const SlideCounter = styled.div`
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 0.938rem;
+  z-index: 10;
+  opacity: 0;
+
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+`;
+
+const ExitButton = styled(motion.button)`
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  opacity: 0;
+
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+`;
+
+const PrintButton = styled(motion.button)`
+  position: absolute;
+  top: 32px;
+  right: 96px;
+  background: rgba(34, 197, 94, 0.9);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.938rem;
+  transition: all 0.3s ease;
+  z-index: 10;
+  opacity: 0;
+
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(34, 197, 94, 1);
+    transform: scale(1.05);
+  }
+`;
+
 // =====================
 // SAMPLE DATA
 // =====================
@@ -941,6 +1106,11 @@ const Dashboard = () => {
   const [animatedCompleted, setAnimatedCompleted] = useState(0);
   const [animatedAvgScore, setAnimatedAvgScore] = useState(0);
   const [animatedAvgTime, setAnimatedAvgTime] = useState(0);
+
+  // Slideshow state
+  const [presentationMode, setPresentationMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 5;
 
   const fetchDashboardData = useCallback(async () => {
     // Prevent duplicate requests
@@ -1228,6 +1398,138 @@ const Dashboard = () => {
     }
   };
 
+  // Slideshow handlers
+  const startPresentation = () => {
+    setPresentationMode(true);
+    setCurrentSlide(0);
+  };
+
+  const exitPresentation = () => {
+    setPresentationMode(false);
+    setCurrentSlide(0);
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const previousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape') {
+        exitPresentation();
+      } else if (e.key === 'ArrowLeft') {
+        previousSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentSlide]);
+
+  // Print slideshow handler
+  const handlePrintSlideshow = async () => {
+    try {
+      toast.loading('Generating PDF...', { id: 'print-pdf' });
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: 'letter'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < totalSlides; i++) {
+        setCurrentSlide(i);
+        
+        // Wait for slide to render
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Wait for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Hide UI elements
+        const elementsToHide = document.querySelectorAll('[data-hide-on-print="true"]');
+        elementsToHide.forEach(el => {
+          el.style.display = 'none';
+        });
+
+        // Temporarily hide scrollbars
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        // Capture the full viewport
+        const canvas = await html2canvas(document.body, {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          scrollX: 0,
+          scrollY: 0,
+          allowTaint: true,
+          foreignObjectRendering: true,
+          backgroundColor: '#1e3a8a'
+        });
+
+        // Restore overflow
+        document.body.style.overflow = originalOverflow;
+
+        // Restore UI elements
+        elementsToHide.forEach(el => {
+          el.style.display = '';
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate aspect ratio to prevent stretching
+        const canvasAspect = canvas.width / canvas.height;
+        const pdfAspect = pdfWidth / pdfHeight;
+        
+        let finalWidth, finalHeight, xOffset, yOffset;
+        
+        if (canvasAspect > pdfAspect) {
+          // Canvas is wider - fit to width
+          finalWidth = pdfWidth;
+          finalHeight = pdfWidth / canvasAspect;
+          xOffset = 0;
+          yOffset = (pdfHeight - finalHeight) / 2;
+        } else {
+          // Canvas is taller - fit to height
+          finalHeight = pdfHeight;
+          finalWidth = pdfHeight * canvasAspect;
+          xOffset = (pdfWidth - finalWidth) / 2;
+          yOffset = 0;
+        }
+
+        if (i > 0) {
+          pdf.addPage();
+        }
+
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+
+        toast.loading(`Processing slide ${i + 1}/${totalSlides}...`, { id: 'print-pdf' });
+      }
+
+      pdf.save(`Insights-Dashboard-Slideshow.pdf`);
+      toast.success('PDF generated successfully!', { id: 'print-pdf' });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF', { id: 'print-pdf' });
+    }
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -1267,20 +1569,15 @@ const Dashboard = () => {
             </div>
             <ActionButtons>
               <ActionButton
-                onClick={handleExport}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                onClick={startPresentation}
+                style={{ 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  border: 'none'
+                }}
               >
-                <FiDownload />
-                Export Data
-              </ActionButton>
-              <ActionButton
-                onClick={handleShare}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FiShare2 />
-                Share
+                <FiPlay />
+                Start Slideshow
               </ActionButton>
             </ActionButtons>
           </HeaderTop>
@@ -1725,6 +2022,812 @@ const Dashboard = () => {
           </QuickActionCard>
         </QuickActionsGrid>
       </ContentContainer>
+
+      {/* Slideshow Mode */}
+      <AnimatePresence>
+        {presentationMode && (
+          <SlideContainer
+            className="insights-slideshow-slide"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ClickArea className="left" onClick={previousSlide} data-hide-on-print="true" />
+            <ClickArea className="right" onClick={nextSlide} data-hide-on-print="true" />
+
+            <NavigationButton 
+              className="prev" 
+              onClick={previousSlide}
+              disabled={currentSlide === 0}
+              data-hide-on-print="true"
+            >
+              <FiChevronLeft size={24} />
+            </NavigationButton>
+
+            <NavigationButton 
+              className="next" 
+              onClick={nextSlide}
+              disabled={currentSlide === totalSlides - 1}
+              data-hide-on-print="true"
+            >
+              <FiChevronRight size={24} />
+            </NavigationButton>
+
+            <SlideCounter data-hide-on-print="true">
+              {currentSlide + 1} / {totalSlides}
+            </SlideCounter>
+
+            <PrintButton onClick={handlePrintSlideshow} data-hide-on-print="true">
+              <FiPrinter size={18} />
+              Print PDF
+            </PrintButton>
+
+            <ExitButton onClick={exitPresentation} data-hide-on-print="true">
+              <FiX size={24} />
+            </ExitButton>
+
+            <SlideContent>
+              {currentSlide === 0 && (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  color: 'white',
+                  maxWidth: '900px'
+                }}>
+                  <motion.h1
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    style={{
+                      fontSize: '4rem',
+                      fontWeight: 700,
+                      marginBottom: '24px',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
+                    Insights Dashboard
+                  </motion.h1>
+                  <motion.p
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    style={{
+                      fontSize: '1.5rem',
+                      opacity: 0.9,
+                      marginBottom: '48px',
+                      lineHeight: 1.6
+                    }}
+                  >
+                    Real-time analytics across all Databricks maturity assessments
+                  </motion.p>
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gap: '32px',
+                      width: '100%',
+                      marginTop: '32px'
+                    }}
+                  >
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(10px)',
+                      padding: '24px',
+                      borderRadius: '16px',
+                      border: '2px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {dashboardData?.totalAssessments || 0}
+                      </div>
+                      <div style={{ fontSize: '1rem', opacity: 0.8 }}>Total Assessments</div>
+                    </div>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(10px)',
+                      padding: '24px',
+                      borderRadius: '16px',
+                      border: '2px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
+                      </div>
+                      <div style={{ fontSize: '1rem', opacity: 0.8 }}>Avg Maturity Score</div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+
+              {currentSlide === 1 && (
+                <div style={{
+                  width: '100%',
+                  maxWidth: '1600px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '60px 80px',
+                  maxHeight: '85vh',
+                  overflow: 'auto'
+                }}>
+                  <h2 style={{
+                    color: 'white',
+                    fontSize: '2.5rem',
+                    fontWeight: 700,
+                    marginBottom: '48px',
+                    textAlign: 'center'
+                  }}>
+                    Key Metrics & Industry Breakdown
+                  </h2>
+
+                  {/* Hero Metrics - 4 cards in a row */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gap: '24px',
+                    width: '100%',
+                    marginBottom: '48px'
+                  }}>
+                    <div style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      color: 'white',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, opacity: 0.9, marginBottom: '8px', textTransform: 'uppercase' }}>
+                        Total Assessments
+                      </div>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {dashboardData?.totalAssessments || 0}
+                      </div>
+                      <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>All time</div>
+                    </div>
+
+                    <div style={{
+                      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      color: 'white',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, opacity: 0.9, marginBottom: '8px', textTransform: 'uppercase' }}>
+                        Completed
+                      </div>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {dashboardData?.completedAssessments || 0}
+                      </div>
+                      <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+                        {completionRate}% completion rate
+                      </div>
+                    </div>
+
+                    <div style={{
+                      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      color: 'white',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, opacity: 0.9, marginBottom: '8px', textTransform: 'uppercase' }}>
+                        Avg Maturity Score
+                      </div>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
+                        <span style={{ fontSize: '1.5rem', opacity: 0.7 }}>/5.0</span>
+                      </div>
+                      <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Across all pillars</div>
+                    </div>
+
+                    <div style={{
+                      background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      color: 'white',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, opacity: 0.9, marginBottom: '8px', textTransform: 'uppercase' }}>
+                        Avg Completion Time
+                      </div>
+                      <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
+                        {dashboardData?.avgCompletionTime || dashboardData?.averageCompletionTime || 0}
+                        <span style={{ fontSize: '1.5rem', opacity: 0.7 }}>min</span>
+                      </div>
+                      <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Per assessment</div>
+                    </div>
+                  </div>
+
+                  {/* Industry Breakdown */}
+                  {industryBreakdown.length > 0 && (
+                    <>
+                      <h3 style={{
+                        color: 'white',
+                        fontSize: '1.75rem',
+                        fontWeight: 700,
+                        marginBottom: '24px',
+                        textAlign: 'center'
+                      }}>
+                        Industry Breakdown
+                      </h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '16px',
+                        width: '100%'
+                      }}>
+                        {industryBreakdown.slice(0, 6).map((industry) => (
+                          <div key={industry.industry} style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            padding: '20px',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
+                          }}>
+                            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1e293b', marginBottom: '12px' }}>
+                              {industry.industry}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '4px' }}>Assessments</div>
+                                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#3b82f6' }}>{industry.count}</div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '4px' }}>Avg Score</div>
+                                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#3b82f6' }}>
+                                  {industry.avgScore?.toFixed(1) || 'N/A'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {currentSlide === 2 && (
+                <div style={{
+                  width: '100%',
+                  maxWidth: '1600px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '60px 80px',
+                  maxHeight: '85vh',
+                  overflow: 'auto'
+                }}>
+                  <h2 style={{
+                    color: 'white',
+                    fontSize: '2.5rem',
+                    fontWeight: 700,
+                    marginBottom: '48px',
+                    textAlign: 'center'
+                  }}>
+                    Top Performers & Pillar Performance
+                  </h2>
+
+                  {/* Top Performers */}
+                  <div style={{
+                    width: '100%',
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '32px',
+                    marginBottom: '32px',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                  }}>
+                    <h3 style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 700,
+                      color: '#1e293b',
+                      marginBottom: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px'
+                    }}>
+                      <FiAward size={24} />
+                      Top Performers ({activeTab === 'fastest' ? 'Fastest' : 'Highest Score'})
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {topPerformers.slice(0, 3).map((performer, index) => (
+                        <div key={performer.id} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '20px',
+                          padding: '16px',
+                          background: '#f8fafc',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '12px'
+                        }}>
+                          <div style={{
+                            width: '48px',
+                            height: '48px',
+                            borderRadius: '12px',
+                            background: index === 0 ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' :
+                                       index === 1 ? 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)' :
+                                       'linear-gradient(135deg, #fb923c 0%, #ea580c 100%)',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.25rem',
+                            fontWeight: 700
+                          }}>
+                            {index + 1}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                              {performer.organizationName || 'Anonymous'}
+                            </div>
+                            <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                              {performer.industry} • {new Date(performer.startedAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#3b82f6' }}>
+                              {activeTab === 'fastest'
+                                ? (performer.completionTime !== null && performer.completionTime !== undefined 
+                                    ? `${performer.completionTime}min` 
+                                    : 'N/A')
+                                : (performer.overallScore || 0).toFixed(1)
+                              }
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              {activeTab === 'fastest' ? 'Completion Time' : 'Maturity Score'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Pillar Performance */}
+                  {dashboardData?.pillarBreakdown && dashboardData.pillarBreakdown.length > 0 && (
+                    <div style={{
+                      width: '100%',
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <h3 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 700,
+                        color: '#1e293b',
+                        marginBottom: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px'
+                      }}>
+                        <FiLayers size={24} />
+                        Pillar Performance Breakdown
+                      </h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '16px'
+                      }}>
+                        {dashboardData.pillarBreakdown.map((pillar) => (
+                          <div key={pillar.pillarId} style={{
+                            background: `linear-gradient(135deg, ${pillar.gradient})`,
+                            border: `2px solid ${pillar.color}`,
+                            borderRadius: '12px',
+                            padding: '20px'
+                          }}>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginBottom: '12px'
+                            }}>
+                              <div style={{
+                                fontSize: '0.938rem',
+                                fontWeight: 700,
+                                color: '#1e293b',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                              }}>
+                                {pillar.icon} {pillar.name}
+                              </div>
+                              <div style={{
+                                fontSize: '1.5rem',
+                                fontWeight: 700,
+                                color: pillar.color
+                              }}>
+                                {(pillar.avgScore || 0).toFixed(1)}
+                              </div>
+                            </div>
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              padding: '8px 0',
+                              fontSize: '0.813rem',
+                              color: '#64748b',
+                              borderTop: '1px solid #e2e8f0'
+                            }}>
+                              <span>Assessments</span>
+                              <span style={{ fontWeight: 700, color: '#1e293b' }}>{pillar.count || 0}</span>
+                            </div>
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              padding: '8px 0',
+                              fontSize: '0.813rem',
+                              color: '#64748b',
+                              borderTop: '1px solid #e2e8f0'
+                            }}>
+                              <span>Avg Gap</span>
+                              <span style={{ fontWeight: 700, color: '#1e293b' }}>{(pillar.avgGap || 0).toFixed(1)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {currentSlide === 3 && (
+                <div style={{
+                  width: '100%',
+                  maxWidth: '1400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '60px 80px',
+                  maxHeight: '85vh',
+                  overflow: 'auto'
+                }}>
+                  <h2 style={{
+                    color: 'white',
+                    fontSize: '2.5rem',
+                    fontWeight: 700,
+                    marginBottom: '48px',
+                    textAlign: 'center'
+                  }}>
+                    Key Insights & Trends
+                  </h2>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '24px',
+                    width: '100%'
+                  }}>
+                    {/* Key Trends */}
+                    <div style={{
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '20px'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <FiTrendingUp size={24} />
+                        </div>
+                        <h3 style={{
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          margin: 0
+                        }}>
+                          Key Trends
+                        </h3>
+                      </div>
+                      <div style={{
+                        fontSize: '0.938rem',
+                        lineHeight: 1.6,
+                        color: '#475569'
+                      }}>
+                        Analysis across all assessments reveals:
+                        <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px' }}>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Platform & Governance</strong> shows highest avg score ({dashboardData?.pillarBreakdown?.[0]?.avgScore?.toFixed(1) || 'N/A'}/5.0)
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Generative AI</strong> pillar has largest improvement gap
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            {completionRate}% of started assessments reach completion
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            Average time to complete: {dashboardData?.averageCompletionTime || 0} minutes
+                          </li>
+                        </ul>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          background: '#dcfce7',
+                          color: '#166534',
+                          borderRadius: '20px',
+                          fontSize: '0.813rem',
+                          fontWeight: 600,
+                          marginTop: '12px'
+                        }}>
+                          <FiTrendingUp size={14} />
+                          {dashboardData?.completedAssessments || 0} completed assessments
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Common Focus Areas */}
+                    <div style={{
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '20px'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <FiTarget size={24} />
+                        </div>
+                        <h3 style={{
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          margin: 0
+                        }}>
+                          Common Focus Areas
+                        </h3>
+                      </div>
+                      <div style={{
+                        fontSize: '0.938rem',
+                        lineHeight: 1.6,
+                        color: '#475569'
+                      }}>
+                        Organizations prioritize:
+                        <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px' }}>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Data Engineering & Integration</strong> - improving pipelines and workflows
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Generative AI adoption</strong> - exploring LLMs and AI agents
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Operational Excellence</strong> - enhancing monitoring and governance
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Analytics & BI</strong> - democratizing data access
+                          </li>
+                        </ul>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          background: '#fef3c7',
+                          color: '#92400e',
+                          borderRadius: '20px',
+                          fontSize: '0.813rem',
+                          fontWeight: 600,
+                          marginTop: '12px'
+                        }}>
+                          <FiZap size={14} />
+                          Top improvement areas
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentSlide === 4 && (
+                <div style={{
+                  width: '100%',
+                  maxWidth: '1400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '60px 80px',
+                  maxHeight: '85vh',
+                  overflow: 'auto'
+                }}>
+                  <h2 style={{
+                    color: 'white',
+                    fontSize: '2.5rem',
+                    fontWeight: 700,
+                    marginBottom: '48px',
+                    textAlign: 'center'
+                  }}>
+                    Industry Insights & Maturity Distribution
+                  </h2>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '24px',
+                    width: '100%'
+                  }}>
+                    {/* Industry Insights */}
+                    <div style={{
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '20px'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <FiAlertCircle size={24} />
+                        </div>
+                        <h3 style={{
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          margin: 0
+                        }}>
+                          Industry Insights
+                        </h3>
+                      </div>
+                      <div style={{
+                        fontSize: '0.938rem',
+                        lineHeight: 1.6,
+                        color: '#475569'
+                      }}>
+                        {industryBreakdown.length > 0 ? (
+                          <>
+                            <p style={{ marginBottom: '12px' }}>
+                              <strong>{industryBreakdown[0]?.industry}</strong> leads with {industryBreakdown[0]?.count} assessments
+                            </p>
+                            <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px' }}>
+                              <li style={{ marginBottom: '8px', color: '#64748b' }}>Financial Services: Focus on governance & compliance</li>
+                              <li style={{ marginBottom: '8px', color: '#64748b' }}>Technology: GenAI and ML adoption leaders</li>
+                              <li style={{ marginBottom: '8px', color: '#64748b' }}>Healthcare: Data engineering maturity growth</li>
+                              <li style={{ marginBottom: '8px', color: '#64748b' }}>Retail: Analytics & BI transformation</li>
+                            </ul>
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '6px 12px',
+                              background: '#dbeafe',
+                              color: '#1e40af',
+                              borderRadius: '20px',
+                              fontSize: '0.813rem',
+                              fontWeight: 600,
+                              marginTop: '12px'
+                            }}>
+                              <FiGlobe size={14} />
+                              {industryBreakdown.length} industries represented
+                            </div>
+                          </>
+                        ) : (
+                          <p>No industry data available yet.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Maturity Distribution */}
+                    <div style={{
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '32px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '20px'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <FiPieChart size={24} />
+                        </div>
+                        <h3 style={{
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          color: '#1e293b',
+                          margin: 0
+                        }}>
+                          Maturity Distribution
+                        </h3>
+                      </div>
+                      <div style={{
+                        fontSize: '0.938rem',
+                        lineHeight: 1.6,
+                        color: '#475569'
+                      }}>
+                        <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px' }}>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Level 5 (Optimizing):</strong> {Math.round((dashboardData?.maturityDistribution?.level5 || 0) * 100)}% of organizations
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Level 4 (Managed):</strong> {Math.round((dashboardData?.maturityDistribution?.level4 || 0) * 100)}%
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Level 3 (Defined):</strong> {Math.round((dashboardData?.maturityDistribution?.level3 || 0.3) * 100)}%
+                          </li>
+                          <li style={{ marginBottom: '8px', color: '#64748b' }}>
+                            <strong>Level 1-2 (Exploring/Emerging):</strong> {Math.round((dashboardData?.maturityDistribution?.level12 || 0.5) * 100)}%
+                          </li>
+                        </ul>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          background: '#fce7f3',
+                          color: '#9f1239',
+                          borderRadius: '20px',
+                          fontSize: '0.813rem',
+                          fontWeight: 600,
+                          marginTop: '12px'
+                        }}>
+                          <FiActivity size={14} />
+                          Average: {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}/5.0
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </SlideContent>
+          </SlideContainer>
+        )}
+      </AnimatePresence>
     </PageContainer>
   );
 };
