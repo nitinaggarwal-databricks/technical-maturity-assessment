@@ -65,11 +65,23 @@ const PrintStyles = styled.div`
       padding: 0;
     }
     
-    /* Ensure content flows properly */
+    /* Ensure content flows properly - keep sections together */
     section,
     article,
-    div[class*="Section"] {
-      page-break-inside: avoid;
+    div[class*="Section"],
+    div[class*="PillarCard"],
+    div[class*="Card"],
+    [class*="MaturityCard"],
+    [class*="InsightCard"],
+    [class*="RecommendationCard"] {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Prevent orphaned headers */
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
     }
     
     /* Show main report content */
