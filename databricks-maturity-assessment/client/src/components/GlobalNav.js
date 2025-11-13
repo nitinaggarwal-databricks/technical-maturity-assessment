@@ -400,15 +400,17 @@ const DropdownDivider = styled.div`
   margin: 8px 0;
 `;
 
-const DropdownEmailLink = styled.a`
+const DropdownEmailLink = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
   padding: 12px 20px;
+  background: none;
+  border: none;
   color: #6b7280;
   font-size: 0.875rem;
-  text-decoration: none;
+  text-align: left;
   transition: all 0.2s ease;
   cursor: pointer;
 
@@ -955,8 +957,12 @@ const GlobalNav = () => {
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownEmailLink 
-                      href="mailto:nitin.aggarwal@databricks.com"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText('nitin.aggarwal@databricks.com');
+                        toast.success('Email copied to clipboard!');
+                        setAdminDropdownOpen(false);
+                      }}
                     >
                       <FiMail />
                       nitin.aggarwal@databricks.com
