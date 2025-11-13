@@ -6,7 +6,9 @@ import toast from 'react-hot-toast';
 import { FiFileText, FiBriefcase, FiCalendar, FiArrowLeft, FiUser, FiCheckCircle, FiClock, FiEye, FiEdit } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+// Use relative URL in production (Railway), localhost in development
+const API_URL = process.env.REACT_APP_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:5001/api' : '/api');
 
 const PageContainer = styled.div`
   min-height: 100vh;

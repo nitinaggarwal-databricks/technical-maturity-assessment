@@ -6,6 +6,9 @@ import { FiUsers, FiUserPlus, FiEdit2, FiTrash2, FiCheck, FiX, FiSearch, FiFilte
 import authService from '../services/authService';
 import toast from 'react-hot-toast';
 
+// Use relative URL in production (Railway), localhost in development
+const API_URL = (window.location.hostname === 'localhost' ? 'http://localhost:5001/api' : '/api');
+
 // =====================
 // STYLED COMPONENTS
 // =====================
@@ -547,7 +550,7 @@ const UserManagement = () => {
     try {
       // Note: We need to add a delete endpoint to authService
       const sessionId = localStorage.getItem('sessionId');
-      const response = await fetch(`http://localhost:5001/api/auth/users/${userId}`, {
+      const response = await fetch(`${API_URL}/auth/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'x-session-id': sessionId
@@ -594,7 +597,7 @@ const UserManagement = () => {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`http://localhost:5001/api/auth/users/${editingUser.id}`, {
+      const response = await fetch(`${API_URL}/auth/users/${editingUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

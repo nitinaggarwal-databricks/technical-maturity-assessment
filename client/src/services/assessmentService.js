@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Use relative URLs by default (works in production when served from same domain)
-// For local development with separate servers, set REACT_APP_API_URL=http://localhost:5000/api in .env
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+// Use relative URL in production (Railway), localhost in development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:5001/api' : '/api');
 
 // Create axios instance with default config
 const api = axios.create({
