@@ -956,10 +956,7 @@ const GlobalNav = () => {
                     <DropdownDivider />
                     <DropdownEmailLink 
                       href="mailto:nitin.aggarwal@databricks.com"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = 'mailto:nitin.aggarwal@databricks.com';
-                      }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <FiMail />
                       nitin.aggarwal@databricks.com
