@@ -1112,7 +1112,7 @@ const IndustryBenchmarkingReport = () => {
 
   const handleDownloadReport = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    const toastId = 
     
     // Set print mode to render all slides
     setPrintMode(true);
@@ -1275,12 +1275,12 @@ const IndustryBenchmarkingReport = () => {
       const assessmentName = results?.assessmentInfo?.name || 'Industry-Benchmarking';
       pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
       
-      toast.success('PDF generated successfully!', { id: 'print-progress' });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
       // Restore scrollbars on error
       document.body.style.overflow = 'auto';
-      toast.error('Failed to generate PDF', { id: 'print-progress' });
+      
     }
   };
 

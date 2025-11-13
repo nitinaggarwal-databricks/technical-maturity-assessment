@@ -162,12 +162,12 @@ const UserEmailPrompt = ({ onSubmit, assessmentName }) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      toast.error('Please enter your email');
+      
       return;
     }
 
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      toast.error('Please enter a valid email address');
+      
       return;
     }
 
@@ -175,10 +175,10 @@ const UserEmailPrompt = ({ onSubmit, assessmentName }) => {
     try {
       // Store in sessionStorage
       sessionStorage.setItem('assessmentEditorEmail', email);
-      toast.success('Great! Your edits will be tracked.');
+      
       onSubmit(email);
     } catch (error) {
-      toast.error('Something went wrong');
+      
       setIsSubmitting(false);
     }
   };

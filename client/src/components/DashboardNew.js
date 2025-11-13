@@ -1271,7 +1271,7 @@ const Dashboard = () => {
   const handleExport = () => {
     try {
       if (!dashboardData) {
-        toast.error('No data available to export');
+        
         return;
       }
 
@@ -1376,10 +1376,10 @@ const Dashboard = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      toast.success('Dashboard data exported successfully!', { id: 'export' });
+      
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export dashboard data', { id: 'export' });
+      
     }
   };
 
@@ -1392,7 +1392,7 @@ const Dashboard = () => {
       }).catch(err => console.log('Error sharing:', err));
     } else {
       navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
+      
     }
   };
 
@@ -1524,10 +1524,10 @@ const Dashboard = () => {
       }
 
       pdf.save(`Insights-Dashboard-Slideshow.pdf`);
-      toast.success('PDF generated successfully!', { id: 'print-pdf' });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Failed to generate PDF', { id: 'print-pdf' });
+      
     }
   };
 

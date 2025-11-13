@@ -284,7 +284,7 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
         } catch (err) {
           console.error('Error loading assessment:', err);
           setError('Failed to load assessment');
-          toast.error('Failed to load assessment');
+          
         } finally {
           setLoading(false);
         }

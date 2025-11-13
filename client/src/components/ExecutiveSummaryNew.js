@@ -714,7 +714,7 @@ const ExecutiveSummaryNew = () => {
     setRoadmapCustomizations(newCustomizations);
     setEditingRoadmapCard(null);
     setEditingCardContent({});
-    toast.success('Roadmap item saved!');
+    
   };
 
   const handleCancelRoadmapEdit = () => {
@@ -726,7 +726,7 @@ const ExecutiveSummaryNew = () => {
     const newCustomizations = { ...roadmapCustomizations };
     delete newCustomizations[index];
     setRoadmapCustomizations(newCustomizations);
-    toast.success('Customization removed, showing original content');
+    
   };
 
   // Get roadmap item data (use customization if exists, otherwise use original)
@@ -750,7 +750,7 @@ const ExecutiveSummaryNew = () => {
   const handleSaveStrategicSection = () => {
     setEditedContent({ ...editedContent, strategicSituation: tempStrategicContent });
     setEditingStrategicSection(false);
-    toast.success('Strategic situation updated!');
+    
   };
 
   const handleCancelStrategicEdit = () => {
@@ -773,13 +773,13 @@ const ExecutiveSummaryNew = () => {
       const result = generateProfessionalReport(resultsData, assessmentInfo);
       
       if (result.success) {
-        toast.success('PDF downloaded successfully!', { id: 'pdf-export' });
+        
       } else {
         throw new Error(result.error || 'Failed to generate PDF');
       }
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast.error(`Failed to export PDF: ${error.message}`, { id: 'pdf-export' });
+      
     } finally {
       setExporting(false);
     }
@@ -797,10 +797,10 @@ const ExecutiveSummaryNew = () => {
         resultsData?.assessmentInfo?.assessmentName || 'Assessment'
       );
       
-      toast.success('Excel downloaded successfully!', { id: 'excel-export' });
+      
     } catch (error) {
       console.error('Error exporting Excel:', error);
-      toast.error('Failed to export Excel', { id: 'excel-export' });
+      
     } finally {
       setExporting(false);
     }
@@ -1028,13 +1028,13 @@ const ExecutiveSummaryNew = () => {
                       transformationRoadmap: roadmapItems
                     }));
                     
-                    toast.success('Refreshed with your assessment data!', { id: 'refresh' });
+                    
                   } else {
                     throw new Error('Failed to regenerate');
                   }
                 } catch (error) {
                   console.error('Error refreshing:', error);
-                  toast.error('Error refreshing. Please try again.', { id: 'refresh' });
+                  
                 }
               }}
               whileHover={{ scale: 1.02 }}

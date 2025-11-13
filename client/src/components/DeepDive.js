@@ -1906,7 +1906,7 @@ const DeepDive = () => {
   // Print handler
   const handlePrint = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    const toastId = 
     
     // Set print mode to render all slides
     setPrintMode(true);
@@ -3089,10 +3089,10 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
     
     if (type === 'objective') {
       setObjectives(prev => prev.filter(obj => obj.id !== itemId));
-      toast.success('Objective deleted successfully');
+      
     } else if (type === 'category') {
       setCategories(prev => prev.filter(cat => cat.id !== itemId));
-      toast.success('Category deleted successfully');
+      
     } else if (type === 'sub-category') {
       // Delete sub-category from its parent category
       if (itemId.subCat && itemId.categoryId) {
@@ -3105,52 +3105,52 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           }
           return cat;
         }));
-        toast.success('Sub-category deleted successfully');
+        
       }
     } else if (type === 'success plan') {
       setTechnicalSuccessPlan(prev => prev.filter(item => item.id !== itemId));
-      toast.success('Success Plan item deleted successfully');
+      
     } else if (type === 'plan-need') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === itemId.planId ? { ...plan, need: '' } : plan
       ));
-      toast.success('Need deleted successfully');
+      
     } else if (type === 'plan-activities') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === itemId.planId ? { ...plan, activities: [] } : plan
       ));
-      toast.success('Activities deleted successfully');
+      
     } else if (type === 'plan-outcome') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === itemId.planId ? { ...plan, outcome: '' } : plan
       ));
-      toast.success('Outcome deleted successfully');
+      
     } else if (type === 'activity-item') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === itemId.planId 
           ? { ...plan, activities: plan.activities.filter((_, idx) => idx !== itemId.index) } 
           : plan
       ));
-      toast.success('Activity deleted successfully');
+      
     } else if (type === 'approach-item') {
       setEngagementScenarios(prev => prev.map(scenario => 
         scenario.id === itemId.scenarioId 
           ? { ...scenario, approach: scenario.approach.filter((_, idx) => idx !== itemId.index) } 
           : scenario
       ));
-      toast.success('Approach item deleted successfully');
+      
     } else if (type === 'engagement plan') {
       setEngagementPlan(prev => prev.filter(item => item.id !== itemId));
-      toast.success('Engagement Plan item deleted successfully');
+      
     } else if (type === 'scenario') {
       setEngagementScenarios(prev => prev.filter(item => item.id !== itemId));
-      toast.success('Scenario deleted successfully');
+      
     } else if (type === 'analysis') {
       setAnalysisActions(prev => prev.filter(item => item.id !== itemId));
-      toast.success('Analysis deleted successfully');
+      
     } else if (type === 'maturity matrix') {
       setMaturityMatrices(prev => prev.filter(item => item.id !== itemId));
-      toast.success('Maturity Matrix deleted successfully');
+      
     } else if (type === 'cell') {
       setMaturityMatrices(prev => prev.map(matrix => 
         matrix.id === itemId.matrixId 
@@ -3169,7 +3169,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }
           : matrix
       ));
-      toast.success('Cell content cleared successfully');
+      
     }
   };
 
@@ -3182,7 +3182,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
         setObjectives(prev => prev.map(obj => 
           obj.id === editingItem.id ? { ...formData, id: editingItem.id } : obj
         ));
-        toast.success('Objective updated successfully');
+        
       } else {
         // Add new
         const newObjective = {
@@ -3193,7 +3193,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           height: null
         };
         setObjectives(prev => [...prev, newObjective]);
-        toast.success('Objective added successfully');
+        
       }
     } else if (modalType === 'category') {
       if (editingItem) {
@@ -3208,7 +3208,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               } 
             : cat
         ));
-        toast.success('Category updated successfully');
+        
       } else {
         // Add new category
         const colors = ['#f97316', '#3b82f6', '#10b981', '#dc2626', '#8b5cf6', '#64748b', '#ec4899', '#f59e0b'];
@@ -3224,7 +3224,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           description: formData.description
         };
         setCategories(prev => [...prev, newCategory]);
-        toast.success(`Category "${formData.title}" added successfully`);
+        
       }
     } else if (modalType === 'success plan') {
       if (editingItem) {
@@ -3233,7 +3233,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             ? { ...item, category: formData.title, color: formData.borderColor || item.color }
             : item
         ));
-        toast.success('Success Plan updated successfully');
+        
       } else {
         const colors = ['#f97316', '#3b82f6', '#10b981', '#dc2626', '#8b5cf6', '#c2185b'];
         const newItem = {
@@ -3245,7 +3245,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           outcome: ''
         };
         setTechnicalSuccessPlan(prev => [...prev, newItem]);
-        toast.success(`Success Plan item "${formData.title}" added successfully`);
+        
       }
     } else if (modalType === 'plan-need') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
@@ -3253,7 +3253,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           ? { ...plan, need: formData.description }
           : plan
       ));
-      toast.success('Need updated successfully');
+      
     } else if (modalType === 'plan-activities') {
       const activitiesArray = formData.description.split('\n').filter(line => line.trim() !== '');
       setTechnicalSuccessPlan(prev => prev.map(plan => 
@@ -3261,14 +3261,14 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           ? { ...plan, activities: activitiesArray }
           : plan
       ));
-      toast.success('Activities updated successfully');
+      
     } else if (modalType === 'plan-outcome') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === editingItem.plan.id 
           ? { ...plan, outcome: formData.description }
           : plan
       ));
-      toast.success('Outcome updated successfully');
+      
     } else if (modalType === 'activity-item') {
       setTechnicalSuccessPlan(prev => prev.map(plan => 
         plan.id === editingItem.plan.id 
@@ -3280,7 +3280,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }
           : plan
       ));
-      toast.success('Activity updated successfully');
+      
     } else if (modalType === 'approach-item') {
       setEngagementScenarios(prev => prev.map(scenario => 
         scenario.id === editingItem.scenario.id 
@@ -3292,7 +3292,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }
           : scenario
       ));
-      toast.success('Approach item updated successfully');
+      
     } else if (modalType === 'engagement plan') {
       if (editingItem) {
         setEngagementPlan(prev => prev.map(item => 
@@ -3300,7 +3300,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             ? { ...item, time: formData.title, engagement: formData.description || '', focusArea: formData.content || '' }
             : item
         ));
-        toast.success('Engagement Plan updated successfully');
+        
       } else {
         const newItem = {
           id: `ep-${Date.now()}`,
@@ -3309,7 +3309,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           focusArea: formData.content || ''
         };
         setEngagementPlan(prev => [...prev, newItem]);
-        toast.success(`Engagement Plan item added successfully`);
+        
       }
     } else if (modalType === 'scenario') {
       if (editingItem) {
@@ -3318,7 +3318,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             ? { ...item, title: formData.title, scenario: formData.description, approach: [] }
             : item
         ));
-        toast.success('Scenario updated successfully');
+        
       } else {
         const colors = ['#f97316', '#3b82f6', '#10b981', '#dc2626', '#8b5cf6'];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -3331,7 +3331,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           approach: []
         };
         setEngagementScenarios(prev => [...prev, newItem]);
-        toast.success(`Scenario "${formData.title}" added successfully`);
+        
       }
     } else if (modalType === 'analysis') {
       if (editingItem) {
@@ -3340,7 +3340,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             ? { ...item, title: formData.title, stages: [] }
             : item
         ));
-        toast.success('Analysis updated successfully');
+        
       } else {
         const colors = ['#f97316', '#3b82f6', '#10b981', '#dc2626', '#8b5cf6', '#64748b'];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -3352,7 +3352,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           stages: []
         };
         setAnalysisActions(prev => [...prev, newItem]);
-        toast.success(`Analysis "${formData.title}" added successfully`);
+        
       }
     } else if (modalType === 'stage') {
       setAnalysisActions(prev => prev.map(analysis => 
@@ -3371,7 +3371,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }
           : analysis
       ));
-      toast.success('Stage updated successfully');
+      
     } else if (modalType === 'maturity matrix') {
       if (editingItem) {
         setMaturityMatrices(prev => prev.map(item => 
@@ -3379,7 +3379,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             ? { ...item, title: formData.title, dimensions: [] }
             : item
         ));
-        toast.success('Maturity Matrix updated successfully');
+        
       } else {
         const colors = ['#f97316', '#3b82f6', '#10b981', '#dc2626', '#8b5cf6', '#64748b'];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -3391,7 +3391,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           dimensions: []
         };
         setMaturityMatrices(prev => [...prev, newItem]);
-        toast.success(`Maturity Matrix "${formData.title}" added successfully`);
+        
       }
     } else if (modalType === 'cell') {
       setMaturityMatrices(prev => prev.map(matrix => 
@@ -3411,11 +3411,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             }
           : matrix
       ));
-      toast.success('Cell updated successfully');
+      
     } else {
       // Fallback for any other types
       const itemName = modalType.charAt(0).toUpperCase() + modalType.slice(1);
-      toast.success(`${itemName} "${formData.title || 'item'}" added successfully`);
+      
       console.log(`${modalType} data:`, formData);
     }
     

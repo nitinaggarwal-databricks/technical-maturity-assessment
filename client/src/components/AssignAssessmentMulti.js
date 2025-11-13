@@ -334,7 +334,7 @@ const AssignAssessmentMulti = () => {
       setAssessments(assessmentsData);
     } catch (error) {
       console.error('Error loading data:', error);
-      toast.error('Failed to load data');
+      
     }
   };
 
@@ -343,25 +343,25 @@ const AssignAssessmentMulti = () => {
     
     // Validation for consumers
     if (!isCreatingNewConsumer && selectedUserIds.length === 0) {
-      toast.error('Please select at least one consumer or create a new one');
+      
       return;
     }
 
     if (isCreatingNewConsumer) {
       if (!formData.newConsumerFirstName || !formData.newConsumerLastName || !formData.newConsumerEmail) {
-        toast.error('Please fill in all required consumer fields (First Name, Last Name, Email)');
+        
         return;
       }
     }
 
     // Validation for assessments
     if (!isCreatingNewAssessment && selectedAssessmentIds.length === 0) {
-      toast.error('Please select at least one assessment or create a new one');
+      
       return;
     }
 
     if (isCreatingNewAssessment && !formData.newAssessmentName) {
-      toast.error('Please enter assessment name');
+      
       return;
     }
 
@@ -449,16 +449,16 @@ const AssignAssessmentMulti = () => {
       }
 
       if (successCount > 0) {
-        toast.success(`Successfully created ${successCount} assignment(s)`);
+        
         navigate('/my-assignments');
       }
       
       if (failCount > 0) {
-        toast.error(`Failed to create ${failCount} assignment(s)`);
+        
       }
     } catch (error) {
       console.error('Error assigning assessments:', error);
-      toast.error('Failed to assign assessments');
+      
     } finally {
       setSubmitting(false);
     }

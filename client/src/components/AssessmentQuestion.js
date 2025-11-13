@@ -1000,10 +1000,10 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           
           // If assessment not found, redirect to assessments list
           if (error.message?.includes('Assessment not found') || error.message?.includes('404')) {
-            toast.error('Assessment not found. Redirecting to assessments list...');
+            
             setTimeout(() => navigate('/assessments'), 2000);
           } else {
-            toast.error('Failed to load assessment data');
+            
           }
           
           setLoading(false);
@@ -1192,7 +1192,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         setAutoSaveStatus('saved');
         setLastSaved(result.lastSaved);
         // Optional: Show subtle success toast
-        // toast.success('Progress saved', { duration: 1000 });
+        // 
       } else {
         setAutoSaveStatus('error');
         console.error('Auto-save failed:', result.error);
@@ -1222,7 +1222,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     });
     
     setResponses(updatedResponses);
-    toast.success(`All Current States set to Level ${level}`, { duration: 2000 });
+    
     setAutoSaveStatus('saving');
     
     // Save all changes
@@ -1242,7 +1242,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setLastSaved(new Date());
     } catch (error) {
       setAutoSaveStatus('error');
-      toast.error('Failed to save bulk changes');
+      
     }
   };
 
@@ -1254,9 +1254,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     
     if (unansweredIndex !== -1) {
       setCurrentQuestionIndex(unansweredIndex);
-      toast.success('Jumped to next unanswered question', { duration: 1500 });
+      
     } else {
-      toast('All questions answered! 🎉', { icon: '✅', duration: 2000 });
+      
     }
   };
 
@@ -1396,7 +1396,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
   const handleNext = () => {
     if (!validateCurrentQuestion()) {
-      toast.error('Please answer all perspectives for this question');
+      
       return;
     }
 
@@ -1427,11 +1427,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         // Go to previous pillar
         const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
         navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
-        toast(`Navigating back to ${previousPillar.name}...`, { icon: 'ℹ️' });
+        
       } else {
         // First question of first pillar - go to assessment list
         navigate('/assessments');
-        toast('Returning to assessments list...', { icon: 'ℹ️' });
+        
       }
     }
   };
@@ -1447,7 +1447,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      toast.success(`${currentArea.name} completed!`);
+      
       
       // Update assessment status and get the latest state
       let updatedAssessment = currentAssessment;
@@ -1478,7 +1478,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setShowCompletionDialog(true);
     } catch (error) {
       console.error('Error submitting area responses:', error);
-      toast.error('Failed to submit responses. Please try again.');
+      
     } finally {
       setIsSubmitting(false);
     }
@@ -1487,7 +1487,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const handleContinueToNextPillar = () => {
     setShowCompletionDialog(false);
     if (nextPillarInfo) {
-      toast.success(`Moving to ${nextPillarInfo.name}...`);
+      
       setTimeout(() => {
         navigate(`/assessment/${assessmentId}/${nextPillarInfo.id}`);
       }, 500);
@@ -1530,7 +1530,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       navigate(`/results/${assessmentId}`);
     } catch (error) {
       console.error('Error submitting assessment:', error);
-      toast.error('Failed to submit assessment. Please try again.');
+      
       setIsSubmittingReport(false);
     }
   };

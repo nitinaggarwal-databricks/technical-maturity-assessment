@@ -640,7 +640,7 @@ const AssessmentsListNew = () => {
       setAssessments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching assessments:', error);
-      toast.error('Failed to load assessments');
+      
       setAssessments([]);
     } finally {
       setLoading(false);
@@ -653,13 +653,13 @@ const AssessmentsListNew = () => {
       const result = await assessmentService.deleteAllAssessments();
       
       if (result && result.success) {
-        toast.success(`Successfully deleted ${result.deletedCount} assessment(s)`, { id: 'delete-all' });
+        
         setShowDeleteAllConfirm(false);
         await fetchAssessments(); // Refresh the list
       }
     } catch (error) {
       console.error('Error deleting all assessments:', error);
-      toast.error('Failed to delete all assessments', { id: 'delete-all' });
+      
     }
   };
 
@@ -669,13 +669,13 @@ const AssessmentsListNew = () => {
       const result = await assessmentService.generateSampleAssessment(level);
       
       if (result && result.id) {
-        toast.success('Sample assessment generated!', { id: 'sample' });
+        
         await fetchAssessments();
         navigate(`/results/${result.id}`);
       }
     } catch (error) {
       console.error('Error generating sample:', error);
-      toast.error('Failed to generate sample assessment', { id: 'sample' });
+      
     }
   };
 
@@ -684,10 +684,10 @@ const AssessmentsListNew = () => {
     try {
       toast.loading('Exporting assessment...', { id: 'export' });
       await exportAssessmentToExcel(assessmentId, assessmentName);
-      toast.success('Assessment exported successfully!', { id: 'export' });
+      
     } catch (error) {
       console.error('Error exporting:', error);
-      toast.error('Failed to export assessment', { id: 'export' });
+      
     }
   };
 
@@ -706,13 +706,13 @@ const AssessmentsListNew = () => {
       };
       
       const result = await assessmentService.cloneAssessment(assessment.id || assessment.assessmentId, clonedData);
-      toast.success('Assessment cloned successfully!', { id: 'clone' });
+      
       
       // Refresh the assessments list
       await fetchAssessments();
     } catch (error) {
       console.error('Error cloning assessment:', error);
-      toast.error('Failed to clone assessment', { id: 'clone' });
+      
     }
   };
 
@@ -727,13 +727,13 @@ const AssessmentsListNew = () => {
     try {
       toast.loading('Deleting assessment...', { id: 'delete' });
       await assessmentService.deleteAssessment(assessmentId);
-      toast.success('Assessment deleted successfully!', { id: 'delete' });
+      
       
       // Refresh the assessments list
       await fetchAssessments();
     } catch (error) {
       console.error('Error deleting assessment:', error);
-      toast.error('Failed to delete assessment', { id: 'delete' });
+      
     }
   };
 

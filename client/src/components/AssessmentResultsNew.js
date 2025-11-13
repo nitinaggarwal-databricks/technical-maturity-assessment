@@ -1691,7 +1691,7 @@ const AssessmentResultsNew = () => {
       setResults(resultsData);
       
       if (showRefreshToast) {
-        toast.success('Results refreshed successfully!', { id: 'refresh-results' });
+        
       }
     } catch (err) {
       console.error('[AssessmentResultsNew] Error fetching results:', err);
@@ -1700,7 +1700,7 @@ const AssessmentResultsNew = () => {
       setResults(null);
       
       if (showRefreshToast) {
-        toast.error('Failed to refresh results', { id: 'refresh-results' });
+        
       }
     } finally {
       setLoading(false);
@@ -1831,7 +1831,7 @@ const AssessmentResultsNew = () => {
     };
     setCustomizations(newCustomizations);
     setEditingPillar(null);
-    toast.success('Pillar content saved!');
+    
   };
 
   const handleCancelPillarEdit = () => {
@@ -1843,7 +1843,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     delete newCustomizations.pillars[pillarId];
     setCustomizations(newCustomizations);
-    toast.success('Customization removed, showing original content');
+    
   };
 
   // Edit handlers for phase cards
@@ -1857,7 +1857,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.phases[phaseId] = editedContent.items.split('\n').filter(line => line.trim());
     setCustomizations(newCustomizations);
     setEditingPhase(null);
-    toast.success('Phase content saved!');
+    
   };
 
   const handleCancelPhaseEdit = () => {
@@ -1869,7 +1869,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     delete newCustomizations.phases[phaseId];
     setCustomizations(newCustomizations);
-    toast.success('Customization removed, showing original content');
+    
   };
 
   // Edit handlers for individual phase items
@@ -1891,7 +1891,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.phases[phaseId] = updatedItems;
     setCustomizations(newCustomizations);
     setEditingPhaseItem(null);
-    toast.success('Phase item updated!');
+    
   };
 
   const handleDeletePhaseItem = (phaseId, itemIndex) => {
@@ -1906,7 +1906,7 @@ const AssessmentResultsNew = () => {
     const updatedItems = currentPhase.items.filter((_, idx) => idx !== itemIndex);
     newCustomizations.phases[phaseId] = updatedItems;
     setCustomizations(newCustomizations);
-    toast.success('Phase item deleted!');
+    
   };
 
 
@@ -2006,10 +2006,10 @@ const AssessmentResultsNew = () => {
       const fileName = `${results.assessmentInfo?.assessmentName || 'Maturity-Report'}-Slideshow.pdf`;
       pdf.save(fileName);
       
-      toast.success('PDF downloaded successfully!', { id: toastId });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Failed to generate PDF', { id: toastId });
+      
     }
   };
 
@@ -2023,10 +2023,10 @@ const AssessmentResultsNew = () => {
         results.assessmentInfo?.assessmentName || 'Assessment'
       );
       
-      toast.success('Excel downloaded successfully!', { id: 'excel-export' });
+      
     } catch (error) {
       console.error('Error exporting Excel:', error);
-      toast.error('Failed to export Excel', { id: 'excel-export' });
+      
     } finally {
       setExporting(false);
     }
@@ -2150,7 +2150,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.goodItems[key] = editedContent[key];
     setCustomizations(newCustomizations);
     setEditingGoodItem(null);
-    toast.success('Item saved!');
+    
   };
 
   // Edit handlers for Bad Items ("Key Challenges")
@@ -2169,7 +2169,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.badItems[key] = editedContent[key];
     setCustomizations(newCustomizations);
     setEditingBadItem(null);
-    toast.success('Item saved!');
+    
   };
 
   // Delete handlers for Good Items
@@ -2178,7 +2178,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     newCustomizations.goodItems[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
-    toast.success('Item deleted!');
+    
   };
 
   // Delete handlers for Bad Items
@@ -2187,7 +2187,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     newCustomizations.badItems[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
-    toast.success('Item deleted!');
+    
   };
 
   // Delete handlers for Features
@@ -2196,7 +2196,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     newCustomizations.features[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
-    toast.success('Feature deleted!');
+    
   };
 
   // Delete handlers for Next Steps
@@ -2205,7 +2205,7 @@ const AssessmentResultsNew = () => {
     const newCustomizations = { ...customizations };
     newCustomizations.nextSteps[key] = null; // Mark as deleted
     setCustomizations(newCustomizations);
-    toast.success('Next step deleted!');
+    
   };
 
   // Add handlers for phase items
@@ -2220,7 +2220,7 @@ const AssessmentResultsNew = () => {
   const handleSaveNewPhaseItem = (phaseId) => {
     const newText = editedContent[`new-phase-${phaseId}`];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2231,7 +2231,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.newPhaseItems[phaseId].push(newText.trim());
     setCustomizations(newCustomizations);
     setAddingPhaseItem(null);
-    toast.success('Item added!');
+    
   };
 
   // Add handlers for impact metrics
@@ -2251,7 +2251,7 @@ const AssessmentResultsNew = () => {
     const newDrivers = editedContent['new-metric-drivers'];
     
     if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
-      toast.error('Please enter both metric value and label');
+      
       return;
     }
     
@@ -2266,7 +2266,7 @@ const AssessmentResultsNew = () => {
     });
     setCustomizations(newCustomizations);
     setAddingImpactMetric(false);
-    toast.success('Metric added!');
+    
   };
 
   // Edit handlers for impact metrics
@@ -2286,7 +2286,7 @@ const AssessmentResultsNew = () => {
     const newDrivers = editedContent[`${metricKey}-drivers`];
     
     if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
-      toast.error('Please enter both metric value and label');
+      
       return;
     }
     
@@ -2302,7 +2302,7 @@ const AssessmentResultsNew = () => {
       }
     });
     setEditingImpactMetric(null);
-    toast.success('Metric updated!');
+    
   };
 
   const handleDeleteImpactMetric = (metricKey) => {
@@ -2313,7 +2313,7 @@ const AssessmentResultsNew = () => {
         [metricKey]: null // Mark as deleted
       }
     });
-    toast.success('Metric deleted!');
+    
   };
 
   const handleDeleteNewImpactMetric = (index) => {
@@ -2323,7 +2323,7 @@ const AssessmentResultsNew = () => {
       ...customizations,
       newImpactMetrics: newMetrics
     });
-    toast.success('Metric deleted!');
+    
   };
 
   const handleEditNewImpactMetric = (metricIndex, metric) => {
@@ -2344,7 +2344,7 @@ const AssessmentResultsNew = () => {
     const newDrivers = editedContent[`${key}-drivers`];
     
     if (!newValue || !newValue.trim() || !newLabel || !newLabel.trim()) {
-      toast.error('Please enter metric value and label');
+      
       return;
     }
     
@@ -2361,7 +2361,7 @@ const AssessmentResultsNew = () => {
       newImpactMetrics: newMetrics
     });
     setEditingImpactMetric(null);
-    toast.success('Metric updated!');
+    
   };
 
   // Edit handlers for newly added items
@@ -2378,7 +2378,7 @@ const AssessmentResultsNew = () => {
     const key = `${pillarId}-new-${itemIndex}`;
     const newText = editedContent[key];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2386,14 +2386,14 @@ const AssessmentResultsNew = () => {
     newCustomizations.newGoodItems[pillarId][itemIndex] = newText.trim();
     setCustomizations(newCustomizations);
     setEditingNewGoodItem(null);
-    toast.success('Item updated!');
+    
   };
 
   const handleDeleteNewGoodItem = (pillarId, itemIndex) => {
     const newCustomizations = { ...customizations };
     newCustomizations.newGoodItems[pillarId].splice(itemIndex, 1);
     setCustomizations(newCustomizations);
-    toast.success('Item deleted!');
+    
   };
 
   const handleEditNewBadItem = (pillarId, itemIndex, text) => {
@@ -2409,7 +2409,7 @@ const AssessmentResultsNew = () => {
     const key = `${pillarId}-new-${itemIndex}`;
     const newText = editedContent[key];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2417,14 +2417,14 @@ const AssessmentResultsNew = () => {
     newCustomizations.newBadItems[pillarId][itemIndex] = newText.trim();
     setCustomizations(newCustomizations);
     setEditingNewBadItem(null);
-    toast.success('Challenge updated!');
+    
   };
 
   const handleDeleteNewBadItem = (pillarId, itemIndex) => {
     const newCustomizations = { ...customizations };
     newCustomizations.newBadItems[pillarId].splice(itemIndex, 1);
     setCustomizations(newCustomizations);
-    toast.success('Challenge deleted!');
+    
   };
 
   const handleEditNewFeature = (pillarId, featureIndex, feature) => {
@@ -2443,7 +2443,7 @@ const AssessmentResultsNew = () => {
     const newDesc = editedContent[`${key}-desc`];
     
     if (!newName || !newName.trim()) {
-      toast.error('Please enter a feature name');
+      
       return;
     }
     
@@ -2456,14 +2456,14 @@ const AssessmentResultsNew = () => {
     };
     setCustomizations(newCustomizations);
     setEditingNewFeature(null);
-    toast.success('Feature updated!');
+    
   };
 
   const handleDeleteNewFeature = (pillarId, featureIndex) => {
     const newCustomizations = { ...customizations };
     newCustomizations.newFeatures[pillarId].splice(featureIndex, 1);
     setCustomizations(newCustomizations);
-    toast.success('Feature deleted!');
+    
   };
 
   const handleEditNewNextStep = (pillarId, stepIndex, step) => {
@@ -2479,7 +2479,7 @@ const AssessmentResultsNew = () => {
     const key = `${pillarId}-new-step-${stepIndex}`;
     const newText = editedContent[key];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2487,14 +2487,14 @@ const AssessmentResultsNew = () => {
     newCustomizations.newNextSteps[pillarId][stepIndex] = newText.trim();
     setCustomizations(newCustomizations);
     setEditingNewNextStep(null);
-    toast.success('Next step updated!');
+    
   };
 
   const handleDeleteNewNextStep = (pillarId, stepIndex) => {
     const newCustomizations = { ...customizations };
     newCustomizations.newNextSteps[pillarId].splice(stepIndex, 1);
     setCustomizations(newCustomizations);
-    toast.success('Next step deleted!');
+    
   };
 
   // Add handlers for new items
@@ -2509,7 +2509,7 @@ const AssessmentResultsNew = () => {
   const handleSaveAddedGoodItem = (pillarId) => {
     const newText = editedContent[`new-good-${pillarId}`];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2520,7 +2520,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.newGoodItems[pillarId].push(newText.trim());
     setCustomizations(newCustomizations);
     setAddingGoodItem(null);
-    toast.success('Item added!');
+    
   };
 
   const handleAddBadItem = (pillarId) => {
@@ -2597,7 +2597,7 @@ const AssessmentResultsNew = () => {
         }
       });
       
-      toast.success('Card color updated!');
+      
     };
     
     input.click();
@@ -2611,16 +2611,16 @@ const AssessmentResultsNew = () => {
     if (newCustomizations.cardColors[cardKey]) {
       delete newCustomizations.cardColors[cardKey];
       setCustomizations(newCustomizations);
-      toast.success('Color reset to original!');
+      
     } else {
-      toast('Card is already using original colors', { icon: 'ℹ️' });
+      
     }
   };
 
   const handleSaveAddedBadItem = (pillarId) => {
     const newText = editedContent[`new-bad-${pillarId}`];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2631,7 +2631,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.newBadItems[pillarId].push(newText.trim());
     setCustomizations(newCustomizations);
     setAddingBadItem(null);
-    toast.success('Challenge added!');
+    
   };
 
   const handleAddFeature = (pillarId) => {
@@ -2648,7 +2648,7 @@ const AssessmentResultsNew = () => {
     const newDesc = editedContent[`new-feature-${pillarId}-desc`];
     
     if (!newName || !newName.trim()) {
-      toast.error('Please enter a feature name');
+      
       return;
     }
     
@@ -2664,7 +2664,7 @@ const AssessmentResultsNew = () => {
     });
     setCustomizations(newCustomizations);
     setAddingFeature(null);
-    toast.success('Feature added!');
+    
   };
 
   const handleAddNextStep = (pillarId) => {
@@ -2678,7 +2678,7 @@ const AssessmentResultsNew = () => {
   const handleSaveAddedNextStep = (pillarId) => {
     const newText = editedContent[`new-nextstep-${pillarId}`];
     if (!newText || !newText.trim()) {
-      toast.error('Please enter some text');
+      
       return;
     }
     
@@ -2689,7 +2689,7 @@ const AssessmentResultsNew = () => {
     newCustomizations.newNextSteps[pillarId].push(newText.trim());
     setCustomizations(newCustomizations);
     setAddingNextStep(null);
-    toast.success('Next step added!');
+    
   };
 
   // Edit handlers for features and next steps
@@ -2717,7 +2717,7 @@ const AssessmentResultsNew = () => {
       }
     });
     setEditingFeature(null);
-    toast.success('Feature updated!');
+    
   };
 
   const handleEditNextStep = (pillarId, stepIndex, step) => {
@@ -2739,7 +2739,7 @@ const AssessmentResultsNew = () => {
       }
     });
     setEditingNextStep(null);
-    toast.success('Next step updated!');
+    
   };
 
   const handleEditTitle = (title) => {
@@ -2748,15 +2748,15 @@ const AssessmentResultsNew = () => {
 
   const handleSaveTitle = () => {
     setCustomizations({ ...customizations, title: editedContent.title });
-    toast.success('Title updated!');
+    
   };
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
     if (editMode) {
-      toast.success('Edit mode disabled');
+      
     } else {
-      toast.success('Edit mode enabled - Click edit buttons to modify content');
+      
     }
   };
 
@@ -3592,7 +3592,7 @@ const AssessmentResultsNew = () => {
                                           [pillar.id]: newColor
                                         }
                                       });
-                                      toast.success(`Color updated for ${pillar.name}`);
+                                      
                                     }}
                                   />
                                 </ColorPreview>
@@ -3614,7 +3614,7 @@ const AssessmentResultsNew = () => {
                                           [pillar.id]: value
                                         }
                                       });
-                                      toast.success(`Color updated for ${pillar.name}`);
+                                      
                                     }
                                   }}
                                   placeholder="#1B3B6F"
@@ -3640,7 +3640,7 @@ const AssessmentResultsNew = () => {
                                           [pillar.id]: color
                                         }
                                       });
-                                      toast.success(`Color updated for ${pillar.name}`);
+                                      
                                     }}
                                     title={color}
                                   />
@@ -4764,7 +4764,7 @@ const AssessmentResultsNew = () => {
                                           }
                                         });
                                         setEditingFeature(null);
-                                        toast.success('Feature saved!');
+                                        
                                       }}
                                       style={{
                                         padding: '4px 12px',
@@ -5317,7 +5317,7 @@ const AssessmentResultsNew = () => {
                                           }
                                         });
                                         setEditingNextStep(null);
-                                        toast.success('Next step saved!');
+                                        
                                       }}
                                       style={{
                                         padding: '4px 8px',

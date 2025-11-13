@@ -515,11 +515,11 @@ const AssessmentHistory = () => {
         setAuditData(response.data.data);
         setEvents(response.data.data.events || []);
       } else {
-        toast.error('Failed to load audit trail');
+        
       }
     } catch (error) {
       console.error('Error fetching audit trail:', error);
-      toast.error('Error loading audit trail');
+      
     } finally {
       setLoading(false);
     }

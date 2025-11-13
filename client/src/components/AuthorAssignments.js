@@ -357,7 +357,7 @@ const AuthorAssignments = () => {
       setAssignments(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching assignments:', error);
-      toast.error('Failed to load assignments');
+      
     } finally {
       setLoading(false);
     }
@@ -380,10 +380,10 @@ const AuthorAssignments = () => {
     
     try {
       await axios.post(`${API_URL}/assignments/${assignment.id}/remind`);
-      toast.success(`Reminder sent to ${assignment.consumer_email}`);
+      
     } catch (error) {
       console.error('Error sending reminder:', error);
-      toast.error('Failed to send reminder');
+      
     } finally {
       setSendingReminder(null);
     }
@@ -392,11 +392,11 @@ const AuthorAssignments = () => {
   const releaseResults = async (assignment) => {
     try {
       await axios.post(`${API_URL}/assignments/release/${assignment.assessment_id}`);
-      toast.success('Results released to consumer');
+      
       fetchAssignments(); // Refresh list
     } catch (error) {
       console.error('Error releasing results:', error);
-      toast.error('Failed to release results');
+      
     }
   };
 

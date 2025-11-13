@@ -238,12 +238,12 @@ const EditAssessmentModal = ({ isOpen, onClose, assessment, onUpdate }) => {
     e.preventDefault();
 
     if (!formData.editorEmail) {
-      toast.error('Please enter your email to track this edit');
+      
       return;
     }
 
     if (!formData.assessmentName.trim()) {
-      toast.error('Assessment name is required');
+      
       return;
     }
 
@@ -254,12 +254,12 @@ const EditAssessmentModal = ({ isOpen, onClose, assessment, onUpdate }) => {
         formData
       );
 
-      toast.success('Assessment information updated successfully');
+      
       onUpdate(response.data);
       onClose();
     } catch (error) {
       console.error('Error updating assessment:', error);
-      toast.error(error.message || 'Failed to update assessment');
+      
     } finally {
       setIsSubmitting(false);
     }

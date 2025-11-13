@@ -144,7 +144,7 @@ const ExecutiveSummary = () => {
             <button
               onClick={() => {
                 navigate(`/assessment/${assessmentId}/platform_governance`);
-                toast.success('Edit your responses to update this summary');
+                
               }}
               style={{
                 padding: '10px 20px',

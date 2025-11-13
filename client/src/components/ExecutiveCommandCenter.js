@@ -1034,7 +1034,7 @@ const ExecutiveCommandCenter = () => {
       } catch (err) {
         console.error('[ExecutiveCommandCenter] Error loading results:', err);
         setError(err.message || 'Failed to load assessment results');
-        toast.error('Failed to load executive dashboard');
+        
       } finally {
         setLoading(false);
       }
@@ -1056,7 +1056,7 @@ const ExecutiveCommandCenter = () => {
 
   const handlePrint = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    const toastId = 
     
     // Set print mode to render all slides
     setPrintMode(true);
@@ -1085,7 +1085,7 @@ const ExecutiveCommandCenter = () => {
       }).catch(err => console.log('Error sharing:', err));
     } else {
       navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
+      
     }
   };
 
@@ -1093,18 +1093,18 @@ const ExecutiveCommandCenter = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        toast.error('Logo file size must be less than 2MB');
+        
         return;
       }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
+        
         return;
       }
       
       const reader = new FileReader();
       reader.onloadend = () => {
         setCustomerLogo(reader.result);
-        toast.success('Customer logo uploaded successfully');
+        
       };
       reader.readAsDataURL(file);
     }
@@ -1116,7 +1116,7 @@ const ExecutiveCommandCenter = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    toast.success('Logo removed');
+    
   };
 
   const handleLogoClick = () => {
@@ -1137,7 +1137,7 @@ const ExecutiveCommandCenter = () => {
   const handleURLSubmit = async (e) => {
     e.preventDefault();
     if (!logoURL.trim()) {
-      toast.error('Please enter a valid URL');
+      
       return;
     }
 
@@ -1149,16 +1149,16 @@ const ExecutiveCommandCenter = () => {
       
       if (response.success && response.data) {
         setCustomerLogo(response.data);
-        toast.success('Logo fetched successfully from customer portal');
+        
         setShowLogoModal(false);
         setShowURLInput(false);
         setLogoURL('');
       } else {
-        toast.error(response.message || 'Failed to fetch logo');
+        
       }
     } catch (error) {
       console.error('Error fetching logo:', error);
-      toast.error(error.message || 'Failed to fetch logo from URL. Please check the URL and try again.');
+      
     } finally {
       setLoadingURL(false);
     }
@@ -1177,14 +1177,14 @@ const ExecutiveCommandCenter = () => {
     setEditingItem(item);
     setFormData(item || {});
     setShowModal(true);
-    toast.success(`Opening ${type} editor`);
+    
   };
 
   const handleDelete = (type, item) => {
     console.log('[Delete]', type, item);
     if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       // In a real app, you'd update the backend here
-      toast.success(`${type} deleted successfully!`);
+      
     }
   };
 
@@ -1194,7 +1194,7 @@ const ExecutiveCommandCenter = () => {
     setEditingItem(null);
     setFormData({});
     setShowModal(true);
-    toast.success(`Add new ${type}`);
+    
   };
 
   const handleFormSubmit = (e) => {
@@ -1202,7 +1202,7 @@ const ExecutiveCommandCenter = () => {
     console.log('[Form Submit]', modalType, formData);
     // In a real app, you'd save to backend here
     setShowModal(false);
-    toast.success(`${modalType} ${editingItem ? 'updated' : 'added'} successfully!`);
+    
   };
 
   // 🎬 Presentation Mode Handlers
@@ -1346,12 +1346,12 @@ const ExecutiveCommandCenter = () => {
       const assessmentName = results?.assessmentInfo?.name || 'Executive-Command-Center';
       pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
       
-      toast.success('PDF generated successfully!', { id: 'print-progress' });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
       // Restore scrollbars on error
       document.body.style.overflow = 'auto';
-      toast.error('Failed to generate PDF', { id: 'print-progress' });
+      
     }
   };
 

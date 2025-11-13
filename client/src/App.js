@@ -217,7 +217,7 @@ function App() {
       setAssessmentFramework(framework);
     } catch (error) {
       console.error('Error loading assessment framework:', error);
-      toast.error('Failed to load assessment framework');
+      
     } finally {
       setLoading(false);
     }
@@ -232,7 +232,7 @@ function App() {
       return assessment;
     } catch (error) {
       console.error('Error starting assessment:', error);
-      toast.error('Failed to start assessment');
+      
       throw error;
     }
   };
@@ -249,7 +249,7 @@ function App() {
       return status;
     } catch (error) {
       console.error('Error updating assessment status:', error);
-      toast.error('Failed to update assessment status');
+      
       throw error;
     }
   };

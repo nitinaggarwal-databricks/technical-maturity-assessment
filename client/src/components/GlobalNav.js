@@ -516,7 +516,7 @@ const GlobalNav = () => {
       }
       
       console.log('[GlobalNav] Assessment ID:', assessmentId);
-      toast.success('Sample assessment created!', { id: 'sample-assessment' });
+      
       
       // Longer delay to ensure assessment is fully saved
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -526,7 +526,7 @@ const GlobalNav = () => {
       navigate(`/assessment/${assessmentId}/platform_governance`);
     } catch (error) {
       console.error('[GlobalNav] Error creating sample assessment:', error);
-      toast.error(error.message || 'Failed to create sample assessment', { id: 'sample-assessment' });
+      
     }
   };
 
@@ -877,7 +877,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(testUser));
                           setCurrentUser(testUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched to Author role (Test Mode)');
+                          
                           window.location.reload();
                         }}>
                           <FiUsers />
@@ -888,7 +888,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(testUser));
                           setCurrentUser(testUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched to Consumer role (Test Mode)');
+                          
                           window.location.reload();
                         }}>
                           <FiUsers />
@@ -905,7 +905,7 @@ const GlobalNav = () => {
                             localStorage.setItem('user', JSON.stringify(testUser));
                             setCurrentUser(testUser);
                             setAdminDropdownOpen(false);
-                            toast.success('Switched to Author role (Test Mode)');
+                            
                             window.location.reload();
                           }}>
                             <FiUsers />
@@ -918,7 +918,7 @@ const GlobalNav = () => {
                             localStorage.setItem('user', JSON.stringify(testUser));
                             setCurrentUser(testUser);
                             setAdminDropdownOpen(false);
-                            toast.success('Switched to Consumer role (Test Mode)');
+                            
                             window.location.reload();
                           }}>
                             <FiUsers />
@@ -931,7 +931,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(originalUser));
                           setCurrentUser(originalUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched back to Admin role');
+                          
                           window.location.reload();
                         }}>
                           <FiUser />
@@ -942,7 +942,7 @@ const GlobalNav = () => {
                     )}
                 <DropdownItem onClick={() => {
                   setAdminDropdownOpen(false);
-                  toast('Change password feature coming soon!', { icon: 'ℹ️' });
+                  
                 }}>
                       <FiLock />
                       Change Password
@@ -960,7 +960,7 @@ const GlobalNav = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText('nitin.aggarwal@databricks.com');
-                        toast.success('Email copied to clipboard!');
+                        
                         setAdminDropdownOpen(false);
                       }}
                     >

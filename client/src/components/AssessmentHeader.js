@@ -287,7 +287,7 @@ const AssessmentHeader = ({
 
   const handleExportToExcel = async () => {
     if (!assessmentId) {
-      toast.error('Assessment ID not found');
+      
       return;
     }
 

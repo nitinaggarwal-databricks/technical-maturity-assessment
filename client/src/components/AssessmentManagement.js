@@ -399,7 +399,7 @@ const AssessmentManagement = () => {
       setAssessments(data || []); // Ensure it's always an array
     } catch (error) {
       console.error('Error loading assessments:', error);
-      toast.error('Failed to load assessments');
+      
       setAssessments([]); // Set to empty array on error
     } finally {
       setLoading(false);
@@ -423,7 +423,7 @@ const AssessmentManagement = () => {
         cloneData
       );
       
-      toast.success('Assessment cloned successfully!');
+      
       setShowCloneModal(false);
       setSelectedAssessment(null);
       
@@ -431,7 +431,7 @@ const AssessmentManagement = () => {
       navigate(`/assessment/${clonedAssessment.assessmentId}/platform_governance`);
     } catch (error) {
       console.error('Error cloning assessment:', error);
-      toast.error('Failed to clone assessment');
+      
     }
   };
 
@@ -439,11 +439,11 @@ const AssessmentManagement = () => {
     if (window.confirm('Are you sure you want to delete this assessment? This action cannot be undone.')) {
       try {
         await assessmentService.deleteAssessment(assessmentId);
-        toast.success('Assessment deleted successfully');
+        
         loadAssessments();
       } catch (error) {
         console.error('Error deleting assessment:', error);
-        toast.error('Failed to delete assessment');
+        
       }
     }
   };

@@ -479,7 +479,7 @@ const UserManagement = () => {
       setUsers(response.users || []);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast.error('Failed to load users');
+      
     } finally {
       setLoading(false);
     }
@@ -489,13 +489,13 @@ const UserManagement = () => {
     e.preventDefault();
     
     if (!formData.email || !formData.password) {
-      toast.error('Email and password are required');
+      
       return;
     }
 
     try {
       await authService.register(formData);
-      toast.success(`User created successfully!`);
+      
       setShowCreateModal(false);
       setFormData({
         email: '',
@@ -508,7 +508,7 @@ const UserManagement = () => {
       fetchUsers();
     } catch (error) {
       console.error('Error creating user:', error);
-      toast.error(error.message || 'Failed to create user');
+      
     }
   };
 
@@ -534,11 +534,11 @@ const UserManagement = () => {
 
     try {
       await authService.register(testUserData);
-      toast.success(`✨ Test user created: ${firstName} ${lastName} (${email})`);
+      
       fetchUsers();
     } catch (error) {
       console.error('Error creating test user:', error);
-      toast.error(error.message || 'Failed to create test user');
+      
     }
   };
 
@@ -559,11 +559,11 @@ const UserManagement = () => {
       
       if (!response.ok) throw new Error('Failed to delete user');
       
-      toast.success('User deleted successfully');
+      
       fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error('Failed to delete user');
+      
     }
   };
 
@@ -611,7 +611,7 @@ const UserManagement = () => {
         throw new Error(error.error || 'Failed to update user');
       }
       
-      toast.success('User updated successfully!');
+      
       setShowEditModal(false);
       setEditingUser(null);
       setFormData({
@@ -625,7 +625,7 @@ const UserManagement = () => {
       fetchUsers();
     } catch (error) {
       console.error('Error updating user:', error);
-      toast.error(error.message || 'Failed to update user');
+      
     }
   };
 

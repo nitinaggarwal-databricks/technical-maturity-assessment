@@ -186,7 +186,7 @@ const AssessmentStart = ({ onStart }) => {
     e.preventDefault();
     
     if (!validateForm()) {
-      toast.error('Please correct the errors below');
+      
       return;
     }
 
@@ -194,13 +194,13 @@ const AssessmentStart = ({ onStart }) => {
 
     try {
       const assessment = await onStart(formData);
-      toast.success('Assessment started successfully!');
+      
       
       // Navigate to first assessment area (Platform & Governance)
       navigate(`/assessment/${assessment.assessmentId}/platform_governance`);
     } catch (error) {
       console.error('Error starting assessment:', error);
-      toast.error('Failed to start assessment. Please try again.');
+      
     } finally {
       setIsSubmitting(false);
     }

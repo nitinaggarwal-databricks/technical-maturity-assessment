@@ -223,7 +223,7 @@ const MyAssessments = () => {
     if (result.success) {
       setAssignments(result.assignments);
     } else {
-      toast.error('Failed to load assessments');
+      
     }
     setLoading(false);
   };
