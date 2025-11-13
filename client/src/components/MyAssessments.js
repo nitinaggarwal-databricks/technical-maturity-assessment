@@ -200,7 +200,6 @@ const MyAssessments = () => {
     // Check authentication
     if (!authService.isAuthenticated()) {
       navigate('/');
-      toast.error('Please login to view your assessments');
       return;
     }
     

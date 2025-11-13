@@ -987,10 +987,7 @@ const GlobalNav = () => {
                   <FiLogIn size={14} />
                   Login
                 </SecondaryCTAButton>
-                <CTAButton onClick={() => {
-                  toast.error('Please login to start an assessment');
-                  setShowLoginModal(true);
-                }}>
+                <CTAButton onClick={() => setShowLoginModal(true)}>
                   Start Assessment →
                 </CTAButton>
               </>
@@ -1072,7 +1069,6 @@ const GlobalNav = () => {
             </MobileSecondaryCTAButton>
             <MobileCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to start an assessment');
               setShowLoginModal(true);
             }}>
               Start Assessment →
