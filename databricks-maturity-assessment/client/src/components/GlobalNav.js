@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import authService from '../services/authService';
+import LoginModal from './LoginModal';
 
 // Fixed: Added mobile navigation with hamburger menu
 
@@ -28,12 +30,11 @@ const NavContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 40px;
 
   @media (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 24px;
+    justify-content: space-between;
   }
 `;
 
@@ -56,7 +57,6 @@ const TopNav = styled.div`
   display: flex;
   align-items: center;
   gap: 32px;
-  flex-wrap: wrap;
 
   @media (max-width: 1400px) {
     gap: 20px;
@@ -70,6 +70,16 @@ const TopNav = styled.div`
     gap: 12px;
   }
 
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
   @media (max-width: 640px) {
     display: none;
   }
@@ -295,10 +305,147 @@ const CTAButton = styled.button`
   }
 `;
 
+const DropdownContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const DropdownButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  @media (max-width: 1200px) {
+    font-size: 0.875rem;
+    padding: 8px 16px;
+  }
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg.chevron {
+    transition: transform 0.3s ease;
+    ${props => props.$isOpen && 'transform: rotate(180deg);'}
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  padding: 8px 0;
+  z-index: 1000;
+  opacity: ${props => props.$isOpen ? 1 : 0};
+  visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
+  transform: translateY(${props => props.$isOpen ? '0' : '-10px'});
+  transition: all 0.3s ease;
+`;
+
+const DropdownItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+  }
+
+  svg {
+    font-size: 16px;
+    color: #6b7280;
+  }
+
+  &:hover svg {
+    color: #3b82f6;
+  }
+`;
+
+const DropdownDivider = styled.div`
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+`;
+
 const GlobalNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(authService.getUser());
+  const [assessmentsDropdownOpen, setAssessmentsDropdownOpen] = useState(false);
+  const [assignmentsDropdownOpen, setAssignmentsDropdownOpen] = useState(false);
+  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      setCurrentUser(authService.getUser());
+    }
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.dropdown-container')) {
+        setAssessmentsDropdownOpen(false);
+        setAssignmentsDropdownOpen(false);
+        setAdminDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    authService.logout();
+    setCurrentUser(null);
+    toast.success('Logged out successfully');
+    navigate('/');
+    closeMobileMenu();
+  };
+
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    // Redirect based on role
+    if (user.role === 'consumer') {
+      navigate('/my-assessments');
+    } else if (user.role === 'author' || user.role === 'admin') {
+      navigate('/insights-dashboard');
+    }
+  };
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -332,276 +479,490 @@ const GlobalNav = () => {
   const handleTrySample = async () => {
     closeMobileMenu();
     try {
-      toast.loading('Creating fully populated sample assessment...', { id: 'sample-assessment' });
+      toast.loading('Generating sample assessment...', { id: 'sample-assessment' });
+      const result = await assessmentService.generateSampleAssessment();
       
-      // Generate unique sample data with timestamp
-      const timestamp = Date.now();
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-      const sampleData = {
-        assessmentName: `Sample Assessment - ${new Date().toLocaleString()} [${randomSuffix}]`,
-        organizationName: 'Demo Organization',
-        industry: 'Technology',
-        contactEmail: 'demo@example.com'
-      };
-      
-      const result = await assessmentService.startAssessment(sampleData);
       console.log('[GlobalNav] Sample assessment result:', result);
       
-      // Handle both wrapped and direct response formats
-      const assessmentId = result?.data?.assessmentId || result?.assessmentId;
+      // Extract assessmentId from various possible response structures
+      const assessmentId = result?.assessment?.id || result?.data?.assessmentId || result?.assessmentId || result?.id;
       
       if (!assessmentId) {
-        console.error('[GlobalNav] Invalid response format:', result);
-        throw new Error('Invalid response format');
+        console.error('[GlobalNav] No assessment ID found in result:', result);
+        throw new Error('No assessment ID returned from server');
       }
-
-      // Get assessment framework to populate all questions
-      toast.loading('Populating assessment with realistic data...', { id: 'sample-assessment' });
-      const framework = await assessmentService.getAssessmentFramework();
       
-      // Generate fully populated responses for all categories
-      const allResponses = {};
-      const completedCategories = [];
-      let firstCategoryId = null;
+      console.log('[GlobalNav] Assessment ID:', assessmentId);
+      toast.success('Sample assessment created!', { id: 'sample-assessment' });
       
-      framework.assessmentAreas.forEach((area, areaIdx) => {
-        // Capture first category for navigation
-        if (areaIdx === 0) {
-          firstCategoryId = area.id;
-        }
-        area.dimensions.forEach((dimension, dimIdx) => {
-          dimension.questions.forEach((question, qIdx) => {
-            // More varied random current state with better distribution (1-5)
-            const baseRandom = Math.random();
-            const currentState = Math.floor(baseRandom * 5) + 1; // 1-5 for more variety
-            
-            // Future state always greater than current or same if already at 5
-            const gap = Math.floor(Math.random() * 3) + 1; // Gap of 1-3
-            const futureState = Math.min(currentState + gap, 5);
-            
-            allResponses[`${question.id}_current_state`] = currentState;
-            allResponses[`${question.id}_future_state`] = futureState;
-            
-            // Generate realistic customer comment (25 words)
-            allResponses[`${question.id}_comment`] = generateRealisticComment(area.id, dimension.name, currentState);
-            
-            // Randomly select technical pain points
-            const technicalPainPerspective = question.perspectives?.find(p => p.id === 'technical_pain');
-            if (technicalPainPerspective) {
-              const availablePains = technicalPainPerspective.options || [];
-              const numPains = Math.min(
-                Math.floor(Math.random() * 3) + 2, // 2-4 pain points
-                availablePains.length
-              );
-              
-              // Fisher-Yates shuffle
-              const shuffled = [...availablePains];
-              for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-              }
-              
-              const selectedPains = shuffled.slice(0, numPains).map(p => p.value);
-              allResponses[`${question.id}_technical_pain`] = selectedPains;
-            }
-            
-            // Randomly select business pain points
-            const businessPainPerspective = question.perspectives?.find(p => p.id === 'business_pain');
-            if (businessPainPerspective) {
-              const availablePains = businessPainPerspective.options || [];
-              const numPains = Math.min(
-                Math.floor(Math.random() * 3) + 2, // 2-4 pain points
-                availablePains.length
-              );
-              
-              // Fisher-Yates shuffle
-              const shuffled = [...availablePains];
-              for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-              }
-              
-              const selectedPains = shuffled.slice(0, numPains).map(p => p.value);
-              allResponses[`${question.id}_business_pain`] = selectedPains;
-            }
-          });
-        });
-        completedCategories.push(area.id);
-      });
-
-      // Submit all responses
-      console.log('[GlobalNav] Submitting bulk responses for assessment:', assessmentId);
-      console.log('[GlobalNav] Sample data variance check - First 5 scores:', 
-        Object.keys(allResponses)
-          .filter(k => k.includes('current_state'))
-          .slice(0, 5)
-          .map(k => ({ [k]: allResponses[k] }))
-      );
-      await assessmentService.submitBulkResponses(assessmentId, allResponses, completedCategories);
-      console.log('[GlobalNav] Bulk responses submitted successfully');
-      
-      // Wait for file I/O to complete (critical for local file storage)
+      // Longer delay to ensure assessment is fully saved
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success('Sample assessment created! Review your selections...', { id: 'sample-assessment' });
-      
-      // Navigate to the first question to show the user the pre-filled assessment
-      // They can then navigate to results when ready
-      setTimeout(() => {
-        navigate(`/assessment/${assessmentId}/${firstCategoryId}`);
-      }, 500);
-      
+      // Navigate to the first question page
+      console.log('[GlobalNav] Navigating to:', `/assessment/${assessmentId}/platform_governance`);
+      navigate(`/assessment/${assessmentId}/platform_governance`);
     } catch (error) {
       console.error('[GlobalNav] Error creating sample assessment:', error);
-      toast.error('Failed to create sample assessment. Please try Start Assessment instead.', { id: 'sample-assessment' });
+      toast.error(error.message || 'Failed to create sample assessment', { id: 'sample-assessment' });
     }
   };
 
-  // Generate realistic customer comments based on pillar and maturity
-  const generateRealisticComment = (pillarId, dimensionName, currentState) => {
-    const comments = {
-      platform_governance: {
-        low: [
-          "We manually track data access via spreadsheets. Need automated RBAC with Unity Catalog for compliance audit trail visibility.",
-          "Currently using separate Hive metastore per workspace. Planning Unity Catalog migration to centralize governance and lineage tracking.",
-          "Security team reviews data access quarterly. Want real-time audit logs and automated policy enforcement through Unity Catalog."
-        ],
-        medium: [
-          "Unity Catalog deployed in 3 workspaces. Working on ABAC policies and row-level security. Need training on dynamic views.",
-          "Basic RBAC with Unity Catalog. Want to implement data classification tags and certification badges for trusted datasets and models.",
-          "Centralized metastore running. Need to enable Delta Sharing for external partners and implement fine-grained access controls on features."
-        ],
-        high: [
-          "Full Unity Catalog with ABAC policies. Testing Compliance for Vector Search and serverless SQL warehouse integration for production workloads.",
-          "Unity Catalog federated across regions. Implementing governed tags and certification system. Evaluating context-based ingress control for security.",
-          "Advanced Unity Catalog setup with row/column security. Working on cost attribution tags and budget policies for chargeback allocation."
-        ]
-      },
-      data_engineering: {
-        low: [
-          "Running batch Spark jobs via notebooks. No data quality checks. Looking at Delta Live Tables for automated expectations and monitoring.",
-          "Manual pipeline management through ADF. Want to migrate to Databricks workflows with Auto Loader for streaming ingestion and recovery.",
-          "Data quality issues found by downstream users. Need DLT expectations (expect_or_fail) and Lakehouse Monitoring for proactive alerting and validation."
-        ],
-        medium: [
-          "Using Delta Lake with manual quality checks. Piloting DLT pipelines for critical workflows. Want full observability and automated expectations.",
-          "Auto Loader deployed for S3 ingestion. Building DLT pipelines with expectations. Need to implement CDC with APPLY CHANGES and monitoring.",
-          "Delta tables with daily batch. Testing streaming with structured streaming API. Planning migration to DLT for unified batch and stream."
-        ],
-        high: [
-          "Full DLT pipelines with expectations and monitoring. Testing Lakeflow Connect Zerobus connector. Want performance mode for production SLAs.",
-          "Streaming ingestion with Auto Loader. DLT expectations catching 95% of issues. Implementing Lakehouse Monitoring for data quality dashboards.",
-          "Advanced DLT with CDC processing. Auto Loader with schema evolution. Evaluating serverless jobs performance mode for cost optimization."
-        ]
-      },
-      analytics_bi: {
-        low: [
-          "Analysts write complex SQL in notebooks. No self-service. Looking at Databricks SQL serverless warehouses for business user access.",
-          "Data accessed via Python notebooks. Want SQL endpoint for business users. Considering AI/BI and Genie for natural language queries.",
-          "BI team waits for data engineer support. Need serverless SQL warehouse with query history and Photon acceleration for performance."
-        ],
-        medium: [
-          "Databricks SQL deployed with classic clusters. Testing serverless warehouses. Want AI/BI dashboards and Genie for NL query access.",
-          "Serverless SQL warehouse for analysts. Working on dashboard library. Evaluating Photon performance gains and query caching strategies for optimization.",
-          "SQL endpoints with basic dashboards. Testing AI/BI features. Need better query optimization and materialized views for common aggregations."
-        ],
-        high: [
-          "Full serverless SQL with Photon. AI/BI dashboards deployed. Testing Genie for business users. Working on query optimization and caching.",
-          "Advanced SQL analytics with Photon acceleration. AI/BI in production. Implementing federation for external data sources and partner integration.",
-          "Serverless warehouses scaled to 200 users. Genie adoption at 40%. Working on semantic layer and metric definitions for consistency."
-        ]
-      },
-      machine_learning: {
-        low: [
-          "ML notebooks with manual versioning. No experiment tracking. Looking at MLflow for model registry and feature store for reuse.",
-          "Models trained in notebooks. Manual deployment to endpoints. Want MLflow Model Serving and automated retraining pipelines for production.",
-          "Feature engineering duplicated across teams. Need Feature Store for consistency. Planning MLflow for experiment tracking and model governance."
-        ],
-        medium: [
-          "MLflow tracking deployed. Working on Feature Store implementation. Want Model Serving for real-time inference and model monitoring setup.",
-          "Feature Store with 50 features. MLflow registry for 10 models. Testing Model Serving serverless endpoints and monitoring for drift.",
-          "Automated retraining pipelines with MLflow. Implementing Feature Store lookups. Need model monitoring and drift detection for production models."
-        ],
-        high: [
-          "Advanced MLflow with 100+ models tracked. Feature Store with 200 features. Model Serving at scale. Implementing AutoML and monitoring.",
-          "Full MLOps with MLflow and Feature Store. Testing Mosaic AI for LLM fine-tuning. Want AI playground for experimentation.",
-          "Production ML platform with automated pipelines. Feature Store lineage tracking. Evaluating Lakehouse Monitoring for model quality and performance."
-        ]
-      },
-      generative_ai: {
-        low: [
-          "No GenAI capability. Data team interested in RAG use cases. Looking at Mosaic AI and Vector Search infrastructure.",
-          "Experimenting with OpenAI API externally. Want Databricks Foundation Models and Vector Search for internal knowledge base RAG applications.",
-          "Business asking for GenAI features. Need Vector Search for document retrieval. Evaluating Mosaic AI Model Serving for governance."
-        ],
-        medium: [
-          "Vector Search POC running. Testing RAG with Databricks Foundation Models. Want prompt engineering best practices and monitoring framework.",
-          "Mosaic AI deployed for 2 use cases. Vector Search indexes for documentation. Working on LLM evaluation metrics and guardrails.",
-          "Foundation Models accessible via API. Building RAG application. Need governance for prompts and output quality monitoring for compliance."
-        ],
-        high: [
-          "Production RAG app with Vector Search. Fine-tuning Llama models. Testing multimodal capabilities. Want AI playground for experimentation.",
-          "Advanced GenAI platform with Model Serving. Vector Search scaled to 1M vectors. Working on evaluation framework and guardrails.",
-          "Multiple GenAI apps in production. Vector Search with hybrid search. Testing Claude Opus 4.1 and function calling for agentic workflows."
-        ]
-      },
-      operational_excellence: {
-        low: [
-          "Ad-hoc platform usage. No CoE structure. Want training programs and adoption metrics to track ROI and user satisfaction.",
-          "Limited documentation. Engineers discover features accidentally. Need best practices repository and onboarding program for new users and teams.",
-          "Platform investment unclear. No usage tracking. Looking at system tables for cost attribution and chargeback to business units."
-        ],
-        medium: [
-          "CoE established with 3 members. Monthly training sessions. Tracking usage with system tables. Want better ROI metrics.",
-          "Documentation site with 50 articles. Quarterly enablement workshops. System tables for cost tracking. Need automated reporting and dashboards.",
-          "Active Slack community with 200 members. Best practices shared. Working on chargeback model and budget policies for teams."
-        ],
-        high: [
-          "Mature CoE with dedicated team. 90% user adoption. Full cost attribution with tags. Advanced training with certification program.",
-          "Comprehensive enablement platform. Usage dashboards in production. Automated chargeback. Working on ML for cost optimization recommendations.",
-          "Platform adoption at 95% with 300 active users. ROI tracked quarterly. Advanced monitoring with system tables and custom metrics."
-        ]
-      }
+  // Generate UNIQUE, question-specific customer comments
+  // 🔥 CRITICAL: Uses TRUE randomness + timestamp to ensure NO TWO ASSESSMENTS ARE EVER THE SAME
+  const generateRealisticComment = (pillarId, dimensionId, questionId, currentState, timestamp) => {
+    // Comprehensive dimension-specific comment library (low maturity = 1-2)
+    const dimensionComments = {
+      // PLATFORM & GOVERNANCE
+      'environment_architecture': [
+        "Single workspace for all teams. No isolation between dev/prod. Need multi-workspace strategy with Unity Catalog for governance.",
+        "Workspaces created ad-hoc. Inconsistent naming. Want standardized workspace provisioning with Terraform and tagging for cost tracking.",
+        "Every team has own workspace. No standards. Need centralized architecture with Unity Catalog federation and workspace templates for consistency.",
+        "Dev and prod in same workspace. Security concern. Want separate workspaces with Unity Catalog catalog-level isolation and promotion workflows."
+      ],
+      'identity_security': [
+        "Manual user provisioning via Azure AD. No SCIM. Want automated sync and group-based Unity Catalog permissions with audit logs.",
+        "Admin rights granted liberally. No principle of least privilege. Need RBAC with Unity Catalog and secrets management with Databricks Secrets.",
+        "Passwords hardcoded in notebooks. Security risk. Want Databricks Secrets with Azure Key Vault integration and automatic secret rotation for compliance.",
+        "No audit trail for data access. Compliance concern. Need Unity Catalog audit logs with automated HIPAA compliance reporting and access reviews."
+      ],
+      'governance_compliance': [
+        "No centralized data catalog. Users don't know what data exists. Want Unity Catalog for discovery and lineage with PII tagging.",
+        "Compliance team manually reviews code quarterly. Need automated scans for PII/PHI and Unity Catalog data classification tags with certifications.",
+        "Data lineage tracked in spreadsheets. Audit nightmare. Want Unity Catalog automatic lineage tracking and impact analysis for regulatory compliance.",
+        "PII scattered across tables. GDPR risk. Need Unity Catalog with automated PII detection, classification tags, and deletion workflows for privacy compliance."
+      ],
+      'observability_monitoring': [
+        "No visibility into cluster usage. Surprises in cloud bills. Want cluster event logs and system tables for usage attribution by team.",
+        "Jobs fail silently. Alerts reactive. Need Databricks workflows with email alerts and integration with PagerDuty for production pipelines.",
+        "Query performance unpredictable. No metrics. Want system tables dashboard with query profiles, bottleneck identification, and optimization recommendations.",
+        "Pipeline SLAs missed without warning. Need proactive monitoring with system tables, Databricks SQL alerts, and Slack notifications for operations team."
+      ],
+      'cost_management': [
+        "Cloud costs ballooning. No understanding of spend drivers. Want budget alerts and system tables for chargeback to business units with tags.",
+        "Teams oversize clusters by default. No right-sizing. Need automated recommendations and spot instance policies for non-critical workloads to reduce costs.",
+        "No visibility into DBU consumption. CFO asking questions. Want system tables cost dashboard with spend by team and budget alerts for accountability.",
+        "Clusters left running overnight. Waste discovered post-mortem. Need auto-termination policies, idle cluster detection, and budget guardrails for cost control."
+      ],
+      
+      // DATA ENGINEERING
+      'ingestion_strategy': [
+        "Manual SFTP transfers nightly. Batch loads via notebooks. Want Auto Loader for real-time streaming ingestion with schema evolution and checkpoints.",
+        "Data engineers write custom Python scripts per source. No reusability. Need standardized connectors and Auto Loader templates for common sources like S3.",
+        "Kinesis streams ingested via custom Spark code. Complex error handling. Want Auto Loader with automatic schema inference and exactly-once semantics for reliability.",
+        "Files land in S3, manual tracking of which processed. Want Auto Loader with checkpoint management and incremental processing for operational efficiency."
+      ],
+      'lakehouse_architecture': [
+        "Parquet files in S3 with no ACID guarantees. Delete operations problematic. Want Delta Lake for ACID transactions and time travel for audits.",
+        "Raw zone, curated zone managed manually. No clear medallion architecture. Need Delta Lake with Bronze/Silver/Gold layers and DLT pipelines for automation.",
+        "Multiple formats (Parquet, ORC, Avro). Schema drift issues. Want Delta Lake with automatic schema evolution and unified format for consistency.",
+        "No data versioning. Can't rollback bad loads. Need Delta Lake time travel with VACUUM control and version retention policies for data governance."
+      ],
+      'pipeline_orchestration': [
+        "Airflow orchestrates Spark submits. Complex dependencies hard to manage. Want Databricks Workflows with native integration and task dependencies for observability.",
+        "Notebooks run manually or via cron. No visibility into failures. Need Databricks Jobs with retries, alerting, and lineage tracking for production pipelines.",
+        "Jenkins triggers notebook runs. No native monitoring. Want Databricks Workflows with built-in alerting, retry logic, and failure notifications for production reliability.",
+        "Pipeline failures discovered by end users. No proactive alerts. Need Databricks Jobs with SLA tracking, email notifications, and PagerDuty integration for operational excellence."
+      ],
+      'data_quality': [
+        "No data quality checks. Issues found by analysts downstream. Want DLT expectations (expect_or_fail, expect_or_drop) to catch issues early at ingestion.",
+        "Manual SQL checks in notebooks. Inconsistent across teams. Need Lakehouse Monitoring for automated data quality metrics and anomaly detection dashboards.",
+        "Bad data reaches production dashboards. Customer complaints. Want DLT with quarantine tables and Lakehouse Monitoring for proactive quality gates.",
+        "No visibility into data freshness or completeness. Need Lakehouse Monitoring with SLA tracking, automated alerts, and data quality scorecards for operations."
+      ],
+      'performance_scalability': [
+        "Pipelines take 6+ hours. Business wants hourly refreshes. Need Photon acceleration and partition tuning with Z-ordering for query performance improvement.",
+        "Clusters manually sized. Either over-provisioned or run out of memory. Want auto-scaling clusters and serverless compute for cost efficiency and elasticity.",
+        "Jobs fail with OOM errors. Trial and error sizing. Want serverless compute with automatic resource management and Photon for predictable performance.",
+        "Data volumes growing 3x per year. Current pipelines don't scale. Need liquid clustering, Photon acceleration, and serverless for elastic growth."
+      ],
+      
+      // ANALYTICS & BI
+      'analytic_performance': [
+        "Analysts wait 5+ minutes per query. Frustration growing. Want serverless SQL warehouses with Photon for sub-second queries and query caching for reusability.",
+        "Same aggregations re-computed hourly. Inefficient. Need materialized views and query result caching to reduce compute costs and improve response times.",
+        "Dashboards timeout during business hours. Resource contention. Want serverless SQL with auto-scaling and Photon acceleration for consistent performance.",
+        "PowerBI extracts take 30+ minutes. Analysts frustrated. Need Databricks SQL with query optimization, Z-ordering, and liquid clustering for fast BI integration."
+      ],
+      'semantic_layer': [
+        "Fact tables have 200+ columns. Star schema unclear. Want dimensional modeling best practices and slowly changing dimension (SCD) patterns for historical accuracy.",
+        "Every team creates own metrics. Inconsistent revenue numbers. Need centralized semantic layer with Unity Catalog and SQL UDFs for metric standardization and governance.",
+        "Analysts join 10+ tables for simple report. Complex SQL. Want curated data marts with pre-joined dimensions and Unity Catalog views for self-service simplicity.",
+        "Metric definitions vary by department. Trust issues. Need Unity Catalog with tagged semantic layer and SQL functions for single source of truth."
+      ],
+      'bi_reporting': [
+        "Analysts export to Excel then pivot. No real-time dashboards. Want Databricks SQL dashboards with auto-refresh and embedding for business stakeholders.",
+        "PowerBI connects to raw tables. Slow and fragile. Need Databricks SQL endpoint with Photon and aggregation tables for fast BI integration and reliability.",
+        "Tableau extracts refresh overnight. Stale data by morning. Want Databricks SQL with live connection and Photon for real-time BI dashboards.",
+        "Reports built in notebooks, manually regenerated. Want Databricks SQL dashboards with scheduling, parameterization, and email delivery for executive reporting."
+      ],
+      'self_service_analytics': [
+        "Analysts wait on data engineers for every query. Bottleneck. Want Databricks SQL with saved queries and Genie for natural language ad-hoc analysis.",
+        "Business users can't explore data independently. No access control. Need Unity Catalog row/column security and Databricks SQL permissions for safe self-service access.",
+        "SQL skills vary widely. Advanced users frustrated, novices stuck. Want Databricks SQL with Genie for natural language and query templates for different skill levels.",
+        "Data requests backlogged 2 weeks. Business agility suffering. Need Databricks SQL with governed self-service and AI/BI for analyst autonomy without engineering bottleneck."
+      ],
+      'data_sharing': [
+        "Notebooks emailed as HTML. No version control. Want Databricks Repos with Git integration and notebook versioning for collaboration and reproducibility.",
+        "Each analyst has own copy of queries. Duplication and drift. Need shared queries library in Databricks SQL and comments for institutional knowledge sharing.",
+        "Partners request data extracts monthly. Manual CSV exports. Want Delta Sharing for secure, automated data sharing with external organizations and real-time updates.",
+        "Cross-team collaboration difficult. Different workspaces and catalogs. Need Unity Catalog federation and Delta Sharing for seamless internal and external collaboration."
+      ],
+      
+      // MACHINE LEARNING
+      'ml_lifecycle': [
+        "ML experiments tracked in spreadsheets. Can't reproduce results. Want MLflow for experiment tracking with hyperparameter logging and model versioning for reproducibility.",
+        "Model artifacts stored in S3 with manual naming. No lineage. Need MLflow Model Registry for version control and model lineage with Unity Catalog integration.",
+        "Data scientists can't find past experiments. Rework common. Want MLflow with experiment search, comparison views, and automated metric tracking for productivity.",
+        "Model performance degrades in production, no history to compare. Need MLflow with model monitoring, drift detection, and automated alerting for quality assurance."
+      ],
+      'ml_deployment': [
+        "Models deployed via Flask on EC2. Manual scaling. Want MLflow Model Serving with autoscaling endpoints and A/B testing for production inference workloads.",
+        "Data scientists retrain models monthly via notebook runs. No automation. Need Databricks Jobs with model retraining pipelines and trigger-based deployment for MLOps.",
+        "Model deployment takes 2 weeks. Business value delayed. Want MLflow Model Serving with one-click deployment and automated testing for rapid productionization.",
+        "Production models run on outdated data. Stale predictions. Need automated retraining pipelines with Databricks Jobs and Feature Store for always-fresh models."
+      ],
+      'feature_engineering': [
+        "Feature engineering code duplicated in notebooks. Inconsistency across models. Want Databricks Feature Store for centralized feature definitions and online/offline serving.",
+        "Training features differ from inference. Causes model drift. Need Feature Store with point-in-time lookups for training-serving skew prevention and consistency.",
+        "Feature computation expensive, re-run for every model. Want Feature Store with precomputed features and online serving for cost efficiency and low latency.",
+        "No visibility into feature usage across models. Want Feature Store with lineage tracking, usage analytics, and feature discovery for reusability and governance."
+      ],
+      'ml_governance': [
+        "No model approval process. Models deployed to prod ad-hoc. Want MLflow Model Registry with stage transitions and approval workflows for governance compliance.",
+        "Can't explain model decisions. Regulatory concern. Need model monitoring dashboards and SHAP integration for explainability audits and regulatory compliance reporting.",
+        "No model risk assessment. Compliance gaps. Want MLflow with model documentation, bias testing, and approval gates for regulated ML deployments.",
+        "Models in production, but who owns them? Need MLflow Registry with ownership tags, SLA tracking, and automated deprecation policies for operational accountability."
+      ],
+      'ml_scale': [
+        "Single-node scikit-learn. Datasets growing beyond memory. Want distributed training with Spark MLlib or PyTorch Distributed for large-scale model training on big data.",
+        "Hyperparameter tuning takes days. Blocking experimentation. Need Hyperopt with MLflow integration and parallel trials for faster experimentation cycles and model optimization.",
+        "GPU clusters expensive and underutilized. Want efficient distributed training with Horovod or Ray and GPU pooling for cost-effective scale.",
+        "Training jobs fail on large datasets. OOM errors common. Need Spark ML for distributed training or model parallelism with Mosaic AI for petabyte-scale data."
+      ],
+      
+      // GENERATIVE AI
+      'genai_strategy': [
+        "No GenAI initiative. CIO asking for roadmap. Want Mosaic AI assessment workshop to identify high-impact use cases like RAG for knowledge base search.",
+        "Experimenting with ChatGPT for customer support. Security concerns. Need Databricks Foundation Models for on-platform LLM inference with data residency and guardrails.",
+        "Business units using shadow AI. Governance risk. Want centralized GenAI platform with Mosaic AI, approved models, and usage tracking for enterprise control.",
+        "GenAI POCs not scaling to production. Need Mosaic AI infrastructure with Vector Search, Model Serving, and MLOps for productionizing LLM applications."
+      ],
+      'data_readiness': [
+        "Documentation scattered in Confluence and SharePoint. No vector embeddings. Want Vector Search index for semantic retrieval and RAG application on internal knowledge base.",
+        "PDFs and Word docs not searchable semantically. Need chunking strategy and Vector Search with hybrid search (keyword + semantic) for enterprise document retrieval.",
+        "Knowledge base outdated, manually maintained. Want automated ingestion with Vector Search, embedding generation, and incremental updates for always-current RAG.",
+        "Unstructured data in S3, no metadata. Want document parsing with Mosaic AI, Vector Search indexing, and Unity Catalog tagging for governed GenAI data."
+      ],
+      'genai_architecture': [
+        "Prompt engineering in Python notebooks. No reusability. Want Databricks AI Playground for prompt iteration and versioning with evaluation metrics and comparison views.",
+        "Calling OpenAI API directly. Cost and latency concerns. Need Databricks Model Serving with provisioned throughput for Foundation Models and reduced latency for production apps.",
+        "RAG app in single notebook. Not production-ready. Want Mosaic AI with Model Serving, Vector Search, and monitoring for enterprise-grade GenAI applications.",
+        "LLM prompts hardcoded. No A/B testing. Need Mosaic AI with prompt management, versioning, and experiment tracking for systematic optimization."
+      ],
+      'genai_quality': [
+        "No way to measure RAG quality. Anecdotal feedback only. Want MLflow with LLM evaluation metrics (retrieval precision, answer relevance, faithfulness) for systematic assessment.",
+        "Prompt changes break production. No regression testing. Need automated LLM evaluation pipelines in Databricks Jobs with golden test sets for continuous quality monitoring.",
+        "LLM outputs inconsistent. User frustration. Want MLflow with LLM evaluation, judge models, and quality thresholds for reliable GenAI responses.",
+        "Can't compare different prompts or models. Need Mosaic AI with A/B testing, evaluation metrics dashboard, and winner selection for continuous improvement."
+      ],
+      'genai_governance': [
+        "No guardrails on LLM outputs. Risk of hallucinations. Want Databricks Lakehouse Monitoring for LLM toxicity detection and output filtering with guardrail policies.",
+        "Concerns about bias in GenAI responses. Need bias testing framework and evaluation metrics for fairness audits and responsible AI governance with stakeholder review.",
+        "No PII protection in LLM workflows. Privacy risk. Want Unity Catalog with PII detection, masking policies, and audit logs for compliant GenAI applications.",
+        "LLM costs unpredictable. Budget overruns. Need Mosaic AI with usage tracking, cost attribution, and budget alerts for financial control of GenAI operations."
+      ],
+      
+      // OPERATIONAL EXCELLENCE
+      'center_of_excellence': [
+        "No central team. Every project figures out Databricks independently. Want CoE with office hours and Slack channel for support escalation and best practices sharing.",
+        "Platform capabilities unknown. Marketing team doesn't know about Vector Search for personalization. Need quarterly showcase and use case library for internal evangelism.",
+        "Support requests go to vendor. Slow response. Want internal CoE with Databricks experts, office hours, and escalation paths for faster issue resolution.",
+        "No governance council. Inconsistent patterns. Need CoE with architecture review board, standards documentation, and approval workflows for platform governance."
+      ],
+      'collaboration_culture': [
+        "Teams work in silos. Notebooks not shared. Want Databricks Repos with Git integration and shared workspace folders for knowledge sharing and collaboration.",
+        "Best practices lost when engineers leave. Need documentation wiki and community Slack channels for institutional knowledge and peer support.",
+        "No cross-team code review. Quality varies. Want Databricks Repos with pull requests, code review workflows, and shared libraries for quality assurance.",
+        "Teams duplicate work unknowingly. Need shared workspace with discovery tools, asset tagging, and quarterly demos for cross-pollination and reuse."
+      ],
+      'enablement_training': [
+        "Tribal knowledge. Key engineers are single point of failure. Want documentation site with runbooks and best practices repository for platform patterns and troubleshooting.",
+        "Teams reinvent the wheel. No code reuse. Need curated template library for common patterns (DLT, MLOps, security) with example implementations and GitHub integration.",
+        "New users overwhelmed. No learning path. Want structured training program with Databricks Academy, hands-on labs, and certification milestones for skill development.",
+        "Advanced users hit plateau. No continuous learning. Need lunch-and-learn sessions, conference attendance, and sandbox environment for innovation and skill growth."
+      ],
+      'cost_value': [
+        "No visibility into platform usage or ROI. CFO asks for justification. Want system tables dashboard for active users, cost per business unit, and business impact metrics.",
+        "Clusters idle overnight. Wasted spend. Need automated cluster termination policies, chargeback model, and usage alerts with recommendations for cost optimization.",
+        "Can't justify platform expansion. Need business case with ROI metrics, time-to-insight improvements, and cost avoidance from legacy retirement for executive buy-in.",
+        "Budget overruns mid-quarter. No forecasting. Want system tables with cost trends, workload forecasting, and budget alerts with auto-scaling policies for predictability."
+      ],
+      'innovation_culture': [
+        "15% of data team uses Databricks. Most still on legacy tools. Want onboarding program and success metrics to track adoption velocity with executive dashboard.",
+        "New hires take 3 weeks to become productive. No training. Need Databricks Academy subscriptions and internal bootcamp curriculum with certification tracking for faster ramp-up.",
+        "Innovation requests backlogged. No experimentation time. Want hackathons, sandbox workspaces, and 10% time policy for exploring new Databricks capabilities.",
+        "Teams fear breaking production. Risk-averse culture. Need dev/staging environments, CI/CD pipelines, and rollback procedures for safe experimentation and innovation."
+      ]
     };
     
-    const pillarComments = comments[pillarId] || comments.platform_governance;
-    // More varied level distribution
-    const levelKey = currentState <= 2 ? 'low' : currentState === 3 ? 'medium' : 'high';
-    const options = pillarComments[levelKey];
+    // Get comments for this specific dimension
+    const comments = dimensionComments[dimensionId] || [
+      "Currently using manual processes. Need automation and best practices implementation with Databricks platform capabilities for operational efficiency.",
+      "Early stage adoption. Looking to scale with Databricks features and proper governance for enterprise-grade data and AI workloads."
+    ];
     
-    // Use crypto random for better randomness if available
-    const randomIndex = typeof window !== 'undefined' && window.crypto?.getRandomValues
-      ? window.crypto.getRandomValues(new Uint32Array(1))[0] % options.length
-      : Math.floor(Math.random() * options.length);
+    // 🔥 CRITICAL FIX: Use TRUE randomness + timestamp seed
+    // NO deterministic hashing - every assessment MUST be unique!
+    // Combine timestamp, questionId, and Math.random() for absolute uniqueness
+    const timestampSeed = timestamp + questionId.charCodeAt(0);
+    const randomSeed = Math.random() * timestampSeed;
+    const commentIndex = Math.floor(randomSeed % comments.length);
     
-    return options[randomIndex];
+    return comments[commentIndex];
   };
 
   return (
-    <Nav>
-      <NavContainer>
-        <DatabricksLogo 
-          src="/databricks-logo.svg" 
-          alt="Databricks" 
-          onClick={handleLogoClick}
-        />
-        
-        {/* Desktop Navigation */}
-        <TopNav>
-          <NavLink onClick={handleLogoClick}>Home</NavLink>
-          <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
-          <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
-          <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
-          <NavLink onClick={() => navigate('/assessments')}>My Assessments</NavLink>
-          <NavLink onClick={() => navigate('/insights-dashboard')}>Dashboard</NavLink>
-          <SecondaryCTAButton onClick={handleTrySample}>
-            <FiPlay size={14} />
-            Try Sample
-          </SecondaryCTAButton>
-          <CTAButton onClick={() => navigate('/start')}>
-            Start Assessment →
-          </CTAButton>
-        </TopNav>
+    <>
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      
+      <Nav>
+        <NavContainer>
+          {/* Desktop Navigation */}
+          <TopNav>
+            <NavLink onClick={handleLogoClick}>Home</NavLink>
+            <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
+            <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
+            <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
+            <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
+          </TopNav>
+
+          <ActionButtons>
+            {currentUser ? (
+              <>
+                {/* Dashboard Button */}
+                {currentUser.role !== 'consumer' && (
+                  <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
+                    Dashboard
+                  </SecondaryCTAButton>
+                )}
+
+                {/* Assessments Dropdown */}
+                <DropdownContainer className="dropdown-container">
+                  <DropdownButton 
+                    $isOpen={assessmentsDropdownOpen}
+                    onClick={() => setAssessmentsDropdownOpen(!assessmentsDropdownOpen)}
+                  >
+                    <FiFileText size={14} />
+                    Assessments
+                    <FiChevronDown size={14} className="chevron" />
+                  </DropdownButton>
+                  <DropdownMenu $isOpen={assessmentsDropdownOpen}>
+                    <DropdownItem onClick={() => {
+                      navigate('/start');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiPlay />
+                      Start Assessment
+                    </DropdownItem>
+                    {currentUser.role !== 'consumer' && (
+                      <DropdownItem onClick={() => {
+                        handleTrySample();
+                        setAssessmentsDropdownOpen(false);
+                      }}>
+                        <FiPlay />
+                        Try Sample
+                      </DropdownItem>
+                    )}
+                    <DropdownItem onClick={() => {
+                      navigate('/my-assessments');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiFileText />
+                      My Assessments
+                    </DropdownItem>
+                    <DropdownItem onClick={() => {
+                      navigate('/assessments');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiList />
+                      All Assessments
+                    </DropdownItem>
+                  </DropdownMenu>
+                </DropdownContainer>
+
+                {/* Assignments Dropdown (Admin/Author only) */}
+                {(currentUser.role === 'admin' || currentUser.role === 'author') && (
+                  <DropdownContainer className="dropdown-container">
+                    <DropdownButton 
+                      $isOpen={assignmentsDropdownOpen}
+                      onClick={() => setAssignmentsDropdownOpen(!assignmentsDropdownOpen)}
+                    >
+                      <FiList size={14} />
+                      Assignments
+                      <FiChevronDown size={14} className="chevron" />
+                    </DropdownButton>
+                    <DropdownMenu $isOpen={assignmentsDropdownOpen}>
+                      <DropdownItem onClick={() => {
+                        navigate('/my-assignments');
+                        setAssignmentsDropdownOpen(false);
+                      }}>
+                        <FiFileText />
+                        Assignments
+                      </DropdownItem>
+                      <DropdownItem onClick={() => {
+                        navigate('/assign-assessment');
+                        setAssignmentsDropdownOpen(false);
+                      }}>
+                        <FiUserPlus />
+                        Assign Users
+                      </DropdownItem>
+                      {currentUser.role === 'admin' && (
+                        <DropdownItem onClick={() => {
+                          navigate('/user-management');
+                          setAssignmentsDropdownOpen(false);
+                        }}>
+                          <FiUsers />
+                          Manage Users
+                        </DropdownItem>
+                      )}
+                    </DropdownMenu>
+                  </DropdownContainer>
+                )}
+
+                {/* Admin/User Dropdown */}
+                <DropdownContainer className="dropdown-container">
+                  <DropdownButton 
+                    $isOpen={adminDropdownOpen}
+                    onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
+                  >
+                    <FiUser size={14} />
+                    {currentUser.testMode 
+                      ? `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} (Test Mode)`
+                      : (currentUser.firstName || currentUser.email.split('@')[0])
+                    }
+                    <FiChevronDown size={14} className="chevron" />
+                  </DropdownButton>
+                  <DropdownMenu $isOpen={adminDropdownOpen}>
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
+                      <>
+                        <DropdownItem onClick={() => {
+                          const testUser = { ...currentUser, role: 'author', testMode: true, originalRole: 'admin' };
+                          localStorage.setItem('user', JSON.stringify(testUser));
+                          setCurrentUser(testUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched to Author role (Test Mode)');
+                          window.location.reload();
+                        }}>
+                          <FiUsers />
+                          Switch to Author
+                        </DropdownItem>
+                        <DropdownItem onClick={() => {
+                          const testUser = { ...currentUser, role: 'consumer', testMode: true, originalRole: 'admin' };
+                          localStorage.setItem('user', JSON.stringify(testUser));
+                          setCurrentUser(testUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched to Consumer role (Test Mode)');
+                          window.location.reload();
+                        }}>
+                          <FiUsers />
+                          Switch to Consumer
+                        </DropdownItem>
+                        <DropdownDivider />
+                      </>
+                    )}
+                    {currentUser.testMode && (
+                      <>
+                        {currentUser.role !== 'author' && (
+                          <DropdownItem onClick={() => {
+                            const testUser = { ...currentUser, role: 'author' };
+                            localStorage.setItem('user', JSON.stringify(testUser));
+                            setCurrentUser(testUser);
+                            setAdminDropdownOpen(false);
+                            toast.success('Switched to Author role (Test Mode)');
+                            window.location.reload();
+                          }}>
+                            <FiUsers />
+                            Switch to Author
+                          </DropdownItem>
+                        )}
+                        {currentUser.role !== 'consumer' && (
+                          <DropdownItem onClick={() => {
+                            const testUser = { ...currentUser, role: 'consumer' };
+                            localStorage.setItem('user', JSON.stringify(testUser));
+                            setCurrentUser(testUser);
+                            setAdminDropdownOpen(false);
+                            toast.success('Switched to Consumer role (Test Mode)');
+                            window.location.reload();
+                          }}>
+                            <FiUsers />
+                            Switch to Consumer
+                          </DropdownItem>
+                        )}
+                        <DropdownItem onClick={() => {
+                          const originalUser = { ...currentUser, role: currentUser.originalRole, testMode: false };
+                          delete originalUser.originalRole;
+                          localStorage.setItem('user', JSON.stringify(originalUser));
+                          setCurrentUser(originalUser);
+                          setAdminDropdownOpen(false);
+                          toast.success('Switched back to Admin role');
+                          window.location.reload();
+                        }}>
+                          <FiUser />
+                          Switch Back to Admin
+                        </DropdownItem>
+                        <DropdownDivider />
+                      </>
+                    )}
+                <DropdownItem onClick={() => {
+                  setAdminDropdownOpen(false);
+                  toast('Change password feature coming soon!', { icon: 'ℹ️' });
+                }}>
+                      <FiLock />
+                      Change Password
+                    </DropdownItem>
+                    <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      handleLogout();
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiLogOut />
+                      Logout
+                    </DropdownItem>
+                  </DropdownMenu>
+                </DropdownContainer>
+              </>
+            ) : (
+              <>
+                <SecondaryCTAButton onClick={() => {
+                  toast.error('Please login to access the Dashboard');
+                  setShowLoginModal(true);
+                }}>
+                  Dashboard
+                </SecondaryCTAButton>
+                <SecondaryCTAButton onClick={() => {
+                  toast.error('Please login to try a sample assessment');
+                  setShowLoginModal(true);
+                }}>
+                  <FiPlay size={14} />
+                  Try Sample
+                </SecondaryCTAButton>
+                <SecondaryCTAButton onClick={() => setShowLoginModal(true)}>
+                  <FiLogIn size={14} />
+                  Login
+                </SecondaryCTAButton>
+                <CTAButton onClick={() => {
+                  toast.error('Please login to start an assessment');
+                  setShowLoginModal(true);
+                }}>
+                  Start Assessment →
+                </CTAButton>
+              </>
+            )}
+          </ActionButtons>
 
         {/* Mobile Menu Button */}
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -615,17 +976,81 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavigate('/assessments')}>My Assessments</MobileNavLink>
-        <MobileNavLink onClick={() => handleNavigate('/insights-dashboard')}>Dashboard</MobileNavLink>
-        <MobileSecondaryCTAButton onClick={handleTrySample}>
-          <FiPlay size={16} />
-          Try Sample Assessment
-        </MobileSecondaryCTAButton>
-        <MobileCTAButton onClick={() => handleNavigate('/start')}>
-          Start Assessment →
-        </MobileCTAButton>
+        <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
+        
+        {currentUser ? (
+          <>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assessments')}>
+              <FiFileText size={16} />
+              My Assessments
+            </MobileSecondaryCTAButton>
+            {currentUser.role !== 'consumer' && (
+              <>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+                  Dashboard
+                </MobileSecondaryCTAButton>
+                <MobileSecondaryCTAButton onClick={handleTrySample}>
+                  <FiPlay size={16} />
+                  Try Sample
+                </MobileSecondaryCTAButton>
+              </>
+            )}
+            {(currentUser.role === 'admin' || currentUser.role === 'author') && (
+              <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assignments')}>
+                <FiFileText size={16} />
+                My Assignments
+              </MobileSecondaryCTAButton>
+            )}
+            {currentUser.role === 'admin' && (
+              <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
+                <FiUsers size={16} />
+                Manage Users
+              </MobileSecondaryCTAButton>
+            )}
+            <MobileCTAButton onClick={() => handleNavigate('/start')}>
+              Start Assessment →
+            </MobileCTAButton>
+            <MobileSecondaryCTAButton onClick={handleLogout}>
+              <FiLogOut size={16} />
+              Logout ({currentUser.email})
+            </MobileSecondaryCTAButton>
+          </>
+        ) : (
+          <>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to access the Dashboard');
+              setShowLoginModal(true);
+            }}>
+              Dashboard
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to try a sample assessment');
+              setShowLoginModal(true);
+            }}>
+              <FiPlay size={16} />
+              Try Sample
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => {
+              closeMobileMenu();
+              setShowLoginModal(true);
+            }}>
+              <FiLogIn size={16} />
+              Login
+            </MobileSecondaryCTAButton>
+            <MobileCTAButton onClick={() => {
+              closeMobileMenu();
+              toast.error('Please login to start an assessment');
+              setShowLoginModal(true);
+            }}>
+              Start Assessment →
+            </MobileCTAButton>
+          </>
+        )}
       </MobileMenu>
     </Nav>
+    </>
   );
 };
 

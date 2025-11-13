@@ -21,28 +21,28 @@ const assessmentFramework = {
 
   maturityLevels: {
     1: {
-      level: 'Initial',
-      description: 'Ad-hoc processes, limited capabilities',
+      level: 'Explore',
+      description: 'Ad-hoc, manual processes with limited standardization',
       color: '#ff4444'
     },
     2: {
-      level: 'Developing',
-      description: 'Basic implementation with some structure',
+      level: 'Experiment',
+      description: 'Basic implementation with some repeatability',
       color: '#ff8800'
     },
     3: {
-      level: 'Defined',
-      description: 'Structured approach with established processes',
+      level: 'Formalize',
+      description: 'Documented standards and processes consistently followed',
       color: '#ffaa00'
     },
     4: {
-      level: 'Managed',
-      description: 'Advanced capabilities with strong governance',
+      level: 'Optimize',
+      description: 'Advanced automation and continuous improvement',
       color: '#88cc00'
     },
     5: {
-      level: 'Optimized',
-      description: 'Industry-leading, AI-driven optimization',
+      level: 'Transform',
+      description: 'Industry-leading practices with AI-driven optimization',
       color: '#00cc44'
     }
   }

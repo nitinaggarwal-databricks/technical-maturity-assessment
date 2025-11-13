@@ -5,7 +5,7 @@ const { generateMaturityOptions } = require('../standardMaturityLevels');
 
 const operationalExcellencePillar = {
   id: 'operational_excellence',
-  name: '⚡ Operations',
+  name: '⚡ Enablement',
   description: 'Measure organizational readiness, enablement, cost discipline, and innovation culture.',
   goal: 'Measure organizational readiness, enablement, cost discipline, and innovation culture.',
   dimensions: [

@@ -1,0 +1,16 @@
+{
+  "name": "f1-racing-game",
+  "version": "1.0.0",
+  "description": "High-end 3D F1 Racing Game",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -l 8080",
+    "dev": "npx serve . -l 8080"
+  },
+  "dependencies": {
+    "three": "^0.158.0",
+    "cannon-es": "^0.20.0"
+  },
+  "type": "module"
+}
+

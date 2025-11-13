@@ -1,3 +1,6 @@
+// Load environment variables first
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -11,8 +14,10 @@ const LiveDataEnhancer = require('./services/liveDataEnhancer');
 const OpenAIContentGenerator = require('./services/openAIContentGenerator');
 const DatabricksFeatureMapper = require('./services/databricksFeatureMapper');
 const ContextAwareRecommendationEngine = require('./services/contextAwareRecommendationEngine');
-const StorageAdapter = require('./utils/storageAdapter');
+const IntelligentRecommendationEngine = require('./services/intelligentRecommendationEngine_v2');
+const featureDB = require('./services/databricksFeatureDatabase');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
+const industryBenchmarkingService = require('./services/industryBenchmarkingService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +26,18 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// Import routes
+const authRoutes = require('./routes/auth');
+const assignmentRoutes = require('./routes/assignments');
+const notificationRoutes = require('./routes/notifications');
+
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -59,22 +76,11 @@ try {
   console.error('⚠️  ALL DATA WILL BE LOST ON RESTART!');
 }
 
-// Initialize storage adapter (PostgreSQL with file-based fallback)
-const assessments = new StorageAdapter(dataFilePath);
+// Initialize engines
 const recommendationEngine = new RecommendationEngine();
 const adaptiveRecommendationEngine = new AdaptiveRecommendationEngine();
 const liveDataEnhancer = new LiveDataEnhancer();
 const openAIContentGenerator = new OpenAIContentGenerator();
-
-// Initialize storage asynchronously
-let storageReady = false;
-assessments.initialize().then(() => {
-  storageReady = true;
-  console.log(`✅ Storage ready: ${assessments.getStorageType()}`);
-}).catch(error => {
-  console.error('❌ Failed to initialize storage:', error);
-  process.exit(1);
-});
 
 // Routes
 
@@ -82,9 +88,10 @@ assessments.initialize().then(() => {
 app.get('/status', async (req, res) => {
   try {
     const fs = require('fs');
-    const assessmentCount = await assessments.size();
-    const stats = await assessments.getStats();
-    const storageType = assessments.getStorageType();
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessmentCount = await assessmentRepo.count();
+    const stats = await assessmentRepo.getStats();
+    const storageType = 'postgresql';
     const dataFileExists = fs.existsSync(dataFilePath);
     
     res.json({
@@ -118,6 +125,196 @@ app.get('/status', async (req, res) => {
   }
 });
 
+// Fetch logo from external URL (bypasses CORS) - with intelligent logo detection
+app.post('/api/fetch-logo', async (req, res) => {
+  try {
+    const { url } = req.body;
+    
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        message: 'URL is required'
+      });
+    }
+
+    // Validate URL format
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(url);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid URL format'
+      });
+    }
+
+    const axios = require('axios');
+    const cheerio = require('cheerio');
+    
+    console.log(`[fetch-logo] Processing URL: ${url}`);
+    
+    // Helper function to fetch an image and convert to data URL
+    const fetchImageAsDataUrl = async (imageUrl) => {
+      try {
+        const fullUrl = new URL(imageUrl, url).href;
+        console.log(`[fetch-logo] Fetching image: ${fullUrl}`);
+        
+        const response = await axios.get(fullUrl, {
+          responseType: 'arraybuffer',
+          timeout: 10000,
+          maxRedirects: 5,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+          }
+        });
+        
+        const contentType = response.headers['content-type'];
+        if (!contentType || !contentType.startsWith('image/')) {
+          throw new Error('Not an image');
+        }
+        
+        const base64 = Buffer.from(response.data).toString('base64');
+        return `data:${contentType};base64,${base64}`;
+      } catch (error) {
+        console.error(`[fetch-logo] Error fetching image ${imageUrl}:`, error.message);
+        throw error;
+      }
+    };
+    
+    // First, try to fetch the URL to see what we get
+    try {
+      const response = await axios.get(url, {
+        timeout: 10000,
+        maxRedirects: 5,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        },
+        validateStatus: (status) => status < 400
+      });
+      
+      const contentType = response.headers['content-type'];
+      console.log(`[fetch-logo] Content-Type: ${contentType}`);
+      
+      // If it's already an image, return it directly
+      if (contentType && contentType.startsWith('image/')) {
+        const base64 = Buffer.from(response.data).toString('base64');
+        const dataUrl = `data:${contentType};base64,${base64}`;
+        
+        console.log(`[fetch-logo] ✅ Direct image found`);
+        return res.json({
+          success: true,
+          data: dataUrl
+        });
+      }
+      
+      // If it's HTML, parse it to find the logo
+      if (contentType && contentType.includes('html')) {
+        const $ = cheerio.load(response.data);
+        const logoStrategies = [];
+        
+        console.log(`[fetch-logo] Parsing HTML to find logo...`);
+        
+        // Strategy 1: Look for SVG logos (best quality, scalable, usually transparent)
+        const $svgLogo = $('img[src*=".svg" i][class*="logo" i], img[src*=".svg" i][id*="logo" i], img[src*=".svg" i][alt*="logo" i]').first();
+        const svgLogoSrc = $svgLogo.attr('src');
+        if (svgLogoSrc) logoStrategies.push({ name: 'SVG logo', url: svgLogoSrc, priority: 1 });
+        
+        // Strategy 2: Look for PNG logos with "logo" in the name (usually high quality, often transparent)
+        const $pngLogo = $('img[src*="logo" i][src*=".png" i]').first();
+        const pngLogoSrc = $pngLogo.attr('src');
+        if (pngLogoSrc) logoStrategies.push({ name: 'PNG logo', url: pngLogoSrc, priority: 2 });
+        
+        // Strategy 3: Look for any img with logo in class/id/alt
+        const $logoImg = $('img[class*="logo" i], img[id*="logo" i], img[alt*="logo" i]').first();
+        const logoImgSrc = $logoImg.attr('src');
+        if (logoImgSrc) logoStrategies.push({ name: 'Logo img', url: logoImgSrc, priority: 3 });
+        
+        // Strategy 4: Look for Open Graph image (usually high quality)
+        const ogImage = $('meta[property="og:image"]').attr('content');
+        if (ogImage) logoStrategies.push({ name: 'OG image', url: ogImage, priority: 4 });
+        
+        // Strategy 5: Look for Twitter card image (usually high quality)
+        const twitterImage = $('meta[name="twitter:image"]').attr('content');
+        if (twitterImage) logoStrategies.push({ name: 'Twitter image', url: twitterImage, priority: 5 });
+        
+        // Strategy 6: Look for apple-touch-icon (high quality)
+        const appleTouchIcon = $('link[rel="apple-touch-icon"]').attr('href');
+        if (appleTouchIcon) logoStrategies.push({ name: 'Apple touch icon', url: appleTouchIcon, priority: 6 });
+        
+        // Strategy 7: Look for shortcut icon
+        const shortcutIcon = $('link[rel="shortcut icon"]').attr('href');
+        if (shortcutIcon) logoStrategies.push({ name: 'Shortcut icon', url: shortcutIcon, priority: 7 });
+        
+        // Strategy 8: Look for standard favicon
+        const favicon = $('link[rel="icon"]').attr('href');
+        if (favicon) logoStrategies.push({ name: 'Favicon', url: favicon, priority: 8 });
+        
+        // Strategy 9: Try Unavatar service (aggregates multiple sources, often transparent)
+        const domain = new URL(url).hostname.replace('www.', '');
+        logoStrategies.push({ name: 'Unavatar service', url: `https://unavatar.io/${domain}?fallback=false`, priority: 9 });
+        
+        // Strategy 10: Try Clearbit Logo API (good quality but may have white backgrounds)
+        logoStrategies.push({ name: 'Clearbit API', url: `https://logo.clearbit.com/${domain}`, priority: 20 });
+        
+        // Strategy 11: Try Google Favicon Service (256x256, last resort)
+        logoStrategies.push({ name: 'Google Favicon', url: `https://www.google.com/s2/favicons?domain=${domain}&sz=256`, priority: 90 });
+        
+        // Strategy 12: Default favicon.ico (absolute last resort)
+        logoStrategies.push({ name: 'Default favicon', url: '/favicon.ico', priority: 99 });
+        
+        // Sort strategies by priority (lower number = higher priority)
+        logoStrategies.sort((a, b) => (a.priority || 50) - (b.priority || 50));
+        
+        console.log(`[fetch-logo] Found ${logoStrategies.length} potential logo URLs`);
+        
+        // Try each strategy in priority order until one succeeds
+        for (const strategy of logoStrategies) {
+          try {
+            console.log(`[fetch-logo] Trying ${strategy.name}: ${strategy.url}`);
+            const dataUrl = await fetchImageAsDataUrl(strategy.url);
+            console.log(`[fetch-logo] ✅ Successfully fetched logo using ${strategy.name}`);
+            return res.json({
+              success: true,
+              data: dataUrl
+            });
+          } catch (error) {
+            console.log(`[fetch-logo] ❌ ${strategy.name} failed: ${error.message}`);
+            // Continue to next strategy
+          }
+        }
+        
+        // If all strategies failed
+        return res.status(404).json({
+          success: false,
+          message: 'Could not fetch logo - tried all available strategies'
+        });
+      }
+      
+      // Neither image nor HTML
+      return res.status(400).json({
+        success: false,
+        message: 'URL does not point to an image or webpage'
+      });
+      
+    } catch (error) {
+      console.error('[fetch-logo] Error:', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch URL',
+        error: error.message
+      });
+    }
+    
+  } catch (error) {
+    console.error('[fetch-logo] Unexpected error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching logo',
+      error: error.message
+    });
+  }
+});
+
 // Get assessment framework
 app.get('/api/assessment/framework', async (req, res) => {
   try {
@@ -137,7 +334,7 @@ app.get('/api/assessment/framework', async (req, res) => {
 // Start new assessment
 app.post('/api/assessment/start', async (req, res) => {
   try {
-    const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
+    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
     
     if (!contactEmail) {
       return res.status(400).json({
@@ -153,29 +350,30 @@ app.post('/api/assessment/start', async (req, res) => {
       });
     }
 
+    const assessmentRepo = require('./db/assessmentRepository');
     const assessmentId = uuidv4();
-    const assessment = {
+    
+    await assessmentRepo.create({
       id: assessmentId,
+      assessmentName,
+      assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || 'Not specified',
       contactEmail,
       industry: industry || 'Not specified',
-      assessmentName,
-      assessmentDescription: assessmentDescription || '',
-      startedAt: new Date().toISOString(),
       status: 'in_progress',
-      responses: {},
-      completedCategories: [],
+      progress: 0,
       currentCategory: assessmentFramework.assessmentAreas[0].id,
-      editHistory: []
-    };
-
-    await assessments.set(assessmentId, assessment);
+      completedCategories: [],
+      responses: {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
 
     res.json({
       success: true,
       data: {
       assessmentId,
-      currentCategory: assessment.currentCategory,
+      currentCategory: assessmentFramework.assessmentAreas[0].id,
       totalCategories: assessmentFramework.assessmentAreas.length,
       assessmentName,
       assessmentDescription
@@ -194,14 +392,18 @@ app.post('/api/assessment/start', async (req, res) => {
 app.get('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
-
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
+      console.log(`❌ [API /assessment/:id] Assessment ${id} not found`);
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
+    
+    console.log(`✅ [API /assessment/:id] Found assessment ${id}`);
 
     // Return the raw assessment data
     res.json(assessment);
@@ -219,7 +421,8 @@ app.get('/api/assessment/:id', async (req, res) => {
 app.get('/api/assessment/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -228,13 +431,8 @@ app.get('/api/assessment/:id/status', async (req, res) => {
       });
     }
 
-        const progress = (assessment.completedCategories.length / assessmentFramework.assessmentAreas.length) * 100;
-
-    // Ensure legacy assessments have default names
-    if (!assessment.assessmentName) {
-      assessment.assessmentName = `Databricks Maturity Assessment ${new Date(assessment.startedAt).toLocaleDateString()}`;
-      await assessments.set(id, assessment);
-    }
+    const completedCats = assessment.completedCategories || [];
+    const progress = (completedCats.length / assessmentFramework.assessmentAreas.length) * 100;
 
     res.json({
       success: true,
@@ -245,12 +443,16 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         assessmentDescription: assessment.assessmentDescription || '',
         organizationName: assessment.organizationName,
         contactEmail: assessment.contactEmail,
+        contactName: assessment.contactName || '',
+        contactRole: assessment.contactRole || '',
         industry: assessment.industry,
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
-        completedCategories: assessment.completedCategories,
+        completedCategories: completedCats,
         startedAt: assessment.startedAt,
+        createdAt: assessment.createdAt || assessment.startedAt,
+        updatedAt: assessment.updatedAt || assessment.startedAt,
         responses: assessment.responses // Include responses for progress calculation
       }
     });
@@ -267,7 +469,8 @@ app.get('/api/assessment/:id/status', async (req, res) => {
 app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
   try {
     const { id, categoryId } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -286,6 +489,7 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
 
     // Get existing responses for this area
     const areaResponses = {};
+    const assessmentResponses = assessment.responses || {};
     
     // Handle new pillar structure with dimensions
     const questions = [];
@@ -304,18 +508,19 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
       // Get responses for all perspectives of this question
       question.perspectives.forEach(perspective => {
         const responseKey = `${question.id}_${perspective.id}`;
-        if (assessment.responses[responseKey]) {
-          areaResponses[responseKey] = assessment.responses[responseKey];
+        if (assessmentResponses[responseKey]) {
+          areaResponses[responseKey] = assessmentResponses[responseKey];
         }
       });
       
       // Get comment responses
       const commentKey = `${question.id}_comment`;
-      if (assessment.responses[commentKey]) {
-        areaResponses[commentKey] = assessment.responses[commentKey];
+      if (assessmentResponses[commentKey]) {
+        areaResponses[commentKey] = assessmentResponses[commentKey];
       }
     });
 
+    const completedCats = assessment.completedCategories || [];
     res.json({
       success: true,
       data: {
@@ -324,7 +529,7 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
           questions // Flatten questions for frontend compatibility
         },
         existingResponses: areaResponses,
-        isCompleted: assessment.completedCategories.includes(categoryId)
+        isCompleted: completedCats.includes(categoryId)
       }
     });
   } catch (error) {
@@ -342,7 +547,9 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
     const { id, categoryId } = req.params;
     const { responses } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -358,78 +565,48 @@ app.post('/api/assessment/:id/category/:categoryId/submit', async (req, res) => 
       });
     }
 
-    // Validate responses - check that all perspectives have responses
-    const requiredResponses = [];
-    
-    // Handle new pillar structure with dimensions
-    const questions = [];
-    if (area.dimensions) {
-      area.dimensions.forEach(dimension => {
-        if (dimension.questions) {
-          questions.push(...dimension.questions);
-        }
-      });
-    } else if (area.questions) {
-      // Fallback for old structure
-      questions.push(...area.questions);
-    }
-    
-    questions.forEach(question => {
-      question.perspectives.forEach(perspective => {
-        requiredResponses.push(`${question.id}_${perspective.id}`);
-      });
-    });
-
-    console.log('Received responses:', JSON.stringify(responses, null, 2));
-    console.log('Required responses:', requiredResponses);
-
-    // More lenient validation - just check if we have some responses
+    // Validate responses
     const hasAnyResponses = Object.keys(responses).length > 0;
-    
     if (!hasAnyResponses) {
       return res.status(400).json({
         success: false,
-        message: 'No responses provided',
-        receivedResponses: Object.keys(responses)
+        message: 'No responses provided'
       });
     }
 
-    // Log missing responses for debugging but don't fail
-    const missingResponses = requiredResponses.filter(responseKey => {
-      const response = responses[responseKey];
-      return !response || (Array.isArray(response) && response.length === 0);
-    });
-    
-    if (missingResponses.length > 0) {
-      console.log('Missing responses (but allowing submission):', missingResponses);
-    }
-
-    // Save responses
+    // Save responses and update assessment
+    const currentResponses = assessment.responses || {};
     Object.keys(responses).forEach(questionId => {
-      assessment.responses[questionId] = responses[questionId];
+      currentResponses[questionId] = responses[questionId];
     });
 
     // Mark category as completed
-    if (!assessment.completedCategories.includes(categoryId)) {
-      assessment.completedCategories.push(categoryId);
+    const completedCategories = assessment.completedCategories || [];
+    if (!completedCategories.includes(categoryId)) {
+      completedCategories.push(categoryId);
     }
 
-    // Update current category to next uncompleted one
+    // Calculate progress
+    const progress = Math.round((completedCategories.length / assessmentFramework.assessmentAreas.length) * 100);
+
+    // Determine next category and status
     const nextArea = assessmentFramework.assessmentAreas.find(a => 
-      !assessment.completedCategories.includes(a.id)
+      !completedCategories.includes(a.id)
     );
     
-    if (nextArea) {
-      assessment.currentCategory = nextArea.id;
-    } else {
-      assessment.status = 'completed';
-      assessment.completedAt = new Date().toISOString();
+    const updateData = {
+      responses: currentResponses,
+      completedCategories: completedCategories,
+      progress: progress,
+      currentCategory: nextArea ? nextArea.id : null
+    };
+
+    if (!nextArea) {
+      updateData.status = 'completed';
+      updateData.completedAt = new Date().toISOString();
     }
 
-    // Update assessment metadata for tracking
-    assessment.lastModified = new Date().toISOString();
-
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -454,7 +631,9 @@ app.post('/api/assessment/:id/bulk-submit', async (req, res) => {
     const { id } = req.params;
     const { responses, completedCategories, status } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -464,26 +643,27 @@ app.post('/api/assessment/:id/bulk-submit', async (req, res) => {
 
     console.log(`[Bulk Submit] Submitting ${Object.keys(responses).length} responses for assessment ${id}`);
 
-    // Save all responses
-    assessment.responses = { ...assessment.responses, ...responses };
+    // Prepare update data
+    const currentResponses = assessment.responses || {};
+    const updateData = {
+      responses: { ...currentResponses, ...responses }
+    };
 
     // Mark all categories as completed
     if (completedCategories && Array.isArray(completedCategories)) {
-      assessment.completedCategories = completedCategories;
+      updateData.completedCategories = completedCategories;
+      updateData.progress = Math.round((completedCategories.length / 6) * 100);
     }
 
     // Update assessment status
     if (status) {
-      assessment.status = status;
+      updateData.status = status;
       if (status === 'completed') {
-        assessment.completedAt = new Date().toISOString();
+        updateData.completedAt = new Date().toISOString();
       }
     }
 
-    // Update assessment metadata
-    assessment.lastModified = new Date().toISOString();
-
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     console.log(`[Bulk Submit] Successfully saved ${Object.keys(responses).length} responses`);
 
@@ -511,7 +691,9 @@ app.patch('/api/assessment/:id/metadata', async (req, res) => {
     const { id } = req.params;
     const { assessmentName, organizationName, contactEmail, industry, assessmentDescription, editorEmail } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -519,46 +701,43 @@ app.patch('/api/assessment/:id/metadata', async (req, res) => {
       });
     }
 
-    // Initialize edit history if it doesn't exist
-    if (!assessment.editHistory) {
-      assessment.editHistory = [];
-    }
-
-    // Track what changed
+    // Prepare update data
+    const updateData = {};
     const changes = {};
+    
     if (assessmentName && assessmentName !== assessment.assessmentName) {
       changes.assessmentName = { from: assessment.assessmentName, to: assessmentName };
-      assessment.assessmentName = assessmentName;
+      updateData.assessmentName = assessmentName;
     }
     if (organizationName && organizationName !== assessment.organizationName) {
       changes.organizationName = { from: assessment.organizationName, to: organizationName };
-      assessment.organizationName = organizationName;
+      updateData.organizationName = organizationName;
     }
     if (contactEmail && contactEmail !== assessment.contactEmail) {
       changes.contactEmail = { from: assessment.contactEmail, to: contactEmail };
-      assessment.contactEmail = contactEmail;
+      updateData.contactEmail = contactEmail;
     }
     if (industry && industry !== assessment.industry) {
       changes.industry = { from: assessment.industry, to: industry };
-      assessment.industry = industry;
+      updateData.industry = industry;
     }
     if (assessmentDescription !== undefined && assessmentDescription !== assessment.assessmentDescription) {
       changes.assessmentDescription = { from: assessment.assessmentDescription, to: assessmentDescription };
-      assessment.assessmentDescription = assessmentDescription;
+      updateData.assessmentDescription = assessmentDescription;
     }
 
     // Add to edit history
     if (Object.keys(changes).length > 0) {
-      assessment.editHistory.push({
+      const editHistory = assessment.editHistory || [];
+      editHistory.push({
         timestamp: new Date().toISOString(),
         editorEmail: editorEmail || contactEmail || 'Unknown',
         changes: changes
       });
+      updateData.editHistory = editHistory;
     }
 
-    // Update last modified
-    assessment.lastModified = new Date().toISOString();
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -590,7 +769,9 @@ app.put('/api/assessment/:id/edited-executive-summary', async (req, res) => {
     const { id } = req.params;
     const editedContent = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -598,21 +779,18 @@ app.put('/api/assessment/:id/edited-executive-summary', async (req, res) => {
       });
     }
 
-    // Store edited content
-    assessment.editedExecutiveSummary = editedContent;
-    assessment.lastModified = new Date().toISOString();
-    
     // Track edit in history
-    if (!assessment.editHistory) {
-      assessment.editHistory = [];
-    }
-    assessment.editHistory.push({
+    const editHistory = assessment.editHistory || [];
+    editHistory.push({
       timestamp: new Date().toISOString(),
       action: 'Executive Summary Edited',
       editor: req.body.editorEmail || assessment.contactEmail || 'SME'
     });
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, {
+      editedExecutiveSummary: editedContent,
+      editHistory: editHistory
+    });
 
     console.log(`✅ Executive Summary edited for assessment: ${id}`);
 
@@ -640,7 +818,40 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
     const { id } = req.params;
     const { questionId, perspectiveId, value, comment, isSkipped, editorEmail } = req.body;
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const updatedAssessment = await assessmentRepo.saveProgress(
+      id, 
+      questionId, 
+      perspectiveId, 
+      value, 
+      comment, 
+      isSkipped, 
+      editorEmail
+    );
+
+    res.json({
+      success: true,
+      message: 'Progress saved',
+      lastSaved: updatedAssessment.updatedAt
+    });
+  } catch (error) {
+    console.error('Error saving progress:', error);
+    const statusCode = error.message === 'Assessment not found' ? 404 : 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message || 'Error saving progress',
+      error: error.message
+    });
+  }
+});
+
+// Submit assessment (mark as submitted to enable results viewing)
+app.post('/api/assessment/:id/submit', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -648,65 +859,37 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
       });
     }
 
-    // Track who made this edit
-    if (editorEmail) {
-      if (!assessment.editors) {
-        assessment.editors = [];
-      }
-      if (!assessment.editors.includes(editorEmail)) {
-        assessment.editors.push(editorEmail);
-      }
-      assessment.lastEditor = editorEmail;
-      assessment.lastEditedAt = new Date().toISOString();
+    // Check if at least one pillar is completed
+    if (!assessment.completedCategories || assessment.completedCategories.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please complete at least one pillar before submitting'
+      });
     }
 
-    // Handle skipped questions
-    if (isSkipped !== undefined) {
-      const skipKey = `${questionId}_skipped`;
-      assessment.responses[skipKey] = isSkipped;
-      
-      // If question is being skipped, clear any existing responses
-      if (isSkipped) {
-        const perspectives = ['current_state', 'future_state', 'technical_pain', 'business_pain'];
-        perspectives.forEach(perspective => {
-          const responseKey = `${questionId}_${perspective}`;
-          delete assessment.responses[responseKey];
-        });
-        const commentKey = `${questionId}_comment`;
-        delete assessment.responses[commentKey];
-      }
-    }
+    // Update status to submitted
+    await assessmentRepo.update(id, {
+      status: 'submitted',
+      completedAt: new Date().toISOString()
+    });
 
-    // Save the response (only if not skipped)
-    if (questionId && perspectiveId && !assessment.responses[`${questionId}_skipped`]) {
-      const responseKey = `${questionId}_${perspectiveId}`;
-      assessment.responses[responseKey] = value;
-    }
-
-    // Save comment if provided (only if not skipped)
-    if (comment !== undefined && !assessment.responses[`${questionId}_skipped`]) {
-      const commentKey = `${questionId}_comment`;
-      assessment.responses[commentKey] = comment;
-    }
-
-    // Update last saved timestamp
-    assessment.lastSaved = new Date().toISOString();
-    
-    // CRITICAL: Clear cached results when responses change
-    delete assessment.results;
-    
-    await assessments.set(id, assessment);
+    console.log(`✅ Assessment ${id} submitted successfully`);
 
     res.json({
       success: true,
-      message: 'Progress saved',
-      lastSaved: assessment.lastSaved
+      message: 'Assessment submitted successfully',
+      assessment: {
+        id: assessment.id,
+        status: assessment.status,
+        submittedAt: assessment.submittedAt,
+        completedCategories: assessment.completedCategories
+      }
     });
   } catch (error) {
-    console.error('Error saving progress:', error);
+    console.error('Error submitting assessment:', error);
     res.status(500).json({
       success: false,
-      message: 'Error saving progress',
+      message: 'Error submitting assessment',
       error: error.message
     });
   }
@@ -716,7 +899,8 @@ app.post('/api/assessment/:id/save-progress', async (req, res) => {
 app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -804,6 +988,8 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 // Generate assessment results and recommendations (ADAPTIVE with live data)
 app.get('/api/assessment/:id/results', async (req, res) => {
   try {
+    console.log(`🎯 [RESULTS ENDPOINT] Request for assessment: ${req.params.id}`);
+    
     // CRITICAL: Prevent caching of dynamic results
     res.set({
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -813,14 +999,22 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     });
 
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    
+    // Try PostgreSQL first, then fallback to file storage
+    const assessmentRepo = require('./db/assessmentRepository');
+    let assessment = null;
+    
+    assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
+      console.log(`❌ [RESULTS ENDPOINT] Assessment ${id} not found`);
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
+    
+    console.log(`✅ [RESULTS ENDPOINT] Found assessment ${id}, has ${Object.keys(assessment.responses || {}).length} responses`);
 
     // DEBUG: Log what we retrieved
     console.log('🔍 Results endpoint - Retrieved assessment:', id);
@@ -939,13 +1133,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
             console.log(`🔧 Enhancing pillar ${pillarId} (level ${Math.round(maturityLevel)}) with ${databricksRecs.currentMaturity?.features?.length || 0} features`);
             
             // Enhance action with actual Databricks features
+            // NOTE: specificRecommendations (Next Steps) will be set by IntelligentRecommendationEngine later
             return {
               ...action,
               databricksFeatures: databricksRecs.currentMaturity?.features || [],
               nextLevelFeatures: databricksRecs.nextLevel?.features || [],
               quickWins: databricksRecs.quickWins || [],
               strategicMoves: databricksRecs.strategicMoves || [],
-              specificRecommendations: databricksRecs.quickWins || [], // Use quickWins for "Next Steps" (customer engagement)
+              // DO NOT SET specificRecommendations here - let intelligent engine handle it
               _source: 'Databricks Release Notes - October 2025',
               _docsUrl: 'https://docs.databricks.com/aws/en/release-notes/product/'
             };
@@ -1015,11 +1210,76 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('🔍 DEBUG: recommendations.areaScores:', JSON.stringify(recommendations.areaScores, null, 2));
     console.log('🔍 DEBUG: areasWithResponses:', areasWithResponses.map(a => a.id));
     
-    areasWithResponses.forEach(area => {
+    // 🚨 NEW: Filter to only FULLY COMPLETED pillars (all questions answered or skipped)
+    const fullyCompletedAreas = areasWithResponses.filter(area => {
+      let totalQuestions = 0;
+      let addressedQuestions = 0; // answered or skipped
+      
+      area.dimensions.forEach(dimension => {
+        dimension.questions.forEach(question => {
+          totalQuestions++;
+          const currentKey = `${question.id}_current_state`;
+          const skippedKey = `${question.id}_skipped`;
+          
+          if (assessment.responses[currentKey] !== undefined || assessment.responses[skippedKey]) {
+            addressedQuestions++;
+          }
+        });
+      });
+      
+      const isFullyCompleted = addressedQuestions === totalQuestions;
+      console.log(`📊 Pillar ${area.id}: ${addressedQuestions}/${totalQuestions} questions addressed - ${isFullyCompleted ? '✅ COMPLETE' : '⏸️ PARTIAL (excluded)'}`);
+      return isFullyCompleted;
+    });
+    
+    console.log(`✅ Fully completed pillars: ${fullyCompletedAreas.length}/${areasWithResponses.length}`);
+    
+    // Only process fully completed pillars
+    fullyCompletedAreas.forEach(area => {
       const areaScore = recommendations.areaScores[area.id] || { current: 0, future: 0 };
       console.log(`🔍 DEBUG: Area ${area.id} - areaScore from recommendations:`, areaScore);
-      const currentScore = areaScore.current || 0;
-      const futureScore = areaScore.future || 0;
+      
+      // 🔥 FIX: Calculate scores from ACTUAL responses if OpenAI didn't provide them
+      let currentScore = areaScore.current || 0;
+      let futureScore = areaScore.future || 0;
+      
+      // If OpenAI scores are 0/missing, calculate from actual responses
+      if (currentScore === 0 && futureScore === 0) {
+        console.log(`⚠️ OpenAI scores missing for ${area.id}, calculating from responses...`);
+        let currentSum = 0;
+        let futureSum = 0;
+        let answeredCount = 0;
+        let totalQuestions = 0;
+        
+        area.dimensions.forEach(dimension => {
+          dimension.questions.forEach(question => {
+            const currentKey = `${question.id}_current_state`;
+            const futureKey = `${question.id}_future_state`;
+            const skippedKey = `${question.id}_skipped`;
+            
+            // Count all non-skipped questions as part of the denominator
+            if (!assessment.responses[skippedKey]) {
+              totalQuestions++;
+              
+              // Only add to sum if actually answered
+              if (assessment.responses[currentKey] !== undefined) {
+                currentSum += assessment.responses[currentKey];
+                futureSum += assessment.responses[futureKey] || assessment.responses[currentKey];
+                answeredCount++;
+              }
+            }
+          });
+        });
+        
+        // FIX: Divide by total non-skipped questions, not just answered questions
+        // This ensures partial completion shows lower scores (e.g., 1/10 = 0.5, not 5/1 = 5.0)
+        if (totalQuestions > 0) {
+          currentScore = currentSum / totalQuestions;
+          futureScore = futureSum / totalQuestions;
+          console.log(`✅ Calculated scores for ${area.id}: answered=${answeredCount}/${totalQuestions}, current=${currentScore.toFixed(2)}, future=${futureScore.toFixed(2)}`);
+        }
+      }
+      
       const isCompleted = assessment.completedCategories.includes(area.id);
       
       // Calculate questions answered for this pillar AND dimension-level scores
@@ -1050,12 +1310,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         
         // Calculate dimension scores
         if (dimAnsweredCount > 0) {
+          const dimCurrentScore = dimCurrentSum / dimAnsweredCount;
+          const dimFutureScore = dimFutureSum / dimAnsweredCount;
           dimensionScores[dimension.id] = {
             id: dimension.id,
             name: dimension.name,
-            currentScore: dimCurrentSum / dimAnsweredCount,
-            futureScore: dimFutureSum / dimAnsweredCount,
-            gap: (dimFutureSum / dimAnsweredCount) - (dimCurrentSum / dimAnsweredCount),
+            currentScore: parseFloat(dimCurrentScore.toFixed(1)), // 🔥 FIX: 1 decimal place
+            futureScore: parseFloat(dimFutureScore.toFixed(1)),
+            gap: parseFloat((dimFutureScore - dimCurrentScore).toFixed(1)),
             questionsAnswered: dimAnsweredCount,
             totalQuestions: dimQuestionCount
           };
@@ -1066,10 +1328,10 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         id: area.id,
         name: area.name,
         description: area.description,
-        score: Math.round(currentScore), // Use current score as overall score
-        currentScore: Math.round(currentScore),
-        futureScore: Math.round(futureScore),
-        gap: Math.round(futureScore - currentScore),
+        score: parseFloat(currentScore.toFixed(1)), // 🔥 FIX: Use 1 decimal place (2.0, 3.5, etc.)
+        currentScore: parseFloat(currentScore.toFixed(1)),
+        futureScore: parseFloat(futureScore.toFixed(1)),
+        gap: parseFloat((futureScore - currentScore).toFixed(1)),
         level: adaptiveRecommendationEngine.getMaturityLevel(currentScore),
         weight: areasWithResponses.length > 0 ? 1 / areasWithResponses.length : 0,
         isPartial: !isCompleted,
@@ -1079,55 +1341,137 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       };
     });
 
-    // 🔥 CONTEXT-AWARE RECOMMENDATIONS: Enhance prioritizedActions with pain-point and comment-based insights
-    console.log('🧠 Enhancing recommendations with context-aware analysis...');
-    const contextEngine = new ContextAwareRecommendationEngine();
+    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable recommendations
+    console.log('🧠 Generating intelligent, customer-specific recommendations...');
+    const intelligentEngine = new IntelligentRecommendationEngine();
     
-    // Enhance each pillar's prioritizedActions with context-specific recommendations
+    // 🚨 FIX: Generate intelligent recommendations for ANY PILLAR WITH RESPONSES (not just fully completed)
+    for (const area of areasWithResponses) {
+      const pillarId = area.id;
+      const pillarMaturity = categoryDetails[pillarId]?.score || 3;
+      
+      console.log(`🧠 Analyzing pillar: ${pillarId} (maturity: ${pillarMaturity})`);
+      
+      // Get the pillar framework data to pass actual question IDs
+      const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+      
+      // Generate intelligent, customer-specific recommendations (NOW WITH DATABASE! 🚀)
+      const intelligentRecs = await intelligentEngine.generateRecommendations(
+        assessment,
+        pillarId,
+        pillarFramework
+      );
+      
+      console.log(`✅ Found ${intelligentRecs.recommendations.length} intelligent recommendations for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.nextSteps.length} customer-specific next steps for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.databricksFeatures.length} Databricks features for ${pillarId}`);
+      console.log(`✅ Found ${intelligentRecs.theGood.length} strengths and ${intelligentRecs.theBad.length} challenges for ${pillarId}`);
+      
+      // 🚨 CRITICAL FIX: Populate categoryDetails with intelligent recommendations
+      if (categoryDetails[pillarId]) {
+        categoryDetails[pillarId].theGood = intelligentRecs.theGood || [];
+        categoryDetails[pillarId].theBad = intelligentRecs.theBad || [];
+        categoryDetails[pillarId].recommendations = intelligentRecs.recommendations || [];
+        categoryDetails[pillarId].nextSteps = intelligentRecs.nextSteps || [];
+        categoryDetails[pillarId].databricksFeatures = intelligentRecs.databricksFeatures || [];
+        categoryDetails[pillarId].painPoints = intelligentRecs.theBad || []; // Alias for backward compatibility
+        categoryDetails[pillarId]._intelligentEngine = true;
+        categoryDetails[pillarId]._painPointsAnalyzed = intelligentRecs.theBad?.length || 0;
+        categoryDetails[pillarId]._strengthsIdentified = intelligentRecs.theGood?.length || 0;
+      }
+    }
+    
+    // Enhance each pillar's prioritizedActions with intelligent, customer-specific recommendations
     if (recommendations.prioritizedActions && Array.isArray(recommendations.prioritizedActions)) {
-      recommendations.prioritizedActions = recommendations.prioritizedActions.map(action => {
+      recommendations.prioritizedActions = await Promise.all(recommendations.prioritizedActions.map(async (action) => {
         const pillarId = action.pillarId || action.area || action.pillar;
-        const pillarMaturity = categoryDetails[pillarId]?.score || 3;
         
-        console.log(`🧠 Analyzing pillar: ${pillarId} (maturity: ${pillarMaturity})`);
-        
-        // Get the pillar framework data to pass actual question IDs
-        const pillarFramework = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
-        
-        // Generate context-aware recommendations
-        const contextRecs = contextEngine.generateContextAwareRecommendations(
-          assessment,
-          pillarId,
-          pillarMaturity,
-          pillarFramework // Pass the actual pillar structure
-        );
-        
-        console.log(`✅ Found ${contextRecs.recommendations.length} specific recommendations for ${pillarId}`);
-        console.log(`✅ Found ${contextRecs.nextSteps.length} next steps for ${pillarId}`);
-        
-        // DEBUG: Log what we're actually replacing
-        if (contextRecs.recommendations.length > 0) {
-          console.log(`📝 Context-aware recommendations for ${pillarId}:`, JSON.stringify(contextRecs.recommendations.slice(0, 2), null, 2));
-        }
-        if (action.recommendations) {
-          console.log(`🔄 Original recommendations for ${pillarId}:`, JSON.stringify(action.recommendations.slice(0, 2), null, 2));
+        // Use the intelligent recommendations we already generated for categoryDetails
+        const pillarDetails = categoryDetails[pillarId];
+        if (pillarDetails && pillarDetails._intelligentEngine) {
+          console.log(`✅ Using cached intelligent recommendations for ${pillarId} in prioritizedActions`);
+          return {
+            ...action,
+            theGood: pillarDetails.theGood || [],
+            theBad: pillarDetails.theBad || [],
+            recommendations: pillarDetails.recommendations || [],
+            nextSteps: pillarDetails.nextSteps || [],
+            specificRecommendations: pillarDetails.nextSteps || [],
+            databricksFeatures: pillarDetails.databricksFeatures || [],
+            _intelligentEngine: true,
+            _painPointsAnalyzed: pillarDetails._painPointsAnalyzed || 0,
+            _strengthsIdentified: pillarDetails._strengthsIdentified || 0
+          };
         }
         
-        // Replace generic recommendations with context-specific ones
-        // NOTE: We keep databricksFeatures from original (has proper structure)
-        // We only enhance the recommendations (bullet list) and nextSteps
+        // Fallback if pillar not in categoryDetails (shouldn't happen)
+        console.warn(`⚠️ Pillar ${pillarId} not found in categoryDetails, skipping intelligent recommendations`);
+        return action;
+      }));
+      
+      // 🗺️ GENERATE DYNAMIC STRATEGIC ROADMAP based on prioritized actions
+      console.log('🗺️ Generating dynamic strategic roadmap...');
+      const dynamicRoadmap = intelligentEngine.generateStrategicRoadmap(recommendations.prioritizedActions);
+      recommendations.roadmap = dynamicRoadmap;
+      console.log(`✅ Dynamic roadmap generated with ${dynamicRoadmap.phases?.length || 0} phases`);
+      
+      // 💰 CALCULATE BUSINESS IMPACT based on assessment gaps and features
+      console.log('💰 Calculating dynamic business impact metrics...');
+      const businessImpact = intelligentEngine.calculateBusinessImpact(
+        assessment,
+        recommendations.prioritizedActions,
+        assessment.industry || 'Technology'
+      );
+      recommendations.businessImpact = businessImpact;
+      console.log(`✅ Business impact calculated: ${businessImpact.decisionSpeed?.value}, ${businessImpact.costOptimization?.value}, ${businessImpact.manualOverhead?.value}`);
+      
+      // 📊 GENERATE DYNAMIC MATURITY SUMMARY based on assessment
+      console.log('📊 Generating dynamic maturity summary...');
+      const currentScore = recommendations.overall?.currentScore || 3;
+      const targetScore = recommendations.overall?.futureScore || 4;
+      const maturitySummary = intelligentEngine.generateMaturitySummary(
+        assessment,
+        recommendations.prioritizedActions,
+        currentScore,
+        targetScore,
+        assessment.industry || 'Technology'
+      );
+      recommendations.maturitySummary = maturitySummary;
+      console.log(`✅ Maturity summary generated: ${maturitySummary.current.level} → ${maturitySummary.target.level}`);
+    }
+
+    // 🚨 RECALCULATE overall score using ONLY fully completed pillars
+    if (fullyCompletedAreas.length > 0) {
+      const completedPillarScores = fullyCompletedAreas.map(area => {
+        const detail = categoryDetails[area.id];
         return {
-          ...action,
-          // Keep original databricksFeatures structure (has name, description, docs)
-          // databricksFeatures: action.databricksFeatures, // Keep as-is
-          // Replace text recommendations with context-specific ones
-          recommendations: contextRecs.recommendations.length > 0 ? contextRecs.recommendations : action.recommendations,
-          specificRecommendations: contextRecs.nextSteps.length > 0 ? contextRecs.nextSteps : action.specificRecommendations,
-          _contextAnalyzed: true,
-          _painPointsFound: contextRecs.features.length,
-          _insights: contextRecs.insights
+          current: detail?.currentScore || 0,
+          future: detail?.futureScore || 0
         };
       });
+      
+      const avgCurrent = completedPillarScores.reduce((sum, s) => sum + s.current, 0) / completedPillarScores.length;
+      const avgFuture = completedPillarScores.reduce((sum, s) => sum + s.future, 0) / completedPillarScores.length;
+      
+      recommendations.overall = {
+        currentScore: parseFloat(avgCurrent.toFixed(1)),
+        futureScore: parseFloat(avgFuture.toFixed(1)),
+        gap: parseFloat((avgFuture - avgCurrent).toFixed(1)),
+        level: avgCurrent < 2 ? 'Initial' : avgCurrent < 3 ? 'Developing' : avgCurrent < 4 ? 'Defined' : avgCurrent < 4.5 ? 'Advanced' : 'Optimized',
+        summary: `Based on ${fullyCompletedAreas.length} completed pillar(s)`
+      };
+      
+      console.log(`✅ Overall score recalculated from ${fullyCompletedAreas.length} fully completed pillars: ${avgCurrent.toFixed(1)} → ${avgFuture.toFixed(1)}`);
+    } else {
+      // No fully completed pillars - return empty/minimal results
+      recommendations.overall = {
+        currentScore: 0,
+        futureScore: 0,
+        gap: 0,
+        level: 'Not Started',
+        summary: 'No pillars fully completed yet. Complete all questions in at least one pillar to see results.'
+      };
+      console.log(`⚠️ No fully completed pillars - returning minimal results`);
     }
 
     const results = {
@@ -1140,8 +1484,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         industry: assessment.industry,
         completedAt: assessment.completedAt,
         startedAt: assessment.startedAt,
-        isPartialAssessment: areasWithResponses.length < assessmentFramework.assessmentAreas.length || assessment.completedCategories.length < assessmentFramework.assessmentAreas.length,
-        completedPillars: assessment.completedCategories.length,
+        isPartialAssessment: fullyCompletedAreas.length < assessmentFramework.assessmentAreas.length,
+        completedPillars: fullyCompletedAreas.length, // 🚨 Changed to fully completed count
         totalPillars: assessmentFramework.assessmentAreas.length,
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,
@@ -1159,6 +1503,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       commentBasedInsights: recommendations.commentBasedInsights || [], // ADAPTIVE: Insights from user notes
       prioritizedActions: recommendations.prioritizedActions,
       roadmap: recommendations.roadmap,
+      businessImpact: recommendations.businessImpact, // DYNAMIC: Calculated based on gaps, industry, and features
+      maturitySummary: recommendations.maturitySummary, // DYNAMIC: Descriptions of current, target, and improvement
       quickWins: recommendations.quickWins,
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
@@ -1203,6 +1549,154 @@ app.get('/api/assessment/:id/results', async (req, res) => {
   }
 });
 
+// Get industry benchmarking report
+app.get('/api/assessment/:id/benchmark', async (req, res) => {
+  try {
+    console.log(`🎯 [BENCHMARK ENDPOINT] Request for assessment: ${req.params.id}`);
+    
+    // Prevent caching
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+
+    const { id } = req.params;
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+
+    if (!assessment) {
+      console.log(`❌ [BENCHMARK ENDPOINT] Assessment ${id} not found`);
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    console.log(`✅ [BENCHMARK ENDPOINT] Assessment ${id} found, generating benchmarking report`);
+
+    // Ensure responses exists
+    if (!assessment.responses || typeof assessment.responses !== 'object') {
+      assessment.responses = {};
+    }
+
+    const hasAnyResponses = Object.keys(assessment.responses).length > 0;
+    
+    if (!hasAnyResponses) {
+      return res.json({
+        success: true,
+        data: {
+          message: 'No responses yet - complete assessment to generate benchmarking report',
+          assessmentInfo: {
+            id: assessment.id,
+            assessmentName: assessment.assessmentName,
+            industry: assessment.industry,
+            startedAt: assessment.startedAt
+          }
+        }
+      });
+    }
+
+    // Calculate pillar scores
+    const pillarScores = {};
+    const areasWithResponses = [];
+    
+    for (const area of assessmentFramework.assessmentAreas) {
+      // Calculate current and future scores
+      let currentTotal = 0;
+      let futureTotal = 0;
+      let answeredCount = 0;
+      let totalNonSkippedQuestions = 0;
+
+      // Count all questions in this area and calculate scores
+      area.dimensions.forEach(dimension => {
+        dimension.questions.forEach(question => {
+          const currentKey = `${question.id}_current_state`;
+          const futureKey = `${question.id}_future_state`;
+          const skippedKey = `${question.id}_skipped`;
+          
+          // Count non-skipped questions
+          if (!assessment.responses[skippedKey]) {
+            totalNonSkippedQuestions++;
+            
+            // Add to totals if answered
+            if (assessment.responses[currentKey] !== undefined) {
+              currentTotal += parseFloat(assessment.responses[currentKey]);
+              answeredCount++;
+            }
+            if (assessment.responses[futureKey] !== undefined) {
+              futureTotal += parseFloat(assessment.responses[futureKey]);
+            }
+          }
+        });
+      });
+
+      // Only include pillar if it has responses
+      if (answeredCount > 0) {
+        areasWithResponses.push(area);
+        
+        // Divide by total non-skipped questions to reflect partial completion
+        const currentScore = totalNonSkippedQuestions > 0 ? parseFloat((currentTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
+        const futureScore = totalNonSkippedQuestions > 0 ? parseFloat((futureTotal / totalNonSkippedQuestions).toFixed(1)) : 0;
+        const gap = parseFloat((futureScore - currentScore).toFixed(1));
+
+        pillarScores[area.id] = {
+          currentScore,
+          futureScore,
+          gap,
+          responseCount: answeredCount
+        };
+      }
+    }
+
+    // Calculate overall score (average of current scores)
+    const pillarCurrentScores = Object.values(pillarScores).map(p => p.currentScore);
+    const overallScore = pillarCurrentScores.length > 0
+      ? parseFloat((pillarCurrentScores.reduce((sum, s) => sum + s, 0) / pillarCurrentScores.length).toFixed(1))
+      : 0;
+
+    // Extract pain points from responses
+    const painPoints = [];
+    Object.values(assessment.responses).forEach(response => {
+      if (response.painPoints && Array.isArray(response.painPoints)) {
+        response.painPoints.forEach(pp => {
+          if (!painPoints.find(p => p.value === pp.value || p.label === pp.label)) {
+            painPoints.push(pp);
+          }
+        });
+      }
+    });
+
+    console.log(`📊 [BENCHMARK] Overall Score: ${overallScore}, Pillars: ${Object.keys(pillarScores).length}, Pain Points: ${painPoints.length}`);
+
+    // Generate comprehensive benchmarking report
+    const benchmarkReport = await industryBenchmarkingService.generateComprehensiveBenchmarkReport(
+      assessment.industry || 'Technology',
+      assessment,
+      overallScore,
+      pillarScores,
+      painPoints
+    );
+
+    console.log('✅ [BENCHMARK] Report generated successfully');
+
+    res.json({
+      success: true,
+      data: benchmarkReport
+    });
+
+  } catch (error) {
+    console.error('❌ [BENCHMARK] Error generating benchmarking report:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating benchmarking report',
+      error: error.message
+    });
+  }
+});
+
 // Submit NPS feedback
 app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
   try {
@@ -1219,7 +1713,9 @@ app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
       });
     }
     
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
     if (!assessment) {
       return res.status(404).json({
         success: false,
@@ -1228,14 +1724,14 @@ app.post('/api/assessment/:id/nps-feedback', async (req, res) => {
     }
     
     // Add NPS feedback to assessment
-    assessment.npsFeedback = {
+    const npsFeedback = {
       score: parseInt(score, 10),
       comment: comment || '',
       submittedAt: new Date().toISOString(),
       category: score >= 9 ? 'Promoter' : score >= 7 ? 'Passive' : 'Detractor'
     };
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, { npsFeedback });
     
     console.log(`[NPS Feedback] Saved successfully for ${id}`);
     
@@ -1259,7 +1755,7 @@ function calculateNPS(assessments) {
   const withFeedback = assessments.filter(a => a.npsFeedback && a.npsFeedback.score !== null && a.npsFeedback.score !== undefined);
   
   if (withFeedback.length === 0) {
-    return 'N/A'; // No feedback yet
+    return 'Awaiting feedback'; // No feedback yet
   }
   
   const promoters = withFeedback.filter(a => a.npsFeedback.score >= 9).length;
@@ -1276,7 +1772,7 @@ function calculateNPSTrend(allAssessments, recentAssessments, previousAssessment
   const recentNPS = calculateNPS(recentAssessments);
   const previousNPS = calculateNPS(previousAssessments);
   
-  if (recentNPS === 'N/A' || previousNPS === 'N/A') {
+  if (recentNPS === 'Awaiting feedback' || previousNPS === 'Awaiting feedback') {
     return '0.0';
   }
   
@@ -1318,7 +1814,8 @@ function getNPSBreakdown(assessments) {
 // Dashboard statistics endpoint - ALL DYNAMIC DATA
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
-    const allAssessments = await assessments.values();
+    const assessmentRepo = require('./db/assessmentRepository');
+    const allAssessments = await assessmentRepo.findAll();
     console.log(`[Dashboard Stats] Processing ${allAssessments.length} assessments`);
     
     // Sort assessments by date for trend calculations
@@ -1350,7 +1847,12 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const activeCustomersTrend = recentCustomers - previousCustomers;
     
     // 3. AVERAGE COMPLETION TIME with trend
-    const completedAssessments = allAssessments.filter(a => a.completedAt);
+    // 🔥 FIX: Handle both completedAt and submittedAt, both startedAt and createdAt
+    const completedAssessments = allAssessments.filter(a => a.completedAt || a.submittedAt).map(a => ({
+      ...a,
+      completedAt: a.completedAt || a.submittedAt,
+      startedAt: a.startedAt || a.createdAt
+    }));
     const recentCompleted = completedAssessments.filter(a => 
       new Date(a.completedAt).getTime() >= thirtyDaysAgo
     );
@@ -1362,8 +1864,10 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const calcAvgTime = (assessments) => {
       if (assessments.length === 0) return 0;
       return assessments.reduce((sum, a) => {
-        const hours = (new Date(a.completedAt) - new Date(a.startedAt)) / (1000 * 60 * 60);
-        return sum + hours;
+        const completed = new Date(a.completedAt || a.submittedAt);
+        const started = new Date(a.startedAt || a.createdAt);
+        const hours = (completed - started) / (1000 * 60 * 60);
+        return sum + (hours > 0 ? hours : 0);
       }, 0) / assessments.length;
     };
     
@@ -1498,7 +2002,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // 8. CUSTOMER PORTFOLIO with dynamic key gaps
     const customerPortfolio = allAssessments
-      .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+      .sort((a, b) => new Date(b.startedAt || b.createdAt) - new Date(a.startedAt || a.createdAt))
       .slice(0, 10)
       .map(assessment => {
         const completion = Math.round((assessment.completedCategories?.length || 0) / 6 * 100);
@@ -1573,7 +2077,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
           maturity: maturity > 0 ? maturity.toFixed(1) : '0.0',
           target: target > 0 ? target.toFixed(1) : '0.0',
           completion: completion,
-          keyGaps: keyGaps.length > 0 ? keyGaps : ['N/A'],
+          keyGaps: keyGaps.length > 0 ? keyGaps : ['Assessment in progress'],
           status: status
         };
       });
@@ -1588,7 +2092,11 @@ app.get('/api/dashboard/stats', async (req, res) => {
       .slice(0, 2)
       .map(a => ({
         name: a.organizationName || 'Unknown',
+        organizationName: a.organizationName || 'Unknown',
+        industry: a.industry || 'Not Specified',
+        startedAt: a.startedAt,
         assessmentId: a.id,
+        completionTime: parseFloat(a.completionTime.toFixed(1)), // 🔥 Include completionTime for frontend
         detail: `${a.completionTime.toFixed(1)} hrs • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
       }));
     
@@ -1609,10 +2117,10 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // 11. STALLED ASSESSMENTS (not completed, oldest first)
     const stalled = allAssessments
-      .filter(a => !a.completedAt)
+      .filter(a => !a.completedAt && !a.submittedAt)
       .map(a => ({
         ...a,
-        stalledTime: (now - new Date(a.startedAt).getTime()) / (1000 * 60 * 60)
+        stalledTime: (now - new Date(a.startedAt || a.createdAt).getTime()) / (1000 * 60 * 60)
       }))
       .sort((a, b) => b.stalledTime - a.stalledTime)
       .slice(0, 2)
@@ -1622,6 +2130,64 @@ app.get('/api/dashboard/stats', async (req, res) => {
         detail: `${a.stalledTime.toFixed(0)} hrs stalled • Owner: ${a.contactEmail?.split('@')[0] || 'Unknown'}`
       }));
     
+    // 🚨 ADD MISSING FIELDS: industryBreakdown, pillarBreakdown, recentAssessments
+    const industryBreakdown = {};
+    allAssessments.forEach(a => {
+      const industry = a.industry || 'Not Specified';
+      if (!industryBreakdown[industry]) {
+        industryBreakdown[industry] = { count: 0, avgScore: 0, totalScore: 0 };
+      }
+      industryBreakdown[industry].count++;
+      const score = calcAvgMaturity([a]);
+      industryBreakdown[industry].totalScore += score;
+      industryBreakdown[industry].avgScore = industryBreakdown[industry].totalScore / industryBreakdown[industry].count;
+    });
+    
+    const pillarBreakdown = {};
+    pillarIds.forEach(pillarId => {
+      const pillarNames = {
+        'platform_governance': 'Platform & Governance',
+        'data_engineering': 'Data Engineering',
+        'analytics_bi': 'Analytics & BI',
+        'machine_learning': 'Machine Learning',
+        'generative_ai': 'Generative AI',
+        'operational_excellence': 'Operational Excellence'
+      };
+      const current = pillarMaturityCurrent[pillarIds.indexOf(pillarId)] || 0;
+      const target = pillarMaturityTarget[pillarIds.indexOf(pillarId)] || 0;
+      pillarBreakdown[pillarId] = {
+        name: pillarNames[pillarId],
+        avgCurrent: current,
+        avgTarget: target,
+        gap: target - current
+      };
+    });
+    
+    const recentAssessmentsFormatted = allAssessments
+      .sort((a, b) => new Date(b.startedAt || b.createdAt) - new Date(a.startedAt || a.createdAt))
+      .slice(0, 10)
+      .map(a => {
+        // Calculate completion time if assessment is completed
+        let completionTime = null;
+        if (a.completedAt || a.submittedAt) {
+          const completed = new Date(a.completedAt || a.submittedAt);
+          const started = new Date(a.startedAt || a.createdAt);
+          const hours = (completed - started) / (1000 * 60 * 60);
+          completionTime = hours > 0 ? parseFloat(hours.toFixed(1)) : 0.0;
+        }
+        
+        return {
+          id: a.id,
+          organizationName: a.organizationName,
+          industry: a.industry,
+          status: a.status || 'in_progress',
+          startedAt: a.startedAt || a.createdAt,
+          completedAt: a.completedAt || a.submittedAt,
+          overallScore: calcAvgMaturity([a]),
+          completionTime // 🔥 FIX: Add completion time for Top Performers
+        };
+      });
+    
     console.log('[Dashboard Stats] Calculations complete');
     
     res.json({
@@ -1629,6 +2195,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
       data: {
         totalAssessments,
         totalAssessmentsTrend,
+        completedAssessments: completedAssessments.length, // 🔥 FIX: Add completed assessments count
         activeCustomers,
         activeCustomersTrend,
         avgCompletionTime: avgCompletionTime > 0 ? avgCompletionTime.toFixed(1) : '0.0',
@@ -1648,7 +2215,26 @@ app.get('/api/dashboard/stats', async (req, res) => {
         customerPortfolio,
         fastest: fastest.length > 0 ? fastest : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
         improvement: improvementList.length > 0 ? improvementList : [{ name: 'No data', assessmentId: null, detail: 'Complete assessments to see data' }],
-        stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }]
+        stalled: stalled.length > 0 ? stalled : [{ name: 'No data', assessmentId: null, detail: 'All assessments completed' }],
+        // 🚨 NEW FIELDS for frontend
+        industryBreakdown: Object.entries(industryBreakdown).map(([industry, data]) => ({
+          industry,
+          count: data.count,
+          avgScore: parseFloat(data.avgScore.toFixed(1))
+        })),
+        pillarBreakdown: Object.entries(pillarBreakdown).map(([pillar, data]) => ({
+          pillar,
+          name: data.name,
+          avgScore: parseFloat((data.avgCurrent || 0).toString()),
+          avgCurrent: parseFloat((data.avgCurrent || 0).toString()),
+          avgTarget: parseFloat((data.avgTarget || 0).toString()),
+          current: parseFloat((data.avgCurrent || 0).toString()),
+          target: parseFloat((data.avgTarget || 0).toString()),
+          gap: parseFloat(((data.avgTarget || 0) - (data.avgCurrent || 0)).toString()),
+          count: allAssessments.length,
+          avgGap: parseFloat(((data.avgTarget || 0) - (data.avgCurrent || 0)).toString())
+        })),
+        recentAssessments: recentAssessmentsFormatted
       }
     });
   } catch (error) {
@@ -1672,6 +2258,41 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+// Feature database health check endpoint
+app.get('/api/health/features-db', async (req, res) => {
+  try {
+    const health = await featureDB.healthCheck();
+    res.json({
+      success: true,
+      data: health
+    });
+  } catch (error) {
+    console.error('[API] Feature DB health check failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Get latest features from database
+app.get('/api/features/latest', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const features = await featureDB.getLatestFeatures(limit);
+    res.json({
+      success: true,
+      data: features
+    });
+  } catch (error) {
+    console.error('[API] Error fetching latest features:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -1682,27 +2303,58 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Get all assessments (for past assessments management)
+// Get all assessments (PostgreSQL only)
 app.get('/api/assessments', async (req, res) => {
   try {
-    const allAssessments = await assessments.values(); // Await the async call
-    const assessmentsList = allAssessments.map(assessment => ({
-      id: assessment.id,
-      organizationName: assessment.organizationName,
-      contactEmail: assessment.contactEmail,
-      industry: assessment.industry,
-      assessmentName: assessment.assessmentName || 'Untitled Assessment',
-      assessmentDescription: assessment.assessmentDescription || '',
-      status: assessment.status,
-      startedAt: assessment.startedAt,
-      completedAt: assessment.completedAt,
-      completedCategories: assessment.completedCategories,
-      totalCategories: assessmentFramework.assessmentAreas.length,
-      progress: Math.round((assessment.completedCategories.length / assessmentFramework.assessmentAreas.length) * 100)
-    }));
+    const assessmentRepo = require('./db/assessmentRepository');
+    const userRepo = require('./db/userRepository');
+    
+    let assessmentsList = [];
+    
+    // Query PostgreSQL assessments with user info
+    const pgAssessments = await assessmentRepo.findAll();
+    
+    for (const assessment of pgAssessments) {
+      let creatorName = 'Unknown';
+      const userId = assessment.user_id || assessment.userId;
+      if (userId) {
+        try {
+          const user = await userRepo.findById(userId);
+          if (user) {
+            creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+          }
+        } catch (err) {
+          console.warn('Could not fetch user:', err.message);
+        }
+      }
+      
+      assessmentsList.push({
+        id: assessment.id,
+        organization_name: assessment.organizationName || '',
+        contact_email: assessment.contactEmail || '',
+        contact_name: '',
+        contact_role: '',
+        industry: assessment.industry || '',
+        assessment_name: assessment.assessmentName || 'Untitled Assessment',
+        assessment_description: assessment.assessmentDescription || '',
+        status: assessment.status || 'in_progress',
+        started_at: assessment.startedAt,
+        created_at: assessment.createdAt,
+        updated_at: assessment.updatedAt,
+        completed_at: assessment.completedAt,
+        completedCategories: assessment.completedCategories || [],
+        completed_categories: assessment.completedCategories || [],
+        total_categories: assessmentFramework.assessmentAreas.length,
+        progress: assessment.progress || 0,
+        creator_name: creatorName,
+        user_id: userId
+      });
+    }
+    
+    console.log(`✅ Fetched ${assessmentsList.length} assessments from PostgreSQL`);
 
     // Sort by most recent first
-    assessmentsList.sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
+    assessmentsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json({
       success: true,
@@ -1718,13 +2370,60 @@ app.get('/api/assessments', async (req, res) => {
   }
 });
 
+// Get single assessment by ID
+app.get('/api/assessments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    const completedCats = assessment.completedCategories || [];
+    const progress = Math.round((completedCats.length / assessmentFramework.assessmentAreas.length) * 100);
+
+    res.json({
+      success: true,
+      assessment: {
+        id: assessment.id,
+        assessment_name: assessment.assessmentName || 'Untitled Assessment',
+        assessment_description: assessment.assessmentDescription || '',
+        organization_name: assessment.organizationName,
+        contact_email: assessment.contactEmail,
+        industry: assessment.industry,
+        status: assessment.status,
+        progress: progress,
+        started_at: assessment.startedAt,
+        created_at: assessment.createdAt || assessment.startedAt,
+        completed_at: assessment.completedAt,
+        responses: assessment.responses,
+        completed_categories: completedCats
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving assessment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving assessment',
+      error: error.message
+    });
+  }
+});
+
 // Clone an existing assessment
 app.post('/api/assessment/:id/clone', async (req, res) => {
   try {
     const { id } = req.params;
     const { organizationName, contactEmail, industry, assessmentName, assessmentDescription } = req.body;
     
-    const originalAssessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const originalAssessment = await assessmentRepo.findById(id);
+    
     if (!originalAssessment) {
       return res.status(404).json({
         success: false,
@@ -1741,23 +2440,24 @@ app.post('/api/assessment/:id/clone', async (req, res) => {
 
     // Create new assessment with cloned data
     const newAssessmentId = uuidv4();
-    const clonedAssessment = {
+    const completedCats = originalAssessment.completedCategories || [];
+    const progress = Math.round((completedCats.length / 6) * 100);
+    
+    await assessmentRepo.create({
       id: newAssessmentId,
+      assessmentName,
+      assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || originalAssessment.organizationName,
       contactEmail: contactEmail || originalAssessment.contactEmail,
       industry: industry || originalAssessment.industry,
-      assessmentName,
-      assessmentDescription: assessmentDescription || '',
-      startedAt: new Date().toISOString(),
       status: 'in_progress',
-      responses: { ...originalAssessment.responses }, // Clone responses
-      completedCategories: [...originalAssessment.completedCategories], // Clone completed categories
+      progress: progress,
       currentCategory: originalAssessment.currentCategory,
-      clonedFrom: id,
-      clonedAt: new Date().toISOString()
-    };
-
-    await assessments.set(newAssessmentId, clonedAssessment);
+      completedCategories: completedCats,
+      responses: originalAssessment.responses || {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
 
     res.json({
       success: true,
@@ -1782,18 +2482,61 @@ app.post('/api/assessment/:id/clone', async (req, res) => {
 });
 
 // Delete an assessment
+// Delete all assessments
+app.delete('/api/assessments/all', async (req, res) => {
+  try {
+    console.log('🗑️  Deleting all assessments...');
+    
+    const assessmentRepo = require('./db/assessmentRepository');
+    const allAssessments = await assessmentRepo.findAll();
+    const assessmentIds = allAssessments.map(a => a.id);
+    
+    console.log(`Found ${assessmentIds.length} assessments to delete`);
+    
+    // Delete each assessment
+    let deletedCount = 0;
+    for (const id of assessmentIds) {
+      try {
+        await assessmentRepo.delete(id);
+        deletedCount++;
+      } catch (error) {
+        console.error(`Failed to delete assessment ${id}:`, error);
+      }
+    }
+    
+    console.log(`✅ Successfully deleted ${deletedCount} assessments`);
+
+    res.json({
+      success: true,
+      message: `Successfully deleted ${deletedCount} assessment(s)`,
+      deletedCount
+    });
+  } catch (error) {
+    console.error('Error deleting all assessments:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting all assessments',
+      error: error.message
+    });
+  }
+});
+
+// Delete individual assessment
 app.delete('/api/assessment/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    if (!await assessments.has(id)) {
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
       });
     }
 
-    assessments.delete(id);
+    await assessmentRepo.delete(id);
 
     res.json({
       success: true,
@@ -1821,7 +2564,8 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
     });
 
     const { id, pillarId } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -1905,36 +2649,43 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       pillarResults.databricksFeatures = [];
     }
     
-    // 🔥 CONTEXT-AWARE RECOMMENDATIONS: Enhance with pain-point and comment-based insights
-    console.log(`🧠 Enhancing pillar ${pillarId} with context-aware analysis...`);
+    // 🔥 INTELLIGENT RECOMMENDATIONS: Generate customer-specific, actionable solutions (NOW WITH DATABASE! 🚀)
+    console.log(`🧠 Generating intelligent recommendations for pillar ${pillarId}...`);
     try {
-      const contextEngine = new ContextAwareRecommendationEngine();
-      const contextRecs = contextEngine.generateContextAwareRecommendations(
+      const intelligentEngine = new IntelligentRecommendationEngine();
+      const intelligentRecs = await intelligentEngine.generateRecommendations(
         assessment,
         pillarId,
-        Math.round(currentScore),
         pillar // Pass the pillar framework structure
       );
       
-      console.log(`✅ Found ${contextRecs.recommendations.length} context-specific recommendations`);
-      console.log(`✅ Found ${contextRecs.nextSteps.length} context-specific next steps`);
+      console.log(`✅ Generated ${intelligentRecs.recommendations.length} intelligent recommendations`);
+      console.log(`✅ Generated ${intelligentRecs.nextSteps.length} customer-specific next steps`);
+      console.log(`✅ Identified ${intelligentRecs.theGood.length} strengths and ${intelligentRecs.theBad.length} challenges`);
       
-      // Replace with context-specific recommendations if found
-      // NOTE: Keep databricksFeatures from original (has proper name/description/docs structure)
-      // Only replace text recommendations and next steps
-      if (contextRecs.recommendations.length > 0) {
-        pillarResults.recommendations = contextRecs.recommendations;
+      // Replace with intelligent, customer-specific recommendations
+      if (intelligentRecs.theGood.length > 0) {
+        pillarResults.theGood = intelligentRecs.theGood;
       }
-      if (contextRecs.nextSteps.length > 0) {
-        pillarResults.specificRecommendations = contextRecs.nextSteps;
-        pillarResults.quickWins = contextRecs.nextSteps;
+      if (intelligentRecs.theBad.length > 0) {
+        pillarResults.theBad = intelligentRecs.theBad;
+      }
+      if (intelligentRecs.recommendations.length > 0) {
+        pillarResults.recommendations = intelligentRecs.recommendations;
+      }
+      if (intelligentRecs.nextSteps.length > 0) {
+        pillarResults.specificRecommendations = intelligentRecs.nextSteps;
+        pillarResults.quickWins = intelligentRecs.nextSteps;
+      }
+      if (intelligentRecs.databricksFeatures.length > 0) {
+        pillarResults.databricksFeatures = intelligentRecs.databricksFeatures;
       }
       
-      pillarResults._contextAnalyzed = true;
-      pillarResults._painPointsFound = contextRecs.features.length;
-      pillarResults._insights = contextRecs.insights;
+      pillarResults._intelligentEngine = true;
+      pillarResults._painPointsAnalyzed = intelligentRecs.theBad.length;
+      pillarResults._strengthsIdentified = intelligentRecs.theGood.length;
     } catch (error) {
-      console.error('⚠️  Error in context-aware enhancement:', error);
+      console.error('⚠️  Error in intelligent recommendation generation:', error);
     }
     
     // Use pillar details from OpenAI
@@ -1955,6 +2706,9 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
       success: true,
       pillarDetails,
       summary: pillarResults.summary || '',
+      // 🎯 Context-aware strengths and challenges
+      theGood: pillarResults.theGood || [],
+      theBad: pillarResults.theBad || [],
       recommendations: pillarResults.recommendations || [],
       // NEW: Databricks-specific features
       databricksFeatures: pillarResults.databricksFeatures || [],
@@ -1991,7 +2745,8 @@ app.get('/api/assessment/:id/pillar/:pillarId/results', async (req, res) => {
 app.post('/api/assessment/:id/debug/complete', async (req, res) => {
   try {
     const { id } = req.params;
-    const assessment = await assessments.get(id);
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
 
     if (!assessment) {
       return res.status(404).json({
@@ -2000,9 +2755,12 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
       });
     }
 
+    const updateData = {};
+    const currentResponses = assessment.responses || {};
+    
     // Add some sample responses if none exist
-    if (Object.keys(assessment.responses).length === 0) {
-      assessment.responses = {
+    if (Object.keys(currentResponses).length === 0) {
+      updateData.responses = {
         'env_standardization_current_state': 3,
         'env_standardization_future_state': 4,
         'scaling_effectiveness_current_state': 2,
@@ -2011,11 +2769,12 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
     }
 
     // Mark all categories as completed
-    assessment.completedCategories = assessmentFramework.assessmentAreas.map(a => a.id);
-    assessment.status = 'completed';
-    assessment.completedAt = new Date().toISOString();
+    updateData.completedCategories = assessmentFramework.assessmentAreas.map(a => a.id);
+    updateData.status = 'completed';
+    updateData.progress = 100;
+    updateData.completedAt = new Date().toISOString();
     
-    await assessments.set(id, assessment);
+    await assessmentRepo.update(id, updateData);
 
     res.json({
       success: true,
@@ -2046,30 +2805,33 @@ app.post('/api/assessment', async (req, res) => {
       });
     }
     
-    const newAssessment = {
-      id: `assessment_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+    const assessmentRepo = require('./db/assessmentRepository');
+    const newId = `assessment_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    
+    await assessmentRepo.create({
+      id: newId,
       assessmentName,
+      assessmentDescription: '',
       organizationName,
-      industry: industry || '',
       contactEmail: contactEmail || '',
+      industry: industry || '',
       status: 'in_progress',
-      startedAt: new Date().toISOString(),
-      lastModified: new Date().toISOString(),
-      responses: {},
+      progress: 0,
+      currentCategory: null,
       completedCategories: [],
-      editHistory: []
-    };
+      responses: {},
+      editHistory: [],
+      startedAt: new Date().toISOString()
+    });
     
-    await assessments.set(newAssessment.id, newAssessment);
-    
-    console.log(`✅ New assessment created: ${newAssessment.id} (${newAssessment.assessmentName})`);
+    console.log(`✅ New assessment created: ${newId} (${assessmentName})`);
     
     res.json({
       success: true,
       message: 'Assessment created successfully',
-      id: newAssessment.id,
-      assessmentName: newAssessment.assessmentName,
-      organizationName: newAssessment.organizationName
+      id: newId,
+      assessmentName: assessmentName,
+      organizationName: organizationName
     });
   } catch (error) {
     console.error('❌ Error creating assessment:', error);
@@ -2094,10 +2856,25 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       specificPillars
     });
     
-    // Save to storage (use set method, not save)
-    await assessments.set(sampleAssessment.id, sampleAssessment);
+    // Save to PostgreSQL
+    const assessmentRepo = require('./db/assessmentRepository');
+    await assessmentRepo.create({
+      id: sampleAssessment.id,
+      assessmentName: sampleAssessment.assessmentName,
+      assessmentDescription: sampleAssessment.assessmentDescription || '',
+      organizationName: sampleAssessment.organizationName,
+      contactEmail: sampleAssessment.contactEmail,
+      industry: sampleAssessment.industry,
+      status: sampleAssessment.status,
+      progress: sampleAssessment.progress || Math.round((sampleAssessment.completedCategories.length / 6) * 100),
+      currentCategory: sampleAssessment.currentCategory || null,
+      completedCategories: sampleAssessment.completedCategories,
+      responses: sampleAssessment.responses,
+      editHistory: sampleAssessment.editHistory || [],
+      startedAt: sampleAssessment.startedAt || new Date().toISOString()
+    });
     
-    console.log(`✅ Sample assessment created: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
+    console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
     console.log(`   Completed pillars: ${sampleAssessment.completedCategories.length}/6`);
     console.log(`   Total responses: ${Object.keys(sampleAssessment.responses).length}`);
     
@@ -2108,6 +2885,10 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
         id: sampleAssessment.id,
         assessmentName: sampleAssessment.assessmentName,
         organizationName: sampleAssessment.organizationName,
+        industry: sampleAssessment.industry,
+        contactEmail: sampleAssessment.contactEmail,
+        editorEmail: sampleAssessment.editorEmail,
+        assessmentDescription: sampleAssessment.assessmentDescription,
         status: sampleAssessment.status,
         completedCategories: sampleAssessment.completedCategories,
         responses: sampleAssessment.responses,  // Include responses for validation
@@ -2119,6 +2900,239 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating sample assessment',
+      error: error.message
+    });
+  }
+});
+
+// ============================================
+// AUDIT TRAIL ENDPOINTS
+// ============================================
+
+// Get audit trail for an assessment
+app.get('/api/assessment/:id/audit-trail', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit = 100, offset = 0 } = req.query;
+    
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    // Build audit trail from edit_history and responses
+    const auditEvents = [];
+    
+    // 1. Assessment creation event
+    auditEvents.push({
+      id: 'event_created',
+      eventType: 'assessment_created',
+      timestamp: assessment.startedAt || assessment.createdAt,
+      userEmail: assessment.contactEmail,
+      userName: assessment.contactName || 'System',
+      changes: {
+        assessmentName: { to: assessment.assessmentName },
+        organizationName: { to: assessment.organizationName },
+        industry: { to: assessment.industry }
+      },
+      impact: {
+        reportCreated: true,
+        dashboardAvailable: false
+      },
+      afterSnapshot: {
+        status: 'in_progress',
+        progress: 0,
+        completedCategories: [],
+        responseCount: 0
+      }
+    });
+    
+    // 2. Add events from edit_history
+    if (assessment.editHistory && Array.isArray(assessment.editHistory)) {
+      assessment.editHistory.forEach((edit, index) => {
+        auditEvents.push({
+          id: `event_edit_${index}`,
+          eventType: 'metadata_updated',
+          timestamp: edit.timestamp,
+          userEmail: edit.editorEmail || edit.editor || assessment.contactEmail,
+          userName: edit.editorName || 'User',
+          changes: edit.changes || {},
+          impact: {
+            reportHeaderChanged: !!(edit.changes.organizationName || edit.changes.assessmentName),
+            benchmarkingChanged: !!edit.changes.industry
+          }
+        });
+      });
+    }
+    
+    // 3. Track response changes (group by pillar completion)
+    const responsesByPillar = {};
+    Object.keys(assessment.responses || {}).forEach(key => {
+      if (key.includes('_skipped') || key.includes('_comment')) return;
+      
+      // Extract pillar from question ID
+      const questionId = key.split('_current_state')[0].split('_future_state')[0].split('_technical_pain')[0].split('_business_pain')[0];
+      const pillar = assessmentFramework.assessmentAreas.find(area => 
+        area.dimensions.some(dim => 
+          dim.questions.some(q => q.id === questionId)
+        )
+      );
+      
+      if (pillar) {
+        if (!responsesByPillar[pillar.id]) {
+          responsesByPillar[pillar.id] = {
+            pillarName: pillar.name,
+            responses: []
+          };
+        }
+        responsesByPillar[pillar.id].responses.push(key);
+      }
+    });
+    
+    // 4. Add pillar completion events
+    (assessment.completedCategories || []).forEach((pillarId, index) => {
+      const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
+      const pillarData = responsesByPillar[pillarId] || { responses: [] };
+      
+      auditEvents.push({
+        id: `event_pillar_${pillarId}`,
+        eventType: 'pillar_completed',
+        timestamp: assessment.lastModified || assessment.updatedAt || assessment.startedAt,
+        userEmail: assessment.lastEditor || assessment.contactEmail,
+        userName: assessment.lastEditorName || 'User',
+        changes: {
+          completedCategories: {
+            from: index,
+            to: index + 1
+          },
+          pillar: {
+            id: pillarId,
+            name: pillar?.name || pillarId
+          }
+        },
+        impact: {
+          maturityScoreChanged: true,
+          recommendationsChanged: true,
+          executiveSummaryChanged: true,
+          strategicRoadmapChanged: true,
+          pillarResultsAvailable: true
+        },
+        afterSnapshot: {
+          progress: Math.round(((index + 1) / assessmentFramework.assessmentAreas.length) * 100),
+          completedCategories: assessment.completedCategories.slice(0, index + 1),
+          responseCount: pillarData.responses.length
+        }
+      });
+    });
+    
+    // 5. Assessment completion event
+    if (assessment.status === 'completed' && assessment.completedAt) {
+      auditEvents.push({
+        id: 'event_completed',
+        eventType: 'assessment_completed',
+        timestamp: assessment.completedAt,
+        userEmail: assessment.lastEditor || assessment.contactEmail,
+        userName: assessment.lastEditorName || 'User',
+        changes: {
+          status: {
+            from: 'in_progress',
+            to: 'completed'
+          }
+        },
+        impact: {
+          fullReportAvailable: true,
+          executiveCommandCenterAvailable: true,
+          benchmarkingAvailable: true,
+          exportAvailable: true
+        },
+        afterSnapshot: {
+          status: 'completed',
+          progress: 100,
+          completedCategories: assessment.completedCategories,
+          responseCount: Object.keys(assessment.responses || {}).filter(k => !k.includes('_skipped') && !k.includes('_comment')).length
+        }
+      });
+    }
+    
+    // Sort by timestamp (newest first)
+    auditEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Apply pagination
+    const paginatedEvents = auditEvents.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: {
+        assessmentId: id,
+        assessmentName: assessment.assessmentName,
+        organizationName: assessment.organizationName,
+        totalEvents: auditEvents.length,
+        events: paginatedEvents,
+        summary: {
+          created: assessment.startedAt,
+          lastModified: assessment.lastModified || assessment.updatedAt,
+          completed: assessment.completedAt,
+          totalEditors: [...new Set(auditEvents.map(e => e.userEmail).filter(Boolean))].length,
+          pillarsCompleted: assessment.completedCategories?.length || 0,
+          totalPillars: assessmentFramework.assessmentAreas.length,
+          responseCount: Object.keys(assessment.responses || {}).filter(k => !k.includes('_skipped') && !k.includes('_comment')).length
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving audit trail:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving audit trail',
+      error: error.message
+    });
+  }
+});
+
+// Add audit event (for manual tracking or future use)
+app.post('/api/assessment/:id/audit-event', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { eventType, userEmail, userName, changes, metadata } = req.body;
+    
+    const assessmentRepo = require('./db/assessmentRepository');
+    const assessment = await assessmentRepo.findById(id);
+    
+    if (!assessment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+    
+    // Add event to edit history
+    const editHistory = assessment.editHistory || [];
+    editHistory.push({
+      timestamp: new Date().toISOString(),
+      eventType,
+      editorEmail: userEmail,
+      editorName: userName,
+      changes: changes || {},
+      metadata: metadata || {}
+    });
+    
+    // Save assessment
+    await assessmentRepo.update(id, { editHistory });
+    
+    res.json({
+      success: true,
+      message: 'Audit event recorded'
+    });
+  } catch (error) {
+    console.error('Error recording audit event:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error recording audit event',
       error: error.message
     });
   }
@@ -2151,23 +3165,32 @@ if (process.env.NODE_ENV === 'production') {
 
 // Start server (only if not in serverless environment)
 if (process.env.VERCEL !== '1') {
-  app.listen(PORT, async () => {
-    console.log(`🚀 Databricks Maturity Assessment API running on port ${PORT}`);
-    console.log(`📊 Assessment framework loaded with ${assessmentFramework.assessmentAreas.length} areas`);
+  // Initialize database connection BEFORE starting the server
+  const db = require('./db/connection');
+  
+  (async () => {
+    await db.initialize();
     
-    // Get assessment count asynchronously
-    try {
-      const count = await assessments.size();
-      console.log(`💾 ${count} assessment(s) loaded from persistent storage`);
-    } catch (error) {
-      console.log(`💾 Assessment storage initialized (count unavailable)`);
-    }
-    
-    console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
-  });
+    app.listen(PORT, async () => {
+      console.log(`🚀 Databricks Maturity Assessment API running on port ${PORT}`);
+      console.log(`📊 Assessment framework loaded with ${assessmentFramework.assessmentAreas.length} areas`);
+      
+      // Get assessment count asynchronously
+      try {
+        const assessmentRepo = require('./db/assessmentRepository');
+        const count = await assessmentRepo.count();
+        console.log(`💾 ${count} assessment(s) in PostgreSQL database`);
+      } catch (error) {
+        console.log(`💾 Assessment storage initialized (count unavailable)`);
+      }
+      
+      console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
+    });
+  })();
 }
 
 module.exports = app;
+
 
 
 

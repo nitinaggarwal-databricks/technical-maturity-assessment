@@ -1,0 +1,56 @@
+{
+  "name": "Daily Agent Report Job",
+  "description": "Automated daily report generation using multi-agent system",
+  "tasks": [
+    {
+      "task_key": "generate_daily_report",
+      "description": "Generate comprehensive daily report",
+      "notebook_task": {
+        "notebook_path": "/Users/your-email@company.com/agents/notebooks/03_multi_agent_system_demo",
+        "base_parameters": {
+          "query": "Generate a daily business intelligence report covering market trends, competitive analysis, and key metrics"
+        }
+      },
+      "new_cluster": {
+        "spark_version": "13.3.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 2,
+        "spark_conf": {
+          "spark.databricks.cluster.profile": "serverless"
+        }
+      },
+      "libraries": [
+        {
+          "pypi": {
+            "package": "langgraph>=0.2.0"
+          }
+        },
+        {
+          "pypi": {
+            "package": "langchain>=0.3.0"
+          }
+        },
+        {
+          "pypi": {
+            "package": "langchain-openai>=0.2.0"
+          }
+        }
+      ],
+      "timeout_seconds": 3600,
+      "max_retries": 2
+    }
+  ],
+  "schedule": {
+    "quartz_cron_expression": "0 0 8 * * ?",
+    "timezone_id": "America/Los_Angeles",
+    "pause_status": "UNPAUSED"
+  },
+  "email_notifications": {
+    "on_success": ["your-email@company.com"],
+    "on_failure": ["your-email@company.com"],
+    "no_alert_for_skipped_runs": false
+  },
+  "max_concurrent_runs": 1,
+  "format": "MULTI_TASK"
+}
+

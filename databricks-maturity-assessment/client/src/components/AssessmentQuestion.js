@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff, FiLoader } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import UserEmailPrompt from './UserEmailPrompt';
@@ -32,11 +32,12 @@ const AssessmentContainer = styled.div`
 const ContentWrapper = styled.div`
   flex: 1;
   margin-left: 350px;
-  height: 100%;
+  height: calc(100vh - 68px);
   max-width: calc(100vw - 370px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 `;
 
 const ScrollableContent = styled.div`
@@ -68,13 +69,30 @@ const AutoSaveStatus = styled.div`
   gap: 8px;
   font-size: 0.9rem;
   color: ${props => {
-    switch (props.status) {
+    switch (props.$status) {
       case 'saving': return '#ff8800';
       case 'saved': return '#00cc44';
       case 'error': return '#ff4444';
       default: return '#666';
     }
   }};
+  font-weight: 600;
+  
+  .save-icon {
+    animation: ${props => props.status === 'saved' ? 'checkmarkBounce 0.6s ease' : 'none'};
+  }
+  
+  @keyframes checkmarkBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+`;
+
+const LastSavedText = styled.span`
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 400;
+  margin-left: 4px;
 `;
 
 const AreaTitle = styled.h1`
@@ -110,7 +128,7 @@ const ProgressBar = styled.div`
 const ProgressFill = styled.div`
   height: 100%;
   background: linear-gradient(90deg, #ff6b35, #f7931e);
-  width: ${props => props.progress}%;
+  width: ${props => props.$progress}%;
   transition: width 0.5s ease;
 `;
 
@@ -191,11 +209,22 @@ const SkipMessage = styled.div`
 
 const PerspectivesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
   gap: 16px;
   margin-bottom: 0;
+  overflow-x: auto;
+  
+  @media (max-width: 1600px) {
+    grid-template-columns: repeat(3, minmax(250px, 1fr));
+    gap: 16px;
+  }
   
   @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 20px;
   }
@@ -204,10 +233,11 @@ const PerspectivesGrid = styled.div`
 const PerspectiveColumn = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 220px;
 `;
 
 const PerspectiveHeader = styled.h4`
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 16px;
@@ -215,6 +245,8 @@ const PerspectiveHeader = styled.h4`
   background: #f8f9fa;
   border-radius: 8px;
   text-align: center;
+  line-height: 1.3;
+  word-wrap: break-word;
 `;
 
 const OptionGroup = styled.div`
@@ -225,19 +257,24 @@ const OptionGroup = styled.div`
 `;
 
 const OptionButton = styled.button`
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 2px solid ${props => props.selected ? '#ff6b35' : '#e0e0e0'};
   border-radius: 8px;
   background: ${props => props.selected ? '#fff5f2' : 'white'};
   color: ${props => props.selected ? '#ff6b35' : '#333'};
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
-  height: 60px;
+  min-height: 60px;
+  height: auto;
   display: flex;
   align-items: center;
   width: 100%;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   
   &:hover {
     border-color: #ff6b35;
@@ -248,16 +285,21 @@ const OptionButton = styled.button`
 const MultiSelectOption = styled.label`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 12px 14px;
   border: 2px solid ${props => props.selected ? '#ff6b35' : '#e0e0e0'};
   border-radius: 8px;
   background: ${props => props.selected ? '#fff5f2' : 'white'};
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.85rem;
-  height: 60px;
+  font-size: 0.9rem;
+  min-height: 60px;
+  height: auto;
   width: 100%;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   
   &:hover {
     border-color: #ff6b35;
@@ -267,16 +309,19 @@ const MultiSelectOption = styled.label`
   input[type="checkbox"] {
     margin: 0;
     flex-shrink: 0;
+    width: 18px;
+    height: 18px;
   }
 `;
 
 const CommentSection = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 220px;
 `;
 
 const CommentHeader = styled.h4`
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 16px;
@@ -284,6 +329,8 @@ const CommentHeader = styled.h4`
   background: #f8f9fa;
   border-radius: 8px;
   text-align: center;
+  line-height: 1.3;
+  word-wrap: break-word;
 `;
 
 const CommentInputWrapper = styled.div`
@@ -296,10 +343,11 @@ const CommentInputWrapper = styled.div`
 const CommentTextarea = styled.textarea`
   width: 100%;
   height: 316px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
   font-family: inherit;
   resize: vertical;
   transition: border-color 0.3s ease;
@@ -323,6 +371,10 @@ const NavigationSection = styled.div`
   border-top: 2px solid #e5e7eb;
   flex-shrink: 0;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  margin-top: auto;
 `;
 
 const NavButton = styled(motion.button)`
@@ -362,6 +414,118 @@ const NextButton = styled(NavButton)`
   }
 `;
 
+const DialogOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+`;
+
+const DialogBox = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const DialogTitle = styled.h2`
+  margin: 0 0 12px 0;
+  font-size: 1.75rem;
+  color: #1f2937;
+  font-weight: 700;
+`;
+
+const DialogMessage = styled.p`
+  margin: 0 0 32px 0;
+  font-size: 1.1rem;
+  color: #6b7280;
+  line-height: 1.6;
+`;
+
+const DialogButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+`;
+
+const DialogButton = styled(motion.button)`
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  
+  ${props => props.variant === 'primary' && `
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+  `}
+  
+  ${props => props.variant === 'secondary' && `
+    background: #f3f4f6;
+    color: #4b5563;
+    
+    &:hover {
+      background: #e5e7eb;
+    }
+  `}
+`;
+
+const ProgressContainer = styled.div`
+  margin-top: 24px;
+`;
+
+const SubmissionProgressBar = styled.div`
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+`;
+
+const SubmissionProgressFill = styled(motion.div)`
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 6px;
+`;
+
+const SubmissionProgressText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.938rem;
+  color: #4b5563;
+  font-weight: 500;
+  
+  svg {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
 const LoadingSpinner = styled.div`
   display: flex;
   align-items: center;
@@ -384,11 +548,11 @@ const LoadingSpinner = styled.div`
 `;
 
 const FilterSection = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 0;
+  box-shadow: none;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -404,10 +568,10 @@ const FilterLabel = styled.span`
 const FilterButton = styled.button`
   padding: 8px 16px;
   border-radius: 8px;
-  border: 2px solid ${props => props.active ? '#ff6b35' : '#e5e7eb'};
-  background: ${props => props.active ? '#ff6b35' : 'white'};
-  color: ${props => props.active ? 'white' : '#666'};
-  font-weight: ${props => props.active ? '600' : '500'};
+  border: 2px solid ${props => props.$active ? '#ff6b35' : '#e5e7eb'};
+  background: ${props => props.$active ? '#ff6b35' : 'white'};
+  color: ${props => props.$active ? 'white' : '#666'};
+  font-weight: ${props => props.$active ? '600' : '500'};
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -417,17 +581,279 @@ const FilterButton = styled.button`
 
   &:hover {
     border-color: #ff6b35;
-    ${props => !props.active && 'background: #fff5f2;'}
+    ${props => !props.$active && 'background: #fff5f2;'}
   }
 `;
 
 const FilterBadge = styled.span`
-  background: ${props => props.active ? 'rgba(255,255,255,0.3)' : '#f3f4f6'};
-  color: ${props => props.active ? 'white' : '#666'};
+  background: ${props => props.$active ? 'rgba(255,255,255,0.3)' : '#f3f4f6'};
+  color: ${props => props.$active ? 'white' : '#666'};
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 600;
+`;
+
+// 🆕 SMART NAVIGATION COMPONENTS
+const QuestionMiniMap = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+    gap: 5px;
+  }
+`;
+
+const MiniMapDot = styled.button`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid ${props => 
+    props.$isComplete ? '#10b981' : 
+    props.$isPartial ? '#fbbf24' : 
+    props.$isCurrent ? '#ff6b35' : '#e5e7eb'};
+  background: ${props => 
+    props.$isComplete ? '#10b981' : 
+    props.$isPartial ? '#fef3c7' :
+    props.$isCurrent ? '#ff6b35' : 'white'};
+  color: ${props => props.$isComplete || props.$isCurrent ? 'white' : props.$isPartial ? '#92400e' : '#9ca3af'};
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  @media (max-width: 768px) {
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+  }
+`;
+
+const MiniMapLabel = styled.div`
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+// 🆕 CONTEXTUAL HELP COMPONENTS
+const TooltipContainer = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const TooltipTrigger = styled.span`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 6px;
+  flex-shrink: 0;
+  
+  &:hover + div {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+`;
+
+const TooltipContent = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #1f2937;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  width: max-content;
+  max-width: 300px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+  
+  @media (max-width: 768px) {
+    max-width: 250px;
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+`;
+
+const MaturityLevelInfo = styled.div`
+  background: #f8f9fa;
+  border-left: 4px solid #3b82f6;
+  padding: 12px 16px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  
+  strong {
+    color: #3b82f6;
+    display: block;
+    margin-bottom: 4px;
+  }
+`;
+
+// 🆕 BULK ACTIONS COMPONENTS
+const BulkActionsBar = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  
+  @media (max-width: 968px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const BulkActionsTitle = styled.div`
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const BulkActionsButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const BulkActionButton = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    flex: 1;
+    padding: 10px 12px;
+  }
+`;
+
+// 🆕 DIMENSION PROGRESS CARD
+const DimensionProgressCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const DimensionInfo = styled.div`
+  flex: 1;
+`;
+
+const DimensionTitle = styled.h3`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+`;
+
+const DimensionProgress = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ProgressBarSmall = styled.div`
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  
+  div {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    width: ${props => props.progress}%;
+    transition: width 0.5s ease;
+  }
+`;
+
+const ProgressLabel = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #10b981;
+  white-space: nowrap;
 `;
 
 const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) => {
@@ -445,7 +871,14 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [editorEmail, setEditorEmail] = useState(null);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [nextPillarInfo, setNextPillarInfo] = useState(null);
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all', 'completed', 'not_started', 'without_notes'
+  const [showBulkActions, setShowBulkActions] = useState(false); // 🆕 Bulk actions toggle
+  const [showMiniMap, setShowMiniMap] = useState(true); // 🆕 Mini-map toggle
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false); // 🆕 Report submission state
+  const [submissionProgress, setSubmissionProgress] = useState(0); // 🆕 Progress tracking
+  const [submissionMessage, setSubmissionMessage] = useState(''); // 🆕 Progress message
 
   // Get dimension from query parameter
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
@@ -564,6 +997,15 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           setLoading(false);
         } catch (error) {
           console.error('Error loading area data:', error);
+          
+          // If assessment not found, redirect to assessments list
+          if (error.message?.includes('Assessment not found') || error.message?.includes('404')) {
+            toast.error('Assessment not found. Redirecting to assessments list...');
+            setTimeout(() => navigate('/assessments'), 2000);
+          } else {
+            toast.error('Failed to load assessment data');
+          }
+          
           setLoading(false);
         }
       }
@@ -671,7 +1113,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     ? currentArea?.questions?.[currentQuestionIndex]
     : filteredQuestions[currentQuestionIndex >= filteredQuestions.length ? 0 : currentQuestionIndex];
 
-  // Get current dimension for display
+  // Get current dimension for display with completion stats
   const getCurrentDimension = () => {
     if (!currentArea?.dimensions || !currentQuestion) return null;
     
@@ -679,7 +1121,16 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     for (const dimension of currentArea.dimensions) {
       const dimensionQuestionCount = dimension.questions?.length || 0;
       if (currentQuestionIndex < questionCount + dimensionQuestionCount) {
-        return dimension;
+        // Calculate completion stats for this dimension
+        const completedCount = (dimension.questions || []).filter(q => 
+          isQuestionCompleted(q)
+        ).length;
+        
+        return {
+          ...dimension,
+          completedQuestions: completedCount,
+          totalQuestions: dimensionQuestionCount
+        };
       }
       questionCount += dimensionQuestionCount;
     }
@@ -687,6 +1138,38 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   };
 
   const currentDimension = getCurrentDimension();
+
+  // 🆕 MATURITY LEVEL EXPLANATIONS
+  const maturityLevelHelp = {
+    1: {
+      name: "Level 1: Explore",
+      description: "Manual processes, ad-hoc implementations, no standardization. You're just beginning your journey."
+    },
+    2: {
+      name: "Level 2: Experiment",
+      description: "Basic implementation in place, some repeatability. Early adoption with limited scale."
+    },
+    3: {
+      name: "Level 3: Formalize",
+      description: "Documented processes, consistent practices across teams. Enterprise-wide standards emerging."
+    },
+    4: {
+      name: "Level 4: Optimize",
+      description: "Fully automated, optimized processes. Advanced capabilities deployed at scale."
+    },
+    5: {
+      name: "Level 5: Transform",
+      description: "Industry-leading maturity, continuous innovation, AI-driven optimization across all operations."
+    }
+  };
+
+  // Helper component for tooltips
+  const renderTooltip = (content) => (
+    <TooltipContainer>
+      <TooltipTrigger>?</TooltipTrigger>
+      <TooltipContent>{content}</TooltipContent>
+    </TooltipContainer>
+  );
 
   // Auto-save function with debouncing
   const autoSave = async (questionId, perspectiveId, value, comment, isSkipped) => {
@@ -727,6 +1210,72 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     }, 1000),
     [assessmentId, editorEmail]
   );
+
+  // 🆕 BULK ACTIONS HANDLERS
+  const handleBulkSetCurrentState = async (level) => {
+    if (!window.confirm(`Set ALL questions' Current State to Level ${level}?`)) return;
+    
+    const updatedResponses = { ...responses };
+    currentArea?.questions?.forEach(question => {
+      const currentStateKey = `${question.id}_current_state`;
+      updatedResponses[currentStateKey] = level;
+    });
+    
+    setResponses(updatedResponses);
+    toast.success(`All Current States set to Level ${level}`, { duration: 2000 });
+    setAutoSaveStatus('saving');
+    
+    // Save all changes
+    try {
+      for (const question of (currentArea?.questions || [])) {
+        await assessmentService.saveQuestionResponse(
+          assessmentId, 
+          question.id, 
+          'current_state', 
+          level, 
+          responses[`${question.id}_comment`] || '',
+          skippedQuestions[question.id] || false,
+          editorEmail
+        );
+      }
+      setAutoSaveStatus('saved');
+      setLastSaved(new Date());
+    } catch (error) {
+      setAutoSaveStatus('error');
+      toast.error('Failed to save bulk changes');
+    }
+  };
+
+  const handleSkipToNextUnanswered = () => {
+    const unansweredIndex = (currentArea?.questions || []).findIndex((q, idx) => {
+      if (idx <= currentQuestionIndex) return false;
+      return !isQuestionCompleted(q);
+    });
+    
+    if (unansweredIndex !== -1) {
+      setCurrentQuestionIndex(unansweredIndex);
+      toast.success('Jumped to next unanswered question', { duration: 1500 });
+    } else {
+      toast('All questions answered! 🎉', { icon: '✅', duration: 2000 });
+    }
+  };
+
+  const handleJumpToQuestion = (index) => {
+    setCurrentQuestionIndex(index);
+  };
+
+  // Format last saved time
+  const getLastSavedText = () => {
+    if (!lastSaved) return null;
+    
+    const now = new Date();
+    const diff = Math.floor((now - new Date(lastSaved)) / 1000); // seconds
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return new Date(lastSaved).toLocaleTimeString();
+  };
 
   const handlePerspectiveResponse = (questionId, perspectiveId, value, isMultiple = false) => {
     const responseKey = `${questionId}_${perspectiveId}`;
@@ -868,10 +1417,22 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
+      // Go to previous question in current pillar
       setCurrentQuestionIndex(prev => prev - 1);
     } else {
-      // Navigate to previous area or start page
-      navigate('/start');
+      // On first question - navigate to previous pillar's last question
+      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      
+      if (currentPillarIndex > 0) {
+        // Go to previous pillar
+        const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
+        navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
+        toast(`Navigating back to ${previousPillar.name}...`, { icon: 'ℹ️' });
+      } else {
+        // First question of first pillar - go to assessment list
+        navigate('/assessments');
+        toast('Returning to assessments list...', { icon: 'ℹ️' });
+      }
     }
   };
 
@@ -886,26 +1447,91 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      toast.success('Pillar completed successfully! View your results.');
+      toast.success(`${currentArea.name} completed!`);
       
-      // NEW FLOW: After completing a pillar, show THAT pillar's results
-      // User can then continue to next pillar from the results page
-      navigate(`/pillar-results/${assessmentId}/${categoryId}`);
-      
-      // Update assessment status (non-blocking - don't let this fail the whole operation)
+      // Update assessment status and get the latest state
+      let updatedAssessment = currentAssessment;
       if (onUpdateStatus) {
         try {
-          await onUpdateStatus(assessmentId);
+          updatedAssessment = await onUpdateStatus(assessmentId);
         } catch (statusError) {
           console.warn('Failed to update status, but submission succeeded:', statusError);
-          // Don't show error toast since the main operation succeeded
         }
       }
+      
+      // Use the updated completed categories list (after this pillar was added)
+      const completedCategories = updatedAssessment?.completedCategories || currentAssessment?.completedCategories || [];
+      
+      // Find the next pillar in sequence (regardless of completion status)
+      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      const nextPillar = framework.assessmentAreas[currentPillarIndex + 1]; // Get next pillar in sequence
+      
+      // Show appropriate message if all pillars completed
+      if (!nextPillar && completedCategories.length === framework.assessmentAreas.length) {
+        toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
+          duration: 5000
+        });
+      }
+      
+      // Always show dialog to let user choose
+      setNextPillarInfo(nextPillar); // Will be null if no more pillars
+      setShowCompletionDialog(true);
     } catch (error) {
       console.error('Error submitting area responses:', error);
       toast.error('Failed to submit responses. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleContinueToNextPillar = () => {
+    setShowCompletionDialog(false);
+    if (nextPillarInfo) {
+      toast.success(`Moving to ${nextPillarInfo.name}...`);
+      setTimeout(() => {
+        navigate(`/assessment/${assessmentId}/${nextPillarInfo.id}`);
+      }, 500);
+    }
+  };
+
+  const handleSubmitReport = async () => {
+    console.log('[AssessmentQuestion] Submitting assessment and generating report:', assessmentId);
+    setShowCompletionDialog(false);
+    setIsSubmittingReport(true);
+    setSubmissionProgress(0);
+    
+    // Authentic progress messages (same as NavigationPanel)
+    const progressSteps = [
+      { progress: 10, message: 'Analyzing assessment responses...' },
+      { progress: 25, message: 'Calculating maturity scores...' },
+      { progress: 40, message: 'Generating recommendations...' },
+      { progress: 55, message: 'Identifying Databricks features...' },
+      { progress: 70, message: 'Building strategic roadmap...' },
+      { progress: 85, message: 'Calculating business impact...' },
+      { progress: 95, message: 'Finalizing report...' },
+      { progress: 100, message: 'Assessment complete!' }
+    ];
+
+    try {
+      // Submit assessment to API
+      await assessmentService.submitAssessment(assessmentId);
+      
+      // Animate progress
+      for (const step of progressSteps) {
+        await new Promise(resolve => setTimeout(resolve, 1250)); // 10 seconds total / 8 steps
+        setSubmissionProgress(step.progress);
+        setSubmissionMessage(step.message);
+      }
+      
+      // Small delay before navigation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Navigate to results
+      navigate(`/results/${assessmentId}`);
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      toast.error('Failed to submit assessment. Please try again.');
+      setIsSubmittingReport(false);
     }
   };
 
@@ -970,91 +1596,148 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       />
       <ContentWrapper>
         <ProgressSection>
-          <ProgressInfo>
-            <AreaTitle>
+          {/* 🆕 ULTRA COMPACT: Everything in ONE single line */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            gap: '12px',
+            flexWrap: 'wrap',
+            marginBottom: '8px'
+          }}>
+            {/* Left: Title */}
+            <AreaTitle style={{ margin: 0, fontSize: '1.3rem', flexShrink: 0 }}>
               <div>{currentArea.name}</div>
               {currentDimension && (
-                <DimensionSubtitle>{currentDimension.name}</DimensionSubtitle>
+                <DimensionSubtitle style={{ fontSize: '0.75rem', marginTop: '2px' }}>{currentDimension.name}</DimensionSubtitle>
               )}
             </AreaTitle>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <AutoSaveStatus status={autoSaveStatus}>
-                {autoSaveStatus === 'saving' && (
-                  <>
-                    <FiSave size={16} />
-                    <span>Saving...</span>
-                  </>
-                )}
+            
+            {/* Middle: Filters + Question Numbers (compact) */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              flex: 1,
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}>
+              {/* Filter Buttons - Compact */}
+              <FilterButton 
+                $active={questionFilter === 'all'} 
+                onClick={() => setQuestionFilter('all')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                All
+                <FilterBadge $active={questionFilter === 'all'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.total}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                $active={questionFilter === 'completed'} 
+                onClick={() => setQuestionFilter('completed')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                Done
+                <FilterBadge $active={questionFilter === 'completed'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.completed}
+                </FilterBadge>
+              </FilterButton>
+              <FilterButton 
+                $active={questionFilter === 'not_started'} 
+                onClick={() => setQuestionFilter('not_started')}
+                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              >
+                Todo
+                <FilterBadge $active={questionFilter === 'not_started'} style={{ fontSize: '0.7rem' }}>
+                  {filterStats.notStarted}
+                </FilterBadge>
+              </FilterButton>
+
+              {/* Separator */}
+              <div style={{ width: '1px', height: '20px', background: '#e5e7eb' }} />
+
+              {/* Question Numbers - Compact (show first 10 only) */}
+              {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
+                // Only render first 10 question numbers to save space
+                if (idx >= 10) return null;
+                
+                const isComplete = isQuestionCompleted(q);
+                const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
+                const isCurrent = idx === currentQuestionIndex;
+                
+                return (
+                  <MiniMapDot
+                    key={q.id}
+                    $isComplete={isComplete}
+                    $isPartial={isPartial}
+                    $isCurrent={isCurrent}
+                    onClick={() => handleJumpToQuestion(idx)}
+                    title={`Q${idx + 1}: ${q.topic}`}
+                    style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}
+                  >
+                    {idx + 1}
+                  </MiniMapDot>
+                );
+              })}
+            </div>
+            
+            {/* Right: Status indicators */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+              <AutoSaveStatus $status={autoSaveStatus}>
                 {autoSaveStatus === 'saved' && (
                   <>
-                    <FiWifi size={16} />
-                    <span>
-                      Saved
-                      {lastSaved && (
-                        <span style={{ marginLeft: '4px', opacity: 0.8 }}>
-                          {new Date(lastSaved).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      )}
-                    </span>
+                    <FiCheckCircle size={14} className="save-icon" />
+                    <span style={{ fontSize: '0.75rem' }}>Saved</span>
                   </>
                 )}
-                {autoSaveStatus === 'error' && (
+                {autoSaveStatus === 'saving' && (
                   <>
-                    <FiWifiOff size={16} />
-                    <span>Save failed - click Save Progress below</span>
+                    <FiSave size={14} />
+                    <span style={{ fontSize: '0.75rem' }}>Saving...</span>
                   </>
                 )}
               </AutoSaveStatus>
-              <ProgressText>
-                Question {currentQuestionIndex + 1} of {questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
-                {questionFilter !== 'all' && <span style={{ color: '#ff6b35', fontWeight: 600 }}> (Filtered)</span>}
+              <ProgressText style={{ fontSize: '0.75rem' }}>
+                Q {currentQuestionIndex + 1}/{questionFilter === 'all' ? totalQuestions : filteredQuestions.length}
               </ProgressText>
+              
+              {/* Skip Checkbox - Ultra Compact */}
+              {currentQuestion && (
+                <label 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '4px', 
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: skippedQuestions[currentQuestion?.id] ? '#f59e0b' : '#6b7280',
+                    padding: '3px 6px',
+                    background: skippedQuestions[currentQuestion?.id] ? '#fef3c7' : '#f8f9fa',
+                    borderRadius: '4px',
+                    border: `1px solid ${skippedQuestions[currentQuestion?.id] ? '#fbbf24' : '#e5e7eb'}`,
+                    flexShrink: 0
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={skippedQuestions[currentQuestion?.id] || false}
+                    onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
+                    style={{ width: '12px', height: '12px', cursor: 'pointer' }}
+                  />
+                  Skip
+                </label>
+              )}
             </div>
-          </ProgressInfo>
-          <ProgressBar>
-            <ProgressFill progress={progress} />
+          </div>
+          
+          {/* Progress Bar - Thin */}
+          <ProgressBar style={{ marginBottom: '8px', height: '4px' }}>
+            <ProgressFill $progress={progress} />
           </ProgressBar>
         </ProgressSection>
 
-        <FilterSection>
-          <FilterLabel>Filter Questions:</FilterLabel>
-          <FilterButton 
-            active={questionFilter === 'all'} 
-            onClick={() => setQuestionFilter('all')}
-          >
-            All
-            <FilterBadge active={questionFilter === 'all'}>
-              {filterStats.total}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'completed'} 
-            onClick={() => setQuestionFilter('completed')}
-          >
-            Completed
-            <FilterBadge active={questionFilter === 'completed'}>
-              {filterStats.completed}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'not_started'} 
-            onClick={() => setQuestionFilter('not_started')}
-          >
-            Not Started
-            <FilterBadge active={questionFilter === 'not_started'}>
-              {filterStats.notStarted}
-            </FilterBadge>
-          </FilterButton>
-          <FilterButton 
-            active={questionFilter === 'without_notes'} 
-            onClick={() => setQuestionFilter('without_notes')}
-          >
-            Completed Without Notes
-            <FilterBadge active={questionFilter === 'without_notes'}>
-              {filterStats.withoutNotes}
-            </FilterBadge>
-          </FilterButton>
-        </FilterSection>
 
         <ScrollableContent>
           <AnimatePresence mode="wait">
@@ -1070,22 +1753,6 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                 <QuestionTopic>{currentQuestion?.topic}</QuestionTopic>
                 <QuestionText>{currentQuestion?.question}</QuestionText>
               </QuestionContent>
-              
-              <SkipToggleContainer isSkipped={skippedQuestions[currentQuestion?.id]}>
-                <SkipToggle isSkipped={skippedQuestions[currentQuestion?.id]}>
-                  <input
-                    type="checkbox"
-                    checked={skippedQuestions[currentQuestion?.id] || false}
-                    onChange={(e) => handleSkipToggle(currentQuestion?.id, e.target.checked)}
-                  />
-                  Skip this question
-                </SkipToggle>
-                {skippedQuestions[currentQuestion?.id] && (
-                  <SkipMessage>
-                    Excluded from calculations
-                  </SkipMessage>
-                )}
-              </SkipToggleContainer>
             </QuestionHeader>
 
             <PerspectivesGrid style={{ 
@@ -1094,7 +1761,16 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             }}>
               {currentQuestion?.perspectives?.map((perspective) => (
                 <PerspectiveColumn key={perspective.id}>
-                  <PerspectiveHeader>{perspective.label}</PerspectiveHeader>
+                  <PerspectiveHeader>
+                    {perspective.label}
+                    {/* 🆕 Add tooltips for state perspectives */}
+                    {perspective.id === 'current_state' && renderTooltip(
+                      "Rate your organization's current maturity level for this capability"
+                    )}
+                    {perspective.id === 'future_state' && renderTooltip(
+                      "What maturity level do you aspire to achieve? (Must be ≥ Current State)"
+                    )}
+                  </PerspectiveHeader>
                   <OptionGroup>
                     {perspective.type === 'single_choice' ? (
                       perspective.options.map((option) => {
@@ -1163,6 +1839,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               </CommentSection>
             </PerspectivesGrid>
           </QuestionCard>
+
         </AnimatePresence>
         </ScrollableContent>
 
@@ -1202,8 +1879,94 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           }}
         />
       )}
+
+      {/* Completion Dialog */}
+      {showCompletionDialog && (
+        <DialogOverlay onClick={() => setShowCompletionDialog(false)}>
+          <DialogBox
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DialogTitle>🎉 {currentArea?.name || 'Pillar'} Completed!</DialogTitle>
+            <DialogMessage>
+              {nextPillarInfo ? (
+                <>
+                  Great progress! Would you like to review the next pillar ({nextPillarInfo.name}) 
+                  or submit and generate your overall assessment report?
+                </>
+              ) : (
+                <>
+                  Congratulations! You've completed all pillars. 
+                  Submit your assessment to generate a comprehensive report.
+                </>
+              )}
+            </DialogMessage>
+            <DialogButtons>
+              <DialogButton
+                variant="secondary"
+                onClick={handleSubmitReport}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Submit
+              </DialogButton>
+              {nextPillarInfo && (
+                <DialogButton
+                  variant="primary"
+                  onClick={handleContinueToNextPillar}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Review {nextPillarInfo.name} →
+                </DialogButton>
+              )}
+            </DialogButtons>
+          </DialogBox>
+        </DialogOverlay>
+      )}
+
+      {/* Progress Dialog for Report Generation */}
+      <AnimatePresence>
+        {isSubmittingReport && (
+          <DialogOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <DialogBox
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <DialogTitle>✨ Generating Your Report</DialogTitle>
+              <DialogMessage>
+                Please wait while we analyze your assessment and create personalized recommendations...
+              </DialogMessage>
+              <ProgressContainer>
+                <SubmissionProgressBar>
+                  <SubmissionProgressFill
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${submissionProgress}%` }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  />
+                </SubmissionProgressBar>
+                <SubmissionProgressText>
+                  <FiLoader size={16} />
+                  {submissionMessage}
+                  <span style={{ marginLeft: 'auto', fontWeight: 600, color: '#ff6b35' }}>
+                    {submissionProgress}%
+                  </span>
+                </SubmissionProgressText>
+              </ProgressContainer>
+            </DialogBox>
+          </DialogOverlay>
+        )}
+      </AnimatePresence>
     </AssessmentContainer>
   );
 };
 
 export default AssessmentQuestion;
+

@@ -40,10 +40,16 @@ class OpenAIContentGenerator {
 
     try {
       console.log(`🤖 Generating ${pillarId ? 'pillar' : 'overall'} content for assessment ${assessment.id}`);
+      console.log(`   Organization: ${assessment.organizationName}`);
+      console.log(`   Industry: ${assessment.industry}`);
+      console.log(`   Total responses: ${Object.keys(assessment.responses || {}).length}`);
       
       const prompt = pillarId 
         ? this.buildPillarPrompt(assessment, pillarId)
         : this.buildOverallPrompt(assessment);
+      
+      console.log(`📝 Prompt length: ${prompt.length} characters`);
+      console.log(`🔑 Assessment ID in prompt: ${assessment.id}`);
       
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
@@ -57,13 +63,16 @@ class OpenAIContentGenerator {
             content: prompt
           }
         ],
-        temperature: 0.7,
+        temperature: 0.9, // 🔥 INCREASED: Generate more varied, unique content for each assessment
         max_tokens: 4000,
         response_format: { type: 'json_object' }
       });
 
       const content = JSON.parse(response.choices[0].message.content);
       console.log('✅ OpenAI content generated successfully');
+      console.log(`   Executive Summary length: ${content.executiveSummary?.length || 0} chars`);
+      console.log(`   Recommendations count: ${content.recommendations?.length || 0}`);
+      console.log(`   First 100 chars of summary: ${(content.executiveSummary || '').substring(0, 100)}...`);
       
       return pillarId 
         ? this.formatPillarResults(content, assessment, pillarId)
@@ -159,9 +168,16 @@ Return ONLY valid JSON with the exact structure requested.`;
     return `# Databricks Platform Maturity Assessment Analysis
 
 ## Organization Context
+- **Assessment ID:** ${assessment.id}
 - **Organization:** ${assessment.organizationName || 'Not provided'}
 - **Industry:** ${assessment.industry || 'Not provided'}
 - **Assessment Name:** ${assessment.assessmentName || 'Unnamed Assessment'}
+- **Timestamp:** ${new Date().toISOString()}
+
+⚠️ CRITICAL: Generate UNIQUE content for this specific assessment (ID: ${assessment.id}).
+⚠️ Do NOT reuse generic templates or previous responses.
+⚠️ Every assessment has different responses, pain points, and context.
+⚠️ Your analysis MUST reflect THIS assessment's specific data, organization, and industry context.
 
 ## Assessment Data by Pillar
 
@@ -280,8 +296,15 @@ Return JSON with this structure:
     return `# ${area.name} Pillar Assessment Analysis
 
 ## Organization Context
+- **Assessment ID:** ${assessment.id}
 - **Organization:** ${assessment.organizationName || 'Not provided'}
 - **Industry:** ${assessment.industry || 'Not provided'}
+- **Pillar:** ${area.name}
+- **Timestamp:** ${new Date().toISOString()}
+
+⚠️ CRITICAL: Generate UNIQUE content for this specific assessment (ID: ${assessment.id}) and pillar (${area.name}).
+⚠️ Do NOT reuse generic templates or previous responses.
+⚠️ This organization's ${area.name} responses are UNIQUE - analyze THEIR specific data.
 
 ## ${area.name} Questions (${filledQuestions.length} answered)
 
@@ -419,6 +442,8 @@ Return JSON with this structure:
     const actions = [];
     const responses = assessment.responses || {};
     
+    console.log(`[OpenAI] Generating pillar actions for ${Object.keys(pillarScores).length} pillars`);
+    
     Object.keys(pillarScores).forEach(pillarId => {
       const pillar = assessmentFramework.assessmentAreas.find(a => a.id === pillarId);
       if (!pillar) return;
@@ -461,6 +486,7 @@ Return JSON with this structure:
       });
       
       // Generate action for ALL completed pillars (even if gap is 0)
+      console.log(`[OpenAI] Creating action for pillar ${pillarId} (gap: ${gap})`);
       actions.push({
         pillarId: pillarId,
         pillarName: pillar.name,
@@ -484,6 +510,8 @@ Return JSON with this structure:
         recommendations: []
       });
     });
+    
+    console.log(`[OpenAI] Generated ${actions.length} pillar actions total`);
     
     // Sort by gap (largest first) then by priority
     return actions.sort((a, b) => {
@@ -673,13 +701,19 @@ Return JSON with this structure:
       };
     } else {
       // Generate overall fallback
+      console.log('[OpenAI] ⭐ FALLBACK: Generating overall assessment (not pillar-specific)');
       const recommendations = engine.generateAdaptiveRecommendations(
         validResponses
       );
+      console.log('[OpenAI] ⭐ FALLBACK: Adaptive engine returned, checking areaScores...');
+      console.log('[OpenAI] ⭐ FALLBACK: recommendations object keys:', Object.keys(recommendations || {}));
       
       // Transform to use pillar-structured actions
+      console.log('[OpenAI] About to generate pillar actions. areaScores:', Object.keys(recommendations.areaScores || {}).length, 'pillars');
       const pillarActions = this.generatePillarPrioritizedActions(recommendations.areaScores, assessment);
+      console.log('[OpenAI] pillarActions generated:', pillarActions.length);
       recommendations.prioritizedActions = pillarActions;
+      console.log('[OpenAI] ⭐ FALLBACK: Returning recommendations with prioritizedActions:', recommendations.prioritizedActions?.length);
       
       return recommendations;
     }
@@ -820,28 +854,28 @@ Return JSON with this structure:
     
     const maturityLevels = {
       1: {
-        level: 'Initial',
-        description: 'Ad-hoc processes, limited capabilities',
+        level: 'Explore',
+        description: 'Ad-hoc, manual processes with limited standardization',
         color: '#ff4444'
       },
       2: {
-        level: 'Developing',
-        description: 'Basic implementation with some structure',
+        level: 'Experiment',
+        description: 'Basic implementation with some repeatability',
         color: '#ff8800'
       },
       3: {
-        level: 'Defined',
-        description: 'Structured approach with established processes',
+        level: 'Formalize',
+        description: 'Documented standards and processes consistently followed',
         color: '#ffaa00'
       },
       4: {
-        level: 'Managed',
-        description: 'Advanced capabilities with strong governance',
+        level: 'Optimize',
+        description: 'Advanced automation and continuous improvement',
         color: '#88cc00'
       },
       5: {
-        level: 'Optimized',
-        description: 'Industry-leading, AI-driven optimization',
+        level: 'Transform',
+        description: 'Industry-leading practices with AI-driven optimization',
         color: '#00cc44'
       }
     };

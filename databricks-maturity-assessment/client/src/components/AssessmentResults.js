@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
+import { FiDownload, FiTrendingUp, FiTarget, FiAlertTriangle, FiCheckCircle, FiArrowRight, FiFileText, FiBarChart2, FiAlertCircle, FiEdit2, FiUpload, FiX, FiLink } from 'react-icons/fi';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Radar } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
@@ -44,6 +44,7 @@ const ContentWrapper = styled.div`
 `;
 
 const HeaderSection = styled(motion.div)`
+  position: relative;
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -94,6 +95,230 @@ const HeaderSection = styled(motion.div)`
       padding: 12px !important;
       page-break-inside: avoid !important;
     }
+  }
+`;
+
+const LogoContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: ${props => props.$hasLogo ? '1' : '0'};
+  transition: opacity 0.3s ease;
+
+  ${HeaderSection}:hover & {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+    margin-bottom: 16px;
+    justify-content: center;
+  }
+
+  @media print {
+    opacity: ${props => props.$hasLogo ? '1' : '0'} !important;
+  }
+`;
+
+const LogoUploadBox = styled.div`
+  position: relative;
+  width: 180px;
+  height: 80px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+  }
+
+  @media print {
+    border-style: solid;
+  }
+`;
+
+const LogoImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+`;
+
+const LogoPlaceholder = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 12px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const RemoveLogoButton = styled.button`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+
+  ${LogoUploadBox}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #dc2626;
+  }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
+`;
+
+const LogoOptionsModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+`;
+
+const LogoOptionsContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+`;
+
+const LogoOptionsTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+`;
+
+const LogoOptionButton = styled.button`
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const URLInputForm = styled.form`
+  margin-top: 16px;
+`;
+
+const URLInput = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+`;
+
+const URLSubmitButton = styled.button`
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const CancelButton = styled.button`
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1e293b;
   }
 `;
 
@@ -904,6 +1129,12 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [customerLogo, setCustomerLogo] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const [showURLInput, setShowURLInput] = useState(false);
+  const [logoURL, setLogoURL] = useState('');
+  const [loadingURL, setLoadingURL] = useState(false);
 
   useEffect(() => {
     const loadResults = async () => {
@@ -927,6 +1158,87 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
     // Always load results when component mounts, assessmentId changes, or user navigates to this page
     loadResults();
   }, [assessmentId, routerLocation.key]);
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast.error('Logo file size must be less than 2MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomerLogo(reader.result);
+        toast.success('Customer logo uploaded successfully');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = (e) => {
+    e.stopPropagation();
+    setCustomerLogo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success('Logo removed');
+  };
+
+  const handleLogoClick = () => {
+    if (!customerLogo) {
+      setShowLogoModal(true);
+    }
+  };
+
+  const handleUploadFromDevice = () => {
+    setShowLogoModal(false);
+    fileInputRef.current?.click();
+  };
+
+  const handleFetchFromURL = () => {
+    setShowURLInput(true);
+  };
+
+  const handleURLSubmit = async (e) => {
+    e.preventDefault();
+    if (!logoURL.trim()) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
+    setLoadingURL(true);
+    
+    try {
+      // Call backend API to fetch logo (bypasses CORS)
+      const response = await assessmentService.fetchLogoFromURL(logoURL);
+      
+      if (response.success && response.data) {
+        setCustomerLogo(response.data);
+        toast.success('Logo fetched successfully from customer portal');
+        setShowLogoModal(false);
+        setShowURLInput(false);
+        setLogoURL('');
+      } else {
+        toast.error(response.message || 'Failed to fetch logo');
+      }
+    } catch (error) {
+      console.error('Error fetching logo:', error);
+      toast.error(error.message || 'Failed to fetch logo from URL. Please check the URL and try again.');
+    } finally {
+      setLoadingURL(false);
+    }
+  };
+
+  const handleCancelModal = () => {
+    setShowLogoModal(false);
+    setShowURLInput(false);
+    setLogoURL('');
+  };
 
   const getMaturityLevelName = (score) => {
     const levels = {
@@ -1457,8 +1769,33 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          style={{ marginTop: '0px', background: '#ffffff', padding: '32px' }}
+          style={{ marginTop: '0px', background: '#ffffff', padding: '32px', position: 'relative' }}
         >
+          {/* Customer Logo Upload */}
+          <LogoContainer $hasLogo={!!customerLogo}>
+            <LogoUploadBox onClick={handleLogoClick}>
+              {customerLogo ? (
+                <>
+                  <LogoImage src={customerLogo} alt="Customer Logo" />
+                  <RemoveLogoButton onClick={handleRemoveLogo}>
+                    <FiX size={14} />
+                  </RemoveLogoButton>
+                </>
+              ) : (
+                <LogoPlaceholder>
+                  <FiUpload />
+                  <span>Customer Logo</span>
+                </LogoPlaceholder>
+              )}
+            </LogoUploadBox>
+            <HiddenFileInput
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+            />
+          </LogoContainer>
+
           {/* Executive Summary Header with Action Buttons */}
           <div style={{ marginBottom: '24px', borderBottom: '3px solid #ff3621', paddingBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px' }}>
@@ -1512,6 +1849,15 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                 >
                   <FiFileText size={14} />
                   Executive Summary
+                </SecondaryButton>
+                <SecondaryButton
+                  onClick={() => navigate(`/benchmarks/${assessmentId}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#10b981', color: 'white', border: 'none' }}
+                >
+                  <FiBarChart2 size={14} />
+                  Industry Benchmarks
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={handleExportPDF}
@@ -1879,7 +2225,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                           gap: '8px'
                         }}>
                           <span style={{ fontSize: '1.5rem' }}>⚠</span>
-                          What You Need
+                          KEY CHALLENGES
                         </h4>
                         <ul style={{
                           listStyle: 'none',
@@ -2227,6 +2573,71 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
         )}
 
       </ContentWrapper>
+      {/* Logo Upload Options Modal */}
+      {showLogoModal && (
+        <LogoOptionsModal onClick={handleCancelModal}>
+          <LogoOptionsContent onClick={(e) => e.stopPropagation()}>
+            <LogoOptionsTitle>Add Customer Logo</LogoOptionsTitle>
+            
+            {!showURLInput ? (
+              <>
+                <LogoOptionButton onClick={handleUploadFromDevice}>
+                  <FiUpload />
+                  Upload from Device
+                </LogoOptionButton>
+                
+                <LogoOptionButton onClick={handleFetchFromURL}>
+                  <FiLink />
+                  Fetch from Customer Portal URL
+                </LogoOptionButton>
+                
+                <CancelButton onClick={handleCancelModal}>
+                  Cancel
+                </CancelButton>
+              </>
+            ) : (
+              <>
+                <div style={{ 
+                  marginBottom: '16px', 
+                  padding: '12px', 
+                  background: '#f0f9ff', 
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: '#0369a1',
+                  lineHeight: '1.5'
+                }}>
+                  🤖 <strong>Smart Logo Detection:</strong> Enter any customer website URL and we'll automatically find and extract their logo!
+                  <br/>
+                  <strong>Examples:</strong>
+                  <br/>
+                  • https://google.com (extracts Google logo)
+                  <br/>
+                  • https://databricks.com (extracts Databricks logo)
+                  <br/>
+                  • https://company.com/logo.png (direct image link)
+                </div>
+                
+                <URLInputForm onSubmit={handleURLSubmit}>
+                  <URLInput
+                    type="url"
+                    value={logoURL}
+                    onChange={(e) => setLogoURL(e.target.value)}
+                    placeholder="https://cdn.example.com/logo.png"
+                    required
+                  />
+                  <URLSubmitButton type="submit" disabled={loadingURL}>
+                    {loadingURL ? 'Loading Logo...' : 'Add Logo'}
+                  </URLSubmitButton>
+                </URLInputForm>
+                
+                <CancelButton onClick={handleCancelModal}>
+                  Cancel
+                </CancelButton>
+              </>
+            )}
+          </LogoOptionsContent>
+        </LogoOptionsModal>
+      )}
     </ResultsContainer>
     </>
   );

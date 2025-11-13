@@ -1,0 +1,1001 @@
+order_id,order_date,product_id,product_name,category,price,quantity,revenue,customer_id,customer_segment,region
+ORD10000,2023-02-27,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1102,Individual,South
+ORD10001,2023-03-13,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST4016,Enterprise,Central
+ORD10002,2023-10-30,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1122,Enterprise,South
+ORD10003,2023-09-16,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3465,Enterprise,Central
+ORD10004,2023-11-29,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2718,Small Business,West
+ORD10005,2023-05-23,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4315,Enterprise,South
+ORD10006,2023-08-05,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2393,Individual,South
+ORD10007,2023-06-22,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST1418,Enterprise,West
+ORD10008,2023-07-03,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4471,Individual,Central
+ORD10009,2023-01-23,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3988,Education,Central
+ORD10010,2023-07-13,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1322,Individual,Central
+ORD10011,2023-07-05,PROD015,Cable Organizer,Accessories,14.99,3,44.97,CUST3364,Small Business,North
+ORD10012,2023-12-05,PROD001,"Laptop Pro 15""",Electronics,1299.99,3,3899.97,CUST2185,Enterprise,South
+ORD10013,2023-02-21,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2556,Individual,West
+ORD10014,2023-07-06,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1666,Individual,East
+ORD10015,2023-12-10,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4836,Enterprise,Central
+ORD10016,2023-03-29,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3187,Small Business,South
+ORD10017,2023-07-14,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2105,Small Business,East
+ORD10018,2023-01-29,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1938,Enterprise,East
+ORD10019,2023-05-18,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1271,Small Business,Central
+ORD10020,2023-06-11,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1870,Education,West
+ORD10021,2023-11-26,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2084,Small Business,South
+ORD10022,2023-10-15,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4059,Education,Central
+ORD10023,2023-07-05,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1898,Small Business,Central
+ORD10024,2023-02-16,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4095,Enterprise,North
+ORD10025,2023-11-18,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST3787,Education,Central
+ORD10026,2023-07-17,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2563,Education,Central
+ORD10027,2023-10-11,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1047,Enterprise,Central
+ORD10028,2023-05-17,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4148,Individual,North
+ORD10029,2023-08-11,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1647,Education,North
+ORD10030,2023-05-15,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4980,Small Business,Central
+ORD10031,2023-02-24,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4565,Individual,Central
+ORD10032,2023-04-12,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1626,Individual,South
+ORD10033,2023-09-29,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4762,Enterprise,Central
+ORD10034,2023-09-08,PROD006,Desk Chair,Furniture,249.99,3,749.97,CUST1079,Enterprise,East
+ORD10035,2023-06-07,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST1980,Enterprise,South
+ORD10036,2023-10-18,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1350,Education,North
+ORD10037,2023-09-30,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4136,Small Business,South
+ORD10038,2023-09-01,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4878,Small Business,East
+ORD10039,2023-11-07,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1867,Small Business,East
+ORD10040,2023-12-10,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2794,Education,North
+ORD10041,2023-04-26,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1262,Individual,North
+ORD10042,2023-10-11,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST1902,Enterprise,North
+ORD10043,2023-11-20,PROD012,Smart Watch,Electronics,299.99,3,899.97,CUST1276,Enterprise,East
+ORD10044,2023-09-21,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1974,Individual,West
+ORD10045,2023-10-04,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4831,Education,South
+ORD10046,2023-08-31,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4307,Education,South
+ORD10047,2023-02-19,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3699,Education,East
+ORD10048,2023-07-30,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2912,Enterprise,North
+ORD10049,2023-07-26,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3982,Individual,North
+ORD10050,2023-04-09,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST1779,Education,South
+ORD10051,2023-04-04,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2140,Education,South
+ORD10052,2023-02-08,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST2815,Enterprise,North
+ORD10053,2023-10-04,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST4969,Enterprise,South
+ORD10054,2023-07-28,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2989,Education,South
+ORD10055,2023-07-25,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST4696,Enterprise,South
+ORD10056,2023-01-02,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2599,Individual,West
+ORD10057,2023-08-05,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3853,Education,South
+ORD10058,2023-06-01,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1891,Enterprise,Central
+ORD10059,2023-10-05,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST2284,Enterprise,North
+ORD10060,2023-09-02,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3059,Small Business,North
+ORD10061,2023-02-11,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4487,Small Business,North
+ORD10062,2023-02-04,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST3765,Small Business,West
+ORD10063,2023-10-19,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3435,Enterprise,Central
+ORD10064,2023-08-03,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3692,Individual,East
+ORD10065,2023-12-09,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1977,Individual,West
+ORD10066,2023-12-10,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2872,Individual,North
+ORD10067,2023-08-23,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST3544,Enterprise,North
+ORD10068,2023-04-20,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3072,Individual,South
+ORD10069,2023-06-28,PROD015,Cable Organizer,Accessories,14.99,3,44.97,CUST4608,Enterprise,South
+ORD10070,2023-05-26,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1646,Education,Central
+ORD10071,2023-06-04,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3505,Enterprise,Central
+ORD10072,2023-12-06,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST4596,Small Business,East
+ORD10073,2023-02-24,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4040,Small Business,East
+ORD10074,2023-11-06,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST2404,Small Business,East
+ORD10075,2023-09-08,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2028,Enterprise,North
+ORD10076,2023-08-05,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4397,Individual,North
+ORD10077,2023-06-20,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4158,Small Business,East
+ORD10078,2023-08-15,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3259,Education,Central
+ORD10079,2023-02-27,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1308,Small Business,Central
+ORD10080,2023-07-09,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST3385,Small Business,West
+ORD10081,2023-01-22,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2262,Individual,North
+ORD10082,2023-07-03,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1860,Small Business,North
+ORD10083,2023-10-14,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2664,Small Business,South
+ORD10084,2023-03-25,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4998,Small Business,West
+ORD10085,2023-04-02,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4016,Individual,West
+ORD10086,2023-12-09,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4320,Small Business,East
+ORD10087,2023-12-26,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST4572,Enterprise,West
+ORD10088,2023-04-13,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4344,Education,East
+ORD10089,2023-04-27,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1913,Enterprise,South
+ORD10090,2023-06-18,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2141,Enterprise,East
+ORD10091,2023-11-25,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3783,Individual,North
+ORD10092,2023-05-14,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1731,Individual,North
+ORD10093,2023-11-02,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3984,Individual,West
+ORD10094,2023-09-19,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1473,Education,Central
+ORD10095,2023-05-11,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1181,Education,North
+ORD10096,2023-10-03,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4851,Small Business,East
+ORD10097,2023-02-05,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4886,Individual,Central
+ORD10098,2023-12-06,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3948,Individual,Central
+ORD10099,2023-12-08,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2648,Individual,Central
+ORD10100,2023-04-09,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2722,Education,South
+ORD10101,2023-10-19,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3244,Enterprise,East
+ORD10102,2023-04-18,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2760,Individual,West
+ORD10103,2023-08-15,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3767,Small Business,Central
+ORD10104,2023-03-28,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST3698,Enterprise,East
+ORD10105,2023-12-06,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2372,Enterprise,South
+ORD10106,2023-06-08,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1920,Small Business,South
+ORD10107,2023-01-24,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2002,Education,Central
+ORD10108,2023-02-07,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2865,Education,Central
+ORD10109,2023-12-23,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2636,Small Business,South
+ORD10110,2023-12-19,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST4075,Enterprise,West
+ORD10111,2023-04-01,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4293,Education,North
+ORD10112,2023-05-08,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4757,Enterprise,West
+ORD10113,2023-08-26,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST3734,Individual,West
+ORD10114,2023-09-16,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2747,Education,South
+ORD10115,2023-09-01,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST2843,Individual,South
+ORD10116,2023-11-23,PROD014,Desk Lamp,Furniture,59.99,3,179.97,CUST4185,Education,South
+ORD10117,2023-08-14,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1317,Individual,South
+ORD10118,2023-06-21,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST2309,Enterprise,South
+ORD10119,2023-04-29,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2568,Small Business,South
+ORD10120,2023-08-01,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST2669,Individual,Central
+ORD10121,2023-08-01,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST1255,Small Business,West
+ORD10122,2023-10-27,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1080,Education,West
+ORD10123,2023-06-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2223,Education,West
+ORD10124,2023-10-07,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4677,Small Business,West
+ORD10125,2023-05-20,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2785,Education,North
+ORD10126,2023-06-22,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3739,Education,South
+ORD10127,2023-08-28,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST4766,Small Business,Central
+ORD10128,2023-01-14,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4714,Education,Central
+ORD10129,2023-12-06,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST3632,Education,South
+ORD10130,2023-08-25,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1744,Enterprise,East
+ORD10131,2023-06-17,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1866,Education,East
+ORD10132,2023-07-14,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2139,Education,East
+ORD10133,2023-02-11,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2926,Enterprise,Central
+ORD10134,2023-06-29,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST1918,Enterprise,North
+ORD10135,2023-01-16,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4889,Small Business,South
+ORD10136,2023-01-11,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3544,Small Business,South
+ORD10137,2023-08-31,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3742,Enterprise,Central
+ORD10138,2023-08-27,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3865,Individual,East
+ORD10139,2023-11-07,PROD003,USB-C Cable,Accessories,19.99,3,59.97,CUST4063,Enterprise,South
+ORD10140,2023-02-25,PROD005,Keyboard Mechanical,Electronics,149.99,3,449.97,CUST3370,Enterprise,East
+ORD10141,2023-12-13,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2537,Education,South
+ORD10142,2023-10-31,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3569,Small Business,North
+ORD10143,2023-06-04,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4482,Enterprise,Central
+ORD10144,2023-01-22,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2422,Education,East
+ORD10145,2023-09-17,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3652,Individual,North
+ORD10146,2023-08-04,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4368,Education,North
+ORD10147,2023-07-05,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3603,Education,South
+ORD10148,2023-04-01,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4005,Individual,Central
+ORD10149,2023-10-03,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2904,Education,Central
+ORD10150,2023-06-15,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST4488,Small Business,North
+ORD10151,2023-08-19,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1998,Education,Central
+ORD10152,2023-12-09,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1117,Education,East
+ORD10153,2023-09-07,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1868,Individual,East
+ORD10154,2023-05-24,PROD006,Desk Chair,Furniture,249.99,3,749.97,CUST4605,Individual,Central
+ORD10155,2023-09-22,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4883,Small Business,North
+ORD10156,2023-07-28,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3001,Small Business,West
+ORD10157,2023-12-31,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4247,Enterprise,North
+ORD10158,2023-04-24,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2656,Small Business,East
+ORD10159,2023-10-25,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3267,Individual,West
+ORD10160,2023-10-09,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3878,Education,East
+ORD10161,2023-05-09,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1944,Enterprise,South
+ORD10162,2023-03-03,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4042,Small Business,South
+ORD10163,2023-09-05,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2132,Individual,North
+ORD10164,2023-04-10,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2213,Small Business,East
+ORD10165,2023-06-04,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST1057,Small Business,East
+ORD10166,2023-01-28,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3266,Individual,South
+ORD10167,2023-09-09,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1420,Enterprise,Central
+ORD10168,2023-08-29,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2960,Education,East
+ORD10169,2023-01-27,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2034,Education,North
+ORD10170,2023-02-03,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2641,Education,North
+ORD10171,2023-11-19,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1621,Small Business,Central
+ORD10172,2023-02-13,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2016,Enterprise,Central
+ORD10173,2023-08-02,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3483,Small Business,Central
+ORD10174,2023-08-19,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4721,Education,East
+ORD10175,2023-10-29,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2250,Enterprise,Central
+ORD10176,2023-02-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4881,Small Business,South
+ORD10177,2023-12-05,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST1982,Small Business,Central
+ORD10178,2023-03-22,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST1010,Education,West
+ORD10179,2023-11-01,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1133,Small Business,East
+ORD10180,2023-05-25,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3879,Education,North
+ORD10181,2023-04-30,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4784,Individual,Central
+ORD10182,2023-04-12,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST2741,Enterprise,Central
+ORD10183,2023-11-28,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST2088,Small Business,North
+ORD10184,2023-03-26,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4246,Individual,Central
+ORD10185,2023-10-19,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2798,Enterprise,West
+ORD10186,2023-06-05,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST3866,Education,East
+ORD10187,2023-10-04,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1329,Enterprise,West
+ORD10188,2023-06-15,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3472,Individual,North
+ORD10189,2023-04-28,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4939,Enterprise,East
+ORD10190,2023-01-21,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4125,Small Business,West
+ORD10191,2023-11-30,PROD009,Headphones,Electronics,199.99,2,399.98,CUST2139,Small Business,Central
+ORD10192,2023-11-22,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST4969,Enterprise,West
+ORD10193,2023-07-29,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2365,Individual,North
+ORD10194,2023-03-24,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2350,Education,West
+ORD10195,2023-12-06,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4332,Enterprise,West
+ORD10196,2023-06-11,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2033,Individual,North
+ORD10197,2023-07-26,PROD013,Backpack,Accessories,89.99,2,179.98,CUST4542,Enterprise,Central
+ORD10198,2023-07-31,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST1222,Small Business,Central
+ORD10199,2023-11-15,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3561,Education,North
+ORD10200,2023-05-17,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3249,Small Business,East
+ORD10201,2023-12-24,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1118,Small Business,South
+ORD10202,2023-10-10,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST2671,Enterprise,South
+ORD10203,2023-02-28,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST2890,Enterprise,South
+ORD10204,2023-05-30,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3084,Individual,West
+ORD10205,2023-09-05,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2934,Small Business,West
+ORD10206,2023-03-16,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2571,Small Business,Central
+ORD10207,2023-03-11,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4539,Enterprise,East
+ORD10208,2023-08-01,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2392,Individual,North
+ORD10209,2023-06-02,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4430,Education,South
+ORD10210,2023-10-03,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2361,Education,West
+ORD10211,2023-06-14,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4561,Small Business,South
+ORD10212,2023-07-16,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1956,Education,North
+ORD10213,2023-08-31,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3888,Education,West
+ORD10214,2023-11-30,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3028,Enterprise,South
+ORD10215,2023-10-30,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1411,Education,North
+ORD10216,2023-08-22,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1062,Small Business,West
+ORD10217,2023-12-02,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1306,Education,East
+ORD10218,2023-11-16,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3661,Enterprise,East
+ORD10219,2023-12-12,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST2556,Individual,West
+ORD10220,2023-10-05,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST1280,Small Business,East
+ORD10221,2023-02-16,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2777,Enterprise,North
+ORD10222,2023-03-27,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3842,Individual,North
+ORD10223,2023-06-16,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4261,Enterprise,East
+ORD10224,2023-07-11,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2764,Small Business,South
+ORD10225,2023-07-30,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3318,Small Business,South
+ORD10226,2023-02-10,PROD003,USB-C Cable,Accessories,19.99,3,59.97,CUST3496,Education,Central
+ORD10227,2023-05-04,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3038,Small Business,South
+ORD10228,2023-11-23,PROD008,Webcam HD,Electronics,79.99,3,239.97,CUST2045,Enterprise,West
+ORD10229,2023-05-28,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST3775,Small Business,North
+ORD10230,2023-06-26,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3406,Individual,West
+ORD10231,2023-05-09,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2871,Individual,South
+ORD10232,2023-09-05,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1436,Small Business,West
+ORD10233,2023-07-03,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3354,Individual,East
+ORD10234,2023-12-04,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1033,Enterprise,Central
+ORD10235,2023-09-12,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4411,Individual,South
+ORD10236,2023-06-30,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1897,Small Business,Central
+ORD10237,2023-12-14,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4143,Small Business,North
+ORD10238,2023-11-18,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2265,Education,North
+ORD10239,2023-07-06,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3999,Small Business,North
+ORD10240,2023-06-01,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2338,Education,South
+ORD10241,2023-03-09,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST4221,Individual,Central
+ORD10242,2023-05-20,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4401,Small Business,East
+ORD10243,2023-09-04,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4962,Individual,East
+ORD10244,2023-02-28,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2918,Enterprise,South
+ORD10245,2023-04-26,PROD013,Backpack,Accessories,89.99,2,179.98,CUST4523,Education,Central
+ORD10246,2023-02-16,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4238,Education,North
+ORD10247,2023-10-02,PROD005,Keyboard Mechanical,Electronics,149.99,4,599.96,CUST2509,Individual,Central
+ORD10248,2023-11-23,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST1443,Small Business,West
+ORD10249,2023-11-14,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST3299,Individual,Central
+ORD10250,2023-11-28,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4374,Education,East
+ORD10251,2023-07-29,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1477,Small Business,North
+ORD10252,2023-06-05,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST3017,Enterprise,North
+ORD10253,2023-10-03,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST2858,Individual,Central
+ORD10254,2023-10-28,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1632,Education,North
+ORD10255,2023-09-08,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3521,Education,East
+ORD10256,2023-12-20,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST2816,Education,South
+ORD10257,2023-07-05,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1406,Individual,Central
+ORD10258,2023-11-27,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2630,Individual,South
+ORD10259,2023-08-21,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1375,Small Business,Central
+ORD10260,2023-01-26,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4222,Individual,South
+ORD10261,2023-10-17,PROD003,USB-C Cable,Accessories,19.99,4,79.96,CUST4398,Small Business,Central
+ORD10262,2023-04-30,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2345,Small Business,Central
+ORD10263,2023-05-22,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4516,Small Business,South
+ORD10264,2023-05-09,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4270,Small Business,North
+ORD10265,2023-01-14,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1539,Enterprise,East
+ORD10266,2023-05-02,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3411,Individual,North
+ORD10267,2023-05-16,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1214,Small Business,West
+ORD10268,2023-02-28,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4054,Enterprise,West
+ORD10269,2023-07-05,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3102,Enterprise,West
+ORD10270,2023-04-24,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4872,Enterprise,Central
+ORD10271,2023-08-23,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST3635,Enterprise,North
+ORD10272,2023-07-25,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST2746,Enterprise,West
+ORD10273,2023-08-16,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1301,Enterprise,East
+ORD10274,2023-03-17,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1269,Small Business,East
+ORD10275,2023-11-21,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3916,Individual,West
+ORD10276,2023-09-29,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2207,Education,Central
+ORD10277,2023-08-09,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1406,Enterprise,Central
+ORD10278,2023-04-21,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2761,Education,South
+ORD10279,2023-06-23,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4389,Education,West
+ORD10280,2023-02-18,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST2280,Education,East
+ORD10281,2023-05-11,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2533,Small Business,West
+ORD10282,2023-02-16,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4406,Enterprise,North
+ORD10283,2023-02-19,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4049,Individual,South
+ORD10284,2023-01-31,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3402,Individual,North
+ORD10285,2023-07-01,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4578,Education,North
+ORD10286,2023-11-04,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1424,Small Business,South
+ORD10287,2023-09-04,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1918,Enterprise,East
+ORD10288,2023-10-12,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4123,Individual,Central
+ORD10289,2023-08-08,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4461,Enterprise,Central
+ORD10290,2023-12-03,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2095,Enterprise,South
+ORD10291,2023-12-26,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4774,Individual,East
+ORD10292,2023-04-03,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST4562,Small Business,Central
+ORD10293,2023-07-25,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1285,Small Business,North
+ORD10294,2023-09-29,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1881,Education,West
+ORD10295,2023-06-24,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1644,Individual,East
+ORD10296,2023-06-16,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4181,Enterprise,North
+ORD10297,2023-03-22,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4090,Enterprise,North
+ORD10298,2023-08-15,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3711,Education,West
+ORD10299,2023-08-15,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2696,Individual,South
+ORD10300,2023-09-20,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1466,Individual,West
+ORD10301,2023-05-26,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3777,Education,Central
+ORD10302,2023-06-07,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1186,Small Business,West
+ORD10303,2023-01-29,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1031,Small Business,East
+ORD10304,2023-03-12,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4130,Individual,East
+ORD10305,2023-03-03,PROD006,Desk Chair,Furniture,249.99,3,749.97,CUST1031,Education,West
+ORD10306,2023-03-08,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2557,Small Business,Central
+ORD10307,2023-12-09,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1295,Education,North
+ORD10308,2023-01-10,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2883,Enterprise,East
+ORD10309,2023-08-08,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3348,Education,West
+ORD10310,2023-02-28,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2659,Enterprise,East
+ORD10311,2023-11-13,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3824,Individual,North
+ORD10312,2023-02-24,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1996,Education,Central
+ORD10313,2023-09-26,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST1322,Education,East
+ORD10314,2023-06-23,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1907,Individual,South
+ORD10315,2023-09-19,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3593,Enterprise,Central
+ORD10316,2023-04-10,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4710,Individual,East
+ORD10317,2023-11-27,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1967,Enterprise,South
+ORD10318,2023-04-12,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1710,Small Business,North
+ORD10319,2023-11-18,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4090,Education,Central
+ORD10320,2023-11-22,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2323,Individual,South
+ORD10321,2023-02-04,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2920,Education,East
+ORD10322,2023-05-21,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3422,Enterprise,East
+ORD10323,2023-02-07,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2271,Education,West
+ORD10324,2023-01-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,3,3899.97,CUST2510,Individual,North
+ORD10325,2023-02-16,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3519,Education,West
+ORD10326,2023-10-11,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4026,Enterprise,West
+ORD10327,2023-10-20,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2316,Education,Central
+ORD10328,2023-02-01,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2845,Enterprise,East
+ORD10329,2023-02-13,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3066,Small Business,North
+ORD10330,2023-12-29,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2799,Small Business,East
+ORD10331,2023-05-25,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2586,Education,East
+ORD10332,2023-11-03,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3584,Individual,North
+ORD10333,2023-02-18,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3285,Education,East
+ORD10334,2023-12-03,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3468,Small Business,East
+ORD10335,2023-10-26,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4754,Individual,East
+ORD10336,2023-12-24,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST1528,Enterprise,East
+ORD10337,2023-07-12,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3635,Individual,South
+ORD10338,2023-12-26,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4026,Enterprise,West
+ORD10339,2023-07-05,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1074,Individual,East
+ORD10340,2023-04-20,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2399,Education,South
+ORD10341,2023-03-12,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1634,Enterprise,East
+ORD10342,2023-02-21,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3079,Enterprise,East
+ORD10343,2023-11-13,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2543,Small Business,South
+ORD10344,2023-12-21,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4313,Small Business,West
+ORD10345,2023-07-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2492,Small Business,West
+ORD10346,2023-05-26,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4081,Education,South
+ORD10347,2023-05-03,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2267,Education,South
+ORD10348,2023-12-14,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2804,Education,East
+ORD10349,2023-07-15,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3059,Education,South
+ORD10350,2023-04-13,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4281,Small Business,East
+ORD10351,2023-11-25,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST2520,Enterprise,Central
+ORD10352,2023-03-05,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2167,Enterprise,South
+ORD10353,2023-08-19,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4708,Small Business,West
+ORD10354,2023-04-24,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4345,Education,East
+ORD10355,2023-01-14,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2699,Enterprise,West
+ORD10356,2023-07-11,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1965,Education,North
+ORD10357,2023-04-25,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1115,Individual,North
+ORD10358,2023-11-29,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST1598,Small Business,North
+ORD10359,2023-08-30,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3851,Small Business,West
+ORD10360,2023-11-12,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST1324,Enterprise,East
+ORD10361,2023-03-18,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3247,Education,North
+ORD10362,2023-05-28,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1973,Individual,North
+ORD10363,2023-05-03,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2719,Education,North
+ORD10364,2023-09-13,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3444,Enterprise,Central
+ORD10365,2023-05-04,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3943,Small Business,East
+ORD10366,2023-01-01,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST3518,Individual,South
+ORD10367,2023-08-02,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST1767,Enterprise,Central
+ORD10368,2023-02-04,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4905,Enterprise,West
+ORD10369,2023-08-29,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1178,Education,East
+ORD10370,2023-01-09,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2462,Enterprise,East
+ORD10371,2023-12-03,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4160,Individual,South
+ORD10372,2023-06-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3236,Individual,South
+ORD10373,2023-12-17,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3848,Education,South
+ORD10374,2023-03-11,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1258,Education,North
+ORD10375,2023-04-14,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1179,Small Business,North
+ORD10376,2023-06-08,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST3111,Education,Central
+ORD10377,2023-05-10,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1149,Small Business,East
+ORD10378,2023-01-25,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST4546,Individual,East
+ORD10379,2023-07-08,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2789,Education,West
+ORD10380,2023-07-17,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2388,Small Business,West
+ORD10381,2023-09-12,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2504,Individual,North
+ORD10382,2023-08-06,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1323,Education,Central
+ORD10383,2023-04-03,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST3234,Individual,East
+ORD10384,2023-02-10,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2343,Individual,East
+ORD10385,2023-11-05,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST1682,Education,East
+ORD10386,2023-01-22,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3977,Individual,Central
+ORD10387,2023-05-21,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3619,Enterprise,North
+ORD10388,2023-11-23,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3101,Small Business,North
+ORD10389,2023-11-08,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST2794,Enterprise,South
+ORD10390,2023-05-01,PROD002,Wireless Mouse,Electronics,29.99,3,89.97,CUST4188,Individual,East
+ORD10391,2023-10-18,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST1628,Education,East
+ORD10392,2023-08-16,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4125,Enterprise,Central
+ORD10393,2023-09-29,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2503,Education,East
+ORD10394,2023-05-23,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2022,Enterprise,North
+ORD10395,2023-04-06,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST3044,Education,Central
+ORD10396,2023-05-15,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4174,Individual,West
+ORD10397,2023-11-10,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4753,Education,South
+ORD10398,2023-03-11,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4493,Enterprise,West
+ORD10399,2023-08-16,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1359,Individual,East
+ORD10400,2023-02-03,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3252,Individual,East
+ORD10401,2023-03-22,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST3915,Small Business,East
+ORD10402,2023-04-25,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1497,Small Business,South
+ORD10403,2023-09-10,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST1107,Individual,Central
+ORD10404,2023-07-08,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2914,Small Business,Central
+ORD10405,2023-02-14,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST1269,Individual,West
+ORD10406,2023-09-03,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3153,Education,West
+ORD10407,2023-10-22,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST4982,Individual,North
+ORD10408,2023-08-27,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST3785,Individual,South
+ORD10409,2023-10-10,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1745,Small Business,West
+ORD10410,2023-01-29,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4405,Enterprise,Central
+ORD10411,2023-06-05,PROD003,USB-C Cable,Accessories,19.99,3,59.97,CUST1674,Small Business,East
+ORD10412,2023-12-30,PROD015,Cable Organizer,Accessories,14.99,4,59.96,CUST4880,Individual,North
+ORD10413,2023-04-11,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3601,Individual,South
+ORD10414,2023-06-05,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3516,Enterprise,Central
+ORD10415,2023-03-28,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3424,Small Business,South
+ORD10416,2023-11-16,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3478,Individual,Central
+ORD10417,2023-01-15,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1332,Enterprise,Central
+ORD10418,2023-11-30,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST3343,Education,Central
+ORD10419,2023-01-16,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3039,Individual,East
+ORD10420,2023-05-06,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4296,Education,East
+ORD10421,2023-02-07,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3820,Enterprise,South
+ORD10422,2023-08-01,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2983,Education,South
+ORD10423,2023-11-07,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST4528,Individual,East
+ORD10424,2023-03-08,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4115,Individual,Central
+ORD10425,2023-02-24,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2307,Small Business,West
+ORD10426,2023-05-17,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2841,Small Business,South
+ORD10427,2023-01-26,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST2188,Education,Central
+ORD10428,2023-05-08,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4943,Small Business,East
+ORD10429,2023-10-23,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1777,Small Business,West
+ORD10430,2023-08-28,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3042,Individual,West
+ORD10431,2023-02-16,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4871,Education,Central
+ORD10432,2023-05-04,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1881,Individual,North
+ORD10433,2023-05-25,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3027,Education,East
+ORD10434,2023-01-05,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4470,Enterprise,West
+ORD10435,2023-05-16,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3979,Individual,West
+ORD10436,2023-01-24,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2640,Enterprise,Central
+ORD10437,2023-04-10,PROD009,Headphones,Electronics,199.99,2,399.98,CUST2484,Individual,North
+ORD10438,2023-09-16,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2844,Individual,Central
+ORD10439,2023-11-09,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST4993,Enterprise,West
+ORD10440,2023-06-23,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3284,Individual,South
+ORD10441,2023-11-05,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST3048,Enterprise,North
+ORD10442,2023-03-12,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3922,Individual,West
+ORD10443,2023-08-22,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1610,Small Business,East
+ORD10444,2023-11-10,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2609,Individual,Central
+ORD10445,2023-09-17,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST4392,Education,Central
+ORD10446,2023-09-01,PROD005,Keyboard Mechanical,Electronics,149.99,3,449.97,CUST4341,Enterprise,East
+ORD10447,2023-12-11,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST2706,Individual,North
+ORD10448,2023-08-31,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2087,Small Business,North
+ORD10449,2023-09-03,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1698,Education,South
+ORD10450,2023-12-15,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST3345,Enterprise,South
+ORD10451,2023-08-14,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2284,Education,South
+ORD10452,2023-12-20,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3055,Education,North
+ORD10453,2023-03-12,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST3124,Small Business,Central
+ORD10454,2023-12-06,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2543,Individual,South
+ORD10455,2023-09-30,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2402,Individual,East
+ORD10456,2023-09-05,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1787,Small Business,East
+ORD10457,2023-06-02,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1921,Individual,East
+ORD10458,2023-04-17,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3827,Education,East
+ORD10459,2023-06-28,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3295,Individual,East
+ORD10460,2023-10-21,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2555,Education,East
+ORD10461,2023-03-16,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2189,Enterprise,East
+ORD10462,2023-02-10,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2418,Education,East
+ORD10463,2023-09-03,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1876,Small Business,Central
+ORD10464,2023-10-15,PROD005,Keyboard Mechanical,Electronics,149.99,3,449.97,CUST1562,Enterprise,Central
+ORD10465,2023-10-28,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1207,Small Business,South
+ORD10466,2023-02-21,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2692,Individual,West
+ORD10467,2023-12-15,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST1021,Small Business,West
+ORD10468,2023-09-01,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2955,Small Business,East
+ORD10469,2023-05-27,PROD006,Desk Chair,Furniture,249.99,3,749.97,CUST3645,Enterprise,North
+ORD10470,2023-10-21,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST4025,Enterprise,South
+ORD10471,2023-04-01,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST4825,Enterprise,West
+ORD10472,2023-09-11,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1763,Individual,North
+ORD10473,2023-06-02,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST3326,Enterprise,East
+ORD10474,2023-08-21,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3626,Education,South
+ORD10475,2023-09-16,PROD014,Desk Lamp,Furniture,59.99,3,179.97,CUST2917,Individual,South
+ORD10476,2023-02-27,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2354,Small Business,West
+ORD10477,2023-05-12,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3943,Small Business,North
+ORD10478,2023-06-22,PROD012,Smart Watch,Electronics,299.99,3,899.97,CUST4238,Individual,Central
+ORD10479,2023-04-09,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1718,Education,West
+ORD10480,2023-06-17,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1355,Education,North
+ORD10481,2023-03-13,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2955,Individual,South
+ORD10482,2023-05-14,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2571,Small Business,West
+ORD10483,2023-05-17,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4907,Individual,East
+ORD10484,2023-10-21,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST3677,Individual,South
+ORD10485,2023-12-08,PROD001,"Laptop Pro 15""",Electronics,1299.99,3,3899.97,CUST2256,Small Business,West
+ORD10486,2023-09-15,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4781,Individual,North
+ORD10487,2023-06-01,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2505,Small Business,South
+ORD10488,2023-09-02,PROD003,USB-C Cable,Accessories,19.99,3,59.97,CUST1627,Education,Central
+ORD10489,2023-08-01,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST3875,Education,Central
+ORD10490,2023-12-07,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4120,Small Business,Central
+ORD10491,2023-02-11,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3152,Education,Central
+ORD10492,2023-07-05,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1319,Enterprise,North
+ORD10493,2023-10-08,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1828,Small Business,South
+ORD10494,2023-09-24,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2809,Enterprise,South
+ORD10495,2023-10-26,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4681,Education,North
+ORD10496,2023-03-09,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3102,Education,West
+ORD10497,2023-01-30,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3288,Education,East
+ORD10498,2023-01-12,PROD012,Smart Watch,Electronics,299.99,3,899.97,CUST2621,Individual,North
+ORD10499,2023-04-22,PROD012,Smart Watch,Electronics,299.99,3,899.97,CUST3368,Enterprise,North
+ORD10500,2023-06-26,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3868,Enterprise,Central
+ORD10501,2023-02-05,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4824,Education,North
+ORD10502,2023-07-29,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1737,Small Business,West
+ORD10503,2023-07-15,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST2837,Education,West
+ORD10504,2023-12-16,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4582,Small Business,East
+ORD10505,2023-04-02,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3200,Education,Central
+ORD10506,2023-04-25,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST4419,Enterprise,North
+ORD10507,2023-08-26,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST3758,Education,Central
+ORD10508,2023-04-28,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST2013,Education,East
+ORD10509,2023-05-22,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1772,Enterprise,North
+ORD10510,2023-12-05,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4137,Enterprise,South
+ORD10511,2023-02-04,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1413,Enterprise,West
+ORD10512,2023-12-11,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST1199,Small Business,North
+ORD10513,2023-08-13,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST1959,Small Business,North
+ORD10514,2023-09-15,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2184,Small Business,Central
+ORD10515,2023-10-23,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3754,Individual,South
+ORD10516,2023-03-15,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3704,Small Business,West
+ORD10517,2023-05-21,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST1249,Small Business,West
+ORD10518,2023-09-11,PROD009,Headphones,Electronics,199.99,3,599.97,CUST1192,Individual,West
+ORD10519,2023-09-26,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2305,Education,West
+ORD10520,2023-06-03,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2541,Small Business,Central
+ORD10521,2023-05-04,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4478,Small Business,East
+ORD10522,2023-12-29,PROD014,Desk Lamp,Furniture,59.99,4,239.96,CUST2896,Enterprise,Central
+ORD10523,2023-08-02,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3282,Small Business,West
+ORD10524,2023-05-11,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST1832,Individual,North
+ORD10525,2023-08-19,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4469,Individual,North
+ORD10526,2023-04-08,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1211,Individual,West
+ORD10527,2023-11-06,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4578,Enterprise,South
+ORD10528,2023-10-28,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3289,Small Business,West
+ORD10529,2023-06-20,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST2241,Enterprise,South
+ORD10530,2023-04-08,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST4940,Enterprise,West
+ORD10531,2023-05-05,PROD015,Cable Organizer,Accessories,14.99,3,44.97,CUST3849,Small Business,West
+ORD10532,2023-05-03,PROD015,Cable Organizer,Accessories,14.99,3,44.97,CUST3261,Individual,East
+ORD10533,2023-08-27,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3185,Individual,East
+ORD10534,2023-07-04,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3100,Education,West
+ORD10535,2023-08-29,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4119,Individual,South
+ORD10536,2023-06-10,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST2695,Enterprise,Central
+ORD10537,2023-04-24,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4036,Small Business,North
+ORD10538,2023-10-11,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3372,Education,East
+ORD10539,2023-04-11,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2351,Small Business,West
+ORD10540,2023-05-06,PROD010,Phone Case,Accessories,24.99,3,74.97,CUST3045,Individual,East
+ORD10541,2023-09-08,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4958,Education,West
+ORD10542,2023-06-30,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1693,Small Business,Central
+ORD10543,2023-04-05,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4755,Enterprise,Central
+ORD10544,2023-02-08,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4871,Enterprise,North
+ORD10545,2023-03-12,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4451,Small Business,North
+ORD10546,2023-03-19,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1037,Small Business,Central
+ORD10547,2023-07-11,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1247,Education,West
+ORD10548,2023-01-04,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3179,Education,North
+ORD10549,2023-09-29,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3958,Individual,Central
+ORD10550,2023-01-09,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3057,Education,South
+ORD10551,2023-02-19,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3147,Small Business,South
+ORD10552,2023-11-14,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4339,Individual,East
+ORD10553,2023-07-23,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1323,Individual,West
+ORD10554,2023-10-17,PROD008,Webcam HD,Electronics,79.99,3,239.97,CUST3855,Small Business,East
+ORD10555,2023-02-11,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3677,Enterprise,North
+ORD10556,2023-07-14,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2544,Education,North
+ORD10557,2023-01-05,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3878,Small Business,North
+ORD10558,2023-08-11,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3641,Individual,Central
+ORD10559,2023-02-18,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4665,Enterprise,South
+ORD10560,2023-12-21,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2947,Individual,North
+ORD10561,2023-02-08,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST3803,Individual,Central
+ORD10562,2023-12-03,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST4804,Individual,North
+ORD10563,2023-10-28,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4361,Education,North
+ORD10564,2023-03-25,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3309,Small Business,Central
+ORD10565,2023-07-19,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3773,Individual,West
+ORD10566,2023-03-13,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4237,Enterprise,Central
+ORD10567,2023-06-27,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1219,Enterprise,West
+ORD10568,2023-02-08,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST2395,Education,East
+ORD10569,2023-11-21,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST2845,Education,South
+ORD10570,2023-10-11,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2768,Small Business,Central
+ORD10571,2023-07-14,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1351,Individual,South
+ORD10572,2023-02-07,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1336,Individual,South
+ORD10573,2023-12-31,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1631,Education,East
+ORD10574,2023-02-24,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST1374,Enterprise,East
+ORD10575,2023-07-04,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST4118,Individual,North
+ORD10576,2023-02-14,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1767,Education,West
+ORD10577,2023-10-12,PROD009,Headphones,Electronics,199.99,2,399.98,CUST1423,Enterprise,North
+ORD10578,2023-10-11,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST3449,Individual,West
+ORD10579,2023-05-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2694,Education,North
+ORD10580,2023-10-14,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1994,Small Business,West
+ORD10581,2023-03-13,PROD003,USB-C Cable,Accessories,19.99,3,59.97,CUST2101,Individual,East
+ORD10582,2023-03-16,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1259,Small Business,West
+ORD10583,2023-08-04,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2227,Education,North
+ORD10584,2023-05-09,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4867,Small Business,West
+ORD10585,2023-11-12,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST1438,Small Business,East
+ORD10586,2023-07-22,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2360,Education,East
+ORD10587,2023-06-21,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2763,Small Business,East
+ORD10588,2023-11-05,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1822,Education,East
+ORD10589,2023-07-23,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4967,Individual,East
+ORD10590,2023-12-22,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4963,Small Business,East
+ORD10591,2023-05-24,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4344,Education,East
+ORD10592,2023-10-16,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3234,Small Business,Central
+ORD10593,2023-08-25,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4862,Small Business,West
+ORD10594,2023-05-30,PROD013,Backpack,Accessories,89.99,2,179.98,CUST4404,Enterprise,West
+ORD10595,2023-09-13,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1570,Individual,South
+ORD10596,2023-12-04,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST2733,Education,North
+ORD10597,2023-11-03,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2641,Education,Central
+ORD10598,2023-07-04,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3873,Enterprise,North
+ORD10599,2023-05-08,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3693,Individual,South
+ORD10600,2023-11-10,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3642,Education,East
+ORD10601,2023-08-09,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1433,Enterprise,North
+ORD10602,2023-04-24,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST3091,Small Business,West
+ORD10603,2023-07-20,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2896,Small Business,East
+ORD10604,2023-09-05,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1428,Individual,West
+ORD10605,2023-02-13,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1475,Small Business,East
+ORD10606,2023-06-25,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2865,Small Business,Central
+ORD10607,2023-06-28,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2950,Enterprise,West
+ORD10608,2023-12-23,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1275,Individual,North
+ORD10609,2023-12-30,PROD013,Backpack,Accessories,89.99,2,179.98,CUST4478,Individual,North
+ORD10610,2023-03-26,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4808,Small Business,Central
+ORD10611,2023-10-10,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST3293,Education,West
+ORD10612,2023-07-27,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3579,Small Business,South
+ORD10613,2023-12-03,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1119,Small Business,West
+ORD10614,2023-08-08,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST2592,Enterprise,South
+ORD10615,2023-05-23,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4081,Enterprise,Central
+ORD10616,2023-10-02,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST2335,Small Business,West
+ORD10617,2023-05-15,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3747,Education,Central
+ORD10618,2023-06-10,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3445,Education,Central
+ORD10619,2023-10-28,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST2441,Education,Central
+ORD10620,2023-12-11,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2218,Enterprise,South
+ORD10621,2023-03-02,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1977,Individual,North
+ORD10622,2023-07-11,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3840,Small Business,Central
+ORD10623,2023-08-03,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3442,Small Business,Central
+ORD10624,2023-08-05,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1760,Education,Central
+ORD10625,2023-11-27,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1709,Small Business,West
+ORD10626,2023-03-13,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1766,Individual,West
+ORD10627,2023-01-28,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4545,Individual,North
+ORD10628,2023-03-11,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1799,Education,Central
+ORD10629,2023-12-01,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3804,Education,West
+ORD10630,2023-08-16,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3001,Small Business,North
+ORD10631,2023-01-16,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST4259,Small Business,East
+ORD10632,2023-05-21,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1920,Individual,South
+ORD10633,2023-08-23,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3316,Education,Central
+ORD10634,2023-02-27,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3345,Enterprise,East
+ORD10635,2023-10-06,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2502,Enterprise,West
+ORD10636,2023-04-22,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2741,Enterprise,South
+ORD10637,2023-01-17,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2842,Individual,East
+ORD10638,2023-02-14,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2798,Enterprise,South
+ORD10639,2023-10-29,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4526,Education,South
+ORD10640,2023-03-13,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4214,Small Business,South
+ORD10641,2023-01-31,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3335,Individual,Central
+ORD10642,2023-11-02,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2325,Individual,East
+ORD10643,2023-05-17,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4901,Enterprise,South
+ORD10644,2023-07-30,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4763,Enterprise,East
+ORD10645,2023-12-02,PROD014,Desk Lamp,Furniture,59.99,3,179.97,CUST4547,Small Business,South
+ORD10646,2023-12-31,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2013,Education,West
+ORD10647,2023-10-23,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3571,Education,West
+ORD10648,2023-02-08,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3595,Enterprise,West
+ORD10649,2023-05-23,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3845,Individual,West
+ORD10650,2023-06-17,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3383,Enterprise,North
+ORD10651,2023-08-23,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3600,Individual,North
+ORD10652,2023-10-01,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4965,Education,South
+ORD10653,2023-05-18,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2322,Individual,East
+ORD10654,2023-10-23,PROD009,Headphones,Electronics,199.99,2,399.98,CUST4491,Education,East
+ORD10655,2023-12-16,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1188,Enterprise,West
+ORD10656,2023-03-05,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4806,Small Business,West
+ORD10657,2023-01-01,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4924,Education,South
+ORD10658,2023-03-09,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4613,Individual,South
+ORD10659,2023-05-21,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1382,Individual,East
+ORD10660,2023-07-10,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3721,Small Business,North
+ORD10661,2023-11-17,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST3864,Small Business,West
+ORD10662,2023-02-16,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3882,Enterprise,North
+ORD10663,2023-09-02,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1319,Small Business,Central
+ORD10664,2023-09-23,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3785,Education,North
+ORD10665,2023-12-23,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1493,Education,South
+ORD10666,2023-02-06,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1937,Education,North
+ORD10667,2023-02-22,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1422,Individual,East
+ORD10668,2023-06-03,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1561,Education,South
+ORD10669,2023-12-13,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3172,Enterprise,Central
+ORD10670,2023-03-26,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2802,Individual,South
+ORD10671,2023-03-19,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST4767,Education,Central
+ORD10672,2023-08-15,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4522,Small Business,North
+ORD10673,2023-02-21,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1573,Enterprise,Central
+ORD10674,2023-07-16,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2439,Education,East
+ORD10675,2023-03-13,PROD013,Backpack,Accessories,89.99,3,269.97,CUST2014,Individual,North
+ORD10676,2023-10-11,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3953,Individual,North
+ORD10677,2023-12-04,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1841,Small Business,West
+ORD10678,2023-11-27,PROD005,Keyboard Mechanical,Electronics,149.99,4,599.96,CUST4677,Small Business,West
+ORD10679,2023-02-27,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST1987,Education,Central
+ORD10680,2023-09-28,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4640,Enterprise,East
+ORD10681,2023-06-12,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1540,Education,Central
+ORD10682,2023-07-07,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3237,Small Business,West
+ORD10683,2023-02-07,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1068,Enterprise,North
+ORD10684,2023-04-21,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST1163,Enterprise,West
+ORD10685,2023-05-27,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3574,Education,West
+ORD10686,2023-07-25,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1337,Small Business,East
+ORD10687,2023-06-08,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1323,Small Business,South
+ORD10688,2023-06-17,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2600,Enterprise,East
+ORD10689,2023-08-12,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3989,Small Business,North
+ORD10690,2023-02-14,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4787,Education,North
+ORD10691,2023-11-10,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2266,Small Business,North
+ORD10692,2023-12-29,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST1046,Small Business,West
+ORD10693,2023-09-25,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3118,Individual,South
+ORD10694,2023-03-06,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4071,Individual,North
+ORD10695,2023-01-16,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2372,Education,East
+ORD10696,2023-02-02,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2077,Enterprise,West
+ORD10697,2023-09-19,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2475,Enterprise,West
+ORD10698,2023-10-18,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST1644,Individual,North
+ORD10699,2023-10-21,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1472,Small Business,Central
+ORD10700,2023-01-23,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4517,Enterprise,South
+ORD10701,2023-08-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2490,Education,South
+ORD10702,2023-01-19,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3264,Education,South
+ORD10703,2023-05-08,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2704,Individual,East
+ORD10704,2023-02-09,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3341,Individual,North
+ORD10705,2023-12-11,PROD009,Headphones,Electronics,199.99,3,599.97,CUST1734,Small Business,Central
+ORD10706,2023-07-25,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1282,Education,East
+ORD10707,2023-06-09,PROD013,Backpack,Accessories,89.99,2,179.98,CUST2340,Enterprise,Central
+ORD10708,2023-01-05,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2511,Small Business,East
+ORD10709,2023-06-05,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4029,Small Business,West
+ORD10710,2023-10-30,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4164,Small Business,Central
+ORD10711,2023-05-06,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1616,Enterprise,West
+ORD10712,2023-04-30,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3218,Individual,North
+ORD10713,2023-01-01,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4108,Education,East
+ORD10714,2023-04-16,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3170,Small Business,West
+ORD10715,2023-01-31,PROD008,Webcam HD,Electronics,79.99,2,159.98,CUST4983,Small Business,East
+ORD10716,2023-01-23,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4773,Small Business,Central
+ORD10717,2023-12-25,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST2877,Enterprise,Central
+ORD10718,2023-09-16,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1546,Education,North
+ORD10719,2023-10-18,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST3713,Small Business,South
+ORD10720,2023-05-14,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST4485,Individual,West
+ORD10721,2023-06-17,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2302,Education,East
+ORD10722,2023-02-08,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4864,Small Business,South
+ORD10723,2023-10-27,PROD013,Backpack,Accessories,89.99,2,179.98,CUST1432,Small Business,West
+ORD10724,2023-06-10,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2665,Enterprise,Central
+ORD10725,2023-04-17,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST2851,Individual,West
+ORD10726,2023-03-03,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1370,Small Business,East
+ORD10727,2023-12-27,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1165,Small Business,East
+ORD10728,2023-02-16,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3912,Small Business,East
+ORD10729,2023-09-20,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1200,Individual,East
+ORD10730,2023-03-31,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1127,Education,West
+ORD10731,2023-10-09,PROD009,Headphones,Electronics,199.99,3,599.97,CUST2892,Enterprise,South
+ORD10732,2023-01-07,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1252,Small Business,South
+ORD10733,2023-07-25,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST2524,Enterprise,Central
+ORD10734,2023-05-13,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4757,Enterprise,North
+ORD10735,2023-04-12,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST4696,Education,South
+ORD10736,2023-06-19,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1501,Enterprise,West
+ORD10737,2023-03-28,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST4785,Education,West
+ORD10738,2023-01-16,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2567,Education,South
+ORD10739,2023-04-20,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4720,Small Business,East
+ORD10740,2023-08-17,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4618,Small Business,North
+ORD10741,2023-11-14,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3651,Individual,West
+ORD10742,2023-10-09,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1359,Individual,West
+ORD10743,2023-08-03,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1816,Small Business,Central
+ORD10744,2023-01-10,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2566,Individual,West
+ORD10745,2023-09-06,PROD009,Headphones,Electronics,199.99,2,399.98,CUST2409,Individual,West
+ORD10746,2023-04-03,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1106,Individual,Central
+ORD10747,2023-01-16,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4669,Individual,North
+ORD10748,2023-08-30,PROD013,Backpack,Accessories,89.99,2,179.98,CUST3168,Individual,Central
+ORD10749,2023-03-23,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1410,Small Business,South
+ORD10750,2023-10-01,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4757,Enterprise,South
+ORD10751,2023-07-18,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST2453,Small Business,South
+ORD10752,2023-10-31,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4023,Individual,Central
+ORD10753,2023-12-27,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4881,Small Business,Central
+ORD10754,2023-09-10,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3220,Individual,South
+ORD10755,2023-01-20,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1369,Enterprise,South
+ORD10756,2023-04-23,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1081,Education,North
+ORD10757,2023-11-11,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST1534,Individual,South
+ORD10758,2023-06-15,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST1243,Enterprise,South
+ORD10759,2023-12-27,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4171,Enterprise,Central
+ORD10760,2023-07-06,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4934,Enterprise,East
+ORD10761,2023-12-06,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1413,Individual,East
+ORD10762,2023-03-11,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4997,Small Business,West
+ORD10763,2023-11-24,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3659,Individual,South
+ORD10764,2023-10-15,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4804,Individual,South
+ORD10765,2023-10-29,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2549,Individual,East
+ORD10766,2023-04-01,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3985,Enterprise,Central
+ORD10767,2023-10-18,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST3467,Individual,Central
+ORD10768,2023-11-24,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4836,Education,South
+ORD10769,2023-02-09,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST1974,Individual,East
+ORD10770,2023-11-22,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1363,Individual,West
+ORD10771,2023-05-16,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST1858,Small Business,North
+ORD10772,2023-05-12,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4223,Enterprise,North
+ORD10773,2023-07-17,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2794,Education,South
+ORD10774,2023-07-31,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST3019,Education,East
+ORD10775,2023-07-12,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1415,Education,Central
+ORD10776,2023-12-18,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST2848,Enterprise,North
+ORD10777,2023-01-11,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2305,Individual,North
+ORD10778,2023-06-25,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1696,Education,South
+ORD10779,2023-02-08,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3240,Enterprise,East
+ORD10780,2023-11-11,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3885,Enterprise,West
+ORD10781,2023-03-26,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3487,Education,South
+ORD10782,2023-02-21,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2356,Small Business,South
+ORD10783,2023-12-23,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4791,Individual,East
+ORD10784,2023-05-02,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1392,Enterprise,West
+ORD10785,2023-10-09,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST1629,Enterprise,East
+ORD10786,2023-08-07,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1358,Individual,Central
+ORD10787,2023-04-13,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1397,Enterprise,South
+ORD10788,2023-11-23,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST1335,Education,North
+ORD10789,2023-07-23,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST2928,Education,East
+ORD10790,2023-11-25,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1757,Individual,West
+ORD10791,2023-04-06,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2825,Enterprise,East
+ORD10792,2023-08-27,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST2078,Small Business,East
+ORD10793,2023-02-01,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1619,Enterprise,North
+ORD10794,2023-06-26,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4310,Education,Central
+ORD10795,2023-10-11,PROD004,"Monitor 27""",Electronics,399.99,3,1199.97,CUST2585,Education,Central
+ORD10796,2023-09-01,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3345,Small Business,West
+ORD10797,2023-02-10,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2617,Enterprise,Central
+ORD10798,2023-09-22,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4278,Small Business,North
+ORD10799,2023-08-18,PROD013,Backpack,Accessories,89.99,2,179.98,CUST1708,Small Business,South
+ORD10800,2023-04-09,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1516,Enterprise,West
+ORD10801,2023-12-16,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST4369,Small Business,Central
+ORD10802,2023-06-13,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4730,Enterprise,North
+ORD10803,2023-10-12,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2335,Individual,Central
+ORD10804,2023-01-07,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST4221,Education,North
+ORD10805,2023-03-18,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1607,Enterprise,North
+ORD10806,2023-02-21,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST4218,Individual,Central
+ORD10807,2023-06-26,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST4595,Education,East
+ORD10808,2023-12-02,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3494,Education,North
+ORD10809,2023-05-22,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2650,Small Business,Central
+ORD10810,2023-12-15,PROD010,Phone Case,Accessories,24.99,3,74.97,CUST1158,Education,East
+ORD10811,2023-05-02,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1201,Education,East
+ORD10812,2023-07-10,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1082,Individual,East
+ORD10813,2023-05-24,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST4452,Education,North
+ORD10814,2023-04-27,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST1550,Individual,West
+ORD10815,2023-06-14,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2103,Education,Central
+ORD10816,2023-02-15,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1769,Education,South
+ORD10817,2023-07-28,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4034,Education,Central
+ORD10818,2023-07-11,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST4362,Enterprise,Central
+ORD10819,2023-03-23,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1268,Individual,Central
+ORD10820,2023-03-11,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST4196,Enterprise,South
+ORD10821,2023-04-13,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4428,Enterprise,South
+ORD10822,2023-08-22,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1207,Individual,South
+ORD10823,2023-07-08,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4373,Education,Central
+ORD10824,2023-11-22,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3790,Enterprise,South
+ORD10825,2023-09-08,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST3433,Education,South
+ORD10826,2023-08-31,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST3403,Individual,East
+ORD10827,2023-05-13,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4067,Enterprise,East
+ORD10828,2023-07-17,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1203,Small Business,Central
+ORD10829,2023-04-20,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4510,Small Business,South
+ORD10830,2023-04-16,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2102,Education,Central
+ORD10831,2023-12-16,PROD001,"Laptop Pro 15""",Electronics,1299.99,2,2599.98,CUST4733,Small Business,South
+ORD10832,2023-01-05,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST1916,Individual,Central
+ORD10833,2023-06-06,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3919,Individual,West
+ORD10834,2023-07-12,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4488,Individual,West
+ORD10835,2023-04-22,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2911,Individual,Central
+ORD10836,2023-11-16,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST1419,Enterprise,Central
+ORD10837,2023-07-11,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3299,Individual,East
+ORD10838,2023-02-25,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2973,Enterprise,East
+ORD10839,2023-11-24,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2134,Individual,East
+ORD10840,2023-03-18,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3118,Small Business,North
+ORD10841,2023-11-04,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2309,Small Business,North
+ORD10842,2023-09-12,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2210,Individual,West
+ORD10843,2023-07-18,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST4017,Enterprise,Central
+ORD10844,2023-10-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2405,Small Business,Central
+ORD10845,2023-09-01,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4713,Individual,Central
+ORD10846,2023-03-29,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4443,Small Business,East
+ORD10847,2023-08-30,PROD002,Wireless Mouse,Electronics,29.99,3,89.97,CUST1524,Individual,Central
+ORD10848,2023-04-04,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4878,Individual,North
+ORD10849,2023-07-01,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1914,Individual,West
+ORD10850,2023-06-19,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2522,Individual,Central
+ORD10851,2023-08-26,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4486,Enterprise,West
+ORD10852,2023-11-21,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4867,Enterprise,West
+ORD10853,2023-04-10,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST3049,Enterprise,West
+ORD10854,2023-06-02,PROD009,Headphones,Electronics,199.99,1,199.99,CUST2692,Enterprise,South
+ORD10855,2023-04-13,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2403,Education,Central
+ORD10856,2023-08-23,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1586,Individual,South
+ORD10857,2023-02-11,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2997,Individual,South
+ORD10858,2023-11-21,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST2851,Individual,South
+ORD10859,2023-03-28,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3360,Small Business,West
+ORD10860,2023-02-15,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1530,Education,West
+ORD10861,2023-08-08,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST4953,Education,West
+ORD10862,2023-01-20,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3186,Small Business,East
+ORD10863,2023-06-14,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4100,Small Business,North
+ORD10864,2023-01-03,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST3566,Small Business,South
+ORD10865,2023-06-26,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2278,Small Business,North
+ORD10866,2023-09-15,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3411,Individual,South
+ORD10867,2023-01-24,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST2221,Individual,West
+ORD10868,2023-09-24,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST3442,Individual,West
+ORD10869,2023-12-18,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2403,Education,East
+ORD10870,2023-04-07,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1675,Education,North
+ORD10871,2023-04-25,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3978,Small Business,South
+ORD10872,2023-01-12,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3415,Small Business,North
+ORD10873,2023-12-31,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1153,Education,East
+ORD10874,2023-10-01,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3432,Enterprise,North
+ORD10875,2023-01-11,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1197,Enterprise,West
+ORD10876,2023-07-14,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1506,Individual,West
+ORD10877,2023-03-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1841,Enterprise,East
+ORD10878,2023-12-05,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3131,Individual,Central
+ORD10879,2023-12-25,PROD010,Phone Case,Accessories,24.99,2,49.98,CUST4402,Enterprise,Central
+ORD10880,2023-11-13,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1466,Enterprise,West
+ORD10881,2023-11-08,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST2077,Small Business,East
+ORD10882,2023-07-29,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2209,Small Business,North
+ORD10883,2023-09-12,PROD009,Headphones,Electronics,199.99,1,199.99,CUST4728,Small Business,West
+ORD10884,2023-05-01,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1011,Enterprise,North
+ORD10885,2023-02-26,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4421,Education,South
+ORD10886,2023-09-19,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1307,Enterprise,East
+ORD10887,2023-04-29,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2870,Individual,East
+ORD10888,2023-01-26,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST1408,Small Business,North
+ORD10889,2023-05-29,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST2475,Individual,West
+ORD10890,2023-03-01,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1389,Enterprise,North
+ORD10891,2023-03-12,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST3717,Small Business,East
+ORD10892,2023-08-13,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST4912,Individual,North
+ORD10893,2023-06-25,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1749,Enterprise,West
+ORD10894,2023-08-22,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2113,Education,West
+ORD10895,2023-08-04,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3657,Small Business,North
+ORD10896,2023-12-23,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4860,Small Business,North
+ORD10897,2023-10-30,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3330,Education,South
+ORD10898,2023-07-14,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4191,Individual,Central
+ORD10899,2023-12-17,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST3978,Small Business,West
+ORD10900,2023-09-07,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST1462,Education,West
+ORD10901,2023-02-02,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2071,Individual,North
+ORD10902,2023-12-14,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4045,Small Business,East
+ORD10903,2023-09-25,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3819,Enterprise,West
+ORD10904,2023-05-08,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2973,Individual,West
+ORD10905,2023-10-13,PROD003,USB-C Cable,Accessories,19.99,2,39.98,CUST3510,Enterprise,North
+ORD10906,2023-03-22,PROD011,"Tablet 10""",Electronics,449.99,2,899.98,CUST3070,Education,West
+ORD10907,2023-03-26,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1306,Education,East
+ORD10908,2023-06-19,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST4973,Individual,North
+ORD10909,2023-04-25,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3254,Education,West
+ORD10910,2023-05-01,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1322,Education,West
+ORD10911,2023-10-21,PROD013,Backpack,Accessories,89.99,1,89.99,CUST4508,Education,West
+ORD10912,2023-03-02,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3037,Enterprise,North
+ORD10913,2023-07-31,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1146,Enterprise,North
+ORD10914,2023-11-06,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3611,Individual,Central
+ORD10915,2023-04-16,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3681,Education,East
+ORD10916,2023-01-28,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4344,Small Business,West
+ORD10917,2023-10-14,PROD006,Desk Chair,Furniture,249.99,2,499.98,CUST3457,Education,East
+ORD10918,2023-08-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1467,Enterprise,South
+ORD10919,2023-06-24,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST2454,Individual,Central
+ORD10920,2023-07-11,PROD009,Headphones,Electronics,199.99,2,399.98,CUST3875,Enterprise,North
+ORD10921,2023-03-26,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST3016,Small Business,West
+ORD10922,2023-05-11,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3502,Small Business,South
+ORD10923,2023-07-21,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1883,Education,South
+ORD10924,2023-06-23,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1441,Education,North
+ORD10925,2023-11-21,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST3411,Enterprise,West
+ORD10926,2023-12-04,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3065,Small Business,West
+ORD10927,2023-09-29,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST4015,Enterprise,Central
+ORD10928,2023-08-10,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST4435,Education,Central
+ORD10929,2023-04-01,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3833,Small Business,South
+ORD10930,2023-07-18,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3693,Individual,Central
+ORD10931,2023-07-16,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2714,Small Business,East
+ORD10932,2023-06-25,PROD007,Standing Desk,Furniture,599.99,3,1799.97,CUST4975,Individual,West
+ORD10933,2023-03-10,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1565,Education,Central
+ORD10934,2023-09-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST2224,Individual,Central
+ORD10935,2023-04-22,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST1822,Small Business,Central
+ORD10936,2023-05-29,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST3812,Individual,South
+ORD10937,2023-11-29,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST1728,Individual,North
+ORD10938,2023-06-30,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3303,Education,Central
+ORD10939,2023-12-08,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3761,Individual,West
+ORD10940,2023-01-07,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3141,Enterprise,North
+ORD10941,2023-03-16,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST1217,Enterprise,South
+ORD10942,2023-03-24,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST2173,Individual,South
+ORD10943,2023-02-01,PROD014,Desk Lamp,Furniture,59.99,2,119.98,CUST3828,Individual,South
+ORD10944,2023-10-05,PROD013,Backpack,Accessories,89.99,2,179.98,CUST4334,Education,North
+ORD10945,2023-12-12,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4542,Small Business,Central
+ORD10946,2023-05-02,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST3092,Individual,North
+ORD10947,2023-07-15,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST2587,Education,East
+ORD10948,2023-01-28,PROD009,Headphones,Electronics,199.99,2,399.98,CUST1053,Individual,South
+ORD10949,2023-08-15,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4399,Small Business,East
+ORD10950,2023-10-29,PROD013,Backpack,Accessories,89.99,1,89.99,CUST3471,Small Business,South
+ORD10951,2023-08-18,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST1726,Enterprise,South
+ORD10952,2023-09-21,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1488,Education,North
+ORD10953,2023-05-23,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST3279,Individual,South
+ORD10954,2023-10-27,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1023,Individual,West
+ORD10955,2023-03-21,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1163,Small Business,East
+ORD10956,2023-01-27,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST4168,Individual,West
+ORD10957,2023-10-21,PROD013,Backpack,Accessories,89.99,1,89.99,CUST1298,Individual,Central
+ORD10958,2023-04-05,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST3132,Enterprise,Central
+ORD10959,2023-08-01,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3224,Education,North
+ORD10960,2023-04-24,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST4618,Small Business,East
+ORD10961,2023-07-04,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2202,Small Business,Central
+ORD10962,2023-09-01,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3299,Enterprise,North
+ORD10963,2023-06-27,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST2825,Small Business,Central
+ORD10964,2023-11-15,PROD015,Cable Organizer,Accessories,14.99,2,29.98,CUST1163,Individual,West
+ORD10965,2023-02-28,PROD015,Cable Organizer,Accessories,14.99,1,14.99,CUST2580,Individual,Central
+ORD10966,2023-05-25,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST1101,Individual,Central
+ORD10967,2023-09-18,PROD013,Backpack,Accessories,89.99,1,89.99,CUST2825,Education,North
+ORD10968,2023-11-30,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST3104,Enterprise,North
+ORD10969,2023-10-03,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST3567,Enterprise,South
+ORD10970,2023-11-19,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4542,Education,North
+ORD10971,2023-10-03,PROD004,"Monitor 27""",Electronics,399.99,2,799.98,CUST4598,Education,North
+ORD10972,2023-12-18,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST2880,Individual,North
+ORD10973,2023-02-07,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST1222,Small Business,East
+ORD10974,2023-02-06,PROD009,Headphones,Electronics,199.99,1,199.99,CUST3355,Small Business,East
+ORD10975,2023-07-18,PROD007,Standing Desk,Furniture,599.99,1,599.99,CUST2847,Education,West
+ORD10976,2023-01-09,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST2595,Enterprise,Central
+ORD10977,2023-11-25,PROD001,"Laptop Pro 15""",Electronics,1299.99,1,1299.99,CUST1259,Enterprise,North
+ORD10978,2023-09-15,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST1434,Individual,East
+ORD10979,2023-02-14,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST2153,Education,West
+ORD10980,2023-12-05,PROD007,Standing Desk,Furniture,599.99,2,1199.98,CUST1640,Small Business,South
+ORD10981,2023-07-20,PROD012,Smart Watch,Electronics,299.99,1,299.99,CUST4263,Individual,South
+ORD10982,2023-12-13,PROD005,Keyboard Mechanical,Electronics,149.99,1,149.99,CUST4954,Individual,North
+ORD10983,2023-10-12,PROD009,Headphones,Electronics,199.99,2,399.98,CUST1171,Enterprise,Central
+ORD10984,2023-07-21,PROD010,Phone Case,Accessories,24.99,1,24.99,CUST3200,Enterprise,East
+ORD10985,2023-06-26,PROD004,"Monitor 27""",Electronics,399.99,1,399.99,CUST1867,Education,Central
+ORD10986,2023-03-24,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST1753,Small Business,Central
+ORD10987,2023-05-10,PROD014,Desk Lamp,Furniture,59.99,1,59.99,CUST1795,Enterprise,South
+ORD10988,2023-10-18,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4487,Education,Central
+ORD10989,2023-05-29,PROD002,Wireless Mouse,Electronics,29.99,2,59.98,CUST3751,Enterprise,East
+ORD10990,2023-04-12,PROD002,Wireless Mouse,Electronics,29.99,1,29.99,CUST3972,Education,East
+ORD10991,2023-03-07,PROD006,Desk Chair,Furniture,249.99,1,249.99,CUST3749,Small Business,North
+ORD10992,2023-11-14,PROD005,Keyboard Mechanical,Electronics,149.99,2,299.98,CUST1792,Individual,West
+ORD10993,2023-06-18,PROD008,Webcam HD,Electronics,79.99,1,79.99,CUST3524,Individual,Central
+ORD10994,2023-10-17,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST4308,Individual,West
+ORD10995,2023-01-03,PROD003,USB-C Cable,Accessories,19.99,1,19.99,CUST2282,Small Business,South
+ORD10996,2023-11-25,PROD012,Smart Watch,Electronics,299.99,2,599.98,CUST4441,Individual,South
+ORD10997,2023-06-19,PROD011,"Tablet 10""",Electronics,449.99,1,449.99,CUST4595,Education,West
+ORD10998,2023-07-03,PROD008,Webcam HD,Electronics,79.99,3,239.97,CUST4173,Individual,West
+ORD10999,2023-02-25,PROD009,Headphones,Electronics,199.99,1,199.99,CUST1719,Enterprise,East

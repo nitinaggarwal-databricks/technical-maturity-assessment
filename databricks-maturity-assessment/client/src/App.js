@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { createGlobalStyle } from 'styled-components';
 
 // Components
 import GlobalNav from './components/GlobalNav';
@@ -12,56 +13,128 @@ import HomePage from './components/HomePageNew';
 import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
 import AssessmentResults from './components/AssessmentResultsNew';
-import PillarResults from './components/PillarResults';
 import AssessmentManagement from './components/AssessmentsListNew';
 import AssessmentDashboard from './components/AssessmentDashboard';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/DashboardNew';
 import LoadingSpinner from './components/LoadingSpinner';
+import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
+import AssessmentHistory from './components/AssessmentHistory';
+import DeepDive from './components/DeepDive';
+import IndustryBenchmarkingReport from './components/IndustryBenchmarkingReport';
+import MyAssessments from './components/MyAssessments';
+import UserManagement from './components/UserManagement';
+import AssignAssessmentMulti from './components/AssignAssessmentMulti';
+import AuthorAssignments from './components/AuthorAssignments';
+import UserDetails from './components/UserDetails';
+import AssessmentDetails from './components/AssessmentDetails';
 
 // Services
 import * as assessmentService from './services/assessmentService';
+import authService from './services/authService';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = authService.isAuthenticated();
+  
+  if (!isAuthenticated) {
+    toast.error('Please login to access this page');
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
+
+// Global Print Styles - Applied across all components
+const GlobalPrintStyles = createGlobalStyle`
+  @media print {
+    /* Force background graphics to print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    /* Remove browser headers and footers by setting page margins to 0 */
+    @page {
+      margin: 0;
+      size: letter landscape;
+    }
+    
+    /* Add custom margins to content to prevent clipping */
+    body {
+      margin: 0.5in !important;
+    }
+    
+    /* Ensure gradient backgrounds print */
+    [style*="gradient"],
+    [style*="linear-gradient"],
+    [style*="radial-gradient"] {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    /* Ensure colored backgrounds print */
+    [style*="background"],
+    [class*="background"] {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+`;
 
 function App() {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [currentAssessment, setCurrentAssessment] = useState(null);
   const [assessmentFramework, setAssessmentFramework] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Track pathname changes
+  useEffect(() => {
+    const updatePath = () => setCurrentPath(window.location.pathname);
+    
+    // Listen to popstate (back/forward buttons)
+    window.addEventListener('popstate', updatePath);
+    
+    // Intercept pushState and replaceState for React Router navigation
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+    
+    window.history.pushState = function(...args) {
+      originalPushState.apply(this, args);
+      updatePath();
+    };
+    
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(this, args);
+      updatePath();
+    };
+    
+    return () => {
+      window.removeEventListener('popstate', updatePath);
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+    };
+  }, []);
 
   useEffect(() => {
     loadAssessmentFramework();
     loadCurrentSession();
   }, []);
 
-  // Load current session from localStorage
+  // REMOVED: localStorage caching was causing stale data issues
+  // Assessment data is now always fetched fresh from the server based on URL
   const loadCurrentSession = () => {
-    try {
-      const savedAssessment = localStorage.getItem('currentAssessment');
-      if (savedAssessment) {
-        const assessment = JSON.parse(savedAssessment);
-        setCurrentAssessment(assessment);
-      }
-    } catch (error) {
-      console.error('Error loading current session:', error);
-      localStorage.removeItem('currentAssessment');
-    }
+    // No-op: kept for compatibility
   };
 
-  // Save current session to localStorage
   const saveCurrentSession = (assessment) => {
-    try {
-      if (assessment) {
-        localStorage.setItem('currentAssessment', JSON.stringify(assessment));
-      } else {
-        localStorage.removeItem('currentAssessment');
-      }
-    } catch (error) {
-      console.error('Error saving current session:', error);
-    }
+    // No-op: kept for compatibility
   };
 
   // Load current assessment when URL changes
   useEffect(() => {
     const loadCurrentAssessment = async () => {
-      const path = window.location.pathname;
+      const path = currentPath; // ✅ Use tracked pathname state
       const assessmentMatch = path.match(/\/assessment\/([^\/]+)|\/results\/([^\/]+)|\/pillar-results\/([^\/]+)|\/executive-summary\/([^\/]+)|\/dashboard/);
       
       if (assessmentMatch) {
@@ -136,7 +209,7 @@ function App() {
     if (assessmentFramework) {
       loadCurrentAssessment();
     }
-  }, [window.location.pathname, assessmentFramework]);
+  }, [currentPath, assessmentFramework]); // ✅ currentPath is reactive state
 
   const loadAssessmentFramework = async () => {
     try {
@@ -185,19 +258,24 @@ function App() {
 
   if (loading) {
     return (
-      <Router>
-        <div className="App">
-          <GlobalNav />
-          <LoadingSpinner message="Loading assessment framework..." />
-        </div>
-      </Router>
+      <>
+        <GlobalPrintStyles />
+        <Router>
+          <div className="App">
+            <GlobalNav />
+            <LoadingSpinner message="Loading assessment framework..." />
+          </div>
+        </Router>
+      </>
     );
   }
 
   return (
-    <Router>
-      <div className="App">
-        <GlobalNav />
+    <>
+      <GlobalPrintStyles />
+      <Router>
+        <div className="App">
+          <GlobalNav />
         
         <Routes>
           <Route 
@@ -207,7 +285,16 @@ function App() {
           
           <Route 
             path="/insights-dashboard" 
-            element={<Dashboard />} 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/deep-dive" 
+            element={<DeepDive />} 
           />
           
           <Route 
@@ -237,42 +324,127 @@ function App() {
           <Route 
             path="/start" 
             element={
-              <AssessmentStart 
-                onStart={startAssessment}
-              />
+              <ProtectedRoute>
+                <AssessmentStart 
+                  onStart={startAssessment}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/assessment/:assessmentId/:categoryId" 
             element={
-              <AssessmentQuestion 
-                framework={assessmentFramework}
-                currentAssessment={currentAssessment}
-                onUpdateStatus={updateAssessmentStatus}
-              />
+              <ProtectedRoute>
+                <AssessmentQuestion 
+                  framework={assessmentFramework}
+                  currentAssessment={currentAssessment}
+                  onUpdateStatus={updateAssessmentStatus}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/results/:assessmentId" 
             element={
-              <AssessmentResults 
-                currentAssessment={currentAssessment}
-                framework={assessmentFramework}
-              />
+              <ProtectedRoute>
+                <AssessmentResults 
+                  currentAssessment={currentAssessment}
+                  framework={assessmentFramework}
+                />
+              </ProtectedRoute>
             } 
           />
           
+          <Route 
+            path="/executive/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <ExecutiveCommandCenter />
+              </ProtectedRoute>
+            } 
+          />
           
           <Route 
-            path="/pillar-results/:assessmentId/:pillarId" 
-            element={<PillarResults />} 
+            path="/benchmarks/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <IndustryBenchmarkingReport />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/history/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <AssessmentHistory />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
             path="/assessments" 
-            element={<AssessmentManagement />} 
+            element={
+              <ProtectedRoute>
+                <AssessmentManagement />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/my-assessments" 
+            element={
+              <ProtectedRoute>
+                <MyAssessments />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/user-management" 
+            element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/assign-assessment" 
+            element={
+              <ProtectedRoute>
+                <AssignAssessmentMulti />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/my-assignments" 
+            element={
+              <ProtectedRoute>
+                <AuthorAssignments />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/user-details/:userId" 
+            element={
+              <ProtectedRoute>
+                <UserDetails />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/assessment-details/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <AssessmentDetails />
+              </ProtectedRoute>
+            }
           />
           
           <Route 
@@ -305,6 +477,7 @@ function App() {
         />
       </div>
     </Router>
+    </>
   );
 }
 

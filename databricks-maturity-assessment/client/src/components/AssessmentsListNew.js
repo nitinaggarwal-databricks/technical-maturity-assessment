@@ -13,7 +13,8 @@ import {
   FiPlus,
   FiChevronDown,
   FiCopy,
-  FiTrash2
+  FiTrash2,
+  FiAlertTriangle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
@@ -25,70 +26,30 @@ import { exportAssessmentToExcel } from '../services/excelExportService';
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: radial-gradient(ellipse at top, #e0e7ff 0%, #f3f4f6 50%, #ffffff 100%);
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
   position: relative;
-  padding-top: 68px; /* Height of fixed GlobalNav */
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 68px;
-    left: 0;
-    right: 0;
-    height: 400px;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    z-index: 0;
-    pointer-events: none;
-  }
-`;
+  padding-top: 68px;
 
-const Breadcrumb = styled.div`
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  color: #6b7280;
-  position: relative;
-  z-index: 1;
-
-  a, button {
-    color: #3b82f6;
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font: inherit;
-    transition: color 0.2s;
-
-    &:hover {
-      color: #2563eb;
-      text-decoration: underline;
-    }
-  }
-
-  span {
-    color: #d1d5db;
+  @media print {
+    background: white !important;
+    padding-top: 0;
   }
 `;
 
 const ContentContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 40px 24px;
   position: relative;
   z-index: 1;
 
   @media (max-width: 768px) {
-    padding: 20px 16px;
+    padding: 24px 16px;
   }
 `;
 
 const HeaderSection = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -100,16 +61,16 @@ const HeaderSection = styled.div`
     min-width: 250px;
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.25rem;
       font-weight: 700;
-      color: #111827;
+      color: #1e293b;
       margin: 0 0 8px 0;
       letter-spacing: -0.02em;
     }
 
     p {
       font-size: 1rem;
-      color: #6b7280;
+      color: #475569;
       margin: 0;
     }
   }
@@ -150,12 +111,17 @@ const Button = styled(motion.button)`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
   }
 
   @media (max-width: 768px) {
@@ -165,34 +131,41 @@ const Button = styled(motion.button)`
 `;
 
 const PrimaryButton = styled(Button)`
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, #00A972 0%, #008c5f 100%);
   color: white;
   border: none;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 169, 114, 0.25);
 
   &:hover {
-    opacity: 0.95;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    background: linear-gradient(135deg, #008c5f 0%, #007550 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 169, 114, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const SecondaryButton = styled(Button)`
   background: white;
-  color: #374151;
-  border-color: #e5e7eb;
+  color: #64748b;
+  border: 2px solid #cbd5e1;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #475569;
   }
 `;
 
 const FilterBar = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   .top-row {
     display: flex;
@@ -225,15 +198,15 @@ const SearchBox = styled.div`
   input {
     width: 100%;
     padding: 10px 12px 10px 40px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 0.875rem;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: #00A972;
+      box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
     }
 
     &::placeholder {
@@ -271,15 +244,15 @@ const Tab = styled.button`
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${props => props.$active ? '600' : '500'};
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: ${props => props.$active ? 'white' : 'transparent'};
-  color: ${props => props.$active ? '#111827' : '#6b7280'};
+  color: ${props => props.$active ? '#1e293b' : '#64748b'};
   box-shadow: ${props => props.$active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'};
 
   &:hover {
-    color: #111827;
+    color: ${props => props.$active ? '#1e293b' : '#FF3621'};
   }
 
   @media (max-width: 768px) {
@@ -290,7 +263,7 @@ const Tab = styled.button`
 
 const Dropdown = styled.select`
   padding: 8px 32px 8px 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 0.875rem;
   color: #374151;
@@ -300,11 +273,12 @@ const Dropdown = styled.select`
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #00A972;
+    box-shadow: 0 0 0 3px rgba(0, 169, 114, 0.1);
   }
 
   @media (max-width: 768px) {
@@ -319,9 +293,10 @@ const BulkActionBar = styled.div`
   align-items: center;
   padding: 12px 20px;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   .left {
     display: flex;
@@ -368,7 +343,7 @@ const BulkActionBar = styled.div`
 const AssessmentsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
+  gap: 24px;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -377,15 +352,23 @@ const AssessmentsGrid = styled.div`
 
 const AssessmentCard = styled(motion.div)`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   &:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+  }
+
+  @media print {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    transform: none !important;
   }
 
   .header {
@@ -451,9 +434,9 @@ const AssessmentCard = styled(motion.div)`
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(90deg, #00A972 0%, #008c5f 100%);
     border-radius: 3px;
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .footer {
@@ -493,23 +476,23 @@ const StatusBadge = styled.span`
     switch (props.$status) {
       case 'completed':
         return `
-          background: #d1fae5;
-          color: #065f46;
+          background: #00A972;
+          color: white;
         `;
       case 'in_progress':
         return `
-          background: #dbeafe;
-          color: #1e40af;
+          background: #1B3B6F;
+          color: white;
         `;
       case 'not_started':
         return `
           background: #f3f4f6;
-          color: #374151;
+          color: #64748b;
         `;
       default:
         return `
           background: #f3f4f6;
-          color: #6b7280;
+          color: #64748b;
         `;
     }
   }}
@@ -520,9 +503,10 @@ const PillarTag = styled.span`
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 const ActionButton = styled.button`
@@ -534,23 +518,48 @@ const ActionButton = styled.button`
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: white;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
   }
 
   &.primary {
-    background: #111827;
+    background: #1B3B6F;
     color: white;
-    border-color: #111827;
+    border-color: #1B3B6F;
 
     &:hover {
-      background: #1f2937;
+      background: #152d55;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #e2e8f0;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+
+    &:hover {
+      background: #e2e8f0;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+    }
+
+    &.primary {
+      background: #cbd5e1;
+      color: #94a3b8;
+      border-color: #cbd5e1;
+
+      &:hover {
+        background: #cbd5e1;
+      }
     }
   }
 
@@ -568,18 +577,19 @@ const EmptyState = styled.div`
     font-size: 4rem;
     margin-bottom: 16px;
     opacity: 0.3;
+    color: #64748b;
   }
 
   .title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
+    color: #1e293b;
     margin-bottom: 8px;
   }
 
   .message {
     font-size: 1rem;
-    color: #6b7280;
+    color: #64748b;
     margin-bottom: 24px;
   }
 `;
@@ -617,6 +627,7 @@ const AssessmentsListNew = () => {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [industryFilter, setIndustryFilter] = useState('all');
   const [completionRangeFilter, setCompletionRangeFilter] = useState('all');
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
 
   useEffect(() => {
     fetchAssessments();
@@ -633,6 +644,22 @@ const AssessmentsListNew = () => {
       setAssessments([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      toast.loading('Deleting all assessments...', { id: 'delete-all' });
+      const result = await assessmentService.deleteAllAssessments();
+      
+      if (result && result.success) {
+        toast.success(`Successfully deleted ${result.deletedCount} assessment(s)`, { id: 'delete-all' });
+        setShowDeleteAllConfirm(false);
+        await fetchAssessments(); // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error deleting all assessments:', error);
+      toast.error('Failed to delete all assessments', { id: 'delete-all' });
     }
   };
 
@@ -671,10 +698,10 @@ const AssessmentsListNew = () => {
       
       // Clone with new name
       const clonedData = {
-        organizationName: assessment.organizationName,
-        contactEmail: assessment.contactEmail,
+        organizationName: assessment.organization_name,
+        contactEmail: assessment.contact_email,
         industry: assessment.industry,
-        assessmentName: `${assessment.assessmentName} (Copy)`,
+        assessmentName: `${assessment.assessment_name} (Copy)`,
         assessmentDescription: assessment.assessmentDescription
       };
       
@@ -714,9 +741,9 @@ const AssessmentsListNew = () => {
   const filteredAssessments = assessments.filter(assessment => {
     const matchesSearch = 
       searchTerm === '' ||
-      (assessment.assessmentName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (assessment.organizationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (assessment.contactEmail || '').toLowerCase().includes(searchTerm.toLowerCase());
+      (assessment.assessment_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (assessment.organization_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (assessment.contact_email || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = 
       statusFilter === 'all' ||
@@ -763,8 +790,13 @@ const AssessmentsListNew = () => {
   });
 
   const getStatusFromAssessment = (assessment) => {
-    if (assessment.status === 'completed') return 'completed';
+    // Check explicit status first
+    if (assessment.status === 'completed' || assessment.status === 'submitted') return 'completed';
+    
+    // If has responses or completed categories, it's in progress
     if (assessment.completedCategories && assessment.completedCategories.length > 0) return 'in_progress';
+    if (assessment.responses && Object.keys(assessment.responses).length > 0) return 'in_progress';
+    
     return 'not_started';
   };
 
@@ -776,11 +808,22 @@ const AssessmentsListNew = () => {
   };
 
   const getProgressPercentage = (assessment) => {
-    return Math.round(((assessment.completedCategories?.length || 0) / 6) * 100);
+    // If status is explicitly completed/submitted, return 100%
+    if (assessment.status === 'completed' || assessment.status === 'submitted') {
+      return 100;
+    }
+    
+    // Calculate based on completed categories
+    const totalPillars = 6; // Total number of pillars
+    const completedCount = assessment.completedCategories?.length || 0;
+    const percentage = Math.round((completedCount / totalPillars) * 100);
+    
+    // Cap at 99% if not officially submitted (to show it's not complete)
+    return percentage >= 100 ? 99 : percentage;
   };
 
   const getTimeAgo = (dateString) => {
-    if (!dateString) return 'Recently';
+    if (!dateString) return 'Just now';
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
@@ -791,6 +834,19 @@ const AssessmentsListNew = () => {
     if (diffInDays === 1) return '1 day ago';
     if (diffInDays < 7) return `${diffInDays} days ago`;
     return date.toLocaleDateString();
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true 
+    });
   };
 
   const pillars = [
@@ -816,13 +872,6 @@ const AssessmentsListNew = () => {
 
   return (
     <PageContainer>
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <button onClick={() => navigate('/')}>Home</button>
-        <span>›</span>
-        <span style={{ color: '#111827' }}>Assessments</span>
-      </Breadcrumb>
-
       <ContentContainer>
         {/* Header */}
         <HeaderSection>
@@ -830,7 +879,30 @@ const AssessmentsListNew = () => {
             <h1>Assessments</h1>
             <p>Browse, filter, and manage all maturity assessments in one place.</p>
           </div>
-          <div className="right">
+          <div className="right" style={{ display: 'flex', gap: '12px' }}>
+            {assessments.length > 0 && (
+              <button
+                onClick={() => setShowDeleteAllConfirm(true)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#dc2626'}
+                onMouseLeave={(e) => e.target.style.background = '#ef4444'}
+              >
+                <FiTrash2 size={16} />
+                Delete All
+              </button>
+            )}
             <PrimaryButton
               onClick={() => navigate('/start')}
               whileHover={{ scale: 1.02 }}
@@ -1015,7 +1087,7 @@ const AssessmentsListNew = () => {
               console.log('[AssessmentsListNew] Assessment:', {
                 id: assessment.id,
                 assessmentId: assessment.assessmentId,
-                name: assessment.assessmentName,
+                name: assessment.assessment_name,
                 finalId: assessmentId
               });
 
@@ -1032,41 +1104,46 @@ const AssessmentsListNew = () => {
                 >
                   <div className="header">
                     <div>
-                      <div className="title">{assessment.assessmentName || 'Untitled Assessment'}</div>
+                      <div className="title">
+                        {assessment.assessment_name || 'Untitled Assessment'}
+                      </div>
                       <div className="meta">
                         <div className="meta-item">
                           <span>🏢</span>
-                          <span>{assessment.organizationName || 'Unknown Org'}</span>
+                          <span>{assessment.organization_name || 'Unknown Org'}</span>
                         </div>
                         <span>›</span>
                         <div className="meta-item">
-                          <span>👤</span>
-                          <span>{assessment.contactEmail || 'No owner'}</span>
+                          <span>🏭</span>
+                          <span>{assessment.industry || 'Not specified'}</span>
+                        </div>
+                      </div>
+                      <div className="meta" style={{ marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>
+                        <div className="meta-item">
+                          <span>📝</span>
+                          <span>Created by: {assessment.creator_name || assessment.contact_email?.split('@')[0] || 'Unknown'}</span>
                         </div>
                         <span>•</span>
                         <div className="meta-item">
-                          <span>🕒</span>
-                          <span>{getTimeAgo(assessment.updatedAt || assessment.createdAt)}</span>
+                          <span>📅</span>
+                          <span>{formatDateTime(assessment.created_at)}</span>
+                        </div>
+                      </div>
+                      <div className="meta" style={{ marginTop: '4px', fontSize: '0.85rem', color: '#64748b' }}>
+                        <div className="meta-item">
+                          <span>✏️</span>
+                          <span>Updated by: {assessment.creator_name || assessment.contact_email?.split('@')[0] || 'Unknown'}</span>
+                        </div>
+                        <span>•</span>
+                        <div className="meta-item">
+                          <span>🕐</span>
+                          <span>{formatDateTime(assessment.updated_at)}</span>
                         </div>
                       </div>
                     </div>
                     <StatusBadge $status={status}>
                       {getStatusLabel(assessment)}
                     </StatusBadge>
-                  </div>
-
-                  <div className="pillars">
-                    {completedPillars.slice(0, 5).map((pillar, idx) => (
-                      <PillarTag key={idx}>
-                        {pillar.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </PillarTag>
-                    ))}
-                    {completedPillars.length > 5 && (
-                      <PillarTag>+{completedPillars.length - 5} more</PillarTag>
-                    )}
-                    {completedPillars.length === 0 && (
-                      <PillarTag style={{ opacity: 0.5 }}>No pillars completed</PillarTag>
-                    )}
                   </div>
 
                   <div className="progress-section">
@@ -1099,7 +1176,7 @@ const AssessmentsListNew = () => {
                         Clone
                       </ActionButton>
                       <ActionButton
-                        onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessmentName, e)}
+                        onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessment_name, e)}
                         title="Delete this assessment"
                         style={{ color: '#ef4444' }}
                       >
@@ -1108,14 +1185,19 @@ const AssessmentsListNew = () => {
                       </ActionButton>
                       <ActionButton
                         className="primary"
+                        disabled={progress === 0 || status === 'not_started'}
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(`[AssessmentsListNew] Open clicked, navigating to: /results/${assessmentId}`);
+                          if (progress === 0 || status === 'not_started') {
+                            return;
+                          }
+                          console.log(`[AssessmentsListNew] View Report clicked, navigating to: /results/${assessmentId}`);
                           navigate(`/results/${assessmentId}`);
                         }}
+                        title={progress === 0 || status === 'not_started' ? 'Complete at least one pillar to view report' : 'View assessment report'}
                       >
                         <FiStar />
-                        Open
+                        View Report
                       </ActionButton>
                     </div>
                   </div>
@@ -1125,6 +1207,82 @@ const AssessmentsListNew = () => {
           </AssessmentsGrid>
         )}
       </ContentContainer>
+
+      {/* Delete All Confirmation Modal */}
+      {showDeleteAllConfirm && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowDeleteAllConfirm(false)}
+        >
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '32px',
+              maxWidth: '500px',
+              width: '90%',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <FiAlertTriangle size={32} color="#ef4444" />
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>Delete All Assessments?</h2>
+            </div>
+            <p style={{ color: '#6b7280', marginBottom: '24px', lineHeight: '1.6' }}>
+              This will permanently delete <strong>all {assessments.length} assessment(s)</strong> and their data. 
+              This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowDeleteAllConfirm(false)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#f3f4f6',
+                  color: '#374151',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#e5e7eb'}
+                onMouseLeave={(e) => e.target.style.background = '#f3f4f6'}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                style={{
+                  padding: '10px 20px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#dc2626'}
+                onMouseLeave={(e) => e.target.style.background = '#ef4444'}
+              >
+                Yes, Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 };

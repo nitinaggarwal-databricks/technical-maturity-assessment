@@ -485,15 +485,23 @@ const HomePage = () => {
       const response = await assessmentService.generateSampleAssessment(completionLevel);
       
       if (response.success) {
-        toast.success(`Sample assessment "${response.assessment.name}" created!`, {
-          id: 'sample-gen',
-          duration: 4000
-        });
+        // Get the first category from the framework to navigate to first question
+        const framework = await assessmentService.getAssessmentFramework();
+        const firstCategoryId = framework?.assessmentAreas?.[0]?.id;
         
-        // Navigate to the results page after a brief delay
-        setTimeout(() => {
-          navigate(`/results/${response.assessment.id}`);
-        }, 1000);
+        if (firstCategoryId) {
+          toast.success(`Sample assessment "${response.assessment.name}" created! Review your selections...`, {
+            id: 'sample-gen',
+            duration: 4000
+          });
+          
+          // Navigate to the first question page, not directly to results
+          setTimeout(() => {
+            navigate(`/assessment/${response.assessment.id}/${firstCategoryId}`);
+          }, 1000);
+        } else {
+          throw new Error('Could not determine first category');
+        }
       } else {
         toast.error('Failed to generate sample assessment', { id: 'sample-gen' });
       }

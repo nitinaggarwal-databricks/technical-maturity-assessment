@@ -68,6 +68,10 @@ const PageContainer = styled.div`
     position: relative;
     z-index: 1;
   }
+  
+  @media (max-width: 768px) {
+    padding: 88px 20px 20px 20px;
+  }
 `;
 
 const Header = styled.div`
@@ -75,6 +79,14 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
 `;
 
 const PageTitle = styled.h1`
@@ -82,11 +94,25 @@ const PageTitle = styled.h1`
   font-weight: 700;
   color: #1f2937;
   margin: 0;
+  
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    gap: 8px;
+  }
 `;
 
 const ActionButton = styled(motion.button)`

@@ -22,6 +22,22 @@ class DatabricksFeatureMapper {
               docs: 'https://docs.databricks.com/data-governance/unity-catalog/index.html'
             },
             {
+              name: 'Delta Sharing',
+              description: 'Open protocol for secure data sharing (Revenue-generating)',
+              benefits: ['Share live data securely', 'No data duplication', 'Open standard', 'Cross-platform sharing'],
+              releaseDate: 'GA with row/column filters - October 2025',
+              docs: 'https://docs.databricks.com/data-sharing/index.html',
+              monetization: 'Enables data monetization and ecosystem growth'
+            },
+            {
+              name: 'Databricks Marketplace',
+              description: 'Data and AI marketplace for monetization (Revenue-generating)',
+              benefits: ['Monetize data assets', 'Discover data products', 'AI app distribution', 'Partner ecosystem'],
+              releaseDate: 'GA - October 2025',
+              docs: 'https://docs.databricks.com/marketplace/index.html',
+              monetization: 'Platform for data product monetization and consumption-based revenue'
+            },
+            {
               name: 'Serverless Compute',
               description: 'Instantly available compute without cluster management',
               benefits: ['Zero cluster management', 'Sub-second startup', 'Cost optimization'],
@@ -29,11 +45,12 @@ class DatabricksFeatureMapper {
               docs: 'https://docs.databricks.com/serverless-compute/index.html'
             },
             {
-              name: 'Databricks Runtime 17.3 LTS',
-              description: 'Latest long-term support runtime with enhanced performance',
-              benefits: ['Photon engine improvements', 'Better Delta Lake performance', 'Security updates'],
-              releaseDate: 'GA - October 2025',
-              docs: 'https://docs.databricks.com/release-notes/runtime/17.3.html'
+              name: 'Clean Rooms',
+              description: 'Privacy-preserving data collaboration',
+              benefits: ['Secure multi-party analytics', 'No raw data exposure', 'Compliance-friendly'],
+              releaseDate: 'Public Preview - October 2025',
+              docs: 'https://docs.databricks.com/clean-rooms/index.html',
+              monetization: 'Enables secure data collaboration and new revenue streams'
             }
           ],
           recommendations: [
@@ -86,7 +103,7 @@ class DatabricksFeatureMapper {
               description: 'Mark trusted data assets with certification badges',
               benefits: ['Data trust', 'Quality assurance', 'User confidence'],
               releaseDate: 'Public Preview - October 2025',
-              docs: 'https://docs.databricks.com/data-governance/certification.html'
+              docs: 'https://docs.databricks.com/data-governance/unity-catalog/index.html'
             },
             {
               name: 'Access Requests in Unity Catalog',
@@ -105,54 +122,54 @@ class DatabricksFeatureMapper {
         optimized: {
           features: [
             {
-              name: 'C5 Compliance Controls',
-              description: 'Enhanced compliance for regulated industries',
+              name: 'Enhanced Security & Compliance',
+              description: 'Enterprise-grade security controls for regulated industries',
               benefits: ['Regulatory compliance', 'Audit readiness', 'Security certifications'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/security/privacy/c5-compliance.html'
+              docs: 'https://docs.databricks.com/security/index.html'
             },
             {
-              name: 'Compatibility Mode',
-              description: 'Smooth migration path from legacy systems',
-              benefits: ['Reduced migration risk', 'Legacy support', 'Gradual modernization'],
-              releaseDate: 'Public Preview - October 2025',
-              docs: 'https://docs.databricks.com/migration/compatibility-mode.html'
+              name: 'Unity Catalog External Locations',
+              description: 'Secure external data access with centralized governance',
+              benefits: ['Centralized access control', 'Cloud storage security', 'Audit logging'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/data-governance/unity-catalog/manage-external-locations-and-credentials.html'
             },
             {
-              name: 'Path Credential Vending',
-              description: 'Fine-grained cloud storage access control',
-              benefits: ['Enhanced security', 'Least-privilege access', 'Cloud-native integration'],
-              releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/security/credential-vending.html'
+              name: 'Advanced Cluster Policies',
+              description: 'Fine-grained control over cluster configurations',
+              benefits: ['Cost control', 'Security enforcement', 'Standardization'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/administration-guide/clusters/policies.html'
             }
           ],
           recommendations: [
-            'Implement C5 Compliance Controls for regulated workloads',
-            'Use Compatibility Mode for legacy migrations',
-            'Enable Path Credential Vending for fine-grained security'
+            'Implement advanced security controls and compliance features',
+            'Configure Unity Catalog external locations for governed data access',
+            'Enforce cluster policies for cost and security governance'
           ]
         },
         innovative: {
           features: [
             {
-              name: 'Serverless Workspaces',
-              description: 'Fully serverless workspace experience',
-              benefits: ['Zero infrastructure management', 'Instant availability', 'Auto-scaling'],
-              releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/serverless/index.html'
+              name: 'Serverless SQL',
+              description: 'Fully managed SQL compute with instant availability',
+              benefits: ['Zero infrastructure management', 'Instant queries', 'Auto-scaling'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/sql/admin/create-sql-warehouse.html'
             },
             {
-              name: 'Databricks One',
-              description: 'Unified platform for all data workloads',
-              benefits: ['Single pane of glass', 'Integrated experience', 'Simplified architecture'],
-              releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/databricks-one/index.html'
+              name: 'Databricks Assistant',
+              description: 'AI-powered coding assistant for notebooks and SQL',
+              benefits: ['AI code generation', 'Query optimization', 'Error fixing'],
+              releaseDate: 'Public Preview',
+              docs: 'https://docs.databricks.com/notebooks/databricks-assistant.html'
             }
           ],
           recommendations: [
-            'Adopt Serverless Workspaces for ultimate simplicity',
-            'Migrate to Databricks One for unified platform',
-            'Contribute to beta programs and feature previews'
+            'Adopt Serverless SQL for simplified data analytics',
+            'Enable Databricks Assistant for AI-powered development',
+            'Explore latest platform innovations and beta features'
           ]
         }
       },
@@ -160,6 +177,14 @@ class DatabricksFeatureMapper {
       data_engineering: {
         emerging: {
           features: [
+            {
+              name: 'Lakeflow Connect',
+              description: 'Managed connectors for SaaS data ingestion (Revenue-generating)',
+              benefits: ['Zero-code SaaS integration', '100+ pre-built connectors', 'Automated schema evolution', 'Reduces time-to-insight from weeks to hours'],
+              releaseDate: 'GA - October 2025',
+              docs: 'https://docs.databricks.com/connect/index.html',
+              monetization: 'Premium feature - DBU consumption based on data volume'
+            },
             {
               name: 'Delta Live Tables (DLT)',
               description: 'Declarative ETL framework for reliable pipelines',
@@ -180,6 +205,13 @@ class DatabricksFeatureMapper {
               benefits: ['Automatic schema detection', 'File discovery', 'Cost-effective'],
               releaseDate: 'GA with file events - September 2025',
               docs: 'https://docs.databricks.com/ingestion/auto-loader/index.html'
+            },
+            {
+              name: 'Streaming Tables',
+              description: 'Simplified streaming data processing',
+              benefits: ['Simplified streaming syntax', 'Automatic backfill', 'Built-in quality checks'],
+              releaseDate: 'Public Preview - October 2025',
+              docs: 'https://docs.databricks.com/structured-streaming/streaming-tables.html'
             }
           ],
           recommendations: [
@@ -228,18 +260,18 @@ class DatabricksFeatureMapper {
               docs: 'https://docs.databricks.com/delta/clustering.html'
             },
             {
-              name: 'Zstd Compression (Default)',
-              description: 'Better compression ratio and performance',
-              benefits: ['Reduced storage costs', 'Faster queries', 'Network efficiency'],
-              releaseDate: 'Default for new tables - October 2025',
-              docs: 'https://docs.databricks.com/delta/compression.html'
+              name: 'Delta Lake Optimizations',
+              description: 'Advanced compression and storage optimizations',
+              benefits: ['Reduced storage costs', 'Faster queries', 'Better performance'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/delta/optimizations/index.html'
             },
             {
-              name: 'Backfill Job Runs',
-              description: 'Reprocess historical data easily',
-              benefits: ['Data correction', 'Historical analysis', 'Pipeline testing'],
-              releaseDate: 'October 2025',
-              docs: 'https://docs.databricks.com/jobs/backfill.html'
+              name: 'Databricks Workflows',
+              description: 'Orchestrate data pipelines and jobs',
+              benefits: ['Job scheduling', 'Dependency management', 'Monitoring'],
+              releaseDate: 'GA',
+              docs: 'https://docs.databricks.com/workflows/index.html'
             }
           ],
           recommendations: [
@@ -255,21 +287,21 @@ class DatabricksFeatureMapper {
               description: 'Extend DLT with custom Python sources',
               benefits: ['Flexible integration', 'Custom logic', 'Reusable components'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/delta-live-tables/python-custom-sources.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/python-ref.html'
             },
             {
               name: 'Stream Progress Metrics',
               description: 'Real-time streaming pipeline monitoring',
               benefits: ['Visibility', 'Performance tuning', 'SLA monitoring'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/delta-live-tables/stream-metrics.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/observability.html'
             },
             {
               name: 'SCD Type 2 Support',
               description: 'Slowly changing dimensions tracking',
               benefits: ['Historical tracking', 'Audit trail', 'Time-travel queries'],
               releaseDate: 'SQL Server connector - September 2025',
-              docs: 'https://docs.databricks.com/delta-live-tables/scd.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/cdc.html'
             }
           ],
           recommendations: [
@@ -285,21 +317,21 @@ class DatabricksFeatureMapper {
               description: 'Transactional database on lakehouse',
               benefits: ['OLTP on lakehouse', 'Unified platform', 'Cost consolidation'],
               releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/lakebase/index.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/index.html'
             },
             {
               name: 'Lakebase Synced Tables',
               description: 'Real-time sync from external databases',
               benefits: ['Near real-time data', 'Simplified ETL', 'Reduced complexity'],
               releaseDate: 'Snapshot mode - August 2025',
-              docs: 'https://docs.databricks.com/lakebase/synced-tables.html'
+              docs: 'https://docs.databricks.com/ingestion/index.html'
             },
             {
               name: 'ai_parse_document',
               description: 'AI-powered document parsing',
               benefits: ['Extract structured data', 'OCR capabilities', 'Intelligent parsing'],
               releaseDate: 'Public Preview - October 2025',
-              docs: 'https://docs.databricks.com/sql/language-manual/functions/ai_parse_document.html'
+              docs: 'https://docs.databricks.com/sql/language-manual/sql-ref-functions-builtin.html'
             }
           ],
           recommendations: [
@@ -355,14 +387,14 @@ class DatabricksFeatureMapper {
               description: 'Natural language data exploration',
               benefits: ['No SQL required', 'Faster insights', 'Democratized analytics'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/ai/explore-llm.html'
+              docs: 'https://docs.databricks.com/machine-learning/foundation-models/index.html'
             },
             {
               name: 'Partition Metadata',
               description: 'Optimized query planning with partition info',
               benefits: ['Faster queries', 'Better performance', 'Cost reduction'],
               releaseDate: 'GA - October 2025',
-              docs: 'https://docs.databricks.com/delta/partition-metadata.html'
+              docs: 'https://docs.databricks.com/delta/table-details.html'
             }
           ],
           recommendations: [
@@ -378,21 +410,21 @@ class DatabricksFeatureMapper {
               description: 'Integration with Power Apps and Power Automate',
               benefits: ['Low-code integration', 'Workflow automation', 'App development'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/partners/power-platform.html'
+              docs: 'https://docs.databricks.com/integrations/partners.html'
             },
             {
               name: 'SQL MCP Server',
               description: 'Model Context Protocol for SQL',
               benefits: ['Standardized interface', 'Tool integration', 'Extensibility'],
               releaseDate: 'Beta - October 2025',
-              docs: 'https://docs.databricks.com/sql/mcp-server.html'
+              docs: 'https://docs.databricks.com/integrations/index.html'
             },
             {
               name: 'Unified Runs List',
               description: 'Centralized view of all executions',
               benefits: ['Better monitoring', 'Unified tracking', 'Easier debugging'],
               releaseDate: 'Public Preview - October 2025',
-              docs: 'https://docs.databricks.com/workflows/unified-runs.html'
+              docs: 'https://docs.databricks.com/workflows/index.html'
             }
           ],
           recommendations: [
@@ -408,21 +440,21 @@ class DatabricksFeatureMapper {
               description: 'Performance-optimized query endpoints',
               benefits: ['Lower latency', 'Better throughput', 'Cost efficiency'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/sql/route-optimization.html'
+              docs: 'https://docs.databricks.com/sql/admin/query-optimization.html'
             },
             {
               name: 'Delta Sharing on Lakehouse Federation',
               description: 'Share data across platforms',
               benefits: ['Cross-platform sharing', 'Secure distribution', 'Unified governance'],
               releaseDate: 'Beta - September 2025',
-              docs: 'https://docs.databricks.com/data-sharing/delta-sharing-federation.html'
+              docs: 'https://docs.databricks.com/data-sharing/index.html'
             },
             {
               name: 'Tables on Default Storage (Delta Sharing)',
               description: 'Share tables without external storage',
               benefits: ['Simplified sharing', 'Reduced complexity', 'Cost savings'],
               releaseDate: 'Beta - September 2025',
-              docs: 'https://docs.databricks.com/data-sharing/default-storage.html'
+              docs: 'https://docs.databricks.com/data-sharing/index.html'
             }
           ],
           recommendations: [
@@ -438,14 +470,14 @@ class DatabricksFeatureMapper {
               description: 'Fine-grained data sharing controls',
               benefits: ['Privacy-preserving sharing', 'Compliance', 'Granular access'],
               releaseDate: 'GA - October 2025',
-              docs: 'https://docs.databricks.com/data-sharing/row-filters.html'
+              docs: 'https://docs.databricks.com/data-sharing/index.html'
             },
             {
               name: 'Mount Delta Shares to Catalog',
               description: 'Seamless integration of shared data',
               benefits: ['Unified access', 'Simplified discovery', 'Easy consumption'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/data-sharing/mount-shares.html'
+              docs: 'https://docs.databricks.com/data-sharing/read-data.html'
             }
           ],
           recommendations: [
@@ -478,7 +510,7 @@ class DatabricksFeatureMapper {
               description: 'On-demand GPU for ML workloads',
               benefits: ['No cluster management', 'H100 support', 'Multinode training'],
               releaseDate: 'Beta H100 - September 2025',
-              docs: 'https://docs.databricks.com/machine-learning/serverless-gpu.html'
+              docs: 'https://docs.databricks.com/machine-learning/train-model/index.html'
             }
           ],
           recommendations: [
@@ -501,14 +533,14 @@ class DatabricksFeatureMapper {
               description: 'Centralized ML metrics and lineage',
               benefits: ['ML governance', 'Audit trail', 'Cost attribution'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/machine-learning/mlflow-system-tables.html'
+              docs: 'https://docs.databricks.com/machine-learning/manage-model-lifecycle/index.html'
             },
             {
               name: 'Scheduled Jobs for Serverless GPU',
               description: 'Automated ML pipeline execution',
               benefits: ['Scheduled training', 'Cost efficiency', 'Production ML'],
               releaseDate: 'August 2025',
-              docs: 'https://docs.databricks.com/jobs/serverless-gpu-scheduling.html'
+              docs: 'https://docs.databricks.com/compute/serverless.html'
             }
           ],
           recommendations: [
@@ -584,14 +616,14 @@ class DatabricksFeatureMapper {
               description: 'Latest OpenAI GPT-5 models',
               benefits: ['Cutting-edge capabilities', 'Better reasoning', 'Higher quality'],
               releaseDate: 'GA - October 2025',
-              docs: 'https://docs.databricks.com/machine-learning/foundation-models/gpt-5.html'
+              docs: 'https://docs.databricks.com/machine-learning/foundation-models/index.html'
             },
             {
               name: 'AWS Capacity Blocks for Compute',
               description: 'Reserve compute capacity on AWS',
               benefits: ['Guaranteed availability', 'Cost predictability', 'Planning'],
               releaseDate: 'October 2025',
-              docs: 'https://docs.databricks.com/administration-guide/cloud-configurations/aws/capacity-blocks.html'
+              docs: 'https://docs.databricks.com/compute/configure.html'
             }
           ],
           recommendations: [
@@ -647,14 +679,14 @@ class DatabricksFeatureMapper {
               description: 'Integrate external tools with Model Context Protocol',
               benefits: ['Tool extensibility', 'Custom integrations', 'Enterprise tools'],
               releaseDate: 'Beta - August 2025',
-              docs: 'https://docs.databricks.com/generative-ai/mcp-servers.html'
+              docs: 'https://docs.databricks.com/generative-ai/agent-framework/index.html'
             },
             {
               name: 'Databricks Apps for Genie',
               description: 'Deploy AI applications with Genie resources',
               benefits: ['Easy deployment', 'No infrastructure', 'Integrated experience'],
               releaseDate: 'September 2025',
-              docs: 'https://docs.databricks.com/generative-ai/genie-apps.html'
+              docs: 'https://docs.databricks.com/integrations/genie.html'
             }
           ],
           recommendations: [
@@ -670,14 +702,14 @@ class DatabricksFeatureMapper {
               description: 'User context for AI agent actions',
               benefits: ['Fine-grained permissions', 'Audit trail', 'Secure delegation'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/generative-ai/agent-framework/authorize-user.html'
+              docs: 'https://docs.databricks.com/generative-ai/agent-framework/index.html'
             },
             {
               name: 'Data Science Agent (Assistant)',
               description: 'AI agent for data science workflows',
               benefits: ['Code generation', 'Analysis assistance', 'Amazon Bedrock support'],
               releaseDate: 'Beta - September 2025',
-              docs: 'https://docs.databricks.com/assistant/data-science-agent.html'
+              docs: 'https://docs.databricks.com/assistant/index.html'
             },
             {
               name: 'Databricks-Hosted Foundation Models',
@@ -700,21 +732,21 @@ class DatabricksFeatureMapper {
               description: 'Enterprise-grade vector database compliance',
               benefits: ['Data residency', 'Compliance certifications', 'Audit logs'],
               releaseDate: 'Standard endpoints - September 2025',
-              docs: 'https://docs.databricks.com/generative-ai/vector-search/compliance.html'
+              docs: 'https://docs.databricks.com/generative-ai/vector-search.html'
             },
             {
               name: 'Prompt Caching for Claude',
               description: 'Reduce costs with intelligent caching',
               benefits: ['Up to 90% cost reduction', 'Faster responses', 'Better UX'],
               releaseDate: 'October 2025',
-              docs: 'https://docs.databricks.com/machine-learning/foundation-models/claude-caching.html'
+              docs: 'https://docs.databricks.com/machine-learning/foundation-models/claude.html'
             },
             {
               name: 'Assistant Edit Mode',
               description: 'Multi-cell refactoring and advanced edits',
               benefits: ['Complex refactoring', 'Multi-cell operations', 'Code quality'],
               releaseDate: 'August 2025',
-              docs: 'https://docs.databricks.com/assistant/edit-mode.html'
+              docs: 'https://docs.databricks.com/assistant/index.html'
             }
           ],
           recommendations: [
@@ -730,14 +762,14 @@ class DatabricksFeatureMapper {
               description: 'Latest multilingual foundation model',
               benefits: ['Multiple languages', 'Strong performance', 'Cost-effective'],
               releaseDate: 'Beta - October 2025',
-              docs: 'https://docs.databricks.com/machine-learning/foundation-models/qwen3.html'
+              docs: 'https://docs.databricks.com/machine-learning/foundation-models/index.html'
             },
             {
               name: 'Assistant Integrated with Compute',
               description: 'Context-aware assistance across platform',
               benefits: ['Better suggestions', 'Resource awareness', 'Unified experience'],
               releaseDate: 'August 2025',
-              docs: 'https://docs.databricks.com/assistant/compute-integration.html'
+              docs: 'https://docs.databricks.com/assistant/index.html'
             }
           ],
           recommendations: [
@@ -763,7 +795,7 @@ class DatabricksFeatureMapper {
               description: 'Visual tracking of notebook runs',
               benefits: ['Better debugging', 'Execution visibility', 'Navigation'],
               releaseDate: 'August 2025',
-              docs: 'https://docs.databricks.com/notebooks/minimap.html'
+              docs: 'https://docs.databricks.com/notebooks/index.html'
             },
             {
               name: 'Enhanced Autocomplete',
@@ -793,14 +825,14 @@ class DatabricksFeatureMapper {
               description: 'Author tracking for Git folders',
               benefits: ['Proper attribution', 'Audit trail', 'Collaboration'],
               releaseDate: 'October 2025',
-              docs: 'https://docs.databricks.com/repos/git-identity.html'
+              docs: 'https://docs.databricks.com/repos/index.html'
             },
             {
               name: 'Databricks GitHub App Permissions',
               description: 'Enhanced GitHub integration',
               benefits: ['Better security', 'Fine-grained access', 'Compliance'],
               releaseDate: 'October 2025',
-              docs: 'https://docs.databricks.com/repos/github-app.html'
+              docs: 'https://docs.databricks.com/repos/repos-setup.html'
             }
           ],
           recommendations: [
@@ -816,21 +848,21 @@ class DatabricksFeatureMapper {
               description: 'Track DLT pipeline changes over time',
               benefits: ['Change management', 'Debugging', 'Audit trail'],
               releaseDate: 'Public Preview - September 2025',
-              docs: 'https://docs.databricks.com/delta-live-tables/timeline.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/observability.html'
             },
             {
               name: 'Set Run-As User for DLT',
               description: 'Execute pipelines as specific users',
               benefits: ['Security', 'Compliance', 'Delegation'],
               releaseDate: 'August 2025',
-              docs: 'https://docs.databricks.com/delta-live-tables/run-as-user.html'
+              docs: 'https://docs.databricks.com/delta-live-tables/index.html'
             },
             {
               name: 'Single-Node Compute (Standard Access Mode)',
               description: 'Simplified single-node clusters',
               benefits: ['Cost savings', 'Faster startup', 'Development efficiency'],
               releaseDate: 'GA - August 2025',
-              docs: 'https://docs.databricks.com/clusters/single-node.html'
+              docs: 'https://docs.databricks.com/clusters/configure.html'
             }
           ],
           recommendations: [
@@ -846,7 +878,7 @@ class DatabricksFeatureMapper {
               description: 'Start with modern features only',
               benefits: ['Cleaner experience', 'Better security', 'Future-proof'],
               releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/administration-guide/workspace/legacy-features.html'
+              docs: 'https://docs.databricks.com/workspace/index.html'
             },
             {
               name: 'Account SCIM 2.0 Updates',
@@ -876,14 +908,14 @@ class DatabricksFeatureMapper {
               description: 'Customize serverless Python environments',
               benefits: ['Custom packages', 'Version control', 'Team standards'],
               releaseDate: 'Public Preview - August 2025',
-              docs: 'https://docs.databricks.com/serverless/base-environments.html'
+              docs: 'https://docs.databricks.com/serverless-compute/index.html'
             },
             {
               name: 'PrivateLink from Serverless to VPC',
               description: 'Secure serverless connectivity',
               benefits: ['Network isolation', 'Compliance', 'Security'],
               releaseDate: 'GA - August 2025',
-              docs: 'https://docs.databricks.com/security/network/serverless-privatelink.html'
+              docs: 'https://docs.databricks.com/security/network/classic/privatelink.html'
             }
           ],
           recommendations: [

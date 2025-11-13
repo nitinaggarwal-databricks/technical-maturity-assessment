@@ -338,6 +338,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
+  align-items: stretch;
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -401,6 +402,10 @@ const CardDescription = styled.p`
 `;
 
 const PillarCard = styled(Card)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .pillar-header {
     display: flex;
     align-items: center;
@@ -424,6 +429,7 @@ const PillarCard = styled(Card)`
     color: #64748b;
     margin-bottom: 20px;
     line-height: 1.6;
+    min-height: 3.6em;
   }
 
   .dimensions-label {
@@ -439,6 +445,8 @@ const PillarCard = styled(Card)`
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    flex: 1;
+    align-content: flex-start;
   }
 
   .dimension-tag {
@@ -448,6 +456,7 @@ const PillarCard = styled(Card)`
     color: #475569;
     border-radius: 6px;
     border: 1px solid #e2e8f0;
+    height: fit-content;
   }
 
   .explore-btn {
@@ -662,6 +671,8 @@ const FooterBottom = styled.div`
   color: rgba(255, 255, 255, 0.5);
 `;
 
+// Slideshow styles removed per user request
+
 // =======================
 // COMPONENT
 // =======================
@@ -672,6 +683,8 @@ const HomePageNew = () => {
   const [showSampleMenu, setShowSampleMenu] = useState(false);
   const [generatingSample, setGeneratingSample] = useState(false);
   const sampleMenuRef = useRef(null);
+
+  // Slideshow functionality removed per user request
 
   // Handle scrolling when navigated from another page
   useEffect(() => {
@@ -714,10 +727,13 @@ const HomePageNew = () => {
       const assessmentId = result?.assessment?.id || result?.id;
       
       if (assessmentId) {
-        toast.success('Sample assessment ready!', { id: 'sample-gen' });
-        setTimeout(() => {
-          navigate(`/results/${assessmentId}`);
-        }, 500);
+        toast.success('Sample assessment created!', { id: 'sample-gen' });
+        
+        // Small delay to ensure assessment is saved to disk
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Navigate to the first question page
+        navigate(`/assessment/${assessmentId}/platform_governance`);
       } else {
         console.error('Invalid response structure:', result);
         throw new Error('Invalid response from server');
@@ -759,56 +775,6 @@ const HomePageNew = () => {
                 Get a comprehensive assessment of your organization's technical maturity across 6 critical pillars. 
                 Receive personalized recommendations and a clear roadmap for success.
               </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <ButtonGroup>
-                  <PrimaryButton
-                    onClick={() => navigate('/start')}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Start My Free Assessment
-                    <FiArrowRight />
-                  </PrimaryButton>
-                  <div style={{ position: 'relative' }} ref={sampleMenuRef}>
-                    <SecondaryButton
-                      onClick={() => setShowSampleMenu(!showSampleMenu)}
-                      disabled={generatingSample}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <FiPlayCircle />
-                      Try Sample Assessment
-                    </SecondaryButton>
-                    <AnimatePresence>
-                      {showSampleMenu && (
-                        <SampleDropdown
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <SampleMenuItem onClick={() => handleGenerateSample('full')}>
-                            <div className="label">Full Assessment</div>
-                            <div className="desc">All 6 pillars completed (~5 min)</div>
-                          </SampleMenuItem>
-                          <SampleMenuItem onClick={() => handleGenerateSample('partial')}>
-                            <div className="label">Partial Assessment</div>
-                            <div className="desc">3 pillars completed (~3 min)</div>
-                          </SampleMenuItem>
-                          <SampleMenuItem onClick={() => handleGenerateSample('minimal')}>
-                            <div className="label">Quick Preview</div>
-                            <div className="desc">1 pillar completed (~1 min)</div>
-                          </SampleMenuItem>
-                        </SampleDropdown>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </ButtonGroup>
-              </motion.div>
             </HeroText>
 
             <HeroSidebar>

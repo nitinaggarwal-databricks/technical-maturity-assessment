@@ -61,16 +61,16 @@ const Label = styled.label`
 
 const Input = styled.input`
   padding: 16px;
-  border: 2px solid ${props => props.hasError ? '#ff4444' : '#e0e0e0'};
+  border: 2px solid ${props => props.$hasError ? '#ff4444' : '#e0e0e0'};
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: ${props => props.hasError ? '#fff5f5' : 'white'};
+  background-color: ${props => props.$hasError ? '#fff5f5' : 'white'};
   
   &:focus {
     outline: none;
-    border-color: ${props => props.hasError ? '#ff4444' : '#ff6b35'};
-    box-shadow: 0 0 0 3px ${props => props.hasError ? 'rgba(255, 68, 68, 0.1)' : 'rgba(255, 107, 53, 0.1)'};
+    border-color: ${props => props.$hasError ? '#ff4444' : '#ff6b35'};
+    box-shadow: 0 0 0 3px ${props => props.$hasError ? 'rgba(255, 68, 68, 0.1)' : 'rgba(255, 107, 53, 0.1)'};
   }
   
   &::placeholder {
@@ -233,7 +233,7 @@ const AssessmentStart = ({ onStart }) => {
               value={formData.assessmentName}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              hasError={!!errors.assessmentName}
+              $hasError={!!errors.assessmentName}
             />
             {errors.assessmentName && (
               <ErrorMessage>{errors.assessmentName}</ErrorMessage>
@@ -268,7 +268,7 @@ const AssessmentStart = ({ onStart }) => {
               value={formData.contactEmail}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              hasError={!!errors.contactEmail}
+              $hasError={!!errors.contactEmail}
             />
             {errors.contactEmail && (
               <ErrorMessage>{errors.contactEmail}</ErrorMessage>

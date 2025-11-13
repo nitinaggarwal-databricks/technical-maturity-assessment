@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Use relative URLs by default (works in production when served from same domain)
-// For local development with separate servers, set REACT_APP_API_URL=http://localhost:5000/api in .env
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+// Use relative URL in production (Railway), localhost in development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:5001/api' : '/api');
 
 // Create axios instance with default config
 const api = axios.create({
@@ -81,12 +81,13 @@ export const startAssessment = async (organizationInfo) => {
 export const getAssessmentStatus = async (assessmentId) => {
   try {
     const response = await api.get(`/assessment/${assessmentId}/status`);
+    // API interceptor already extracts response.data, so we get the actual data directly
     // Backend returns { success: true, data: { ... } }
-    if (response.data && response.data.success && response.data.data) {
-      return response.data.data;
+    if (response.success && response.data) {
+      return response.data;
     }
     // Fallback for backwards compatibility
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error fetching assessment status:', error);
     throw error;
@@ -158,8 +159,9 @@ export const getAssessmentResults = async (assessmentId, forceRefresh = false) =
     const response = await api.get(`/assessment/${assessmentId}/results?_refresh=${forceRefresh ? 'true' : 'false'}&_=${cacheBuster}`, {
       headers
     });
-    // Backend returns data directly for results endpoint
-    return response.data;
+    // API interceptor already extracts response.data, so we get the actual data directly
+    // Backend returns { success: true, data: { ... } }
+    return response; // Return the full response (already has .data extracted by interceptor)
   } catch (error) {
     console.error('Error fetching assessment results:', error);
     throw error;
@@ -189,6 +191,11 @@ export const saveProgress = async (assessmentId, questionId, perspectiveId, valu
     return { success: false, error: error.message };
   }
 };
+
+/**
+ * Save individual question response (alias for saveProgress)
+ */
+export const saveQuestionResponse = saveProgress;
 
 /**
  * Get all assessments for management
@@ -237,6 +244,21 @@ export const cloneAssessment = async (assessmentId, organizationData = {}) => {
     return response.data.data;
   } catch (error) {
     console.error('Error cloning assessment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete all assessments
+ */
+export const deleteAllAssessments = async () => {
+  try {
+    console.log('[deleteAllAssessments] Deleting all assessments');
+    const response = await api.delete('/assessments/all');
+    console.log('[deleteAllAssessments] Response:', response);
+    return response;
+  } catch (error) {
+    console.error('[deleteAllAssessments] Error:', error);
     throw error;
   }
 };
@@ -298,41 +320,6 @@ export const updateAssessmentMetadata = async (assessmentId, metadata) => {
 };
 
 /**
- * Get pillar-specific results and recommendations
- */
-export const getPillarResults = async (assessmentId, pillarId) => {
-  try {
-    console.log(`[getPillarResults] Fetching for assessment: ${assessmentId}, pillar: ${pillarId}`);
-    // Add cache-busting timestamp to force fresh fetch
-    const cacheBuster = Date.now();
-    const response = await api.get(`/assessment/${assessmentId}/pillar/${pillarId}/results?_=${cacheBuster}`);
-    console.log('[getPillarResults] Raw response:', response);
-    console.log('[getPillarResults] Response data:', response.data);
-    
-    // Axios interceptor already unwraps response.data, so response IS the data
-    // Backend now returns flat structure: { success: true, pillarDetails, painPointRecommendations, ... }
-    if (response && response.success && response.pillarDetails) {
-      console.log('[getPillarResults] Returning flat response structure');
-      return response;
-    }
-    
-    // Legacy fallback: if response has nested data property
-    if (response && response.data && response.data.pillarDetails) {
-      console.log('[getPillarResults] Returning response.data (legacy structure)');
-      return response.data;
-    }
-    
-    console.error('[getPillarResults] Unexpected response structure:', response);
-    console.error('[getPillarResults] Expected: { success: true, pillarDetails, ... }');
-    throw new Error('API returned unexpected response structure');
-  } catch (error) {
-    console.error('[getPillarResults] Error fetching pillar results:', error);
-    console.error('[getPillarResults] Error response:', error.response?.data);
-    throw error;
-  }
-};
-
-/**
  * Generate a sample assessment with random data
  */
 export const generateSampleAssessment = async (completionLevel = 'full', specificPillars = null) => {
@@ -347,6 +334,39 @@ export const generateSampleAssessment = async (completionLevel = 'full', specifi
     return data;
   } catch (error) {
     console.error('❌ Failed to generate sample assessment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Submit assessment for final results
+ */
+export const submitAssessment = async (assessmentId) => {
+  try {
+    console.log('[submitAssessment] Submitting assessment:', assessmentId);
+    const data = await api.post(`/assessment/${assessmentId}/submit`);
+    console.log('[submitAssessment] Response:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Failed to submit assessment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get industry benchmarking report
+ */
+export const getBenchmarkReport = async (assessmentId) => {
+  try {
+    console.log(`[getBenchmarkReport] Fetching for assessment: ${assessmentId}`);
+    const response = await api.get(`/assessment/${assessmentId}/benchmark`);
+    // API interceptor already extracts response.data
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return response;
+  } catch (error) {
+    console.error('Error fetching benchmark report:', error);
     throw error;
   }
 };
@@ -438,6 +458,19 @@ export const validateResponses = (questions, responses) => {
   });
   
   return errors;
+};
+
+/**
+ * Fetch logo from external URL via backend proxy (bypasses CORS)
+ */
+export const fetchLogoFromURL = async (url) => {
+  try {
+    const response = await api.post('/fetch-logo', { url });
+    return response;
+  } catch (error) {
+    console.error('Error fetching logo from URL:', error);
+    throw error;
+  }
 };
 
 export default api;

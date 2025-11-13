@@ -205,10 +205,10 @@ class AdaptiveRecommendationEngine {
       const future = this.calculateAreaScoreByPerspective(area, responses, 'future_state');
       
       areaScores[area.id] = {
-        current: Math.round(current),
-        future: Math.round(future),
-        gap: Math.round(future - current),
-        overall: Math.round((current + future) / 2)
+        current: parseFloat(current.toFixed(1)), // 🔥 FIX: Use 1 decimal place
+        future: parseFloat(future.toFixed(1)),
+        gap: parseFloat((future - current).toFixed(1)),
+        overall: parseFloat(((current + future) / 2).toFixed(1))
       };
       
       areaGaps[area.id] = future - current;
@@ -219,10 +219,13 @@ class AdaptiveRecommendationEngine {
     const commentInsights = this.extractCommentInsights(responses, areasToAnalyze);
     
     // Generate adaptive recommendations
+    const currentScoreVal = this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'current_state');
+    const futureScoreVal = this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'future_state');
+    
     const recommendations = {
       overall: {
-        currentScore: Math.round(this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'current_state')),
-        futureScore: Math.round(this.calculateMaturityScoreByPerspective(responses, areasToAnalyze, 'future_state')),
+        currentScore: parseFloat(currentScoreVal.toFixed(1)), // 🔥 FIX: Use 1 decimal place
+        futureScore: parseFloat(futureScoreVal.toFixed(1)),
         gap: 0, // Will calculate
         level: assessmentFramework.maturityLevels[Math.max(1, Math.min(5, overallScore))],
         summary: this.generateAdaptiveSummary(areaScores, painPointAnalysis, commentInsights)
@@ -239,7 +242,7 @@ class AdaptiveRecommendationEngine {
       executiveSummary: {}
     };
 
-    recommendations.overall.gap = recommendations.overall.futureScore - recommendations.overall.currentScore;
+    recommendations.overall.gap = parseFloat((recommendations.overall.futureScore - recommendations.overall.currentScore).toFixed(1)); // 🔥 FIX: 1 decimal place
 
     // Generate area-specific adaptive recommendations
     Object.keys(areaScores).forEach(areaId => {
@@ -869,28 +872,28 @@ class AdaptiveRecommendationEngine {
     
     const maturityLevels = {
       1: {
-        level: 'Initial',
-        description: 'Ad-hoc processes, limited capabilities',
+        level: 'Explore',
+        description: 'Ad-hoc, manual processes with limited standardization',
         color: '#ff4444'
       },
       2: {
-        level: 'Developing',
-        description: 'Basic implementation with some structure',
+        level: 'Experiment',
+        description: 'Basic implementation with some repeatability',
         color: '#ff8800'
       },
       3: {
-        level: 'Defined',
-        description: 'Structured approach with established processes',
+        level: 'Formalize',
+        description: 'Documented standards and processes consistently followed',
         color: '#ffaa00'
       },
       4: {
-        level: 'Managed',
-        description: 'Advanced capabilities with strong governance',
+        level: 'Optimize',
+        description: 'Advanced automation and continuous improvement',
         color: '#88cc00'
       },
       5: {
-        level: 'Optimized',
-        description: 'Industry-leading, AI-driven optimization',
+        level: 'Transform',
+        description: 'Industry-leading practices with AI-driven optimization',
         color: '#00cc44'
       }
     };

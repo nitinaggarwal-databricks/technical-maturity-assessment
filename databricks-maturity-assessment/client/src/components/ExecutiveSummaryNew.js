@@ -846,8 +846,9 @@ const ExecutiveSummaryNew = () => {
   const isIncomplete = !hasResponses || resultsData?.assessmentInfo?.completionPercentage < 10;
 
   // Calculate maturity levels from results
-  const currentMaturity = resultsData?.overall?.currentScore || 3;
-  const targetMaturity = resultsData?.overall?.futureScore || 4;
+  // 🔥 FIX: Default to Level 1 (Explore) if no responses, not Level 3!
+  const currentMaturity = hasResponses ? (resultsData?.overall?.currentScore || 1) : 1;
+  const targetMaturity = hasResponses ? (resultsData?.overall?.futureScore || 1) : 1;
   const improvementScope = targetMaturity - currentMaturity;
 
   // Get actual pillars data from results (dynamically generated)
@@ -934,7 +935,7 @@ const ExecutiveSummaryNew = () => {
                 </div>
                 <div style={{ fontSize: '1rem', marginBottom: '16px', lineHeight: 1.6 }}>
                   This assessment has <strong>{resultsData?.assessmentInfo?.questionsAnswered || 0} questions answered</strong>. 
-                  The Executive Summary requires assessment responses to generate "What's Working", "What You Need", and Databricks recommendations.
+                  The Executive Summary requires assessment responses to generate "What's Working", "Key Challenges", and Databricks recommendations.
                 </div>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <button
