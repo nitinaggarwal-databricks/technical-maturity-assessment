@@ -905,14 +905,12 @@ const PrintButton = styled(motion.button)`
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 12px 20px;
-  border-radius: 24px;
+  padding: 12px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.938rem;
   transition: all 0.3s ease;
   z-index: 10;
   opacity: 0;
@@ -923,7 +921,7 @@ const PrintButton = styled(motion.button)`
 
   &:hover {
     background: rgba(34, 197, 94, 1);
-    transform: scale(1.05);
+    transform: scale(1.1);
   }
 `;
 
@@ -1412,6 +1410,9 @@ const Dashboard = () => {
   const nextSlide = () => {
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
+    } else {
+      // Auto-exit slideshow after last slide
+      exitPresentation();
     }
   };
 
@@ -2058,8 +2059,7 @@ const Dashboard = () => {
             </SlideCounter>
 
             <PrintButton onClick={handlePrintSlideshow} data-hide-on-print="true">
-              <FiPrinter size={18} />
-              Print PDF
+              <FiPrinter size={20} />
             </PrintButton>
 
             <ExitButton onClick={exitPresentation} data-hide-on-print="true">
