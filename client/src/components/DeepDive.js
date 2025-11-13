@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiMonitor, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Footer from './Footer';
 
@@ -1761,7 +1761,6 @@ const DeepDive = () => {
   // Presentation Mode State
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [printMode, setPrintMode] = useState(false);
   
   // Auto-start slideshow if URL parameter is present
   useEffect(() => {
@@ -1903,27 +1902,6 @@ const DeepDive = () => {
     };
   }, [presentationMode, currentSlide]);
 
-  // Print handler
-  const handlePrint = () => {
-    // Show brief toast
-    const toastId = 
-    
-    // Set print mode to render all slides
-    setPrintMode(true);
-    
-    // Dismiss the toast and open print dialog
-    setTimeout(() => {
-      toast.dismiss(toastId);
-      toast.dismiss();
-      setTimeout(() => {
-        window.print();
-        // Exit print mode after printing
-        setTimeout(() => {
-          setPrintMode(false);
-        }, 500);
-      }, 500);
-    }, 1000);
-  };
 
   // Click navigation handler
   const handleSlideClick = (e) => {
@@ -3985,86 +3963,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
   return (
     <PageContainer>
-      {/* 🖨️ PRINT MODE: Render all slides for printing */}
-      {printMode && (
-        <div style={{ display: 'none' }} className="print-slides-container">
-          <style>{`
-            @media print {
-              @page {
-                margin: 0;
-                size: letter landscape;
-              }
-              * {
-                box-sizing: border-box;
-              }
-              body {
-                margin: 0 !important;
-                padding: 0 !important;
-              }
-              body * {
-                visibility: hidden;
-              }
-              .print-slides-container,
-              .print-slides-container * {
-                visibility: visible !important;
-              }
-              .print-slides-container {
-                display: block !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                z-index: 99999;
-                margin: 0;
-                padding: 0;
-              }
-              footer {
-                display: none !important;
-              }
-            }
-          `}</style>
-          {slides.map((slide, slideIndex) => (
-            <PrintSlide key={slideIndex}>
-              <div style={{
-                width: '100%',
-                height: '8.5in',
-                maxHeight: '8.5in',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                padding: '25px 35px',
-                color: 'white',
-                boxSizing: 'border-box',
-                overflow: 'hidden'
-              }}>
-                {/* Slide Header */}
-                <div style={{
-                  fontSize: '1.8rem',
-                  fontWeight: 700,
-                  marginBottom: '16px',
-                  color: 'white',
-                  flexShrink: 0
-                }}>
-                  {slide.title}
-                </div>
-
-                {/* Slide Content */}
-                <div style={{
-                  width: '100%',
-                  maxWidth: '100%',
-                  flex: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden'
-                }}>
-                  {renderSlideContentForPrint(slide)}
-                </div>
-              </div>
-            </PrintSlide>
-          ))}
-        </div>
-      )}
-      
       <ContentWrapper>
         <PageHeader>
           <ExpandCollapseControls>
@@ -4093,29 +3991,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             </PageSubtitle>
           </div>
           
-          <motion.button
-            onClick={handlePrint}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{ 
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
-              color: 'white', 
-              border: 'none', 
-              padding: '14px 28px', 
-              borderRadius: '8px', 
-              fontWeight: 600, 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              marginLeft: 'auto'
-            }}
-          >
-            <FiMonitor size={18} />
-            <span>Print / Save PDF</span>
-          </motion.button>
         </PageHeader>
 
         {/* Objectives Section */}
