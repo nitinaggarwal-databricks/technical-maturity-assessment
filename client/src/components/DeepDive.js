@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiChevronLeft, FiChevronRight, FiPlay } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Footer from './Footer';
 
@@ -5068,7 +5068,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <FiMonitor size={20} />
+          <FiPlay size={20} />
           Start Slideshow
         </PresentationButton>
       )}
