@@ -33,6 +33,53 @@ import Footer from './Footer';
 // STYLED COMPONENTS
 // =======================
 
+// Global print styles
+const PrintStyles = styled.div`
+  @media print {
+    @page {
+      size: letter;
+      margin: 0.5in;
+    }
+    
+    /* Enable background graphics */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    /* Hide navigation, buttons, and interactive elements */
+    nav,
+    button,
+    .no-print,
+    [class*="ActionButton"],
+    [class*="NavigationButton"],
+    [class*="ExitButton"],
+    [class*="ClickArea"] {
+      display: none !important;
+    }
+    
+    /* Optimize spacing for print */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Ensure content flows properly */
+    section,
+    article,
+    div[class*="Section"] {
+      page-break-inside: avoid;
+    }
+    
+    /* Show main report content */
+    [class*="ReportContainer"] {
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
+  }
+`;
+
 const PageContainer = styled.div`
   min-height: 100vh;
   background: #f9fafb;
@@ -1310,14 +1357,7 @@ const SlideContainer = styled(motion.div)`
   justify-content: center;
   
   @media print {
-    position: relative;
-    page-break-after: always;
-    page-break-inside: avoid;
-    
-    /* Enable background graphics */
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
+    display: none !important;
   }
 `;
 
@@ -2861,6 +2901,7 @@ const AssessmentResultsNew = () => {
 
   return (
     <PageContainer>
+      <PrintStyles />
       <ReportContainer>
         {/* 🚨 NO COMPLETED PILLARS WARNING */}
         {hasNoCompletedPillars && (
