@@ -1400,6 +1400,11 @@ const ExecutiveCommandCenter = () => {
       id: 'risk-heatmap',
       title: 'Risk Heatmap',
       type: 'component'
+    },
+    {
+      id: 'thank-you',
+      title: 'Thank You',
+      type: 'thank-you'
     }
   ];
 
@@ -1472,6 +1477,41 @@ const ExecutiveCommandCenter = () => {
         <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '30px', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
           <div style={{ fontSize: '1.1rem', color: '#475569', textAlign: 'center' }}>
             Risk Assessment Overview
+          </div>
+        </div>
+      );
+    }
+
+    // Thank You slide
+    if (slide.id === 'thank-you') {
+      return (
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '60px',
+          gap: '30px'
+        }}>
+          <div style={{
+            fontSize: '4rem',
+            fontWeight: 800,
+            color: 'white',
+            marginBottom: '20px',
+            textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+          }}>
+            Thank You
+          </div>
+          <div style={{
+            fontSize: '1.5rem',
+            fontWeight: 400,
+            color: 'rgba(255, 255, 255, 0.9)',
+            lineHeight: '1.6',
+            maxWidth: '800px'
+          }}>
+            For your time and participation in the Technical Maturity Assessment
           </div>
         </div>
       );
@@ -2291,6 +2331,40 @@ const ExecutiveCommandCenter = () => {
                         results={results} 
                         assessment={results?.assessmentInfo}
                       />
+                    </div>
+                  )}
+
+                  {/* Thank You Slide */}
+                  {slides[currentSlide].id === 'thank-you' && (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      padding: '60px',
+                      gap: '30px'
+                    }}>
+                      <div style={{
+                        fontSize: '4rem',
+                        fontWeight: 800,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                      }}>
+                        Thank You
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6',
+                        maxWidth: '800px'
+                      }}>
+                        For your time and participation in the Technical Maturity Assessment
+                      </div>
                     </div>
                   )}
                 </motion.div>
