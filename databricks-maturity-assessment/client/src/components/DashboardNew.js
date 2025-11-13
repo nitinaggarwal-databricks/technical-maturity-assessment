@@ -2416,13 +2416,13 @@ const Dashboard = () => {
                             background: `linear-gradient(135deg, ${pillar.gradient})`,
                             border: `2px solid ${pillar.color}`,
                             borderRadius: '12px',
-                            padding: '20px'
+                            padding: '16px'
                           }}>
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              marginBottom: '12px'
+                              marginBottom: '8px'
                             }}>
                               <div style={{
                                 fontSize: '0.938rem',
@@ -2445,10 +2445,11 @@ const Dashboard = () => {
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              padding: '8px 0',
+                              padding: '6px 0',
                               fontSize: '0.813rem',
                               color: '#64748b',
-                              borderTop: '1px solid #e2e8f0'
+                              borderTop: '1px solid #e2e8f0',
+                              marginTop: '8px'
                             }}>
                               <span>Assessments</span>
                               <span style={{ fontWeight: 700, color: '#1e293b' }}>{pillar.count || 0}</span>
@@ -2456,7 +2457,7 @@ const Dashboard = () => {
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              padding: '8px 0',
+                              padding: '6px 0',
                               fontSize: '0.813rem',
                               color: '#64748b',
                               borderTop: '1px solid #e2e8f0'
