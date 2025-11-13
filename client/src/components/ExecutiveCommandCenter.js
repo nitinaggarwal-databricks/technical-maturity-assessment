@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2, FiMonitor } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiShare2, FiAlertTriangle, FiUpload, FiX, FiLink, FiEdit2, FiTrash2, FiPlus, FiBarChart2, FiMonitor, FiPrinter } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import * as assessmentService from '../services/assessmentService';
 import ExecutiveDashboard from './ExecutiveDashboard';
 import ROICalculator from './ROICalculator';
@@ -767,7 +769,7 @@ const SlideContent = styled.div`
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
-  padding: 45px 60px 20px 60px;
+  padding: 80px 60px 60px 60px;
 `;
 
 const SlideHeading = styled.div`
@@ -778,6 +780,12 @@ const SlideHeading = styled.div`
   font-weight: 700;
   color: white;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 `;
 
 const SlideCounter = styled.div`
@@ -788,6 +796,12 @@ const SlideCounter = styled.div`
   color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 `;
 
 const ClickArea = styled.div`
@@ -818,7 +832,12 @@ const NavigationButton = styled(motion.button)`
   cursor: pointer;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
   
   &:hover {
     background: #3b82f6;
@@ -919,14 +938,54 @@ const ExitButton = styled(motion.button)`
   cursor: pointer;
   z-index: 10;
   pointer-events: auto;
-  opacity: 0.4;
+  opacity: 0;
   transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 
   &:hover {
-    opacity: 1;
     transform: scale(1.15);
     background: rgba(239, 68, 68, 1);
     box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+`;
+
+const PrintButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 120px;
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: scale(1.15);
+    background: rgba(34, 197, 94, 1);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.6);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 `;
 
@@ -1159,6 +1218,24 @@ const ExecutiveCommandCenter = () => {
     document.body.style.overflow = 'auto';
   };
 
+  // ESC key to exit slideshow
+  useEffect(() => {
+    if (!presentationMode) return;
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape') {
+        exitPresentation();
+      } else if (e.key === 'ArrowLeft') {
+        previousSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentSlide]);
+
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
@@ -1171,6 +1248,110 @@ const ExecutiveCommandCenter = () => {
   const previousSlide = () => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  // Print slideshow as PDF
+  const handlePrintSlideshow = async () => {
+    const pdf = new jsPDF('landscape', 'pt', 'letter');
+    const slideCount = slides.length;
+    
+    toast.loading(`Generating PDF (0/${slideCount} slides)...`, { id: 'print-progress' });
+
+    try {
+      // Hide scrollbars during capture
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      
+      let isFirstPage = true;
+      
+      for (let i = 0; i < slideCount; i++) {
+        // Navigate to slide
+        setCurrentSlide(i);
+        
+        // Wait for slide to render
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Hide UI elements
+        const elementsToHide = document.querySelectorAll('[data-hide-on-print="true"]');
+        elementsToHide.forEach(el => {
+          el.style.display = 'none';
+        });
+        
+        // Wait for layout to settle
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Capture the entire body/viewport as it appears on screen
+        const canvas = await html2canvas(document.body, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          foreignObjectRendering: true,
+          backgroundColor: '#1e3a8a',
+          width: window.innerWidth,
+          height: window.innerHeight,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight,
+          x: 0,
+          y: 0,
+          scrollX: 0,
+          scrollY: 0
+        });
+        
+        // Restore UI elements
+        elementsToHide.forEach(el => {
+          el.style.display = '';
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate dimensions to maintain aspect ratio without stretching
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasAspectRatio = canvas.width / canvas.height;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
+        
+        let finalWidth, finalHeight, xOffset, yOffset;
+        
+        if (canvasAspectRatio > pdfAspectRatio) {
+          // Canvas is wider - fit to width
+          finalWidth = pdfWidth;
+          finalHeight = pdfWidth / canvasAspectRatio;
+          xOffset = 0;
+          yOffset = (pdfHeight - finalHeight) / 2;
+        } else {
+          // Canvas is taller - fit to height
+          finalHeight = pdfHeight;
+          finalWidth = pdfHeight * canvasAspectRatio;
+          xOffset = (pdfWidth - finalWidth) / 2;
+          yOffset = 0;
+        }
+        
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+        isFirstPage = false;
+        
+        // Add image with proper aspect ratio
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+        
+        toast.loading(`Generating PDF (${i + 1}/${slideCount} slides)...`, { id: 'print-progress' });
+      }
+      
+      // Restore scrollbars
+      document.body.style.overflow = originalOverflow;
+      
+      // Save PDF
+      const assessmentName = results?.assessmentInfo?.name || 'Executive-Command-Center';
+      pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
+      
+      toast.success('PDF generated successfully!', { id: 'print-progress' });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // Restore scrollbars on error
+      document.body.style.overflow = 'auto';
+      toast.error('Failed to generate PDF', { id: 'print-progress' });
     }
   };
 
@@ -1191,29 +1372,34 @@ const ExecutiveCommandCenter = () => {
   // Define slides for Executive Command Center
   const slides = [
     {
-      id: 'title',
+      id: 'executive-dashboard',
       title: 'Executive Command Center',
-      type: 'title'
+      type: 'dashboard'
+    },
+    {
+      id: 'strategic-imperatives',
+      title: 'Top Strategic Imperatives',
+      type: 'imperatives'
     },
     {
       id: 'strategic-roadmap',
       title: 'Strategic Roadmap & Next Steps',
-      type: 'single'
+      type: 'component'
     },
     {
       id: 'business-impact',
       title: 'Expected Business Impact',
-      type: 'single'
+      type: 'component'
     },
     {
       id: 'roi',
       title: 'Interactive ROI Calculator',
-      type: 'single'
+      type: 'component'
     },
     {
       id: 'risk-heatmap',
       title: 'Risk Heatmap',
-      type: 'single'
+      type: 'component'
     }
   ];
 
@@ -1463,25 +1649,7 @@ const ExecutiveCommandCenter = () => {
 
         <ActionButtons>
           <ActionButton
-            onClick={handlePrint}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FiDownload />
-            Print / Save PDF
-          </ActionButton>
-          <ActionButton
-            onClick={handleShare}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FiShare2 />
-            Share
-          </ActionButton>
-          <ActionButton
             onClick={startPresentation}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
             title="View Executive Command Center in presentation slideshow mode"
           >
@@ -1785,11 +1953,12 @@ const ExecutiveCommandCenter = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <ClickArea $direction="left" onClick={previousSlide} />
-            <ClickArea $direction="right" onClick={nextSlide} />
+            <ClickArea data-hide-on-print="true" $direction="left" onClick={previousSlide} />
+            <ClickArea data-hide-on-print="true" $direction="right" onClick={nextSlide} />
             
             {/* Navigation Buttons - Show on hover */}
             <NavigationButton
+              data-hide-on-print="true"
               $direction="left"
               onClick={previousSlide}
               disabled={currentSlide === 0}
@@ -1799,6 +1968,7 @@ const ExecutiveCommandCenter = () => {
             </NavigationButton>
             
             <NavigationButton
+              data-hide-on-print="true"
               $direction="right"
               onClick={nextSlide}
               whileTap={{ scale: 0.9 }}
@@ -1806,21 +1976,32 @@ const ExecutiveCommandCenter = () => {
               →
             </NavigationButton>
             
-            <SlideHeading>{slides[currentSlide]?.title}</SlideHeading>
-            <SlideCounter>{currentSlide + 1} / {slides.length}</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / {slides.length}</SlideCounter>
 
-            {/* Exit Button - Shows on hover on last slide */}
-            {currentSlide === slides.length - 1 && (
-              <ExitButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  exitPresentation();
-                }}
-                whileTap={{ scale: 0.9 }}
-              >
-                ×
-              </ExitButton>
-            )}
+            {/* Print Button - Shows on hover */}
+            <PrintButton
+              data-hide-on-print="true"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrintSlideshow();
+              }}
+              whileTap={{ scale: 0.9 }}
+              title="Print Slideshow as PDF"
+            >
+              <FiPrinter />
+            </PrintButton>
+
+            {/* Exit Button - Shows on hover */}
+            <ExitButton
+              data-hide-on-print="true"
+              onClick={(e) => {
+                e.stopPropagation();
+                exitPresentation();
+              }}
+              whileTap={{ scale: 0.9 }}
+            >
+              ×
+            </ExitButton>
 
             <SlideContent>
               <AnimatePresence mode="wait">
@@ -1831,212 +2012,285 @@ const ExecutiveCommandCenter = () => {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3 }}
                   style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                  className="executive-slideshow-slide"
                 >
-                  {/* Title Slide */}
-                  {slides[currentSlide].id === 'title' && (
+                  {/* Executive Dashboard Slide - Full Interactive Dashboard */}
+                  {slides[currentSlide].id === 'executive-dashboard' && results && (
                     <div style={{
+                      width: '100%',
+                      height: '100%',
+                      overflow: 'auto',
+                      padding: '20px 40px'
+                    }}>
+                      <ExecutiveDashboard 
+                        results={results} 
+                        assessment={results?.assessmentInfo}
+                        hideImperatives={true}
+                      />
+                    </div>
+                  )}
+
+                  {/* Strategic Imperatives Slide */}
+                  {slides[currentSlide].id === 'strategic-imperatives' && results && (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100%',
-                      textAlign: 'center',
-                      gap: '32px'
+                      padding: '0 40px'
                     }}>
                       <div style={{
-                        fontSize: '4.5rem',
-                        fontWeight: 700,
-                        color: 'white',
-                        marginBottom: '24px'
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '16px',
+                        padding: '40px',
+                        border: '2px solid #e5e7eb'
                       }}>
-                        Executive Command Center
+                        <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px' }}>
+                          🎯 Top 3 Strategic Imperatives
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                          {/* Imperative 1 */}
+                          <div style={{
+                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                            borderRadius: '12px',
+                            padding: '28px',
+                            color: 'white'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                              <div style={{
+                                width: '48px',
+                                height: '48px',
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1.5rem',
+                                fontWeight: 700
+                              }}>1</div>
+                              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+                                Implement Unity Catalog
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '1.1rem', opacity: 0.95, lineHeight: '1.6', paddingLeft: '64px' }}>
+                              Centralize data governance and security • Reduce compliance risk • Enable fine-grained access control
+                            </div>
+                          </div>
+
+                          {/* Imperative 2 */}
+                          <div style={{
+                            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                            borderRadius: '12px',
+                            padding: '28px',
+                            color: 'white'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                              <div style={{
+                                width: '48px',
+                                height: '48px',
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1.5rem',
+                                fontWeight: 700
+                              }}>2</div>
+                              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+                                Deploy Delta Live Tables
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '1.1rem', opacity: 0.95, lineHeight: '1.6', paddingLeft: '64px' }}>
+                              Automate data pipeline quality • Reduce data delivery time • Improve data trust and reliability
+                            </div>
+                          </div>
+
+                          {/* Imperative 3 */}
+                          <div style={{
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                            borderRadius: '12px',
+                            padding: '28px',
+                            color: 'white'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                              <div style={{
+                                width: '48px',
+                                height: '48px',
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1.5rem',
+                                fontWeight: 700
+                              }}>3</div>
+                              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+                                Establish MLOps Framework
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '1.1rem', opacity: 0.95, lineHeight: '1.6', paddingLeft: '64px' }}>
+                              Accelerate model deployment • Reduce time-to-production by 60-70% • Enable continuous ML improvement
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div style={{
-                        fontSize: '2rem',
-                        color: 'rgba(255, 255, 255, 0.8)',
-                        maxWidth: '900px'
-                      }}>
-                        Strategic Insights & Decision Intelligence
-                      </div>
-                      {customerLogo && (
-                        <img 
-                          src={customerLogo} 
-                          alt="Customer Logo" 
-                          style={{
-                            maxHeight: '120px',
-                            maxWidth: '400px',
-                            objectFit: 'contain',
-                            marginTop: '40px'
-                          }}
-                        />
-                      )}
                     </div>
                   )}
 
                   {/* Strategic Roadmap Slide */}
-                  {slides[currentSlide].id === 'strategic-roadmap' && results?.strategicRoadmap && (
+                  {slides[currentSlide].id === 'strategic-roadmap' && results?.roadmap?.phases && (
                     <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '24px',
+                      width: '100%',
                       height: '100%',
-                      alignItems: 'start'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '24px 32px',
+                      overflow: 'hidden'
                     }}>
-                      {results.strategicRoadmap.map((phase, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '28px',
-                            border: '4px solid #3b82f6',
-                            height: 'fit-content'
-                          }}
-                        >
-                          <div style={{
-                            fontSize: '1.8rem',
-                            fontWeight: 700,
-                            color: '#1e293b',
-                            marginBottom: '16px'
-                          }}>
-                            {phase.phase}
+                      <div style={{ marginBottom: '16px', flexShrink: 0 }}>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>
+                          📍 Strategic Roadmap & Next Steps
+                        </h2>
+                        <p style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: '1.4', margin: 0 }}>
+                          {results.roadmap.roadmapIntro || 'This roadmap outlines key phases to accelerate your data platform maturity.'}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, minHeight: 0 }}>
+                        {results.roadmap.phases.map((phase, index) => (
+                          <div
+                            key={phase.id}
+                            style={{
+                              background: phase.bgColor || '#f3f4f6',
+                              borderLeft: `4px solid ${phase.borderColor || '#3b82f6'}`,
+                              borderRadius: '8px',
+                              padding: '16px 20px',
+                              flex: '1 1 0',
+                              minHeight: 0,
+                              display: 'flex',
+                              flexDirection: 'column'
+                            }}
+                          >
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', margin: '0 0 10px 0' }}>
+                              {phase.title}
+                            </h3>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1 }}>
+                              {phase.items.slice(0, 3).map((item, idx) => (
+                                <li key={idx} style={{ fontSize: '0.85rem', color: '#475569', padding: '6px 0 6px 20px', position: 'relative', lineHeight: '1.4' }}>
+                                  <span style={{ position: 'absolute', left: 0, color: '#3b82f6', fontWeight: 'bold' }}>▸</span>
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <div style={{
-                            fontSize: '1.35rem',
-                            color: '#64748b',
-                            marginBottom: '20px'
-                          }}>
-                            {phase.timeframe}
-                          </div>
-                          <div style={{
-                            fontSize: '1.2rem',
-                            color: '#475569',
-                            lineHeight: '1.8'
-                          }}>
-                            {phase.priorities?.map((priority, pIdx) => (
-                              <div key={pIdx} style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
-                                <span style={{ color: '#3b82f6', fontWeight: 600 }}>•</span>
-                                <span>{priority}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
 
                   {/* Business Impact Slide */}
                   {slides[currentSlide].id === 'business-impact' && results?.businessImpact && (
                     <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '24px',
+                      width: '100%',
                       height: '100%',
-                      alignItems: 'start'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      padding: '0 60px'
                     }}>
-                      {results.businessImpact.map((impact, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '28px',
-                            border: '4px solid #10b981',
-                            height: 'fit-content'
-                          }}
-                        >
-                          <div style={{
-                            fontSize: '1.8rem',
-                            fontWeight: 700,
-                            color: '#1e293b',
-                            marginBottom: '16px'
-                          }}>
-                            {impact.category}
-                          </div>
-                          <div style={{
-                            fontSize: '1.35rem',
-                            color: '#64748b',
-                            marginBottom: '20px'
-                          }}>
-                            {impact.metric}
-                          </div>
-                          <div style={{
-                            fontSize: '1.2rem',
-                            color: '#475569',
-                            lineHeight: '1.8'
-                          }}>
-                            {impact.description}
-                          </div>
+                      <div style={{
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '16px',
+                        padding: '32px',
+                        border: '2px solid #e5e7eb'
+                      }}>
+                        <div style={{ marginBottom: '24px' }}>
+                          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>
+                            📊 Expected Business Impact
+                          </h2>
                         </div>
-                      ))}
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '20px'
+                        }}>
+                          {Object.entries(results.businessImpact).map(([key, metric], index) => (
+                            <div
+                              key={key}
+                              style={{
+                                background: '#f9fafb',
+                                border: '2px solid #e5e7eb',
+                                borderRadius: '10px',
+                                padding: '20px 16px',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <div style={{
+                                fontSize: '2.25rem',
+                                fontWeight: 700,
+                                color: '#3b82f6',
+                                marginBottom: '6px'
+                              }}>
+                                {metric.value}
+                              </div>
+                              <div style={{
+                                fontSize: '0.9rem',
+                                fontWeight: 600,
+                                color: '#1e293b',
+                                marginBottom: '8px',
+                                lineHeight: '1.3'
+                              }}>
+                                {metric.label}
+                              </div>
+                              <div style={{
+                                fontSize: '0.75rem',
+                                color: '#64748b',
+                                fontStyle: 'italic',
+                                lineHeight: '1.4'
+                              }}>
+                                {metric.drivers?.join(' • ')}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {/* ROI Calculator Slide */}
                   {slides[currentSlide].id === 'roi' && (
                     <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100%'
+                      width: '100%',
+                      height: '100%',
+                      overflow: 'auto',
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '20px'
                     }}>
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        borderRadius: '16px',
-                        padding: '48px',
-                        maxWidth: '1200px',
-                        textAlign: 'center'
-                      }}>
-                        <div style={{
-                          fontSize: '3rem',
-                          fontWeight: 700,
-                          color: '#1e293b',
-                          marginBottom: '24px'
-                        }}>
-                          Interactive ROI Calculator
-                        </div>
-                        <div style={{
-                          fontSize: '1.6rem',
-                          color: '#64748b',
-                          lineHeight: '1.8'
-                        }}>
-                          Calculate your return on investment with Databricks platform maturity improvements
-                        </div>
-                      </div>
+                      <ROICalculator 
+                        results={results} 
+                        assessment={results?.assessmentInfo}
+                      />
                     </div>
                   )}
 
                   {/* Risk Heatmap Slide */}
                   {slides[currentSlide].id === 'risk-heatmap' && (
                     <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100%'
+                      width: '100%',
+                      height: '100%',
+                      overflow: 'auto',
+                      background: 'white',
+                      borderRadius: '16px',
+                      padding: '20px'
                     }}>
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        borderRadius: '16px',
-                        padding: '48px',
-                        maxWidth: '1200px',
-                        textAlign: 'center'
-                      }}>
-                        <div style={{
-                          fontSize: '3rem',
-                          fontWeight: 700,
-                          color: '#1e293b',
-                          marginBottom: '24px'
-                        }}>
-                          Risk Heatmap
-                        </div>
-                        <div style={{
-                          fontSize: '1.6rem',
-                          color: '#64748b',
-                          lineHeight: '1.8'
-                        }}>
-                          Visualize and prioritize risks across your Databricks implementation
-                        </div>
-                      </div>
+                      <RiskHeatmap 
+                        results={results} 
+                        assessment={results?.assessmentInfo}
+                      />
                     </div>
                   )}
                 </motion.div>

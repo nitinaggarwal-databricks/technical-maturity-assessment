@@ -279,7 +279,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         return;
       }
 
-      toast.success(`Welcome back, ${result.user.firstName || result.user.email}!`);
       onLoginSuccess(result.user);
       onClose();
     } else {

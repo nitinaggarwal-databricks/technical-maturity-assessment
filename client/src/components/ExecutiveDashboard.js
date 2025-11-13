@@ -558,7 +558,7 @@ const Button = styled.button`
 // COMPONENT
 // =====================
 
-const ExecutiveDashboard = ({ results, assessment }) => {
+const ExecutiveDashboard = ({ results, assessment, hideImperatives = false }) => {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [animatedRevenue, setAnimatedRevenue] = useState(0);
   const [animatedRisks, setAnimatedRisks] = useState(0);
@@ -816,58 +816,60 @@ const ExecutiveDashboard = ({ results, assessment }) => {
       </CompetitiveSection>
 
       {/* Top 3 Strategic Imperatives */}
-      <ImperativesSection>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <SectionTitle style={{ margin: 0 }}>
-            <FiZap />
-            Top 3 Strategic Imperatives
-          </SectionTitle>
-          <AddButton onClick={handleAdd}>
-            <FiPlus size={16} />
-            Add Imperative
-          </AddButton>
-        </div>
-        {strategicImperatives.map((imperative, index) => (
-          <ImperativeCard
-            key={imperative.id || index}
-            $color={imperative.color}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-          >
-            <CardActions>
-              <IconButton onClick={() => handleEdit('imperative', imperative, index)} title="Edit">
-                <FiEdit2 size={14} />
-              </IconButton>
-              <IconButton onClick={() => handleDelete('imperative', index)} title="Delete">
-                <FiTrash2 size={14} />
-              </IconButton>
-            </CardActions>
-            <ImperativeHeader>
-              <ImperativeNumber $color={imperative.color}>
-                {index + 1}
-              </ImperativeNumber>
-              <ImperativeContent>
-                <ImperativeTitle>{imperative.title}</ImperativeTitle>
-                <ImperativeImpact>
-                  <ImpactBadge $bg="#dcfce7" $color="#166534">
-                    <FiDollarSign size={12} style={{ display: 'inline', marginRight: '2px' }} />
-                    {imperative.impact}
-                  </ImpactBadge>
-                  <ImpactBadge $bg="#dbeafe" $color="#1e40af">
-                    <FiClock size={12} style={{ display: 'inline', marginRight: '2px' }} />
-                    {imperative.timeline}
-                  </ImpactBadge>
-                  <ImpactBadge $bg="#fef3c7" $color="#92400e">
-                    <FiTarget size={12} style={{ display: 'inline', marginRight: '2px' }} />
-                    {imperative.priority}
-                  </ImpactBadge>
-                </ImperativeImpact>
-              </ImperativeContent>
-            </ImperativeHeader>
-          </ImperativeCard>
-        ))}
-      </ImperativesSection>
+      {!hideImperatives && (
+        <ImperativesSection>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <SectionTitle style={{ margin: 0 }}>
+              <FiZap />
+              Top 3 Strategic Imperatives
+            </SectionTitle>
+            <AddButton onClick={handleAdd}>
+              <FiPlus size={16} />
+              Add Imperative
+            </AddButton>
+          </div>
+          {strategicImperatives.map((imperative, index) => (
+            <ImperativeCard
+              key={imperative.id || index}
+              $color={imperative.color}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+            >
+              <CardActions>
+                <IconButton onClick={() => handleEdit('imperative', imperative, index)} title="Edit">
+                  <FiEdit2 size={14} />
+                </IconButton>
+                <IconButton onClick={() => handleDelete('imperative', index)} title="Delete">
+                  <FiTrash2 size={14} />
+                </IconButton>
+              </CardActions>
+              <ImperativeHeader>
+                <ImperativeNumber $color={imperative.color}>
+                  {index + 1}
+                </ImperativeNumber>
+                <ImperativeContent>
+                  <ImperativeTitle>{imperative.title}</ImperativeTitle>
+                  <ImperativeImpact>
+                    <ImpactBadge $bg="#dcfce7" $color="#166534">
+                      <FiDollarSign size={12} style={{ display: 'inline', marginRight: '2px' }} />
+                      {imperative.impact}
+                    </ImpactBadge>
+                    <ImpactBadge $bg="#dbeafe" $color="#1e40af">
+                      <FiClock size={12} style={{ display: 'inline', marginRight: '2px' }} />
+                      {imperative.timeline}
+                    </ImpactBadge>
+                    <ImpactBadge $bg="#fef3c7" $color="#92400e">
+                      <FiTarget size={12} style={{ display: 'inline', marginRight: '2px' }} />
+                      {imperative.priority}
+                    </ImpactBadge>
+                  </ImperativeImpact>
+                </ImperativeContent>
+              </ImperativeHeader>
+            </ImperativeCard>
+          ))}
+        </ImperativesSection>
+      )}
 
       {/* Edit Modal */}
       {modalOpen && (

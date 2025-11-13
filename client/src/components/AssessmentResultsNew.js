@@ -22,9 +22,12 @@ import {
   FiChevronUp,
   FiClock,
   FiBarChart2,
-  FiMonitor
+  FiMonitor,
+  FiPrinter
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import * as assessmentService from '../services/assessmentService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
 import Footer from './Footer';
@@ -37,57 +40,53 @@ import Footer from './Footer';
 const PrintStyles = styled.div`
   @media print {
     @page {
-      size: letter;
-      margin: 0.5in;
+      size: letter landscape;
+      margin: 0;
     }
     
     /* Enable background graphics */
     * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
     }
     
-    /* Hide navigation, buttons, and interactive elements */
-    nav,
-    button,
-    .no-print,
-    [class*="ActionButton"],
-    [class*="NavigationButton"],
-    [class*="ExitButton"],
-    [class*="ClickArea"] {
+    /* Hide EVERYTHING first */
+    body * {
+      visibility: hidden !important;
+    }
+    
+    /* Show ONLY the print-all-slides container */
+    .print-all-slides,
+    .print-all-slides * {
+      visibility: visible !important;
+    }
+    
+    .print-all-slides {
+      display: block !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    
+    /* Hide the single slideshow view */
+    .slideshow-single-slide {
       display: none !important;
     }
     
-    /* Optimize spacing for print */
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    
-    /* Ensure content flows properly - keep sections together */
-    section,
-    article,
-    div[class*="Section"],
-    div[class*="PillarCard"],
-    div[class*="Card"],
-    [class*="MaturityCard"],
-    [class*="InsightCard"],
-    [class*="RecommendationCard"] {
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-    
-    /* Prevent orphaned headers */
-    h1, h2, h3, h4, h5, h6 {
-      page-break-after: avoid !important;
-      break-after: avoid !important;
-    }
-    
-    /* Show main report content */
-    [class*="ReportContainer"] {
-      padding: 0 !important;
-      max-width: 100% !important;
+    /* Style each print slide */
+    .print-single-slide {
+      width: 100vw;
+      height: 100vh;
+      page-break-after: always;
+      page-break-inside: avoid;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
     }
   }
 `;
@@ -102,9 +101,11 @@ const PageContainer = styled.div`
   }
   
   @media print {
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
     background: white !important;
-    min-height: auto;
+    min-height: 0 !important;
+    height: auto !important;
   }
 `;
 
@@ -159,7 +160,7 @@ const ReportHeader = styled.div`
 
   /* 🖨️ PRINT OPTIMIZATION */
   @media print {
-    display: none !important;
+      display: none !important;
   }
 `;
 
@@ -1369,7 +1370,12 @@ const SlideContainer = styled(motion.div)`
   justify-content: center;
   
   @media print {
-    display: none !important;
+    position: relative !important;
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex !important;
   }
 `;
 
@@ -1512,6 +1518,38 @@ const ExitButton = styled(motion.button)`
     transform: scale(1.15);
     background: rgba(239, 68, 68, 1);
     box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+`;
+
+const PrintButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 120px;
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  
+  @media print {
+    display: none !important;
+  }
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+    background: rgba(16, 185, 129, 1);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.6);
   }
 `;
 
@@ -1871,6 +1909,109 @@ const AssessmentResultsNew = () => {
     toast.success('Phase item deleted!');
   };
 
+
+  const handlePrintSlideshow = async () => {
+    const toastId = toast.loading('Generating PDF from slideshow... This may take a minute', {
+      position: 'top-center'
+    });
+    
+    try {
+      // Get the slideshow container
+      const slideshowContainer = document.querySelector('.slideshow-single-slide');
+      if (!slideshowContainer) {
+        throw new Error('Slideshow not found');
+      }
+      
+      // Create PDF (landscape letter size: 11 x 8.5 inches)
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'in',
+        format: 'letter'
+      });
+      
+      const originalSlide = currentSlide;
+      
+      // Loop through all 20 slides
+      for (let i = 0; i < 20; i++) {
+        toast.loading(`Capturing slide ${i + 1} of 20...`, { id: toastId });
+        
+        // Navigate to slide
+        setCurrentSlide(i);
+        
+        // Wait for slide animation to complete
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide ALL UI elements before screenshot using data attribute
+        const uiElements = slideshowContainer.querySelectorAll('[data-hide-on-print="true"]');
+        console.log(`🔍 Found ${uiElements.length} elements with data-hide-on-print attribute`);
+        uiElements.forEach((el, idx) => {
+          console.log(`  ${idx + 1}. ${el.tagName} - ${el.className}`);
+          el.style.display = 'none';
+        });
+        
+        // Wait a bit for DOM update
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Capture screenshot
+        const canvas = await html2canvas(slideshowContainer, {
+          backgroundColor: null,
+          scale: 2, // Higher quality
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+          foreignObjectRendering: true
+        });
+        
+        // Show UI elements again
+        uiElements.forEach(el => {
+          el.style.display = '';
+        });
+        
+        // Convert to image
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate dimensions to maintain aspect ratio
+        const canvasAspectRatio = canvas.width / canvas.height;
+        const pdfWidth = 11; // inches (landscape letter)
+        const pdfHeight = 8.5; // inches
+        const pdfAspectRatio = pdfWidth / pdfHeight;
+        
+        let imgWidth, imgHeight, xOffset, yOffset;
+        
+        if (canvasAspectRatio > pdfAspectRatio) {
+          // Canvas is wider - fit to width
+          imgWidth = pdfWidth;
+          imgHeight = pdfWidth / canvasAspectRatio;
+          xOffset = 0;
+          yOffset = (pdfHeight - imgHeight) / 2;
+        } else {
+          // Canvas is taller - fit to height
+          imgHeight = pdfHeight;
+          imgWidth = pdfHeight * canvasAspectRatio;
+          xOffset = (pdfWidth - imgWidth) / 2;
+          yOffset = 0;
+        }
+        
+        // Add to PDF with correct aspect ratio
+        if (i > 0) {
+          pdf.addPage();
+        }
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+      }
+      
+      // Restore original slide
+      setCurrentSlide(originalSlide);
+      
+      // Download PDF
+      const fileName = `${results.assessmentInfo?.assessmentName || 'Maturity-Report'}-Slideshow.pdf`;
+      pdf.save(fileName);
+      
+      toast.success('PDF downloaded successfully!', { id: toastId });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF', { id: toastId });
+    }
+  };
 
   const handleExportExcel = async () => {
     try {
@@ -2827,6 +2968,13 @@ const AssessmentResultsNew = () => {
   const roadmapPhases = getRoadmapPhases();
 
   // Get pillar-specific results
+  // Helper function to extract text from recommendation items
+  const getRecommendationText = (item) => {
+    if (typeof item === 'string') return item;
+    // Try different possible field names
+    return item.name || item.feature || item.action || item.title || item.description || JSON.stringify(item);
+  };
+
   const getPillarData = (pillarId) => {
     const resultsData = results?.data || results;
     
@@ -2857,15 +3005,27 @@ const AssessmentResultsNew = () => {
     // FIX: Backend returns theGood/theBad in prioritizedActions array
     // prioritizedActions is the source of truth for pillar-specific good/bad/recommendations
     // NEW: Also includes databricksFeatures, quickWins, specificRecommendations
+    const databricksFeatures = prioritized?.databricksFeatures || [];
+    const actions = prioritized?.actions || [];
+    
+    // Combine recommendations: prioritize databricksFeatures, then fall back to actions
+    const combinedRecommendations = databricksFeatures.length > 0 ? databricksFeatures : actions;
+    
+    // Combine nextSteps: prioritize specificRecommendations, then fall back to generic nextSteps
+    const specificRecs = prioritized?.specificRecommendations || [];
+    const genericNextSteps = prioritized?.nextSteps || [];
+    const combinedNextSteps = specificRecs.length > 0 ? specificRecs : genericNextSteps;
+    
     const data = {
       theGood: prioritized?.theGood || [],  // Direct access from prioritizedActions
       theBad: prioritized?.theBad || [],    // Direct access from prioritizedActions
-      recommendations: prioritized?.actions || [],  // Actions from prioritizedActions
+      recommendations: combinedRecommendations,  // Combined recommendations
+      nextSteps: combinedNextSteps,  // Combined next steps
       // NEW: Databricks-specific features
-      databricksFeatures: prioritized?.databricksFeatures || [],
+      databricksFeatures: databricksFeatures,
       quickWins: prioritized?.quickWins || [],
       strategicMoves: prioritized?.strategicMoves || [],
-      specificRecommendations: prioritized?.specificRecommendations || [],
+      specificRecommendations: specificRecs,
       nextLevelFeatures: prioritized?.nextLevelFeatures || [],
       databricksSource: prioritized?._source || null,
       databricksDocsUrl: prioritized?._docsUrl || null
@@ -2873,6 +3033,18 @@ const AssessmentResultsNew = () => {
     
     console.log(`[AssessmentResultsNew] Final data for ${pillarId}:`, data);
     console.log(`[AssessmentResultsNew] Databricks features for ${pillarId}:`, data.databricksFeatures?.length || 0);
+    console.log(`[AssessmentResultsNew] Recommendations for ${pillarId}:`, data.recommendations?.length || 0);
+    console.log(`[AssessmentResultsNew] Sample recommendations:`, data.recommendations?.slice(0, 2));
+    
+    // Check if recommendations are personalized or generic
+    if (data.recommendations.length === 0 && data.databricksFeatures.length === 0) {
+      console.warn(`⚠️ [${pillarId}] NO RECOMMENDATIONS FOUND! This assessment may not have been fully completed or needs to be refreshed.`);
+      console.warn(`⚠️ [${pillarId}] Click the green "Refresh" button to regenerate personalized recommendations based on your assessment data.`);
+    } else if (data.recommendations.length > 0) {
+      const sampleText = JSON.stringify(data.recommendations[0]);
+      console.log(`📊 [${pillarId}] First recommendation preview:`, sampleText.substring(0, 100));
+    }
+    
     return data;
   };
 
@@ -4926,64 +5098,32 @@ const AssessmentResultsNew = () => {
                             </div>
                           )}
                         </div>
-                        
-                        {/* Detailed Technical Recommendations */}
-                        {data.recommendations && data.recommendations.length > 0 && (
-                          <div style={{ marginTop: '24px' }}>
-                            <div style={{ 
-                              fontSize: '0.9rem', 
-                              fontWeight: 700, 
-                              color: '#1e40af', 
-                              marginBottom: '12px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px'
-                            }}>
-                              <span style={{ fontSize: '1.1rem' }}>💡</span> SME Recommendations
-                            </div>
-                            <ul style={{ 
-                              listStyle: 'none', 
-                              padding: 0, 
-                              margin: 0,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '12px'
-                            }}>
-                              {data.recommendations.map((item, idx) => (
-                                <li key={idx} style={{ 
-                                  background: 'white',
-                                  padding: '16px',
-                                  borderRadius: '8px',
-                                  border: '1px solid #e5e7eb',
-                                  fontSize: '0.85rem',
-                                  lineHeight: '1.6',
-                                  color: '#374151',
-                                  fontFamily: 'monospace',
-                                  position: 'relative',
-                                  paddingLeft: '36px'
-                                }}>
-                                  <span style={{ 
-                                    position: 'absolute',
-                                    left: '12px',
-                                    top: '16px',
-                                    fontWeight: 700,
-                                    color: '#3b82f6'
-                                  }}>{idx + 1}.</span>
-                                  {typeof item === 'string' ? item : item.action || item.title}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     ) : (
                       <ul>
                         {data.recommendations.length > 0 ? (
                           data.recommendations.slice(0, 4).map((item, idx) => (
-                            <li key={idx}>{typeof item === 'string' ? item : item.action || item.title}</li>
+                            <li key={idx}>{getRecommendationText(item)}</li>
                           ))
                         ) : (
-                          <li>Complete assessment to see recommendations</li>
+                          <li>
+                            No recommendations generated. 
+                            <button 
+                              onClick={() => window.location.reload()} 
+                              style={{ 
+                                marginLeft: '8px', 
+                                padding: '4px 12px', 
+                                background: '#10b981', 
+                                color: 'white', 
+                                border: 'none', 
+                                borderRadius: '4px', 
+                                cursor: 'pointer',
+                                fontSize: '0.85rem'
+                              }}
+                            >
+                              Click Refresh button above or reload page
+                            </button>
+                          </li>
                         )}
                       </ul>
                     )}
@@ -5468,8 +5608,8 @@ const AssessmentResultsNew = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <ClickArea $direction="left" onClick={previousSlide} />
-            <ClickArea $direction="right" onClick={nextSlide} />
+            <ClickArea $direction="left" onClick={previousSlide} data-hide-on-print="true" />
+            <ClickArea $direction="right" onClick={nextSlide} data-hide-on-print="true" />
             
             {/* Navigation Buttons - Show on hover */}
             <NavigationButton
@@ -5477,6 +5617,7 @@ const AssessmentResultsNew = () => {
               onClick={previousSlide}
               disabled={currentSlide === 0}
               whileTap={{ scale: 0.9 }}
+              data-hide-on-print="true"
             >
               ←
             </NavigationButton>
@@ -5485,6 +5626,7 @@ const AssessmentResultsNew = () => {
               $direction="right"
               onClick={nextSlide}
               whileTap={{ scale: 0.9 }}
+              data-hide-on-print="true"
             >
               →
             </NavigationButton>
@@ -5511,20 +5653,32 @@ const AssessmentResultsNew = () => {
                 return '';
               })()}
             </SlideHeading>
-            <SlideCounter>{currentSlide + 1} / 20</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 20</SlideCounter>
 
-            {/* Exit Button - Shows on hover on last slide */}
-            {currentSlide === 19 && (
+            {/* Print Button - Always visible on hover */}
+            <PrintButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrintSlideshow();
+              }}
+              whileTap={{ scale: 0.9 }}
+              title="Print all 20 slides"
+              data-hide-on-print="true"
+            >
+              <FiPrinter />
+            </PrintButton>
+
+            {/* Exit Button - Shows on hover on all slides */}
               <ExitButton
                 onClick={(e) => {
                   e.stopPropagation();
                   exitPresentation();
                 }}
                 whileTap={{ scale: 0.9 }}
+              data-hide-on-print="true"
               >
                 ×
               </ExitButton>
-            )}
 
             <SlideContent>
               <AnimatePresence mode="wait">
@@ -5574,44 +5728,44 @@ const AssessmentResultsNew = () => {
                         maxWidth: '1300px',
                         marginTop: '40px'
                       }}>
-                        {/* Current Maturity Card */}
-                        <div style={{
+                      {/* Current Maturity Card */}
+                      <div style={{
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
                           padding: '28px 24px',
-                          display: 'flex',
-                          flexDirection: 'column',
+                        display: 'flex',
+                        flexDirection: 'column',
                           gap: '12px',
                           minHeight: '280px',
                           maxHeight: '320px',
                           overflow: 'hidden'
-                        }}>
-                          <div style={{
+                      }}>
+                        <div style={{
                             width: '44px',
                             height: '44px',
                             borderRadius: '12px',
                             background: 'rgba(59, 130, 246, 0.3)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                             fontSize: '1.3rem',
                             marginBottom: '4px',
                             flexShrink: 0
-                          }}>
-                            🎯
-                          </div>
-                          <div style={{
+                        }}>
+                          🎯
+                        </div>
+                        <div style={{
                             fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
-                            textTransform: 'uppercase',
+                          textTransform: 'uppercase',
                             letterSpacing: '0.05em',
                             flexShrink: 0
-                          }}>
+                        }}>
                             CURRENT MATURITY
-                          </div>
-                          <div style={{
+                        </div>
+                        <div style={{
                             fontSize: '1.6rem',
                             fontWeight: 800,
                             color: 'white',
@@ -5619,8 +5773,8 @@ const AssessmentResultsNew = () => {
                             flexShrink: 0
                           }}>
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
-                          </div>
-                          <div style={{
+                        </div>
+                        <div style={{
                             fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.5',
@@ -5632,47 +5786,47 @@ const AssessmentResultsNew = () => {
                           }}>
                             {(resultsData?.maturitySummary?.current?.description || 
                              'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 180)}
-                          </div>
                         </div>
+                      </div>
 
-                        {/* Target Maturity Card */}
-                        <div style={{
+                      {/* Target Maturity Card */}
+                      <div style={{
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
                           padding: '28px 24px',
-                          display: 'flex',
-                          flexDirection: 'column',
+                        display: 'flex',
+                        flexDirection: 'column',
                           gap: '12px',
                           minHeight: '280px',
                           maxHeight: '320px',
                           overflow: 'hidden'
-                        }}>
-                          <div style={{
+                      }}>
+                        <div style={{
                             width: '44px',
                             height: '44px',
                             borderRadius: '12px',
                             background: 'rgba(16, 185, 129, 0.3)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                             fontSize: '1.3rem',
                             marginBottom: '4px',
                             flexShrink: 0
-                          }}>
-                            📈
-                          </div>
-                          <div style={{
+                        }}>
+                          📈
+                        </div>
+                        <div style={{
                             fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
-                            textTransform: 'uppercase',
+                          textTransform: 'uppercase',
                             letterSpacing: '0.05em',
                             flexShrink: 0
-                          }}>
+                        }}>
                             TARGET MATURITY
-                          </div>
-                          <div style={{
+                        </div>
+                        <div style={{
                             fontSize: '1.6rem',
                             fontWeight: 800,
                             color: 'white',
@@ -5680,8 +5834,8 @@ const AssessmentResultsNew = () => {
                             flexShrink: 0
                           }}>
                             Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Optimize'}
-                          </div>
-                          <div style={{
+                        </div>
+                        <div style={{
                             fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.5',
@@ -5693,56 +5847,56 @@ const AssessmentResultsNew = () => {
                           }}>
                             {(resultsData?.maturitySummary?.target?.description || 
                              'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 180)}
-                          </div>
                         </div>
+                      </div>
 
-                        {/* Improvement Potential Card */}
-                        <div style={{
+                      {/* Improvement Potential Card */}
+                      <div style={{
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
                           padding: '28px 24px',
-                          display: 'flex',
-                          flexDirection: 'column',
+                        display: 'flex',
+                        flexDirection: 'column',
                           gap: '12px',
                           minHeight: '280px',
                           maxHeight: '320px',
                           overflow: 'hidden'
-                        }}>
-                          <div style={{
+                      }}>
+                        <div style={{
                             width: '44px',
                             height: '44px',
                             borderRadius: '12px',
                             background: 'rgba(245, 158, 11, 0.3)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                             fontSize: '1.3rem',
                             marginBottom: '4px',
                             flexShrink: 0
-                          }}>
-                            ⚡
-                          </div>
-                          <div style={{
+                        }}>
+                          ⚡
+                        </div>
+                        <div style={{
                             fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
-                            textTransform: 'uppercase',
+                          textTransform: 'uppercase',
                             letterSpacing: '0.05em',
                             flexShrink: 0
-                          }}>
+                        }}>
                             IMPROVEMENT POTENTIAL
-                          </div>
-                          <div style={{
+                        </div>
+                        <div style={{
                             fontSize: '1.6rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
                             flexShrink: 0
-                          }}>
-                            +{improvementLevel} Level
-                          </div>
-                          <div style={{
+                        }}>
+                          +{improvementLevel} Level
+                        </div>
+                        <div style={{
                             fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.5',
@@ -5754,7 +5908,7 @@ const AssessmentResultsNew = () => {
                           }}>
                             {(resultsData?.maturitySummary?.improvement?.description || 
                              'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 180)}
-                          </div>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -5808,12 +5962,12 @@ const AssessmentResultsNew = () => {
                           gap: '24px',
                           padding: '0 40px'
                         }}>
-                          {pillarsArray.map((pillar) => {
+                        {pillarsArray.map((pillar) => {
                             const categoryData = resultsData?.categoryDetails?.[pillar.id] || {};
                             const currentScore = (categoryData.currentScore || categoryData.score || 0).toFixed(1);
                             const futureScore = (categoryData.futureScore || categoryData.currentScore || categoryData.score || 0).toFixed(1);
-                            
-                            return (
+                          
+                          return (
                               <div key={pillar.id} style={{
                                 background: 'rgba(255, 255, 255, 0.95)',
                                 borderRadius: '12px',
@@ -5824,9 +5978,9 @@ const AssessmentResultsNew = () => {
                                 gap: '16px'
                               }}>
                                 {/* Pillar Header */}
-                                <div style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
                                   gap: '12px'
                                 }}>
                                   <span style={{ fontSize: '1.8rem' }}>{pillar.icon}</span>
@@ -5843,7 +5997,7 @@ const AssessmentResultsNew = () => {
                                 {/* Scores Container */}
                                 <div style={{
                                   display: 'flex',
-                                  gap: '16px',
+                                gap: '16px',
                                   justifyContent: 'space-around'
                                 }}>
                                   {/* Today Score */}
@@ -5855,18 +6009,18 @@ const AssessmentResultsNew = () => {
                                   }}>
                                     <div style={{
                                       fontSize: '0.75rem',
-                                      fontWeight: 600,
+                                fontWeight: 600,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
                                       letterSpacing: '0.5px'
-                                    }}>
+                              }}>
                                       TODAY
-                                    </div>
-                                    <div style={{
+                              </div>
+                                <div style={{
                                       background: pillar.color,
                                       color: 'white',
                                       padding: '8px 20px',
-                                      borderRadius: '8px',
+                                  borderRadius: '8px',
                                       fontSize: '1.5rem',
                                       fontWeight: 700,
                                       minWidth: '70px',
@@ -5878,9 +6032,9 @@ const AssessmentResultsNew = () => {
 
                                   {/* Tomorrow Score */}
                                   <div style={{
-                                    display: 'flex',
+                                  display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'center',
+                                  alignItems: 'center',
                                     gap: '8px'
                                   }}>
                                     <div style={{
@@ -5891,25 +6045,25 @@ const AssessmentResultsNew = () => {
                                       letterSpacing: '0.5px'
                                     }}>
                                       TOMORROW
-                                    </div>
-                                    <div style={{
-                                      background: 'transparent',
+                                </div>
+                                <div style={{
+                                  background: 'transparent',
                                       color: pillar.color,
                                       padding: '8px 20px',
-                                      borderRadius: '8px',
+                                  borderRadius: '8px',
                                       fontSize: '1.5rem',
-                                      fontWeight: 700,
+                                  fontWeight: 700,
                                       border: `2px solid ${pillar.color}`,
                                       minWidth: '70px',
                                       textAlign: 'center'
-                                    }}>
+                                }}>
                                       {futureScore}
                                     </div>
-                                  </div>
                                 </div>
                               </div>
-                            );
-                          })}
+                            </div>
+                          );
+                        })}
                         </div>
                       </div>
                     );
@@ -5992,13 +6146,13 @@ const AssessmentResultsNew = () => {
                                 <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
                                   <span style={{ position: 'absolute', left: 0 }}>•</span>
                                   {item}
-                                </div>
+                            </div>
                               ))}
                             </div>
                           </div>
                           
                           {/* Key Challenges */}
-                          <div style={{
+                            <div style={{
                             background: 'rgba(255, 255, 255, 0.95)',
                             borderRadius: '16px',
                             padding: '24px',
@@ -6016,38 +6170,38 @@ const AssessmentResultsNew = () => {
                                 </div>
                               ))}
                             </div>
+                            </div>
                           </div>
-                        </div>
-                        
+
                         {/* Bottom: Recommendations */}
-                        <div style={{
-                          background: 'rgba(255, 255, 255, 0.95)',
-                          borderRadius: '16px',
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
                           padding: '24px',
-                          border: `4px solid ${pillar.color}`,
+                            border: `4px solid ${pillar.color}`,
                           flex: 1.3,
                           overflow: 'auto'
                         }}>
                           <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
-                            Key Recommendations
-                          </div>
+                              Key Recommendations
+                            </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             {pillar.recommendations.slice(0, 8).map((rec, idx) => {
-                              let recText = '';
-                              if (typeof rec === 'string') {
-                                recText = rec;
-                              } else if (rec.name) {
-                                recText = rec.name;
-                                if (rec.description) {
-                                  recText += ` - ${rec.description}`;
-                                }
-                              } else {
-                                recText = rec.message || rec.recommendationText || rec.title || '';
-                              }
-                              
-                              return (
-                                <div key={idx} style={{
-                                  display: 'flex',
+                                  let recText = '';
+                                  if (typeof rec === 'string') {
+                                    recText = rec;
+                                  } else if (rec.name) {
+                                    recText = rec.name;
+                                    if (rec.description) {
+                                      recText += ` - ${rec.description}`;
+                                    }
+                                  } else {
+                                    recText = rec.message || rec.recommendationText || rec.title || '';
+                                  }
+                                  
+                                  return (
+                                    <div key={idx} style={{
+                                      display: 'flex',
                                   gap: '10px',
                                   alignItems: 'flex-start',
                                   fontSize: '0.9rem',
@@ -6064,16 +6218,16 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontWeight: 700,
+                                        fontWeight: 700,
                                     fontSize: '0.85rem'
                                   }}>
                                     {idx + 1}
                                   </div>
                                   <div style={{ flex: 1, paddingTop: '2px' }}>{recText}</div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                         </div>
                       </div>
                     );
@@ -6130,45 +6284,47 @@ const AssessmentResultsNew = () => {
                     
                     return (
                       <SlideContent>
-                        <div style={{
+                              <div style={{
                           background: 'rgba(255, 255, 255, 0.98)',
                           borderRadius: '20px',
-                          padding: '50px',
-                          maxWidth: '1600px',
+                          padding: '40px 60px',
+                          maxWidth: '2375px',
                           margin: '0 auto',
                           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
                         }}>
                           {/* Header with maturity levels scale */}
                           <div style={{
                             display: 'grid',
-                            gridTemplateColumns: '320px 1fr',
-                            gap: '24px',
-                            marginBottom: '24px',
-                            paddingBottom: '20px',
+                            gridTemplateColumns: '280px 1fr',
+                            gap: '40px',
+                            marginBottom: '16px',
+                            paddingBottom: '16px',
                             borderTop: '3px solid #e5e7eb'
                           }}>
                             <div></div>
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              padding: '0 16px'
+                              padding: '0 4px',
+                              gap: '16px'
                             }}>
                               {['1. Initial', '2. Managed', '3. Defined', '4. Quantified', '5. Optimized'].map((level) => (
                                 <div key={level} style={{
-                                  fontSize: '0.95rem',
+                                  fontSize: '0.75rem',
                                   fontWeight: 600,
                                   color: '#64748b',
-                                  textAlign: 'center',
-                                  flex: 1
-                                }}>
+                                textAlign: 'center',
+                                  flex: 1,
+                                  whiteSpace: 'nowrap'
+                              }}>
                                   {level}
-                                </div>
+                              </div>
                               ))}
-                            </div>
                           </div>
-                          
+                        </div>
+
                           {/* Dimension rows */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {dimensions.map((dimension, dimIdx) => {
                               const dimensionScores = resultsData?.categoryDetails?.[pillarDef.id]?.dimensions?.[dimension.id] || {};
                               const currentScore = (dimensionScores.currentScore || 0).toFixed(1);
@@ -6179,16 +6335,16 @@ const AssessmentResultsNew = () => {
                               return (
                                 <div key={dimIdx} style={{
                                   display: 'grid',
-                                  gridTemplateColumns: '320px 1fr',
-                                  gap: '24px',
+                                  gridTemplateColumns: '280px 1fr',
+                                  gap: '40px',
                                   alignItems: 'center'
                                 }}>
                                   {/* Dimension Name */}
-                                  <div style={{
-                                    fontSize: '1.3rem',
+                          <div style={{
+                                    fontSize: '1.1rem',
                                     fontWeight: 600,
                                     color: '#1e293b',
-                                    padding: '20px',
+                                    padding: '14px 18px',
                                     background: '#f8fafc',
                                     borderRadius: '12px',
                                     borderLeft: `5px solid ${pillarDef.color}`
@@ -6197,25 +6353,25 @@ const AssessmentResultsNew = () => {
                                   </div>
                                   
                                   {/* Progress Bars Container */}
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                     {/* TODAY Bar */}
                                     <div style={{ position: 'relative' }}>
-                                      <div style={{
+                            <div style={{
                                         position: 'absolute',
                                         left: '12px',
                                         top: '50%',
                                         transform: 'translateY(-50%)',
                                         fontSize: '0.85rem',
-                                        fontWeight: 700,
-                                        color: '#1e293b',
+                              fontWeight: 700,
+                              color: '#1e293b',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.5px',
                                         zIndex: 2,
                                         textShadow: '0 1px 2px rgba(255,255,255,0.8)'
-                                      }}>
+                            }}>
                                         TODAY
-                                      </div>
-                                      <div style={{
+                            </div>
+                              <div style={{
                                         position: 'absolute',
                                         right: '12px',
                                         top: '50%',
@@ -6227,10 +6383,10 @@ const AssessmentResultsNew = () => {
                                         textShadow: '0 1px 2px rgba(255,255,255,0.8)'
                                       }}>
                                         {currentScore}
-                                      </div>
-                                      <div style={{
+                                  </div>
+                              <div style={{
                                         width: '100%',
-                                        height: '40px',
+                                        height: '32px',
                                         background: '#e5e7eb',
                                         borderRadius: '10px',
                                         overflow: 'hidden',
@@ -6242,12 +6398,12 @@ const AssessmentResultsNew = () => {
                                           background: `linear-gradient(90deg, ${pillarDef.color} 0%, ${pillarDef.color}dd 100%)`,
                                           transition: 'width 0.5s ease'
                                         }} />
-                                      </div>
-                                    </div>
-                                    
+                              </div>
+                          </div>
+
                                     {/* TOMORROW Bar */}
                                     <div style={{ position: 'relative' }}>
-                                      <div style={{
+                          <div style={{
                                         position: 'absolute',
                                         left: '12px',
                                         top: '50%',
@@ -6261,21 +6417,21 @@ const AssessmentResultsNew = () => {
                                       }}>
                                         TOMORROW
                                       </div>
-                                      <div style={{
+                            <div style={{
                                         position: 'absolute',
                                         right: '12px',
                                         top: '50%',
                                         transform: 'translateY(-50%)',
                                         fontSize: '1rem',
-                                        fontWeight: 700,
+                              fontWeight: 700,
                                         color: pillarDef.color,
                                         zIndex: 2
-                                      }}>
+                            }}>
                                         {futureScore}
-                                      </div>
+                            </div>
                                       <div style={{
                                         width: '100%',
-                                        height: '40px',
+                                        height: '32px',
                                         background: '#e5e7eb',
                                         borderRadius: '10px',
                                         overflow: 'hidden',
@@ -6321,9 +6477,9 @@ const AssessmentResultsNew = () => {
                     console.log(`[Slideshow] Next Steps for ${pillarDef.id}:`, nextSteps?.length || 0);
                     
                     return (
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
+                              <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
                         gap: '20px',
                         paddingTop: '50px',
                         maxWidth: '1200px',
@@ -6340,8 +6496,8 @@ const AssessmentResultsNew = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '12px'
-                        }}>
+                                gap: '12px'
+                              }}>
                           <span style={{ fontSize: '3rem' }}>🎯</span>
                           Next Steps
                         </div>
@@ -6353,12 +6509,12 @@ const AssessmentResultsNew = () => {
                             gap: '20px'
                           }}>
                             {nextSteps.slice(0, 6).map((step, idx) => (
-                              <div key={idx} style={{
+                                  <div key={idx} style={{
                                 background: 'rgba(255, 255, 255, 0.95)',
                                 borderRadius: '16px',
                                 padding: '24px',
                                 border: `4px solid ${pillarDef.color}`,
-                                display: 'flex',
+                                    display: 'flex',
                                 gap: '16px',
                                 alignItems: 'flex-start',
                                 minHeight: '140px'
@@ -6379,30 +6535,30 @@ const AssessmentResultsNew = () => {
                                   {idx + 1}
                                 </div>
                                 <div style={{
-                                  fontSize: '1.2rem',
+                                      fontSize: '1.2rem',
                                   color: '#1e293b',
                                   lineHeight: '1.7',
                                   flex: 1
-                                }}>
+                                    }}>
                                   {step}
                                 </div>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div style={{
+                            ) : (
+                              <div style={{
                             background: 'rgba(255, 255, 255, 0.95)',
                             borderRadius: '16px',
                             padding: '40px',
-                            textAlign: 'center',
+                                textAlign: 'center',
                             fontSize: '1.3rem',
                             color: '#64748b',
                             fontStyle: 'italic'
-                          }}>
+                              }}>
                             No specific next steps available for this pillar
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
                     );
                   })()}
                 </motion.div>

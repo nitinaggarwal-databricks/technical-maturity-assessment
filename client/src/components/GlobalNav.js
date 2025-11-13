@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -400,6 +400,30 @@ const DropdownDivider = styled.div`
   margin: 8px 0;
 `;
 
+const DropdownEmailLink = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: left;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: #3b82f6;
+    background: #f3f4f6;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+`;
+
 const GlobalNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -432,7 +456,6 @@ const GlobalNav = () => {
   const handleLogout = () => {
     authService.logout();
     setCurrentUser(null);
-    toast.success('Logged out successfully');
     navigate('/');
     closeMobileMenu();
   };
@@ -932,19 +955,29 @@ const GlobalNav = () => {
                       <FiLogOut />
                       Logout
                     </DropdownItem>
+                    <DropdownDivider />
+                    <DropdownEmailLink 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText('nitin.aggarwal@databricks.com');
+                        toast.success('Email copied to clipboard!');
+                        setAdminDropdownOpen(false);
+                      }}
+                    >
+                      <FiMail />
+                      nitin.aggarwal@databricks.com
+                    </DropdownEmailLink>
                   </DropdownMenu>
                 </DropdownContainer>
               </>
             ) : (
               <>
                 <SecondaryCTAButton onClick={() => {
-                  toast.error('Please login to access the Dashboard');
                   setShowLoginModal(true);
                 }}>
                   Dashboard
                 </SecondaryCTAButton>
                 <SecondaryCTAButton onClick={() => {
-                  toast.error('Please login to try a sample assessment');
                   setShowLoginModal(true);
                 }}>
                   <FiPlay size={14} />
@@ -1019,14 +1052,12 @@ const GlobalNav = () => {
           <>
             <MobileSecondaryCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to access the Dashboard');
               setShowLoginModal(true);
             }}>
               Dashboard
             </MobileSecondaryCTAButton>
             <MobileSecondaryCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to try a sample assessment');
               setShowLoginModal(true);
             }}>
               <FiPlay size={16} />

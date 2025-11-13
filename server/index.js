@@ -1345,8 +1345,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('🧠 Generating intelligent, customer-specific recommendations...');
     const intelligentEngine = new IntelligentRecommendationEngine();
     
-    // 🚨 FIX: Generate intelligent recommendations for EACH COMPLETED PILLAR and populate categoryDetails
-    for (const area of fullyCompletedAreas) {
+    // 🚨 FIX: Generate intelligent recommendations for ANY PILLAR WITH RESPONSES (not just fully completed)
+    for (const area of areasWithResponses) {
       const pillarId = area.id;
       const pillarMaturity = categoryDetails[pillarId]?.score || 3;
       

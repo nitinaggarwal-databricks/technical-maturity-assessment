@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import Footer from './Footer';
 import {
   FiAward,
@@ -23,7 +25,8 @@ import {
   FiEdit2,
   FiTrash2,
   FiPlus,
-  FiMonitor
+  FiMonitor,
+  FiPrinter
 } from 'react-icons/fi';
 import * as assessmentService from '../services/assessmentService';
 import {
@@ -821,6 +824,12 @@ const SlideHeading = styled.div`
   fontWeight: 700;
   color: white;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 `;
 
 const SlideCounter = styled.div`
@@ -831,6 +840,12 @@ const SlideCounter = styled.div`
   color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 `;
 
 const ClickArea = styled.div`
@@ -861,7 +876,12 @@ const NavigationButton = styled(motion.button)`
   cursor: pointer;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
   
   &:hover {
     background: #3b82f6;
@@ -962,14 +982,54 @@ const ExitButton = styled(motion.button)`
   cursor: pointer;
   z-index: 10;
   pointer-events: auto;
-  opacity: 0.4;
+  opacity: 0;
   transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
 
   &:hover {
-    opacity: 1;
     transform: scale(1.15);
     background: rgba(239, 68, 68, 1);
     box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+`;
+
+const PrintButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 120px;
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  ${SlideContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: scale(1.15);
+    background: rgba(34, 197, 94, 1);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.6);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 `;
 
@@ -1079,7 +1139,7 @@ const IndustryBenchmarkingReport = () => {
   };
 
   const nextSlide = () => {
-    const totalSlides = 5; // Update this based on actual slide count
+    const totalSlides = 6; // 0-5: Title, Exec Summary+Position, Pillars, Vulnerabilities, Recommendations, Methodology
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
@@ -1119,6 +1179,110 @@ const IndustryBenchmarkingReport = () => {
       document.body.style.overflow = 'auto';
     };
   }, [presentationMode, currentSlide]);
+
+  // Print slideshow as PDF
+  const handlePrintSlideshow = async () => {
+    const pdf = new jsPDF('landscape', 'pt', 'letter');
+    const slideCount = 5; // Total slides
+    
+    toast.loading(`Generating PDF (0/${slideCount} slides)...`, { id: 'print-progress' });
+
+    try {
+      // Hide scrollbars during capture
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      
+      let isFirstPage = true;
+      
+      for (let i = 0; i < slideCount; i++) {
+        // Navigate to slide
+        setCurrentSlide(i);
+        
+        // Wait for slide to render
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Hide UI elements
+        const elementsToHide = document.querySelectorAll('[data-hide-on-print="true"]');
+        elementsToHide.forEach(el => {
+          el.style.display = 'none';
+        });
+        
+        // Wait for layout to settle
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Capture the entire body/viewport as it appears on screen
+        const canvas = await html2canvas(document.body, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          foreignObjectRendering: true,
+          backgroundColor: '#1e3a8a',
+          width: window.innerWidth,
+          height: window.innerHeight,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight,
+          x: 0,
+          y: 0,
+          scrollX: 0,
+          scrollY: 0
+        });
+        
+        // Restore UI elements
+        elementsToHide.forEach(el => {
+          el.style.display = '';
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate dimensions to maintain aspect ratio without stretching
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasAspectRatio = canvas.width / canvas.height;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
+        
+        let finalWidth, finalHeight, xOffset, yOffset;
+        
+        if (canvasAspectRatio > pdfAspectRatio) {
+          // Canvas is wider - fit to width
+          finalWidth = pdfWidth;
+          finalHeight = pdfWidth / canvasAspectRatio;
+          xOffset = 0;
+          yOffset = (pdfHeight - finalHeight) / 2;
+        } else {
+          // Canvas is taller - fit to height
+          finalHeight = pdfHeight;
+          finalWidth = pdfHeight * canvasAspectRatio;
+          xOffset = (pdfWidth - finalWidth) / 2;
+          yOffset = 0;
+        }
+        
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+        isFirstPage = false;
+        
+        // Add image with proper aspect ratio
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+        
+        toast.loading(`Generating PDF (${i + 1}/${slideCount} slides)...`, { id: 'print-progress' });
+      }
+      
+      // Restore scrollbars
+      document.body.style.overflow = originalOverflow;
+      
+      // Save PDF
+      const assessmentName = results?.assessmentInfo?.name || 'Industry-Benchmarking';
+      pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
+      
+      toast.success('PDF generated successfully!', { id: 'print-progress' });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // Restore scrollbars on error
+      document.body.style.overflow = 'auto';
+      toast.error('Failed to generate PDF', { id: 'print-progress' });
+    }
+  };
 
   // 🎨 CRUD Handlers
   const handleEdit = (type, item) => {
@@ -1319,21 +1483,10 @@ const IndustryBenchmarkingReport = () => {
           <div style={{ display: 'flex', gap: '12px' }}>
             <ActionButton
               onClick={() => { setPresentationMode(true); setCurrentSlide(0); document.body.style.overflow = 'hidden'; }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', color: 'white', border: 'none', padding: '0 16px', height: '40px' }}
             >
               <FiMonitor size={18} />
-              <span style={{ marginLeft: '8px' }}>Slideshow</span>
-            </ActionButton>
-            <ActionButton
-              onClick={handleDownloadReport}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: 'white', border: 'none', padding: '0 16px', height: '40px' }}
-            >
-              <FiDownload size={18} />
-              <span style={{ marginLeft: '8px' }}>Print / Save PDF</span>
+              <span style={{ marginLeft: '8px' }}>Start Slideshow</span>
             </ActionButton>
           </div>
         </PageHeader>
@@ -1949,11 +2102,12 @@ const IndustryBenchmarkingReport = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ClickArea $direction="left" onClick={previousSlide} />
-              <ClickArea $direction="right" onClick={nextSlide} />
+              <ClickArea data-hide-on-print="true" $direction="left" onClick={previousSlide} />
+              <ClickArea data-hide-on-print="true" $direction="right" onClick={nextSlide} />
               
               {/* Navigation Buttons - Show on hover */}
               <NavigationButton
+                data-hide-on-print="true"
                 $direction="left"
                 onClick={previousSlide}
                 disabled={currentSlide === 0}
@@ -1963,6 +2117,7 @@ const IndustryBenchmarkingReport = () => {
               </NavigationButton>
               
               <NavigationButton
+                data-hide-on-print="true"
                 $direction="right"
                 onClick={nextSlide}
                 whileTap={{ scale: 0.9 }}
@@ -1970,18 +2125,25 @@ const IndustryBenchmarkingReport = () => {
                 →
               </NavigationButton>
               
-              <SlideHeading>
-                {currentSlide === 0 ? 'Industry Benchmarking Report' :
-                 currentSlide === 1 ? 'Executive Summary' :
-                 currentSlide === 2 ? 'Competitive Analysis' :
-                 currentSlide === 3 ? 'Pillar Comparison' :
-                 'Strategic Recommendations'}
-              </SlideHeading>
-              <SlideCounter>{currentSlide + 1} / 5</SlideCounter>
+              <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 6</SlideCounter>
               
+              {/* Print Button - Shows on hover */}
+              <PrintButton
+                data-hide-on-print="true"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrintSlideshow();
+                }}
+                whileTap={{ scale: 0.9 }}
+                title="Print Slideshow as PDF"
+              >
+                <FiPrinter />
+              </PrintButton>
+              
+              {/* Exit Button - Shows on hover */}
               <ExitButton
+                data-hide-on-print="true"
                 onClick={exitPresentation}
-                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 ×
@@ -1995,18 +2157,341 @@ const IndustryBenchmarkingReport = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.3 }}
-                    style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '2rem' }}
+                    style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                    className="insights-slideshow-slide"
                   >
+                    {/* Title Slide */}
                     {currentSlide === 0 && (
-                      <div style={{ textAlign: 'center' }}>
-                        <h1 style={{ fontSize: '3.5rem', marginBottom: '20px' }}>Industry Benchmarking Report</h1>
+                      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                        <h1 style={{ fontSize: '3.5rem', marginBottom: '20px', color: 'white' }}>Industry Benchmarking Report</h1>
                         <p style={{ fontSize: '1.5rem', color: 'rgba(255,255,255,0.8)' }}>Data Platform Maturity Analysis</p>
                       </div>
                     )}
-                    {currentSlide === 1 && <div>Executive Summary Slide Content</div>}
-                    {currentSlide === 2 && <div>Competitive Analysis Slide Content</div>}
-                    {currentSlide === 3 && <div>Pillar Comparison Slide Content</div>}
-                    {currentSlide === 4 && <div>Strategic Recommendations Slide Content</div>}
+                    
+                    {/* Executive Summary + Competitive Position Slide */}
+                    {currentSlide === 1 && executiveSummary && competitivePositioning && (
+                      <div style={{ width: '100%', height: '100%', overflow: 'auto', padding: '20px 50px' }}>
+                        {/* Report Header */}
+                        <div style={{ marginBottom: '20px', padding: '20px 30px', background: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px' }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                            DATABRICKS MATURITY ASSESSMENT
+                          </div>
+                          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>
+                            Industry Benchmarking Report
+                          </h1>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                            Data Platform Maturity Analysis • {assessment?.industry || 'Manufacturing & Industrial'} • {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                          </div>
+                        </div>
+                        
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', marginBottom: '20px' }}>
+                          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
+                            ⚡ Executive Summary
+                          </h2>
+                          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#475569', marginBottom: '16px', lineHeight: '1.5' }}>
+                            {executiveSummary.headline}
+                          </div>
+                          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', color: '#475569', marginBottom: '16px' }}>
+                            {executiveSummary.keyFindings?.slice(0, 3).map((finding, idx) => (
+                              <li key={idx} style={{ padding: '6px 0', paddingLeft: '20px', position: 'relative' }}>
+                                <span style={{ position: 'absolute', left: 0, color: '#3b82f6', fontWeight: 'bold' }}>▸</span>
+                                {finding}
+                              </li>
+                            ))}
+                          </ul>
+                          <div style={{ background: '#fef3c7', padding: '14px', borderRadius: '8px', fontSize: '0.85rem', color: '#78350f', lineHeight: '1.5' }}>
+                            <strong>Market Context:</strong> {executiveSummary.marketContext}
+                          </div>
+                        </div>
+                        
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px' }}>
+                          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px', textAlign: 'center' }}>
+                            🎯 Your Competitive Position
+                          </h2>
+                          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            <span style={{ 
+                              display: 'inline-block',
+                              background: '#fee2e2', 
+                              color: '#991b1b', 
+                              padding: '8px 24px', 
+                              borderRadius: '24px', 
+                              fontSize: '1.1rem', 
+                              fontWeight: 700,
+                              border: '2px solid #ef4444'
+                            }}>
+                              {competitivePositioning.maturityLevel}
+                            </span>
+                            <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '8px' }}>
+                              Top {competitivePositioning.overallRanking?.percentile}% of {assessment?.industry} organizations
+                            </p>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                            <div style={{ background: '#fef3c7', padding: '16px', borderRadius: '10px', textAlign: 'center', border: '2px solid #fbbf24' }}>
+                              <div style={{ fontSize: '0.75rem', color: '#78350f', fontWeight: 600, marginBottom: '6px' }}>PERCENTILE</div>
+                              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#92400e' }}>
+                                {competitivePositioning.overallRanking?.percentile}th
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#92400e', marginTop: '4px' }}>
+                                {competitivePositioning.overallRanking?.percentileDescription}
+                              </div>
+                            </div>
+                            <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '10px', textAlign: 'center', border: '2px solid #3b82f6' }}>
+                              <div style={{ fontSize: '0.75rem', color: '#1e40af', fontWeight: 600, marginBottom: '6px' }}>PEER GROUP</div>
+                              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e3a8a', lineHeight: '1.3' }}>
+                                {competitivePositioning.overallRanking?.peerGroup}
+                              </div>
+                            </div>
+                            <div style={{ background: '#cffafe', padding: '16px', borderRadius: '10px', textAlign: 'center', border: '2px solid #06b6d4' }}>
+                              <div style={{ fontSize: '0.75rem', color: '#155e75', fontWeight: 600, marginBottom: '6px' }}>MATURITY SCORE</div>
+                              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0e7490' }}>
+                                {actualScore?.toFixed(1)}<span style={{ fontSize: '1rem' }}>/5.0</span>
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#0e7490', marginTop: '4px' }}>6-pillar assessment</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Detailed Pillar Analysis Slide */}
+                    {currentSlide === 2 && pillarAnalysis && (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 60px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                            📊 Detailed Pillar Analysis
+                          </h2>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+                            {Object.entries(pillarAnalysis).slice(0, 6).map(([pillarId, data]) => {
+                              const percentileColor = getPercentileColor(data.percentileRank);
+                              const gap = (data.customerScore - data.industryAverage).toFixed(1);
+                              const isAbove = gap >= 0;
+                              
+                              return (
+                                <div key={pillarId} style={{ background: '#f8fafc', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>
+                                      {data.pillar || formatPillarName(pillarId)}
+                                    </h3>
+                                    <span style={{ 
+                                      background: percentileColor.bg, 
+                                      color: percentileColor.color, 
+                                      padding: '3px 10px', 
+                                      borderRadius: '12px', 
+                                      fontSize: '0.7rem', 
+                                      fontWeight: 600 
+                                    }}>
+                                      {data.percentileRank}th
+                                    </span>
+                                  </div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                      <span style={{ color: '#64748b' }}>Your Score</span>
+                                      <span style={{ fontWeight: 700, color: '#1e293b' }}>{data.customerScore?.toFixed(1)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                      <span style={{ color: '#64748b' }}>Industry</span>
+                                      <span style={{ fontWeight: 600, color: '#64748b' }}>{data.industryAverage?.toFixed(1)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                      <span style={{ color: '#64748b' }}>Top 25%</span>
+                                      <span style={{ fontWeight: 600, color: '#10b981' }}>{data.topQuartile?.toFixed(1)}</span>
+                                    </div>
+                                    <div style={{ 
+                                      display: 'flex', 
+                                      justifyContent: 'space-between', 
+                                      marginTop: '6px', 
+                                      paddingTop: '6px', 
+                                      borderTop: '1px solid #e2e8f0' 
+                                    }}>
+                                      <span style={{ color: '#64748b' }}>Gap</span>
+                                      <span style={{ 
+                                        fontWeight: 700, 
+                                        color: isAbove ? '#10b981' : '#ef4444' 
+                                      }}>
+                                        {isAbove ? '+' : ''}{gap}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Competitive Intelligence Slide */}
+                    {currentSlide === 3 && (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 60px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                            🛡️ Competitive Vulnerabilities
+                          </h2>
+                          
+                          {/* Vulnerabilities in 3x2 Grid */}
+                          {competitiveIntelligence?.vulnerabilities?.length > 0 ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+                              {competitiveIntelligence.vulnerabilities.slice(0, 6).map((vuln, idx) => (
+                                <div key={idx} style={{ background: '#fee2e2', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
+                                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#991b1b', marginBottom: '12px' }}>
+                                    {vuln.area}
+                                  </div>
+                                  <div style={{ fontSize: '0.8rem', color: '#7f1d1d', lineHeight: '1.5' }}>
+                                    <p style={{ margin: '6px 0' }}>
+                                      <strong>Evidence:</strong> {vuln.evidence}
+                                    </p>
+                                    <p style={{ margin: '6px 0' }}>
+                                      <strong>Risk:</strong> {vuln.businessRisk}
+                                    </p>
+                                    <p style={{ margin: '6px 0' }}>
+                                      <strong>Competitor Advantage:</strong> {vuln.competitorAdvantage}
+                                    </p>
+                                    <p style={{ margin: '6px 0' }}>
+                                      <strong>Remediation:</strong> {vuln.remediation}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                              <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>No competitive vulnerabilities data available</p>
+                              <p style={{ fontSize: '0.9rem' }}>This section will be populated once the competitive analysis is complete.</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Strategic Recommendations Slide */}
+                    {currentSlide === 4 && (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 80px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px', maxHeight: '75vh', overflow: 'auto' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                            🎯 Strategic Recommendations
+                          </h2>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            {/* Immediate Actions */}
+                            {strategicRecommendations.immediate?.length > 0 && (
+                              <div>
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ef4444', marginBottom: '12px' }}>
+                                  Immediate Actions (0-3 months)
+                                </h3>
+                                {strategicRecommendations.immediate.slice(0, 2).map((action, idx) => (
+                                  <div key={idx} style={{ background: '#fef2f2', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #ef4444', marginBottom: '12px' }}>
+                                    <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '6px' }}>
+                                      {action.action}
+                                    </div>
+                                    <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: '1.5', margin: 0 }}>
+                                      {action.rationale}
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#64748b' }}>
+                                      <span><strong>Impact:</strong> {action.impact}</span>
+                                      <span><strong>Effort:</strong> {action.effort}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Short-term Actions */}
+                            {strategicRecommendations.shortTerm?.length > 0 && (
+                              <div>
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#f59e0b', marginBottom: '12px' }}>
+                                  Short-term Actions (3-6 months)
+                                </h3>
+                                {strategicRecommendations.shortTerm.slice(0, 2).map((action, idx) => (
+                                  <div key={idx} style={{ background: '#fffbeb', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #f59e0b', marginBottom: '12px' }}>
+                                    <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '6px' }}>
+                                      {action.action}
+                                    </div>
+                                    <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: '1.5', margin: 0 }}>
+                                      {action.rationale}
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#64748b' }}>
+                                      <span><strong>Impact:</strong> {action.impact}</span>
+                                      <span><strong>Effort:</strong> {action.effort}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Long-term Actions */}
+                            {strategicRecommendations.longTerm?.length > 0 && (
+                              <div>
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#3b82f6', marginBottom: '12px' }}>
+                                  Long-term Initiatives (6-12+ months)
+                                </h3>
+                                {strategicRecommendations.longTerm.slice(0, 2).map((action, idx) => (
+                                  <div key={idx} style={{ background: '#eff6ff', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #3b82f6', marginBottom: '12px' }}>
+                                    <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: '6px' }}>
+                                      {action.action}
+                                    </div>
+                                    <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: '1.5', margin: 0 }}>
+                                      {action.rationale}
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.75rem', color: '#64748b' }}>
+                                      <span><strong>Impact:</strong> {action.impact}</span>
+                                      <span><strong>Effort:</strong> {action.effort}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Methodology Slide */}
+                    {currentSlide === 5 && (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 80px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', maxHeight: '75vh', overflow: 'auto' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                            📋 Methodology & Data Sources
+                          </h2>
+                          {benchmarkData?.methodology ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '0.95rem', color: '#475569', lineHeight: 1.6 }}>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Data Source:</strong> {benchmarkData.methodology.dataSource}
+                              </div>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Sample Size:</strong> {benchmarkData.methodology.sampleSize}+ {assessment?.industry} organizations
+                              </div>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Assessment Framework:</strong> {benchmarkData.methodology.assessmentCriteria}
+                              </div>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Benchmarking Period:</strong> {benchmarkData.methodology.benchmarkingPeriod || 'Q3-Q4 2024'}
+                              </div>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Last Updated:</strong> {benchmarkData.methodology.lastUpdated}
+                              </div>
+                              <div>
+                                <strong style={{ color: '#1e293b' }}>Confidence Level:</strong> {benchmarkData.methodology.confidenceLevel}
+                              </div>
+                              
+                              {benchmarkData.methodology.assumptions?.length > 0 && (
+                                <div style={{ marginTop: '16px' }}>
+                                  <strong style={{ color: '#1e293b', display: 'block', marginBottom: '8px' }}>Key Assumptions:</strong>
+                                  <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                                    {benchmarkData.methodology.assumptions.slice(0, 4).map((assumption, idx) => (
+                                      <li key={idx} style={{ marginBottom: '6px' }}>{assumption}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                              <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Methodology data not available</p>
+                              <p style={{ fontSize: '0.9rem' }}>This section will be populated with benchmarking methodology details.</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 </AnimatePresence>
               </SlideContent>
