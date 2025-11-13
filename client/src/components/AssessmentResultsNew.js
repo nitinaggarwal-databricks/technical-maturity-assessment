@@ -63,43 +63,15 @@ const PrintSlide = styled.div`
 // Global print styles
 const PrintStyles = styled.div`
   @media print {
+    @page {
+      size: letter;
+      margin: 0;
+    }
+    
     /* Enable background graphics */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
-    
-    /* Hide navigation and action buttons */
-    nav, button:not(.print-visible), .no-print, header, [class*="GlobalNav"], [class*="ActionButton"] {
-      display: none !important;
-    }
-    
-    /* 🚨 CRITICAL: Keep ALL sections together - NO splits across pages */
-    section,
-    div[style*="background"],
-    div[style*="border"],
-    div[style*="box-shadow"],
-    [class*="Section"],
-    [class*="Card"],
-    [class*="Container"],
-    [class*="Grid"],
-    [class*="Panel"] {
-      page-break-inside: avoid !important;
-      break-inside: avoid-page !important;
-      page-break-before: auto !important;
-      page-break-after: auto !important;
-    }
-    
-    /* Headings stay with content */
-    h1, h2, h3, h4, h5, h6 {
-      page-break-after: avoid !important;
-      break-after: avoid-page !important;
-    }
-    
-    /* Full width for print */
-    body {
-      margin: 0;
-      padding: 0;
-    }
     
     /* Ensure backgrounds and borders print */
     div, section {
@@ -1385,11 +1357,22 @@ const SlideContainer = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
+  
+  @media print {
+    position: relative;
+    page-break-after: always;
+    page-break-inside: avoid;
+    
+    /* Enable background graphics */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 `;
 
 const SlideContent = styled.div`
@@ -1434,6 +1417,10 @@ const ClickArea = styled.div`
   cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
   z-index: 1;
   ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+  
+  @media print {
+    display: none !important;
+  }
 `;
 
 const NavigationButton = styled(motion.button)`
@@ -1455,6 +1442,10 @@ const NavigationButton = styled(motion.button)`
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
+  
+  @media print {
+    display: none !important;
+  }
   
   &:hover {
     background: #3b82f6;
@@ -1513,6 +1504,10 @@ const ExitButton = styled(motion.button)`
   pointer-events: auto;
   opacity: 0.4;
   transition: all 0.3s ease;
+  
+  @media print {
+    display: none !important;
+  }
 
   &:hover {
     opacity: 1;
@@ -1880,23 +1875,26 @@ const AssessmentResultsNew = () => {
 
   const handlePrint = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    toast.success('Opening slideshow for printing... Use Cmd+P or Ctrl+P to print', { duration: 2000 });
     
-    // Set print mode to render all slides
-    setPrintMode(true);
+    // Enter presentation mode which is print-friendly
+    setPresentationMode(true);
+    setCurrentSlide(0);
+    document.body.style.overflow = 'hidden';
     
-    // Dismiss the toast and open print dialog
+    // Show instructions
     setTimeout(() => {
-      toast.dismiss(toastId);
-      toast.dismiss();
-      setTimeout(() => {
-        window.print();
-        // Exit print mode after printing
-        setTimeout(() => {
-          setPrintMode(false);
-        }, 500);
-      }, 500);
-    }, 1000);
+      toast.success('Press Cmd+P (Mac) or Ctrl+P (Windows) to print. Enable "Background graphics" in print settings!', { 
+        duration: 5000,
+        position: 'top-center',
+        style: {
+          background: '#10b981',
+          color: 'white',
+          fontSize: '16px',
+          padding: '16px 24px'
+        }
+      });
+    }, 500);
   };
 
   const handleExportExcel = async () => {
@@ -2937,6 +2935,11 @@ const AssessmentResultsNew = () => {
 
   // 🖨️ Unified slide content renderer - returns JSX for a given slide
   // This is used by both slideshow and print modes to ensure they look identical
+  // 🖨️ Render slide content for print (reuses existing renderer)
+  const renderSlideContentForPrint = (slideIdx) => {
+    return renderPrintSlideContent(slideIdx);
+  };
+
   // 🖨️ Print slide content renderer - copies exact slideshow rendering
   const renderPrintSlideContent = (slideIndex) => {
     const pillarsArray = [
@@ -3639,9 +3642,10 @@ const AssessmentResultsNew = () => {
 
   return (
     <PageContainer>
+      <PrintStyles />
       <ReportContainer>
-        {/* 🖨️ PRINT MODE: Render all slides exactly as they appear in slideshow */}
-        {printMode && results && (
+        {/* Print mode now uses the slideshow directly - no separate renderer needed */}
+        {false && printMode && results && (
           <div style={{ display: 'none' }} className="print-slides-container">
             <style>{`
               @page {
@@ -6265,10 +6269,52 @@ const AssessmentResultsNew = () => {
       {/* Footer */}
       <Footer />
 
-      {/* 🎬 Presentation Slideshow Overlay */}
+      {/* 🖨️ PRINT MODE: Render all 20 slides for printing */}
+      <div className="print-all-slides" style={{ display: 'none' }}>
+        <style>{`
+          @media print {
+            .print-all-slides {
+              display: block !important;
+            }
+            .slideshow-single-slide {
+              display: none !important;
+            }
+          }
+        `}</style>
+        {presentationMode && results && Array.from({ length: 20 }).map((_, slideIdx) => (
+          <SlideContainer key={slideIdx} style={{ position: 'relative', pageBreakAfter: 'always' }}>
+            <SlideHeading>
+              {slideIdx === 0 ? '' : 
+               slideIdx === 1 ? 'Maturity Snapshot by Pillar' : (() => {
+                const pillarsArray = [
+                  { id: 'platform_governance', name: 'Platform & Governance' },
+                  { id: 'data_engineering', name: 'Data Engineering & Integration' },
+                  { id: 'analytics_bi', name: 'Analytics & BI Modernization' },
+                  { id: 'machine_learning', name: 'Machine Learning & MLOps' },
+                  { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
+                  { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
+                ];
+                if (slideIdx >= 2 && slideIdx <= 19) {
+                  const pillarIndex = Math.floor((slideIdx - 2) / 3);
+                  const pillarName = pillarsArray[pillarIndex]?.name || '';
+                  return pillarName;
+                }
+                return '';
+              })()}
+            </SlideHeading>
+            <SlideCounter>{slideIdx + 1} / 20</SlideCounter>
+            <SlideContent>
+              {renderSlideContentForPrint(slideIdx)}
+            </SlideContent>
+          </SlideContainer>
+        ))}
+      </div>
+
+      {/* 🎬 Presentation Slideshow Overlay (Screen Only) */}
       <AnimatePresence>
         {presentationMode && results && (
           <SlideContainer
+            className="slideshow-single-slide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
