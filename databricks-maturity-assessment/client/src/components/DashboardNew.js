@@ -2416,21 +2416,21 @@ const Dashboard = () => {
                             background: `linear-gradient(135deg, ${pillar.gradient})`,
                             border: `2px solid ${pillar.color}`,
                             borderRadius: '12px',
-                            padding: '16px'
+                            padding: '12px'
                           }}>
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              marginBottom: '8px'
+                              marginBottom: '6px'
                             }}>
                               <div style={{
-                                fontSize: '0.938rem',
+                                fontSize: '0.875rem',
                                 fontWeight: 700,
                                 color: '#1e293b',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px'
+                                gap: '6px'
                               }}>
                                 {pillar.icon} {pillar.name}
                               </div>
@@ -2445,11 +2445,11 @@ const Dashboard = () => {
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              padding: '6px 0',
-                              fontSize: '0.813rem',
+                              padding: '4px 0',
+                              fontSize: '0.75rem',
                               color: '#64748b',
                               borderTop: '1px solid #e2e8f0',
-                              marginTop: '8px'
+                              marginTop: '6px'
                             }}>
                               <span>Assessments</span>
                               <span style={{ fontWeight: 700, color: '#1e293b' }}>{pillar.count || 0}</span>
@@ -2457,8 +2457,8 @@ const Dashboard = () => {
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              padding: '6px 0',
-                              fontSize: '0.813rem',
+                              padding: '4px 0',
+                              fontSize: '0.75rem',
                               color: '#64748b',
                               borderTop: '1px solid #e2e8f0'
                             }}>
