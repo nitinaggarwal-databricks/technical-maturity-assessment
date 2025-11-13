@@ -2138,7 +2138,7 @@ const Dashboard = () => {
                       border: '2px solid rgba(255, 255, 255, 0.2)'
                     }}>
                       <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
-                        {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
+                        {parseFloat(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
                       </div>
                       <div style={{ fontSize: '1rem', opacity: 0.8 }}>Avg Maturity Score</div>
                     </div>
@@ -2221,7 +2221,7 @@ const Dashboard = () => {
                         Avg Maturity Score
                       </div>
                       <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
-                        {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
+                        {parseFloat(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}
                         <span style={{ fontSize: '1.5rem', opacity: 0.7 }}>/5.0</span>
                       </div>
                       <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Across all pillars</div>
@@ -2238,7 +2238,7 @@ const Dashboard = () => {
                         Avg Completion Time
                       </div>
                       <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px' }}>
-                        {dashboardData?.avgCompletionTime || dashboardData?.averageCompletionTime || 0}
+                        {Math.round(parseFloat(dashboardData?.avgCompletionTime || dashboardData?.averageCompletionTime || 0))}
                         <span style={{ fontSize: '1.5rem', opacity: 0.7 }}>min</span>
                       </div>
                       <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Per assessment</div>
@@ -2817,7 +2817,7 @@ const Dashboard = () => {
                           marginTop: '12px'
                         }}>
                           <FiActivity size={14} />
-                          Average: {(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}/5.0
+                          Average: {parseFloat(dashboardData?.avgMaturityLevel || dashboardData?.averageMaturityScore || 0).toFixed(1)}/5.0
                         </div>
                       </div>
                     </div>
