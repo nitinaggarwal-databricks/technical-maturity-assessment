@@ -45,13 +45,9 @@ const PrintSlide = styled.div`
     height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px;
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
-    overflow: hidden;
     
     /* Enable background graphics */
     -webkit-print-color-adjust: exact !important;
@@ -3127,13 +3123,19 @@ const AssessmentResultsNew = () => {
     if (slideIndex === 1) {
       return (
         <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          padding: '80px'
+        }}>
+        <div style={{
           background: 'rgba(255, 255, 255, 0.98)',
           borderRadius: '20px',
           padding: '40px',
           maxWidth: '1400px',
-          margin: '0 auto',
-          height: '90%',
-          overflow: 'auto'
+          width: '100%'
         }}>
           <div style={{
             display: 'grid',
@@ -3211,6 +3213,7 @@ const AssessmentResultsNew = () => {
             })}
           </div>
         </div>
+        </div>
       );
     }
 
@@ -3259,13 +3262,21 @@ const AssessmentResultsNew = () => {
         
         return (
           <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            padding: '80px'
+          }}>
+          <div style={{
             background: 'rgba(255, 255, 255, 0.95)',
             padding: '40px 50px',
-            maxWidth: '100%',
-            margin: '0 auto',
-            height: '90%',
+            width: '100%',
+            maxHeight: '100%',
             overflow: 'hidden',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            borderRadius: '12px'
           }}>
             <div style={{
               display: 'grid',
@@ -3413,6 +3424,7 @@ const AssessmentResultsNew = () => {
               })}
             </div>
           </div>
+          </div>
         );
       }
       
@@ -3438,10 +3450,18 @@ const AssessmentResultsNew = () => {
         return (
           <div style={{
             display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            padding: '80px'
+          }}>
+          <div style={{
+            display: 'flex',
             flexDirection: 'column',
             gap: '16px',
-            height: '92%',
-            padding: '40px 60px'
+            width: '100%',
+            maxHeight: '100%'
           }}>
             {/* Top Row: What's Working & Key Challenges */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', flex: 0.7 }}>
@@ -3532,6 +3552,7 @@ const AssessmentResultsNew = () => {
               </div>
             </div>
           </div>
+          </div>
         );
       }
       
@@ -3541,12 +3562,19 @@ const AssessmentResultsNew = () => {
         
         return (
           <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            padding: '80px'
+          }}>
+          <div style={{
             background: 'rgba(255, 255, 255, 0.95)',
             borderRadius: '20px',
             padding: '50px',
-            maxWidth: '1400px',
-            margin: '0 auto',
-            height: '90%',
+            width: '100%',
+            maxHeight: '100%',
             overflow: 'auto'
           }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -3588,6 +3616,7 @@ const AssessmentResultsNew = () => {
                 </div>
               ))}
             </div>
+          </div>
           </div>
         );
       }
@@ -3641,14 +3670,11 @@ const AssessmentResultsNew = () => {
                 
                 /* Slide header styling for print */
                 .print-slide-header {
-                  position: absolute;
-                  top: 40px;
-                  left: 80px;
-                  right: 80px;
+                  padding: 40px 80px 20px 80px;
                   font-size: 2rem;
                   font-weight: 700;
                   color: white;
-                  z-index: 10;
+                  text-align: center;
                 }
               }
             `}</style>
@@ -3680,9 +3706,7 @@ const AssessmentResultsNew = () => {
                   {getSlideTitle(slideIndex) && (
                     <div className="print-slide-header">{getSlideTitle(slideIndex)}</div>
                   )}
-                  <div style={{ width: '100%', height: '100%', paddingTop: getSlideTitle(slideIndex) ? '80px' : '0' }}>
-                    {renderPrintSlideContent(slideIndex)}
-                  </div>
+                  {renderPrintSlideContent(slideIndex)}
                 </PrintSlide>
               );
             })}
