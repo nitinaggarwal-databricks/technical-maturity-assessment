@@ -241,7 +241,6 @@ function App() {
   const handleLogout = () => {
     setCurrentAssessment(null);
     saveCurrentSession(null);
-    toast.success('Logged out successfully');
   };
 
   const updateAssessmentStatus = async (assessmentId) => {

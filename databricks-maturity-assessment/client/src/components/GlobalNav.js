@@ -432,7 +432,6 @@ const GlobalNav = () => {
   const handleLogout = () => {
     authService.logout();
     setCurrentUser(null);
-    toast.success('Logged out successfully');
     navigate('/');
     closeMobileMenu();
   };
