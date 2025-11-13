@@ -37,7 +37,6 @@ const ProtectedRoute = ({ children }) => {
   const isAuthenticated = authService.isAuthenticated();
   
   if (!isAuthenticated) {
-    toast.error('Please login to access this page');
     return <Navigate to="/" replace />;
   }
   

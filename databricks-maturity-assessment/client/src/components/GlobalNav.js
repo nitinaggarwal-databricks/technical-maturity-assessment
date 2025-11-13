@@ -937,13 +937,11 @@ const GlobalNav = () => {
             ) : (
               <>
                 <SecondaryCTAButton onClick={() => {
-                  toast.error('Please login to access the Dashboard');
                   setShowLoginModal(true);
                 }}>
                   Dashboard
                 </SecondaryCTAButton>
                 <SecondaryCTAButton onClick={() => {
-                  toast.error('Please login to try a sample assessment');
                   setShowLoginModal(true);
                 }}>
                   <FiPlay size={14} />
@@ -1018,14 +1016,12 @@ const GlobalNav = () => {
           <>
             <MobileSecondaryCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to access the Dashboard');
               setShowLoginModal(true);
             }}>
               Dashboard
             </MobileSecondaryCTAButton>
             <MobileSecondaryCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to try a sample assessment');
               setShowLoginModal(true);
             }}>
               <FiPlay size={16} />
