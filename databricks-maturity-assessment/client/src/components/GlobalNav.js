@@ -410,6 +410,7 @@ const DropdownEmailLink = styled.a`
   font-size: 0.875rem;
   text-decoration: none;
   transition: all 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     color: #3b82f6;
@@ -953,7 +954,13 @@ const GlobalNav = () => {
                       Logout
                     </DropdownItem>
                     <DropdownDivider />
-                    <DropdownEmailLink href="mailto:nitin.aggarwal@databricks.com">
+                    <DropdownEmailLink 
+                      href="mailto:nitin.aggarwal@databricks.com"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = 'mailto:nitin.aggarwal@databricks.com';
+                      }}
+                    >
                       <FiMail />
                       nitin.aggarwal@databricks.com
                     </DropdownEmailLink>
