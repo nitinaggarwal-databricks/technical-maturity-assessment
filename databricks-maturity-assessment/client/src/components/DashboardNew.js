@@ -791,7 +791,7 @@ const SlideContent = styled.div`
   justify-content: center;
   padding: 80px 60px 60px 60px;
   position: relative;
-  overflow: auto;
+  overflow: visible;
 `;
 
 const ClickArea = styled.div`
@@ -2154,9 +2154,7 @@ const Dashboard = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '60px 80px',
-                  maxHeight: '85vh',
-                  overflow: 'auto'
+                  padding: '60px 80px'
                 }}>
                   <h2 style={{
                     color: 'white',
@@ -2301,9 +2299,7 @@ const Dashboard = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '60px 80px',
-                  maxHeight: '85vh',
-                  overflow: 'auto'
+                  padding: '60px 80px'
                 }}>
                   <h2 style={{
                     color: 'white',
@@ -2484,9 +2480,7 @@ const Dashboard = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '60px 80px',
-                  maxHeight: '85vh',
-                  overflow: 'auto'
+                  padding: '60px 80px'
                 }}>
                   <h2 style={{
                     color: 'white',
@@ -2659,9 +2653,7 @@ const Dashboard = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '60px 80px',
-                  maxHeight: '85vh',
-                  overflow: 'auto'
+                  padding: '60px 80px'
                 }}>
                   <h2 style={{
                     color: 'white',
