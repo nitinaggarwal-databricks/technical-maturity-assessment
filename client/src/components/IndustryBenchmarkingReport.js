@@ -1139,7 +1139,7 @@ const IndustryBenchmarkingReport = () => {
   };
 
   const nextSlide = () => {
-    const totalSlides = 6; // 0-5: Title, Exec Summary+Position, Pillars, Vulnerabilities, Recommendations, Methodology
+    const totalSlides = 7; // 0-6: Title, Exec Summary+Position, Pillars, Vulnerabilities, Recommendations, Methodology, Thank You
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
@@ -2489,6 +2489,40 @@ const IndustryBenchmarkingReport = () => {
                               <p style={{ fontSize: '0.9rem' }}>This section will be populated with benchmarking methodology details.</p>
                             </div>
                           )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Thank You Slide */}
+                    {currentSlide === 6 && (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        padding: '60px',
+                        gap: '30px'
+                      }}>
+                        <div style={{
+                          fontSize: '4rem',
+                          fontWeight: 800,
+                          color: 'white',
+                          marginBottom: '20px',
+                          textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                        }}>
+                          Thank You
+                        </div>
+                        <div style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 400,
+                          color: 'rgba(255, 255, 255, 0.9)',
+                          lineHeight: '1.6',
+                          maxWidth: '800px'
+                        }}>
+                          For your time and participation in the Technical Maturity Assessment
                         </div>
                       </div>
                     )}
