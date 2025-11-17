@@ -1495,38 +1495,44 @@ const UserGuide = () => {
     const uiElements = document.querySelectorAll('[data-hide-on-print="true"]');
     uiElements.forEach(el => { el.style.display = 'none'; });
 
+    // Temporarily hide body overflow
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     for (let i = 0; i < totalSlides; i++) {
       setCurrentSlide(i);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      const canvas = await html2canvas(document.body, {
+      // Capture the entire viewport
+      const canvas = await html2canvas(slideContainer, {
         allowTaint: true,
         foreignObjectRendering: true,
-        scale: 1,
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#1e293b',
         width: window.innerWidth,
         height: window.innerHeight,
         windowWidth: window.innerWidth,
         windowHeight: window.innerHeight,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        x: 0,
+        y: 0
       });
 
       const imgData = canvas.toDataURL('image/png');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = (pdfHeight - imgHeight * ratio) / 2;
 
       if (i > 0) pdf.addPage();
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      // Fill entire page without aspect ratio to match slideshow exactly
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     }
 
-    // Restore UI elements
+    // Restore UI elements and overflow
     uiElements.forEach(el => { el.style.display = ''; });
+    document.body.style.overflow = originalOverflow;
 
     pdf.save('user-guide-presentation.pdf');
   };
