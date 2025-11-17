@@ -1,6 +1,6 @@
 /**
  * Databricks Maturity Assessment Application
- * Version: 2.1.0 - Added editable pillar & roadmap cards - Oct 27, 2025
+ * Version: 2.2.0 - Added floating slideshow buttons and version history - Nov 17, 2025
  */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
