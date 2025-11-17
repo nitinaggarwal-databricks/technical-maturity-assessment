@@ -6625,6 +6625,55 @@ const AssessmentResultsNew = () => {
                           </div>
                     );
                   })()}
+
+                  {/* Thank You Slide (Slide 20) */}
+                  {currentSlide === 20 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      textAlign: 'center',
+                      gap: '40px',
+                      padding: '0 80px'
+                    }}>
+                      <div style={{
+                        fontSize: '6rem',
+                        marginBottom: '20px',
+                        filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                      }}>
+                        ✨
+                      </div>
+                      <div style={{
+                        fontSize: '4.5rem',
+                        fontWeight: 900,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        letterSpacing: '-0.02em'
+                      }}>
+                        Thank You
+                      </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6',
+                        maxWidth: '900px'
+                      }}>
+                        For your time and participation in the Technical Maturity Assessment
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginTop: '20px'
+                      }}>
+                        For support: nitin.aggarwal@databricks.com
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </SlideContent>
