@@ -757,9 +757,13 @@ const GlobalNav = () => {
           {/* Desktop Navigation */}
           <TopNav>
             <NavLink onClick={handleLogoClick}>Home</NavLink>
-            <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
-            <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
-            <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
+            {location.pathname === '/' && (
+              <>
+                <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
+                <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
+                <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
+              </>
+            )}
             <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
           </TopNav>
 
@@ -1045,9 +1049,13 @@ const GlobalNav = () => {
       {/* Mobile Menu */}
       <MobileMenu $isOpen={mobileMenuOpen}>
         <MobileNavLink onClick={handleLogoClick}>Home</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
+        {location.pathname === '/' && (
+          <>
+            <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
+            <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
+            <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
+          </>
+        )}
         <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
         
         {currentUser ? (
