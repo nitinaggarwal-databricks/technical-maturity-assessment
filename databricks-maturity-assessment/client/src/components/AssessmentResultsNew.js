@@ -308,32 +308,35 @@ const ActionButton = styled(motion.button)`
 `;
 
 const FloatingSlideshowButton = styled(motion.button)`
-  position: fixed;
-  top: 180px;
+  position: absolute;
+  top: 24px;
   right: 32px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
   color: white;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   padding: 14px 24px;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
   white-space: nowrap;
-  z-index: 999;
+  z-index: 10;
 
   &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
   @media (max-width: 1024px) {
-    top: 160px;
+    top: 20px;
     right: 24px;
     padding: 12px 20px;
     font-size: 14px;
@@ -3131,23 +3134,6 @@ const AssessmentResultsNew = () => {
     <PageContainer>
       <PrintStyles />
       
-      {/* Floating Start Slideshow Button */}
-      {!presentationMode && (
-        <FloatingSlideshowButton
-          onClick={() => { 
-            setPresentationMode(true); 
-            setCurrentSlide(0); 
-            document.body.style.overflow = 'hidden'; 
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          title="View Maturity Report in presentation slideshow mode"
-        >
-          <FiMonitor size={18} />
-          Slideshow
-        </FloatingSlideshowButton>
-      )}
-      
       <ReportContainer>
         {/* 🚨 NO COMPLETED PILLARS WARNING */}
         {hasNoCompletedPillars && (
@@ -3238,6 +3224,23 @@ const AssessmentResultsNew = () => {
         
         {/* Header - Always show */}
         <ReportHeader>
+          {/* Floating Start Slideshow Button */}
+          {!presentationMode && (
+            <FloatingSlideshowButton
+              onClick={() => { 
+                setPresentationMode(true); 
+                setCurrentSlide(0); 
+                document.body.style.overflow = 'hidden'; 
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="View Maturity Report in presentation slideshow mode"
+            >
+              <FiMonitor size={18} />
+              Slideshow
+            </FloatingSlideshowButton>
+          )}
+          
           <HeaderTop>
             <TitleSection>
               <h1>Enterprise Data & AI Maturity Report</h1>
