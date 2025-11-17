@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 80px 0 60px 0;
+  padding: 80px 0 20px 0;
   overflow-x: hidden;
   
   @media print {
@@ -232,16 +232,16 @@ const PrintButton = styled.button`
 
 const HeroSection = styled.div`
   max-width: 1400px;
-  margin: 0 auto 80px auto;
+  margin: 0 auto 40px auto;
   padding: 0 40px;
   text-align: center;
   color: white;
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 800;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   line-height: 1.2;
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
   -webkit-background-clip: text;
@@ -249,20 +249,20 @@ const HeroTitle = styled.h1`
   background-clip: text;
   
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 `;
 
 const HeroSubtitle = styled.p`
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.95);
   max-width: 900px;
-  margin: 0 auto 40px auto;
-  line-height: 1.6;
+  margin: 0 auto;
+  line-height: 1.5;
   
   @media (max-width: 768px) {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 `;
 
@@ -290,45 +290,45 @@ const CTAButton = styled.button`
 
 const ContentSection = styled.div`
   max-width: 1400px;
-  margin: 0 auto 60px auto;
+  margin: 0 auto 30px auto;
   padding: 0 40px;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 2.8rem;
+  font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: white;
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 `;
 
 const SectionSubtitle = styled.p`
-  font-size: 1.3rem;
+  font-size: 1rem;
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 25px;
   color: rgba(255, 255, 255, 0.9);
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.6;
+  line-height: 1.5;
 `;
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 `;
 
 const Card = styled.div`
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   border: 2px solid rgba(255, 255, 255, 0.3);
   height: 100%;
@@ -336,43 +336,43 @@ const Card = styled.div`
   flex-direction: column;
   
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.6);
   }
 `;
 
 const IconWrapper = styled.div`
-  width: 70px;
-  height: 70px;
-  border-radius: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
   background: ${props => props.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  margin-bottom: 15px;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
   
   svg {
-    width: 35px;
-    height: 35px;
+    width: 25px;
+    height: 25px;
     color: white;
   }
 `;
 
 const CardTitle = styled.h3`
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   line-height: 1.3;
 `;
 
 const CardDescription = styled.p`
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   color: #64748b;
-  line-height: 1.7;
-  margin-bottom: 20px;
+  line-height: 1.5;
+  margin-bottom: 12px;
 `;
 
 const CardList = styled.ul`
@@ -383,12 +383,12 @@ const CardList = styled.ul`
 `;
 
 const CardListItem = styled.li`
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: #475569;
-  padding: 10px 0;
-  padding-left: 30px;
+  padding: 6px 0;
+  padding-left: 22px;
   position: relative;
-  line-height: 1.5;
+  line-height: 1.4;
   
   &:before {
     content: '✓';
@@ -396,22 +396,22 @@ const CardListItem = styled.li`
     left: 0;
     color: #10b981;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  margin: 60px 0;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 0;
 `;
 
 const StatCard = styled.div`
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 40px;
+  border-radius: 16px;
+  padding: 25px;
   text-align: center;
   border: 2px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
@@ -423,15 +423,15 @@ const StatCard = styled.div`
 `;
 
 const StatNumber = styled.div`
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: white;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   line-height: 1;
 `;
 
 const StatLabel = styled.div`
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
 `;
