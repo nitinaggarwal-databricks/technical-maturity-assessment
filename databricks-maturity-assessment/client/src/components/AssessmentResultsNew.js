@@ -5824,7 +5824,7 @@ const AssessmentResultsNew = () => {
                           🎯
                         </div>
                         <div style={{
-                            fontSize: '0.65rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5834,7 +5834,7 @@ const AssessmentResultsNew = () => {
                             CURRENT MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.25rem',
+                            fontSize: '1.4rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5843,7 +5843,7 @@ const AssessmentResultsNew = () => {
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
                         </div>
                         <div style={{
-                            fontSize: '0.7rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.4',
                             overflow: 'hidden',
@@ -5883,7 +5883,7 @@ const AssessmentResultsNew = () => {
                           📈
                         </div>
                         <div style={{
-                            fontSize: '0.65rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5893,7 +5893,7 @@ const AssessmentResultsNew = () => {
                             TARGET MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.25rem',
+                            fontSize: '1.4rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5902,7 +5902,7 @@ const AssessmentResultsNew = () => {
                             Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Optimize'}
                         </div>
                         <div style={{
-                            fontSize: '0.7rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.4',
                             overflow: 'hidden',
@@ -5942,7 +5942,7 @@ const AssessmentResultsNew = () => {
                           ⚡
                         </div>
                         <div style={{
-                            fontSize: '0.65rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5952,7 +5952,7 @@ const AssessmentResultsNew = () => {
                             IMPROVEMENT POTENTIAL
                         </div>
                         <div style={{
-                            fontSize: '1.25rem',
+                            fontSize: '1.4rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5961,7 +5961,7 @@ const AssessmentResultsNew = () => {
                           +{improvementLevel} Level
                         </div>
                         <div style={{
-                            fontSize: '0.7rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.4',
                             overflow: 'hidden',
@@ -5993,9 +5993,9 @@ const AssessmentResultsNew = () => {
                       <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '20px',
-                        paddingTop: '50px',
-                        paddingBottom: '40px',
+                        gap: '16px',
+                        paddingTop: '20px',
+                        paddingBottom: '20px',
                         maxWidth: '1400px',
                         margin: '0 auto',
                         width: '100%'
@@ -6004,16 +6004,16 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'flex',
                           justifyContent: 'center',
-                          gap: '40px',
-                          marginBottom: '20px'
+                          gap: '32px',
+                          marginBottom: '12px'
                         }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, background: '#3b82f6', border: '2px solid #3b82f6' }} />
-                            <span style={{ fontSize: '1.3rem', color: 'white', fontWeight: 600 }}>Today</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: 16, height: 16, borderRadius: 3, background: '#3b82f6', border: '2px solid #3b82f6' }} />
+                            <span style={{ fontSize: '1.1rem', color: 'white', fontWeight: 600 }}>Today</span>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, background: 'transparent', border: '2px solid #10b981' }} />
-                            <span style={{ fontSize: '1.3rem', color: 'white', fontWeight: 600 }}>Tomorrow</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: 16, height: 16, borderRadius: 3, background: 'transparent', border: '2px solid #10b981' }} />
+                            <span style={{ fontSize: '1.1rem', color: 'white', fontWeight: 600 }}>Tomorrow</span>
                           </div>
                         </div>
 
@@ -6021,7 +6021,7 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(2, 1fr)',
-                          gap: '24px',
+                          gap: '16px',
                           padding: '0 40px'
                         }}>
                         {pillarsArray.map((pillar) => {
@@ -6032,22 +6032,22 @@ const AssessmentResultsNew = () => {
                           return (
                               <div key={pillar.id} style={{
                                 background: 'rgba(255, 255, 255, 0.95)',
-                                borderRadius: '12px',
-                                padding: '20px 24px',
-                                borderLeft: `4px solid ${pillar.color}`,
+                                borderRadius: '10px',
+                                padding: '14px 18px',
+                                borderLeft: `3px solid ${pillar.color}`,
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '16px'
+                                gap: '12px'
                               }}>
                                 {/* Pillar Header */}
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                  gap: '12px'
+                                  gap: '10px'
                                 }}>
-                                  <span style={{ fontSize: '1.8rem' }}>{pillar.icon}</span>
+                                  <span style={{ fontSize: '1.4rem' }}>{pillar.icon}</span>
                                   <span style={{
-                                    fontSize: '1.1rem',
+                                    fontSize: '0.95rem',
                                     fontWeight: 600,
                                     color: pillar.color,
                                     flex: 1
@@ -6059,7 +6059,7 @@ const AssessmentResultsNew = () => {
                                 {/* Scores Container */}
                                 <div style={{
                                   display: 'flex',
-                                gap: '16px',
+                                gap: '12px',
                                   justifyContent: 'space-around'
                                 }}>
                                   {/* Today Score */}
@@ -6067,10 +6067,10 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.75rem',
+                                      fontSize: '0.65rem',
                                 fontWeight: 600,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
@@ -6081,11 +6081,11 @@ const AssessmentResultsNew = () => {
                                 <div style={{
                                       background: pillar.color,
                                       color: 'white',
-                                      padding: '8px 20px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.5rem',
+                                      padding: '6px 16px',
+                                  borderRadius: '6px',
+                                      fontSize: '1.2rem',
                                       fontWeight: 700,
-                                      minWidth: '70px',
+                                      minWidth: '60px',
                                       textAlign: 'center'
                                     }}>
                                       {currentScore}
@@ -6094,13 +6094,13 @@ const AssessmentResultsNew = () => {
 
                                   {/* Tomorrow Score */}
                                   <div style={{
-                                  display: 'flex',
+                                    display: 'flex',
                                     flexDirection: 'column',
-                                  alignItems: 'center',
-                                    gap: '8px'
+                                    alignItems: 'center',
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.75rem',
+                                      fontSize: '0.65rem',
                                       fontWeight: 600,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
@@ -6111,12 +6111,12 @@ const AssessmentResultsNew = () => {
                                 <div style={{
                                   background: 'transparent',
                                       color: pillar.color,
-                                      padding: '8px 20px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.5rem',
+                                      padding: '6px 16px',
+                                  borderRadius: '6px',
+                                      fontSize: '1.2rem',
                                   fontWeight: 700,
                                       border: `2px solid ${pillar.color}`,
-                                      minWidth: '70px',
+                                      minWidth: '60px',
                                       textAlign: 'center'
                                 }}>
                                       {futureScore}
