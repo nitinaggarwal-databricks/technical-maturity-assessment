@@ -1793,10 +1793,6 @@ const UserGuide = () => {
             className="slideshow-single-slide"
           >
             <SlideContainer>
-              <SlideHeading $show={currentSlide > 0 && currentSlide < totalSlides - 1}>
-                {slides[currentSlide]?.title}
-              </SlideHeading>
-
               <SlideContent>
                 {renderSlideContent(slides[currentSlide])}
               </SlideContent>

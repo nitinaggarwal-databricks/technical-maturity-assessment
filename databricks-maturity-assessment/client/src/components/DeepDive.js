@@ -1855,6 +1855,11 @@ const DeepDive = () => {
   // Define slides - combining sections to maximize space
   const slides = [
     {
+      id: 'title',
+      title: 'Deep Dive Analysis',
+      type: 'title'
+    },
+    {
       id: 'objectives',
       title: 'Strategic Objectives',
       type: 'single'
@@ -5313,7 +5318,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 →
               </NavigationButton>
               
-              {slides[currentSlide].id !== 'thank-you' && (
+              {slides[currentSlide].id !== 'thank-you' && slides[currentSlide].id !== 'title' && (
                 <SlideHeading>{slides[currentSlide].title}</SlideHeading>
               )}
               <SlideCounter 
@@ -6418,6 +6423,56 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       );
                     })()}
                   </SlideGrid>
+                )}
+
+                {/* Title Slide */}
+                {slides[currentSlide].id === 'title' && (
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '60px',
+                    gap: '40px'
+                  }}>
+                    <div style={{
+                      fontSize: '6rem',
+                      marginBottom: '20px',
+                      filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                    }}>
+                      🔍
+                    </div>
+                    <div style={{
+                      fontSize: '4.5rem',
+                      fontWeight: 900,
+                      color: 'white',
+                      marginBottom: '20px',
+                      textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                      letterSpacing: '-0.02em'
+                    }}>
+                      Deep Dive Analysis
+                    </div>
+                    <div style={{
+                      fontSize: '2rem',
+                      fontWeight: 400,
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      lineHeight: '1.6',
+                      maxWidth: '900px'
+                    }}>
+                      Technical Maturity Assessment
+                    </div>
+                    <div style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 400,
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      marginTop: '20px'
+                    }}>
+                      Comprehensive insights and strategic recommendations
+                    </div>
+                  </div>
                 )}
 
                 {/* Thank You Slide */}
