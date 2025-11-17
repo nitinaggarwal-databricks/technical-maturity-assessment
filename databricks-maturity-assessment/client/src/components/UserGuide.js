@@ -598,10 +598,10 @@ const SlideHeading = styled.div`
 
 const SlideContent = styled.div`
   position: absolute;
-  top: 120px;
-  left: 100px;
-  right: 100px;
-  bottom: 100px;
+  top: 75px;
+  left: 95px;
+  right: 95px;
+  bottom: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1570,35 +1570,39 @@ const UserGuide = () => {
 
       case 'role':
         return (
-          <div style={{ width: '100%', maxWidth: '1200px' }}>
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ 
               background: `linear-gradient(135deg, ${slide.role.gradient})`,
               borderRadius: '24px',
-              padding: '48px',
-              boxShadow: `0 16px 48px ${slide.role.shadow}`
+              padding: '56px',
+              boxShadow: `0 16px 48px ${slide.role.shadow}`,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '28px', marginBottom: '40px' }}>
                 <div style={{
-                  width: '80px',
-                  height: '80px',
+                  width: '90px',
+                  height: '90px',
                   background: 'rgba(255, 255, 255, 0.2)',
                   borderRadius: '20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2.5rem'
+                  fontSize: '3rem'
                 }}>
                   {slide.role.icon}
                 </div>
-                <h2 style={{ fontSize: '3rem', fontWeight: 700, margin: 0 }}>{slide.role.title}</h2>
+                <h2 style={{ fontSize: '3.5rem', fontWeight: 700, margin: 0 }}>{slide.role.title}</h2>
               </div>
-              <p style={{ fontSize: '1.5rem', opacity: 0.95, marginBottom: '32px', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '1.75rem', opacity: 0.95, marginBottom: '40px', lineHeight: 1.6 }}>
                 {slide.role.description}
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 {slide.role.features.map((feature, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.125rem' }}>
-                    <FiCheckCircle style={{ fontSize: '1.5rem', flexShrink: 0 }} />
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.25rem' }}>
+                    <FiCheckCircle style={{ fontSize: '1.75rem', flexShrink: 0 }} />
                     {feature}
                   </div>
                 ))}
@@ -1609,57 +1613,62 @@ const UserGuide = () => {
 
       case 'workflow':
         return (
-          <div style={{ width: '100%', maxWidth: '1200px' }}>
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ 
               background: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(20px)',
               borderRadius: '24px',
-              padding: '48px',
-              border: '2px solid rgba(255, 255, 255, 0.2)'
+              padding: '56px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '40px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '28px', marginBottom: '44px' }}>
                 <div style={{
-                  width: '72px',
-                  height: '72px',
+                  width: '80px',
+                  height: '80px',
                   background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                   borderRadius: '16px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2.5rem',
+                  fontSize: '2.75rem',
                   fontWeight: 700
                 }}>
                   {slide.workflow.number}
                 </div>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{slide.workflow.title}</h2>
+                <h2 style={{ fontSize: '2.75rem', fontWeight: 700, margin: 0 }}>{slide.workflow.title}</h2>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', flex: 1 }}>
                 {slide.workflow.steps.map((step, idx) => (
                   <div key={idx} style={{ 
                     display: 'flex',
-                    gap: '20px',
-                    padding: '24px',
+                    gap: '24px',
+                    padding: '28px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: '16px',
-                    borderLeft: '4px solid #8b5cf6'
+                    borderLeft: '4px solid #8b5cf6',
+                    flex: 1
                   }}>
                     <div style={{
-                      width: '40px',
-                      height: '40px',
+                      width: '48px',
+                      height: '48px',
                       background: '#8b5cf6',
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontWeight: 700,
-                      fontSize: '1.125rem',
+                      fontSize: '1.25rem',
                       flexShrink: 0
                     }}>
                       {idx + 1}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ fontSize: '1.5rem', fontWeight: 600, margin: '0 0 12px 0' }}>{step.title}</h4>
-                      <p style={{ fontSize: '1.125rem', margin: 0, opacity: 0.9, lineHeight: 1.6 }}>{step.description}</p>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <h4 style={{ fontSize: '1.625rem', fontWeight: 600, margin: '0 0 12px 0' }}>{step.title}</h4>
+                      <p style={{ fontSize: '1.25rem', margin: 0, opacity: 0.9, lineHeight: 1.6 }}>{step.description}</p>
                     </div>
                   </div>
                 ))}
@@ -1687,6 +1696,78 @@ const UserGuide = () => {
                 For support: nitin.aggarwal@databricks.com
               </p>
             </motion.div>
+          </div>
+        );
+
+      case 'content':
+        // Overview slide
+        return (
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ 
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '24px',
+              padding: '48px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '32px', textAlign: 'center' }}>
+                What is the Databricks Technical Maturity Assessment?
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}>
+                <div style={{ 
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  padding: '24px',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                }}>
+                  <FiTarget style={{ fontSize: '2.5rem', marginBottom: '16px' }} />
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '12px' }}>Purpose</h3>
+                  <p style={{ fontSize: '1.125rem', opacity: 0.9, lineHeight: 1.6, margin: 0 }}>
+                    Evaluate your organization's Databricks implementation maturity across 6 key pillars
+                  </p>
+                </div>
+                <div style={{ 
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  padding: '24px',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                }}>
+                  <FiBarChart2 style={{ fontSize: '2.5rem', marginBottom: '16px' }} />
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '12px' }}>Outcome</h3>
+                  <p style={{ fontSize: '1.125rem', opacity: 0.9, lineHeight: 1.6, margin: 0 }}>
+                    Get actionable insights, roadmaps, and recommendations to advance your maturity
+                  </p>
+                </div>
+                <div style={{ 
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  padding: '24px',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                }}>
+                  <FiUsers style={{ fontSize: '2.5rem', marginBottom: '16px' }} />
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '12px' }}>Who Uses It</h3>
+                  <p style={{ fontSize: '1.125rem', opacity: 0.9, lineHeight: 1.6, margin: 0 }}>
+                    Admins create assessments, Authors complete them, Consumers view results
+                  </p>
+                </div>
+                <div style={{ 
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  padding: '24px',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                }}>
+                  <FiCheckCircle style={{ fontSize: '2.5rem', marginBottom: '16px' }} />
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '12px' }}>Key Benefits</h3>
+                  <p style={{ fontSize: '1.125rem', opacity: 0.9, lineHeight: 1.6, margin: 0 }}>
+                    Industry benchmarking, executive presentations, and detailed technical deep-dives
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
