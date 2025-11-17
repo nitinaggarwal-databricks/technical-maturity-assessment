@@ -233,7 +233,7 @@ const PrintButton = styled.button`
 const HeroSection = styled.div`
   max-width: 1400px;
   margin: 0 auto 40px auto;
-  padding: 0 40px;
+  padding: 40px 40px 0 40px;
   text-align: center;
   color: white;
 `;
