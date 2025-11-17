@@ -1149,7 +1149,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
         console.error('Error loading results:', error);
         const errorMessage = error.response?.data?.message || 'Failed to load assessment results';
         setError(errorMessage);
-        toast.error(errorMessage);
+        
       } finally {
         setLoading(false);
       }
@@ -1163,18 +1163,18 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        toast.error('Logo file size must be less than 2MB');
+        
         return;
       }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
+        
         return;
       }
       
       const reader = new FileReader();
       reader.onloadend = () => {
         setCustomerLogo(reader.result);
-        toast.success('Customer logo uploaded successfully');
+        
       };
       reader.readAsDataURL(file);
     }
@@ -1186,7 +1186,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    toast.success('Logo removed');
+    
   };
 
   const handleLogoClick = () => {
@@ -1207,7 +1207,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
   const handleURLSubmit = async (e) => {
     e.preventDefault();
     if (!logoURL.trim()) {
-      toast.error('Please enter a valid URL');
+      
       return;
     }
 
@@ -1219,16 +1219,16 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
       
       if (response.success && response.data) {
         setCustomerLogo(response.data);
-        toast.success('Logo fetched successfully from customer portal');
+        
         setShowLogoModal(false);
         setShowURLInput(false);
         setLogoURL('');
       } else {
-        toast.error(response.message || 'Failed to fetch logo');
+        
       }
     } catch (error) {
       console.error('Error fetching logo:', error);
-      toast.error(error.message || 'Failed to fetch logo from URL. Please check the URL and try again.');
+      
     } finally {
       setLoadingURL(false);
     }
@@ -1830,7 +1830,7 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                     const firstCategory = framework?.assessmentAreas?.[0];
                     if (firstCategory) {
                       navigate(`/assessment/${assessmentId}/${firstCategory.id}`);
-                      toast.success('Edit your responses. Results will update automatically when you save.');
+                      
                     }
                   }}
                   whileHover={{ scale: 1.02 }}

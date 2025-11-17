@@ -919,7 +919,7 @@ const RiskHeatmap = ({ results, assessment }) => {
         setDeletedRiskIds([...deletedRiskIds, riskId]);
       }
       
-      toast.success('Risk deleted successfully');
+      
     }
   };
 
@@ -930,12 +930,12 @@ const RiskHeatmap = ({ results, assessment }) => {
     const filteredMitigation = formData.mitigation.filter(m => m.trim() !== '');
     
     if (!formData.title.trim()) {
-      toast.error('Risk title is required');
+      
       return;
     }
     
     if (filteredMitigation.length === 0) {
-      toast.error('At least one mitigation strategy is required');
+      
       return;
     }
 
@@ -967,7 +967,7 @@ const RiskHeatmap = ({ results, assessment }) => {
         setCustomRisks([...customRisks, modifiedRisk]);
       }
       
-      toast.success('Risk updated successfully');
+      
     } else {
       // Add new risk
       const newRisk = {
@@ -976,7 +976,7 @@ const RiskHeatmap = ({ results, assessment }) => {
         mitigation: filteredMitigation
       };
       setCustomRisks([...customRisks, newRisk]);
-      toast.success('Risk added successfully');
+      
     }
     
     setEditingRisk(null);

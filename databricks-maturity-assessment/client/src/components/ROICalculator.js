@@ -668,7 +668,7 @@ const ROICalculator = ({ results, assessment }) => {
       currentDataQualityIssues: 20
     });
     setScenario('realistic');
-    toast.success('Reset to default assumptions');
+    
   };
 
   const formatCurrency = (value) => {

@@ -503,11 +503,11 @@ const HomePage = () => {
           throw new Error('Could not determine first category');
         }
       } else {
-        toast.error('Failed to generate sample assessment', { id: 'sample-gen' });
+        
       }
     } catch (error) {
       console.error('Error generating sample:', error);
-      toast.error('Error generating sample assessment', { id: 'sample-gen' });
+      
     } finally {
       setGeneratingSample(false);
     }

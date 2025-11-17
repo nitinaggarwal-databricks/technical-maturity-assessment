@@ -727,7 +727,7 @@ const HomePageNew = () => {
       const assessmentId = result?.assessment?.id || result?.id;
       
       if (assessmentId) {
-        toast.success('Sample assessment created!', { id: 'sample-gen' });
+        
         
         // Small delay to ensure assessment is saved to disk
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -740,7 +740,7 @@ const HomePageNew = () => {
       }
     } catch (error) {
       console.error('Error generating sample:', error);
-      toast.error(error.message || 'Failed to generate sample', { id: 'sample-gen' });
+      
     } finally {
       setGeneratingSample(false);
     }

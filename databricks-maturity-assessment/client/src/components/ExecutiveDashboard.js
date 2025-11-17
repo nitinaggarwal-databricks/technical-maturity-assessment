@@ -662,7 +662,7 @@ const ExecutiveDashboard = ({ results, assessment, hideImperatives = false }) =>
   const handleDelete = (type, index) => {
     if (type === 'imperative') {
       setImperatives(prev => prev.filter((_, i) => i !== index));
-      toast.success('Strategic imperative deleted');
+      
     }
   };
 
@@ -675,11 +675,11 @@ const ExecutiveDashboard = ({ results, assessment, hideImperatives = false }) =>
         setImperatives(prev => prev.map((imp, i) => 
           i === editingItem.index ? { ...formData } : imp
         ));
-        toast.success('Strategic imperative updated');
+        
       } else {
         // Add new
         setImperatives(prev => [...prev, { ...formData, id: Date.now() }]);
-        toast.success('Strategic imperative added');
+        
       }
     }
     

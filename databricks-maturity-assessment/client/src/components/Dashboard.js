@@ -407,7 +407,7 @@ const Dashboard = () => {
       console.log('[Dashboard] State updated with data');
     } catch (error) {
       console.error('[Dashboard] Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      
     } finally {
       setLoading(false);
     }
@@ -416,7 +416,7 @@ const Dashboard = () => {
   const handleExport = () => {
     try {
       if (!dashboardData) {
-        toast.error('No data to export');
+        
         return;
       }
 
@@ -469,10 +469,10 @@ const Dashboard = () => {
       link.click();
       document.body.removeChild(link);
       
-      toast.success('Dashboard data exported successfully!');
+      
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export dashboard data');
+      
     }
   };
 
@@ -480,10 +480,10 @@ const Dashboard = () => {
     try {
       const shareUrl = window.location.href;
       navigator.clipboard.writeText(shareUrl);
-      toast.success('Dashboard link copied to clipboard!');
+      
     } catch (error) {
       console.error('Share error:', error);
-      toast.error('Failed to copy link');
+      
     }
   };
 
@@ -678,7 +678,7 @@ const Dashboard = () => {
                   setRegionFilter('all');
                   setCustomerFilter('');
                   setShowAdvancedFilters(false);
-                  toast.success('Filters cleared');
+                  
                 }}
                 style={{ width: '100%' }}
               >

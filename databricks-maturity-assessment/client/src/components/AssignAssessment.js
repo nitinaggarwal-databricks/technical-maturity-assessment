@@ -209,7 +209,7 @@ const AssignAssessment = () => {
       }
     } catch (error) {
       console.error('Error fetching consumers:', error);
-      toast.error('Failed to load consumers');
+      
     }
   };
 
@@ -226,7 +226,7 @@ const AssignAssessment = () => {
       setAssessments(availableAssessments);
     } catch (error) {
       console.error('Error fetching assessments:', error);
-      toast.error('Failed to load assessments');
+      
     }
   };
 
@@ -236,12 +236,12 @@ const AssignAssessment = () => {
     // Validate consumer fields
     if (isCreatingNewConsumer) {
       if (!formData.newConsumerEmail || !formData.newConsumerFirstName || !formData.newConsumerLastName) {
-        toast.error('Please enter consumer email, first name, and last name');
+        
         return;
       }
     } else {
       if (!formData.consumerId) {
-        toast.error('Please select a consumer');
+        
         return;
       }
     }
@@ -249,12 +249,12 @@ const AssignAssessment = () => {
     // Validate assessment fields
     if (isCreatingNew) {
       if (!formData.newAssessmentName) {
-        toast.error('Please enter an assessment name');
+        
         return;
       }
     } else {
       if (!formData.assessmentId) {
-        toast.error('Please select an assessment');
+        
         return;
       }
     }
@@ -281,7 +281,7 @@ const AssignAssessment = () => {
         consumerEmail = formData.newConsumerEmail;
         consumerOrganization = formData.newConsumerOrganization;
         
-        toast.success('New consumer created successfully!');
+        
       } else {
         const selectedConsumer = consumers.find(c => c.id === parseInt(formData.consumerId));
         consumerEmail = selectedConsumer.email;
@@ -318,7 +318,7 @@ const AssignAssessment = () => {
         }
       }
       
-      toast.success('Assessment assigned successfully! Email sent to consumer.');
+      
       
       // Reset form
       setFormData({
@@ -343,7 +343,7 @@ const AssignAssessment = () => {
       
     } catch (error) {
       console.error('Error assigning assessment:', error);
-      toast.error(error.message || 'Failed to assign assessment');
+      
     } finally {
       setLoading(false);
     }

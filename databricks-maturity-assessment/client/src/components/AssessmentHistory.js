@@ -483,6 +483,87 @@ const formatTimestamp = (timestamp) => {
   });
 };
 
+// Helper function to format change values in a human-readable way
+const formatChangeValue = (value) => {
+  // Debug logging
+  console.log('formatChangeValue called with:', { value, type: typeof value, isArray: Array.isArray(value) });
+  
+  // Handle null/undefined
+  if (value === null || value === undefined) {
+    return <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>(empty)</span>;
+  }
+  
+  // Handle boolean
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  
+  // Handle number
+  if (typeof value === 'number') {
+    return value.toFixed(2);
+  }
+  
+  // Handle string (MUST be before Array check since strings are iterable)
+  if (typeof value === 'string') {
+    return value || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>(empty)</span>;
+  }
+  
+  // Handle array
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>(none)</span>;
+    }
+    return (
+      <div style={{ marginTop: '4px' }}>
+        {value.map((item, idx) => (
+          <div key={idx} style={{ 
+            padding: '4px 8px', 
+            background: '#f8fafc', 
+            borderRadius: '4px',
+            marginBottom: '4px',
+            border: '1px solid #e2e8f0'
+          }}>
+            {typeof item === 'object' && item !== null 
+              ? JSON.stringify(item, null, 2) 
+              : String(item)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  
+  // Handle object
+  if (typeof value === 'object') {
+    const entries = Object.entries(value);
+    console.log('Object entries:', entries);
+    
+    // If object has numeric keys (0, 1, 2...), it's likely a string that got converted
+    const keys = Object.keys(value);
+    const isNumericKeys = keys.every(k => !isNaN(parseInt(k)));
+    
+    if (isNumericKeys && keys.length > 0) {
+      // Reconstruct the string from numeric keys
+      const reconstructed = keys.sort((a, b) => parseInt(a) - parseInt(b)).map(k => value[k]).join('');
+      console.log('Reconstructed string from object:', reconstructed);
+      return reconstructed;
+    }
+    
+    return (
+      <div style={{ marginTop: '4px' }}>
+        {entries.map(([k, v]) => (
+          <div key={k} style={{ marginBottom: '4px' }}>
+            <strong style={{ color: '#667eea' }}>{k}:</strong> {' '}
+            {typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  
+  // Fallback to string conversion
+  return String(value);
+};
+
 // =======================
 // MAIN COMPONENT
 // =======================
@@ -515,11 +596,11 @@ const AssessmentHistory = () => {
         setAuditData(response.data.data);
         setEvents(response.data.data.events || []);
       } else {
-        toast.error('Failed to load audit trail');
+        
       }
     } catch (error) {
       console.error('Error fetching audit trail:', error);
-      toast.error('Error loading audit trail');
+      
     } finally {
       setLoading(false);
     }
@@ -600,20 +681,49 @@ const AssessmentHistory = () => {
           <DetailsSection>
             <DetailsTitle>Changes Made</DetailsTitle>
             <ChangesList>
-              {Object.entries(event.changes).map(([key, value]) => (
-                <ChangeItem key={key} $color="#667eea">
-                  <ChangeLabel>{key.replace(/([A-Z])/g, ' $1').trim()}</ChangeLabel>
-                  {typeof value === 'object' && value.from !== undefined ? (
-                    <ChangeValue>
-                      <span style={{ color: '#dc2626' }}>{JSON.stringify(value.from)}</span>
-                      {' → '}
-                      <span style={{ color: '#16a34a' }}>{JSON.stringify(value.to)}</span>
-                    </ChangeValue>
-                  ) : (
-                    <ChangeValue>{JSON.stringify(value)}</ChangeValue>
-                  )}
-                </ChangeItem>
-              ))}
+              {(() => {
+                console.log('event.changes:', event.changes);
+                
+                // Filter out numeric keys from the changes object
+                const changes = Object.entries(event.changes).filter(([key]) => isNaN(parseInt(key)));
+                
+                // If no valid changes remain, it means the whole thing is a malformed object
+                if (changes.length === 0) {
+                  // Try to reconstruct if it's a string split into numeric keys
+                  const keys = Object.keys(event.changes).sort((a, b) => parseInt(a) - parseInt(b));
+                  const reconstructed = keys.map(k => event.changes[k]).join('');
+                  return (
+                    <ChangeItem $color="#667eea">
+                      <ChangeLabel>Update</ChangeLabel>
+                      <ChangeValue>{reconstructed}</ChangeValue>
+                    </ChangeItem>
+                  );
+                }
+                
+                return changes.map(([key, value]) => (
+                  <ChangeItem key={key} $color="#667eea">
+                    <ChangeLabel>{key.replace(/([A-Z])/g, ' $1').trim()}</ChangeLabel>
+                    {typeof value === 'object' && value !== null && value.from !== undefined && value.to !== undefined ? (
+                      <ChangeValue>
+                        <div style={{ marginBottom: '8px' }}>
+                          <span style={{ color: '#dc2626', fontWeight: 600 }}>Before:</span>
+                          <div style={{ marginLeft: '8px', marginTop: '4px' }}>
+                            {formatChangeValue(value.from)}
+                          </div>
+                        </div>
+                        <div>
+                          <span style={{ color: '#16a34a', fontWeight: 600 }}>After:</span>
+                          <div style={{ marginLeft: '8px', marginTop: '4px' }}>
+                            {formatChangeValue(value.to)}
+                          </div>
+                        </div>
+                      </ChangeValue>
+                    ) : (
+                      <ChangeValue>{formatChangeValue(value)}</ChangeValue>
+                    )}
+                  </ChangeItem>
+                ));
+              })()}
             </ChangesList>
           </DetailsSection>
         )}
@@ -621,8 +731,10 @@ const AssessmentHistory = () => {
         {/* Impact on Reports */}
         {event.impact && Object.keys(event.impact).length > 0 && (
           <DetailsSection>
-            <DetailsTitle>Impact on Reports</DetailsTitle>
-            <ImpactGrid>
+            <DetailsTitle>Impact Analysis</DetailsTitle>
+            
+            {/* Show impact badges */}
+            <ImpactGrid style={{ marginBottom: '16px' }}>
               {event.impact.maturityScoreChanged && (
                 <ImpactBadge $bg="#fef3c7" $border="#fbbf24" $color="#92400e">
                   <FiTrendingUp /> Maturity Score
@@ -654,6 +766,89 @@ const AssessmentHistory = () => {
                 </ImpactBadge>
               )}
             </ImpactGrid>
+            
+            {/* Show detailed impact comparison if both before and after snapshots exist */}
+            {event.beforeSnapshot && event.afterSnapshot && (
+              <ChangesList>
+                {/* Progress comparison */}
+                {event.beforeSnapshot.progress !== undefined && event.afterSnapshot.progress !== undefined && 
+                 event.beforeSnapshot.progress !== event.afterSnapshot.progress && (
+                  <ChangeItem $color="#3b82f6">
+                    <ChangeLabel>Assessment Progress</ChangeLabel>
+                    <ChangeValue>
+                      <span style={{ color: '#dc2626' }}>{event.beforeSnapshot.progress}%</span>
+                      {' → '}
+                      <span style={{ color: '#16a34a' }}>{event.afterSnapshot.progress}%</span>
+                      <span style={{ 
+                        marginLeft: '8px', 
+                        padding: '2px 8px', 
+                        borderRadius: '4px',
+                        background: event.afterSnapshot.progress > event.beforeSnapshot.progress ? '#dcfce7' : '#fee2e2',
+                        color: event.afterSnapshot.progress > event.beforeSnapshot.progress ? '#166534' : '#991b1b',
+                        fontSize: '0.85rem',
+                        fontWeight: 600
+                      }}>
+                        {event.afterSnapshot.progress > event.beforeSnapshot.progress ? '+' : ''}
+                        {(event.afterSnapshot.progress - event.beforeSnapshot.progress).toFixed(1)}%
+                      </span>
+                    </ChangeValue>
+                  </ChangeItem>
+                )}
+                
+                {/* Status comparison */}
+                {event.beforeSnapshot.status && event.afterSnapshot.status && 
+                 event.beforeSnapshot.status !== event.afterSnapshot.status && (
+                  <ChangeItem $color="#22c55e">
+                    <ChangeLabel>Status</ChangeLabel>
+                    <ChangeValue>
+                      <span style={{ color: '#dc2626', textTransform: 'capitalize' }}>{event.beforeSnapshot.status}</span>
+                      {' → '}
+                      <span style={{ color: '#16a34a', textTransform: 'capitalize' }}>{event.afterSnapshot.status}</span>
+                    </ChangeValue>
+                  </ChangeItem>
+                )}
+                
+                {/* Response count comparison */}
+                {event.beforeSnapshot.responseCount !== undefined && event.afterSnapshot.responseCount !== undefined && 
+                 event.beforeSnapshot.responseCount !== event.afterSnapshot.responseCount && (
+                  <ChangeItem $color="#eab308">
+                    <ChangeLabel>Total Responses</ChangeLabel>
+                    <ChangeValue>
+                      <span style={{ color: '#dc2626' }}>{event.beforeSnapshot.responseCount} responses</span>
+                      {' → '}
+                      <span style={{ color: '#16a34a' }}>{event.afterSnapshot.responseCount} responses</span>
+                      <span style={{ 
+                        marginLeft: '8px', 
+                        padding: '2px 8px', 
+                        borderRadius: '4px',
+                        background: '#fef3c7',
+                        color: '#92400e',
+                        fontSize: '0.85rem',
+                        fontWeight: 600
+                      }}>
+                        +{event.afterSnapshot.responseCount - event.beforeSnapshot.responseCount}
+                      </span>
+                    </ChangeValue>
+                  </ChangeItem>
+                )}
+                
+                {/* Completed pillars comparison */}
+                {event.beforeSnapshot.completedCategories && event.afterSnapshot.completedCategories && 
+                 event.beforeSnapshot.completedCategories.length !== event.afterSnapshot.completedCategories.length && (
+                  <ChangeItem $color="#a855f7">
+                    <ChangeLabel>Completed Pillars</ChangeLabel>
+                    <ChangeValue>
+                      <span style={{ color: '#dc2626' }}>{event.beforeSnapshot.completedCategories.length}</span>
+                      {' → '}
+                      <span style={{ color: '#16a34a' }}>{event.afterSnapshot.completedCategories.length}</span>
+                      <span style={{ marginLeft: '8px', color: '#64748b', fontSize: '0.85rem' }}>
+                        / {auditData?.summary?.totalPillars || 6} total
+                      </span>
+                    </ChangeValue>
+                  </ChangeItem>
+                )}
+              </ChangesList>
+            )}
           </DetailsSection>
         )}
 

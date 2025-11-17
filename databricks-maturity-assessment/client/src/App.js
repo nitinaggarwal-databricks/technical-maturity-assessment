@@ -27,6 +27,10 @@ import AssignAssessmentMulti from './components/AssignAssessmentMulti';
 import AuthorAssignments from './components/AuthorAssignments';
 import UserDetails from './components/UserDetails';
 import AssessmentDetails from './components/AssessmentDetails';
+import FeedbackForm from './components/FeedbackForm';
+import FeedbackList from './components/FeedbackList';
+import QuestionManager from './components/QuestionManager';
+import ChatWidget from './components/ChatWidget';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -217,7 +221,7 @@ function App() {
       setAssessmentFramework(framework);
     } catch (error) {
       console.error('Error loading assessment framework:', error);
-      toast.error('Failed to load assessment framework');
+      
     } finally {
       setLoading(false);
     }
@@ -232,7 +236,7 @@ function App() {
       return assessment;
     } catch (error) {
       console.error('Error starting assessment:', error);
-      toast.error('Failed to start assessment');
+      
       throw error;
     }
   };
@@ -249,7 +253,7 @@ function App() {
       return status;
     } catch (error) {
       console.error('Error updating assessment status:', error);
-      toast.error('Failed to update assessment status');
+      
       throw error;
     }
   };
@@ -262,6 +266,7 @@ function App() {
           <div className="App">
             <GlobalNav />
             <LoadingSpinner message="Loading assessment framework..." />
+            <ChatWidget />
           </div>
         </Router>
       </>
@@ -446,10 +451,35 @@ function App() {
           />
           
           <Route 
+            path="/feedback" 
+            element={<FeedbackForm />} 
+          />
+          
+          <Route 
+            path="/admin/feedback" 
+            element={
+              <ProtectedRoute>
+                <FeedbackList />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/admin/questions" 
+            element={
+              <ProtectedRoute>
+                <QuestionManager />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
             path="*" 
             element={<Navigate to="/" replace />} 
           />
         </Routes>
+
+        <ChatWidget />
 
         <Toaster 
           position="top-right"

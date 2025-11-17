@@ -352,6 +352,50 @@ const ActionButton = styled(motion.button)`
   }
 `;
 
+const FloatingSlideshowButton = styled.button`
+  position: fixed;
+  top: 138px;
+  right: 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 999;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
+  }
+
+  @media (max-width: 1024px) {
+    top: 128px;
+    right: 24px;
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    top: 118px;
+    right: 16px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  @media print {
+    display: none !important;
+  }
+`;
+
 const ContentContainer = styled.div`
   width: 100%;
   padding: 0 40px;
@@ -1034,7 +1078,7 @@ const ExecutiveCommandCenter = () => {
       } catch (err) {
         console.error('[ExecutiveCommandCenter] Error loading results:', err);
         setError(err.message || 'Failed to load assessment results');
-        toast.error('Failed to load executive dashboard');
+        
       } finally {
         setLoading(false);
       }
@@ -1056,7 +1100,7 @@ const ExecutiveCommandCenter = () => {
 
   const handlePrint = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    const toastId = 
     
     // Set print mode to render all slides
     setPrintMode(true);
@@ -1085,7 +1129,7 @@ const ExecutiveCommandCenter = () => {
       }).catch(err => console.log('Error sharing:', err));
     } else {
       navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
+      
     }
   };
 
@@ -1093,18 +1137,18 @@ const ExecutiveCommandCenter = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        toast.error('Logo file size must be less than 2MB');
+        
         return;
       }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
+        
         return;
       }
       
       const reader = new FileReader();
       reader.onloadend = () => {
         setCustomerLogo(reader.result);
-        toast.success('Customer logo uploaded successfully');
+        
       };
       reader.readAsDataURL(file);
     }
@@ -1116,7 +1160,7 @@ const ExecutiveCommandCenter = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    toast.success('Logo removed');
+    
   };
 
   const handleLogoClick = () => {
@@ -1137,7 +1181,7 @@ const ExecutiveCommandCenter = () => {
   const handleURLSubmit = async (e) => {
     e.preventDefault();
     if (!logoURL.trim()) {
-      toast.error('Please enter a valid URL');
+      
       return;
     }
 
@@ -1149,16 +1193,16 @@ const ExecutiveCommandCenter = () => {
       
       if (response.success && response.data) {
         setCustomerLogo(response.data);
-        toast.success('Logo fetched successfully from customer portal');
+        
         setShowLogoModal(false);
         setShowURLInput(false);
         setLogoURL('');
       } else {
-        toast.error(response.message || 'Failed to fetch logo');
+        
       }
     } catch (error) {
       console.error('Error fetching logo:', error);
-      toast.error(error.message || 'Failed to fetch logo from URL. Please check the URL and try again.');
+      
     } finally {
       setLoadingURL(false);
     }
@@ -1177,14 +1221,14 @@ const ExecutiveCommandCenter = () => {
     setEditingItem(item);
     setFormData(item || {});
     setShowModal(true);
-    toast.success(`Opening ${type} editor`);
+    
   };
 
   const handleDelete = (type, item) => {
     console.log('[Delete]', type, item);
     if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       // In a real app, you'd update the backend here
-      toast.success(`${type} deleted successfully!`);
+      
     }
   };
 
@@ -1194,7 +1238,7 @@ const ExecutiveCommandCenter = () => {
     setEditingItem(null);
     setFormData({});
     setShowModal(true);
-    toast.success(`Add new ${type}`);
+    
   };
 
   const handleFormSubmit = (e) => {
@@ -1202,7 +1246,7 @@ const ExecutiveCommandCenter = () => {
     console.log('[Form Submit]', modalType, formData);
     // In a real app, you'd save to backend here
     setShowModal(false);
-    toast.success(`${modalType} ${editingItem ? 'updated' : 'added'} successfully!`);
+    
   };
 
   // 🎬 Presentation Mode Handlers
@@ -1346,12 +1390,12 @@ const ExecutiveCommandCenter = () => {
       const assessmentName = results?.assessmentInfo?.name || 'Executive-Command-Center';
       pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
       
-      toast.success('PDF generated successfully!', { id: 'print-progress' });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
       // Restore scrollbars on error
       document.body.style.overflow = 'auto';
-      toast.error('Failed to generate PDF', { id: 'print-progress' });
+      
     }
   };
 
@@ -1400,6 +1444,11 @@ const ExecutiveCommandCenter = () => {
       id: 'risk-heatmap',
       title: 'Risk Heatmap',
       type: 'component'
+    },
+    {
+      id: 'thank-you',
+      title: 'Thank You',
+      type: 'thank-you'
     }
   ];
 
@@ -1477,6 +1526,41 @@ const ExecutiveCommandCenter = () => {
       );
     }
 
+    // Thank You slide
+    if (slide.id === 'thank-you') {
+      return (
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '60px',
+          gap: '30px'
+        }}>
+          <div style={{
+            fontSize: '4rem',
+            fontWeight: 800,
+            color: 'white',
+            marginBottom: '20px',
+            textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+          }}>
+            Thank You
+          </div>
+          <div style={{
+            fontSize: '1.5rem',
+            fontWeight: 400,
+            color: 'rgba(255, 255, 255, 0.9)',
+            lineHeight: '1.6',
+            maxWidth: '800px'
+          }}>
+            For your time and participation in the Technical Maturity Assessment
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
 
@@ -1545,6 +1629,16 @@ const ExecutiveCommandCenter = () => {
 
   return (
     <PageContainer>
+      {/* Floating Start Slideshow Button */}
+      {!presentationMode && (
+        <FloatingSlideshowButton
+          onClick={startPresentation}
+        >
+          <FiMonitor size={18} />
+          Slideshow
+        </FloatingSlideshowButton>
+      )}
+      
       {/* 🖨️ PRINT MODE: Render all slides for printing */}
       {printMode && results && (
         <div style={{ display: 'none' }} className="print-slides-container">
@@ -1646,17 +1740,6 @@ const ExecutiveCommandCenter = () => {
             />
           </LogoContainer>
         </div>
-
-        <ActionButtons>
-          <ActionButton
-            onClick={startPresentation}
-            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
-            title="View Executive Command Center in presentation slideshow mode"
-          >
-            <FiMonitor />
-            Start Slideshow
-          </ActionButton>
-        </ActionButtons>
       </PageHeader>
 
       <ContentContainer>
@@ -2291,6 +2374,40 @@ const ExecutiveCommandCenter = () => {
                         results={results} 
                         assessment={results?.assessmentInfo}
                       />
+                    </div>
+                  )}
+
+                  {/* Thank You Slide */}
+                  {slides[currentSlide].id === 'thank-you' && (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      padding: '60px',
+                      gap: '30px'
+                    }}>
+                      <div style={{
+                        fontSize: '4rem',
+                        fontWeight: 800,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                      }}>
+                        Thank You
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6',
+                        maxWidth: '800px'
+                      }}>
+                        For your time and participation in the Technical Maturity Assessment
+                      </div>
                     </div>
                   )}
                 </motion.div>

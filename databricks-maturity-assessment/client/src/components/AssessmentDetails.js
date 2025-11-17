@@ -289,7 +289,7 @@ const AssessmentDetails = () => {
       }
     } catch (error) {
       console.error('Error fetching assessment details:', error);
-      toast.error('Failed to load assessment details');
+      
     } finally {
       setLoading(false);
     }

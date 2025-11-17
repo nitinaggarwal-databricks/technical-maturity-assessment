@@ -121,14 +121,14 @@ const PageContainer = styled.div`
 
 const PageHeader = styled.div`
   margin: 0 0 24px 0;
-  padding: 20px 40px;
+  padding: 0 40px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
 
   @media (max-width: 768px) {
-    padding: 20px 16px;
+    padding: 0 16px;
   }
 
   @media print {
@@ -323,6 +323,50 @@ const ActionButton = styled.button`
     color: #3b82f6;
   }
 
+  @media print {
+    display: none !important;
+  }
+`;
+
+const FloatingSlideshowButton = styled.button`
+  position: fixed;
+  top: 110px;
+  right: 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 999;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
+  }
+
+  @media (max-width: 1024px) {
+    top: 100px;
+    right: 24px;
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    top: 90px;
+    right: 16px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
   @media print {
     display: none !important;
   }
@@ -807,13 +851,15 @@ const SlideContainer = styled(motion.div)`
 `;
 
 const SlideContent = styled.div`
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 80px;
+  left: 100px;
+  right: 100px;
+  bottom: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
-  padding: 45px 60px 20px 60px;
 `;
 
 const SlideHeading = styled.div`
@@ -1112,7 +1158,7 @@ const IndustryBenchmarkingReport = () => {
 
   const handleDownloadReport = () => {
     // Show brief toast
-    const toastId = toast.success('Preparing slides for print... Enable "Background graphics" in print settings for best results!', { duration: 1500 });
+    const toastId = 
     
     // Set print mode to render all slides
     setPrintMode(true);
@@ -1139,7 +1185,7 @@ const IndustryBenchmarkingReport = () => {
   };
 
   const nextSlide = () => {
-    const totalSlides = 6; // 0-5: Title, Exec Summary+Position, Pillars, Vulnerabilities, Recommendations, Methodology
+    const totalSlides = 7; // 0-6: Title, Exec Summary+Position, Pillars, Vulnerabilities, Recommendations, Methodology, Thank You
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
@@ -1275,12 +1321,12 @@ const IndustryBenchmarkingReport = () => {
       const assessmentName = results?.assessmentInfo?.name || 'Industry-Benchmarking';
       pdf.save(`${assessmentName.replace(/\s+/g, '-')}-Slideshow.pdf`);
       
-      toast.success('PDF generated successfully!', { id: 'print-progress' });
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
       // Restore scrollbars on error
       document.body.style.overflow = 'auto';
-      toast.error('Failed to generate PDF', { id: 'print-progress' });
+      
     }
   };
 
@@ -1480,16 +1526,17 @@ const IndustryBenchmarkingReport = () => {
               Executive Command Center
             </BenchmarkButton>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <ActionButton
-              onClick={() => { setPresentationMode(true); setCurrentSlide(0); document.body.style.overflow = 'hidden'; }}
-              style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', color: 'white', border: 'none', padding: '0 16px', height: '40px' }}
-            >
-              <FiMonitor size={18} />
-              <span style={{ marginLeft: '8px' }}>Start Slideshow</span>
-            </ActionButton>
-          </div>
         </PageHeader>
+        
+        {/* Floating Start Slideshow Button */}
+        {!presentationMode && (
+          <FloatingSlideshowButton
+            onClick={() => { setPresentationMode(true); setCurrentSlide(0); document.body.style.overflow = 'hidden'; }}
+          >
+            <FiMonitor size={18} />
+            Slideshow
+          </FloatingSlideshowButton>
+        )}
 
       <ReportContainer
         initial={{ opacity: 0, y: 20 }}
@@ -2489,6 +2536,40 @@ const IndustryBenchmarkingReport = () => {
                               <p style={{ fontSize: '0.9rem' }}>This section will be populated with benchmarking methodology details.</p>
                             </div>
                           )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Thank You Slide */}
+                    {currentSlide === 6 && (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        padding: '60px',
+                        gap: '30px'
+                      }}>
+                        <div style={{
+                          fontSize: '4rem',
+                          fontWeight: 800,
+                          color: 'white',
+                          marginBottom: '20px',
+                          textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                        }}>
+                          Thank You
+                        </div>
+                        <div style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 400,
+                          color: 'rgba(255, 255, 255, 0.9)',
+                          lineHeight: '1.6',
+                          maxWidth: '800px'
+                        }}>
+                          For your time and participation in the Technical Maturity Assessment
                         </div>
                       </div>
                     )}

@@ -216,7 +216,7 @@ const NPSFeedbackModal = ({ isOpen, onClose, assessmentId, assessmentName }) => 
 
   const handleSubmit = async () => {
     if (score === null) {
-      toast.error('Please select a rating');
+      
       return;
     }
 
@@ -227,11 +227,11 @@ const NPSFeedbackModal = ({ isOpen, onClose, assessmentId, assessmentName }) => 
         comment,
         assessmentName
       });
-      toast.success('Thank you for your feedback!');
+      
       onClose();
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      toast.error('Failed to submit feedback. Please try again.');
+      
     } finally {
       setSubmitting(false);
     }

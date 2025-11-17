@@ -476,12 +476,12 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
 
   const handleSubmitAssessment = async () => {
     if (!assessmentId) {
-      toast.error('No assessment ID available');
+      
       return;
     }
 
     if (!hasAnyCompletedPillars) {
-      toast.error('Please complete at least one pillar before submitting');
+      
       return;
     }
 
@@ -522,7 +522,7 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
     } catch (error) {
       console.error('Error submitting assessment:', error);
       setIsSubmitting(false);
-      toast.error('Failed to submit assessment. Please try again.');
+      
     }
   };
 

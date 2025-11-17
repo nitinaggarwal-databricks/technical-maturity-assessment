@@ -2,9 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff, FiLoader } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiSave, FiWifi, FiWifiOff, FiLoader, FiEdit2, FiX, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import authService from '../services/authService';
+import * as questionEditsService from '../services/questionEditsService';
 import UserEmailPrompt from './UserEmailPrompt';
 import NavigationPanel from './NavigationPanel';
 
@@ -165,6 +167,86 @@ const QuestionText = styled.h3`
   font-weight: 600;
   color: #333;
   line-height: 1.3;
+`;
+
+const EditableQuestionText = styled.textarea`
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.5;
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  
+  &:focus {
+    outline: none;
+    border-color: #ff6b35;
+  }
+`;
+
+const EditableOptionInput = styled.input`
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  width: 100%;
+  font-family: inherit;
+  
+  &:focus {
+    outline: none;
+    border-color: #ff6b35;
+  }
+`;
+
+const EditButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: ${props => props.$isEditing ? '#ff6b35' : '#667eea'};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+`;
+
+const DeleteButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+`;
+
+const QuestionActions = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
 `;
 
 const SkipToggleContainer = styled.div`
@@ -879,9 +961,22 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const [isSubmittingReport, setIsSubmittingReport] = useState(false); // 🆕 Report submission state
   const [submissionProgress, setSubmissionProgress] = useState(0); // 🆕 Progress tracking
   const [submissionMessage, setSubmissionMessage] = useState(''); // 🆕 Progress message
+  const [isEditMode, setIsEditMode] = useState(false); // Inline editing mode
+  const [editedQuestion, setEditedQuestion] = useState(null); // Edited question data
+  const [isAdmin, setIsAdmin] = useState(false); // Check if user is admin
 
-  // Get dimension from query parameter
+  // Get dimension and questionId from query parameters
   const targetDimensionIndex = searchParams.get('dimension') ? parseInt(searchParams.get('dimension')) : null;
+  const targetQuestionId = searchParams.get('questionId'); // Get questionId from URL
+
+  // Check if current user is admin
+  useEffect(() => {
+    const currentUser = authService.getUser();
+    setIsAdmin(currentUser && currentUser.role === 'admin' && !currentUser.testMode);
+  }, []);
+
+  // Note: Question edits are now loaded and applied within loadAreaData useEffect above
+  // This ensures edits are applied immediately when the area data is fetched
 
   // Reset question index when filter changes
   useEffect(() => {
@@ -955,7 +1050,62 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           setLoading(true);
           const areaData = await assessmentService.getCategoryQuestions(assessmentId, categoryId);
           
-          // Set the area data from API (includes flattened questions)
+          console.log('📥 Loaded area data from API');
+          
+          // Load question edits and apply them to the area data
+          try {
+            const { edits } = await questionEditsService.getQuestionEdits(assessmentId);
+            const { deletedQuestions } = await questionEditsService.getDeletedQuestions(assessmentId);
+            
+            console.log(`📝 Found ${edits?.length || 0} edits and ${deletedQuestions?.length || 0} deleted questions`);
+            
+            // Apply edits and deletions to the area data
+            if (areaData.area.dimensions) {
+              areaData.area.dimensions = areaData.area.dimensions.map(dimension => ({
+                ...dimension,
+                questions: dimension.questions
+                  .filter(q => !deletedQuestions?.some(d => d.question_id === q.id)) // Remove deleted questions
+                  .map(question => {
+                    const edit = edits?.find(e => e.question_id === question.id);
+                    if (edit) {
+                      console.log(`✏️ Applying edit to question ${question.id}`);
+                      return {
+                        ...question,
+                        question: edit.edited_question_text || question.question,
+                        perspectives: edit.edited_perspectives || question.perspectives,
+                        _isEdited: true
+                      };
+                    }
+                    return question;
+                  })
+              }));
+            }
+            
+            // Also apply to flattened questions array if it exists
+            if (areaData.area.questions) {
+              areaData.area.questions = areaData.area.questions
+                .filter(q => !deletedQuestions?.some(d => d.question_id === q.id))
+                .map(question => {
+                  const edit = edits?.find(e => e.question_id === question.id);
+                  if (edit) {
+                    return {
+                      ...question,
+                      question: edit.edited_question_text || question.question,
+                      perspectives: edit.edited_perspectives || question.perspectives,
+                      _isEdited: true
+                    };
+                  }
+                  return question;
+                });
+            }
+            
+            console.log('✅ Edits and deletions applied to area data');
+          } catch (editError) {
+            console.error('⚠️ Error loading edits:', editError);
+            // Continue without edits if there's an error
+          }
+          
+          // Set the area data from API (now with edits applied)
           setCurrentArea(areaData.area);
           
           // Load existing responses
@@ -975,8 +1125,19 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             setAutoSaveStatus('saved');
           }
           
-          // Reset question index for new area or set to specific dimension
-          if (targetDimensionIndex !== null && areaData.area.dimensions) {
+          // Reset question index for new area or set to specific dimension/question
+          if (targetQuestionId && areaData.area.questions) {
+            // Find the index of the specific custom question
+            const questionIndex = areaData.area.questions.findIndex(q => q.id === targetQuestionId);
+            
+            if (questionIndex !== -1) {
+              console.log('Found target question at index:', questionIndex);
+              setCurrentQuestionIndex(questionIndex);
+            } else {
+              console.log('Question ID not found, defaulting to index 0');
+              setCurrentQuestionIndex(0);
+            }
+          } else if (targetDimensionIndex !== null && areaData.area.dimensions) {
             // Calculate question index for specific dimension
             let questionIndex = 0;
             console.log('Calculating question index for dimension:', targetDimensionIndex);
@@ -991,7 +1152,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             console.log('Setting question index to:', questionIndex);
             setCurrentQuestionIndex(questionIndex);
           } else {
-            console.log('No target dimension, setting index to 0');
+            console.log('No target dimension or question, setting index to 0');
             setCurrentQuestionIndex(0);
           }
           setLoading(false);
@@ -1000,10 +1161,10 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
           
           // If assessment not found, redirect to assessments list
           if (error.message?.includes('Assessment not found') || error.message?.includes('404')) {
-            toast.error('Assessment not found. Redirecting to assessments list...');
+            
             setTimeout(() => navigate('/assessments'), 2000);
           } else {
-            toast.error('Failed to load assessment data');
+            
           }
           
           setLoading(false);
@@ -1012,7 +1173,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     };
 
     loadAreaData();
-  }, [assessmentId, categoryId, targetDimensionIndex]);
+  }, [assessmentId, categoryId, targetDimensionIndex, targetQuestionId]);
 
   // Log current state for debugging
   useEffect(() => {
@@ -1192,7 +1353,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         setAutoSaveStatus('saved');
         setLastSaved(result.lastSaved);
         // Optional: Show subtle success toast
-        // toast.success('Progress saved', { duration: 1000 });
+        // 
       } else {
         setAutoSaveStatus('error');
         console.error('Auto-save failed:', result.error);
@@ -1222,7 +1383,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     });
     
     setResponses(updatedResponses);
-    toast.success(`All Current States set to Level ${level}`, { duration: 2000 });
+    
     setAutoSaveStatus('saving');
     
     // Save all changes
@@ -1242,7 +1403,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setLastSaved(new Date());
     } catch (error) {
       setAutoSaveStatus('error');
-      toast.error('Failed to save bulk changes');
+      
     }
   };
 
@@ -1254,9 +1415,9 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     
     if (unansweredIndex !== -1) {
       setCurrentQuestionIndex(unansweredIndex);
-      toast.success('Jumped to next unanswered question', { duration: 1500 });
+      
     } else {
-      toast('All questions answered! 🎉', { icon: '✅', duration: 2000 });
+      
     }
   };
 
@@ -1375,6 +1536,157 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     }
   };
 
+  // Handle edit mode toggle
+  const handleEditToggle = () => {
+    if (!isEditMode) {
+      // Entering edit mode - initialize with current question data
+      setEditedQuestion({
+        ...currentQuestion,
+        question: currentQuestion.question,
+        perspectives: currentQuestion.perspectives.map(p => ({
+          ...p,
+          options: p.options.map(o => ({ ...o }))
+        }))
+      });
+    }
+    setIsEditMode(!isEditMode);
+  };
+
+  // Handle edit field changes
+  const handleEditFieldChange = (field, value) => {
+    setEditedQuestion(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle option label edit
+  const handleOptionEdit = (perspectiveId, optionIndex, newLabel) => {
+    setEditedQuestion(prev => ({
+      ...prev,
+      perspectives: prev.perspectives.map(p => 
+        p.id === perspectiveId
+          ? {
+              ...p,
+              options: p.options.map((opt, idx) => 
+                idx === optionIndex ? { ...opt, label: newLabel } : opt
+              )
+            }
+          : p
+      )
+    }));
+  };
+
+  // Save edited question
+  const handleSaveEdit = async () => {
+    try {
+      const currentUser = authService.getUser();
+      
+      console.log('💾 Saving question edit to backend...');
+      
+      // Call API to save edited question
+      await questionEditsService.saveQuestionEdit(
+        assessmentId,
+        editedQuestion.id,
+        {
+          questionText: editedQuestion.question,
+          perspectives: editedQuestion.perspectives,
+          editedBy: currentUser?.email || 'admin'
+        }
+      );
+      
+      console.log('✅ Question edit saved to backend');
+      
+      // Mark the edited question with _isEdited flag
+      const updatedQuestion = {
+        ...editedQuestion,
+        _isEdited: true
+      };
+      
+      // Update the current area with edited question
+      setCurrentArea(prev => ({
+        ...prev,
+        dimensions: prev.dimensions.map(dim => ({
+          ...dim,
+          questions: dim.questions.map(q => 
+            q.id === editedQuestion.id ? updatedQuestion : q
+          )
+        }))
+      }));
+      
+      console.log('✅ Local state updated with edited question');
+      
+      setIsEditMode(false);
+      setEditedQuestion(null);
+      toast.success('Question updated successfully!');
+      
+      // Force a re-render by updating a dummy state
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('❌ Error saving edited question:', error);
+      toast.error('Failed to save edited question');
+    }
+  };
+
+  // Handle question deletion
+  const handleDeleteQuestion = async () => {
+    if (!window.confirm(`Are you sure you want to delete this question?\n\n"${currentQuestion.question}"\n\nThis will permanently remove the question and regenerate all reports and KPIs.`)) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const currentUser = authService.getUser();
+      
+      console.log(`🗑️ Deleting question ${currentQuestion.id}...`);
+      
+      // Call API to delete question
+      await questionEditsService.deleteQuestion(
+        assessmentId,
+        currentQuestion.id,
+        currentUser?.email || 'admin'
+      );
+      
+      console.log('✅ Question deleted from backend');
+      
+      // Remove from local state
+      const updatedDimensions = currentArea.dimensions.map(dim => ({
+        ...dim,
+        questions: dim.questions.filter(q => q.id !== currentQuestion.id)
+      }));
+      
+      console.log(`📊 Updated dimensions, removed question from ${currentArea.dimensions.length} dimensions`);
+      
+      setCurrentArea(prev => ({
+        ...prev,
+        dimensions: updatedDimensions
+      }));
+      
+      // Calculate new question index
+      const newFilteredQuestions = updatedDimensions.flatMap(d => d.questions);
+      const newIndex = currentQuestionIndex >= newFilteredQuestions.length 
+        ? Math.max(0, newFilteredQuestions.length - 1)
+        : currentQuestionIndex;
+      
+      console.log(`📍 Moving to question index ${newIndex}`);
+      
+      // Move to appropriate question
+      if (newFilteredQuestions.length > 0) {
+        setCurrentQuestionIndex(newIndex);
+      } else {
+        // No more questions in this pillar
+        console.log('⚠️ No more questions in this pillar');
+      }
+      
+      toast.success('Question deleted successfully! Reports will be regenerated.');
+      setLoading(false);
+    } catch (error) {
+      console.error('❌ Error deleting question:', error);
+      toast.error('Failed to delete question');
+      setLoading(false);
+    }
+  };
+
   const validateCurrentQuestion = () => {
     if (!currentQuestion) return false;
     
@@ -1396,7 +1708,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
 
   const handleNext = () => {
     if (!validateCurrentQuestion()) {
-      toast.error('Please answer all perspectives for this question');
+      
       return;
     }
 
@@ -1427,11 +1739,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         // Go to previous pillar
         const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
         navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
-        toast(`Navigating back to ${previousPillar.name}...`, { icon: 'ℹ️' });
+        
       } else {
         // First question of first pillar - go to assessment list
         navigate('/assessments');
-        toast('Returning to assessments list...', { icon: 'ℹ️' });
+        
       }
     }
   };
@@ -1447,7 +1759,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         responses
       );
       
-      toast.success(`${currentArea.name} completed!`);
+      
       
       // Update assessment status and get the latest state
       let updatedAssessment = currentAssessment;
@@ -1478,7 +1790,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setShowCompletionDialog(true);
     } catch (error) {
       console.error('Error submitting area responses:', error);
-      toast.error('Failed to submit responses. Please try again.');
+      
     } finally {
       setIsSubmitting(false);
     }
@@ -1487,7 +1799,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   const handleContinueToNextPillar = () => {
     setShowCompletionDialog(false);
     if (nextPillarInfo) {
-      toast.success(`Moving to ${nextPillarInfo.name}...`);
+      
       setTimeout(() => {
         navigate(`/assessment/${assessmentId}/${nextPillarInfo.id}`);
       }, 500);
@@ -1530,7 +1842,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       navigate(`/results/${assessmentId}`);
     } catch (error) {
       console.error('Error submitting assessment:', error);
-      toast.error('Failed to submit assessment. Please try again.');
+      
       setIsSubmittingReport(false);
     }
   };
@@ -1562,7 +1874,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
         <ContentWrapper>
           <div style={{ textAlign: 'center', padding: '60px' }}>
             <h2>Assessment area not found</h2>
-            <p>Available areas: {framework?.assessmentAreas?.map(a => a.id).join(', ')}</p>
+            <p>Available areas: {framework?.assessmentAreas && Array.isArray(framework.assessmentAreas) ? framework.assessmentAreas.map(a => a.id).join(', ') : 'None'}</p>
             <p>Looking for: {categoryId}</p>
             <button onClick={() => navigate('/start')}>Return to Start</button>
           </div>
@@ -1657,11 +1969,8 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
               {/* Separator */}
               <div style={{ width: '1px', height: '20px', background: '#e5e7eb' }} />
 
-              {/* Question Numbers - Compact (show first 10 only) */}
-              {currentArea?.questions && (currentArea.questions || []).map((q, idx) => {
-                // Only render first 10 question numbers to save space
-                if (idx >= 10) return null;
-                
+              {/* Question Numbers - Show all questions including custom */}
+              {currentArea?.questions && Array.isArray(currentArea.questions) && currentArea.questions.map((q, idx) => {
                 const isComplete = isQuestionCompleted(q);
                 const isPartial = !isComplete && (responses[`${q.id}_current_state`] || responses[`${q.id}_future_state`]);
                 const isCurrent = idx === currentQuestionIndex;
@@ -1673,7 +1982,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                     $isPartial={isPartial}
                     $isCurrent={isCurrent}
                     onClick={() => handleJumpToQuestion(idx)}
-                    title={`Q${idx + 1}: ${q.topic}`}
+                    title={`Q${idx + 1}: ${q.isCustom ? '(Custom) ' : ''}${q.topic || q.question}`}
                     style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}
                   >
                     {idx + 1}
@@ -1751,15 +2060,53 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
             <QuestionHeader>
               <QuestionContent>
                 <QuestionTopic>{currentQuestion?.topic}</QuestionTopic>
-                <QuestionText>{currentQuestion?.question}</QuestionText>
+                {isEditMode ? (
+                  <EditableQuestionText
+                    value={editedQuestion?.question || ''}
+                    onChange={(e) => handleEditFieldChange('question', e.target.value)}
+                    placeholder="Enter question text..."
+                  />
+                ) : (
+                  <QuestionText>{currentQuestion?.question}</QuestionText>
+                )}
               </QuestionContent>
+              
+              {isAdmin && (
+                <QuestionActions>
+                  {isEditMode ? (
+                    <>
+                      <EditButton onClick={handleSaveEdit} $isEditing={true}>
+                        <FiSave size={16} />
+                        Save
+                      </EditButton>
+                      <EditButton onClick={handleEditToggle} $isEditing={false} style={{ background: '#6b7280' }}>
+                        <FiX size={16} />
+                        Cancel
+                      </EditButton>
+                    </>
+                  ) : (
+                    <>
+                      <EditButton onClick={handleEditToggle} $isEditing={false}>
+                        <FiEdit2 size={16} />
+                        Edit
+                      </EditButton>
+                      <DeleteButton onClick={handleDeleteQuestion}>
+                        <FiTrash2 size={16} />
+                        Delete
+                      </DeleteButton>
+                    </>
+                  )}
+                </QuestionActions>
+              )}
             </QuestionHeader>
 
             <PerspectivesGrid style={{ 
               opacity: skippedQuestions[currentQuestion?.id] ? 0.5 : 1,
               pointerEvents: skippedQuestions[currentQuestion?.id] ? 'none' : 'auto'
             }}>
-              {currentQuestion?.perspectives?.map((perspective) => (
+              {(isEditMode ? editedQuestion?.perspectives : currentQuestion?.perspectives) && 
+               Array.isArray(isEditMode ? editedQuestion?.perspectives : currentQuestion?.perspectives) && 
+               (isEditMode ? editedQuestion?.perspectives : currentQuestion?.perspectives).map((perspective, perspIndex) => (
                 <PerspectiveColumn key={perspective.id}>
                   <PerspectiveHeader>
                     {perspective.label}
@@ -1773,13 +2120,20 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                   </PerspectiveHeader>
                   <OptionGroup>
                     {perspective.type === 'single_choice' ? (
-                      perspective.options.map((option) => {
+                      perspective.options && Array.isArray(perspective.options) && perspective.options.map((option, optIndex) => {
                         const responseKey = `${currentQuestion.id}_${perspective.id}`;
                         const storedValue = responses[responseKey];
                         // Normalize comparison: convert both to strings to handle type mismatch
                         const isSelected = storedValue != null && String(storedValue) === String(option.value);
                         
-                        return (
+                        return isEditMode ? (
+                          <EditableOptionInput
+                            key={option.value}
+                            value={option.label}
+                            onChange={(e) => handleOptionEdit(perspective.id, optIndex, e.target.value)}
+                            placeholder="Enter option label..."
+                          />
+                        ) : (
                           <OptionButton
                             key={option.value}
                             selected={isSelected}
@@ -1794,14 +2148,21 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
                         );
                       })
                     ) : (
-                      perspective.options.map((option) => {
+                      perspective.options && Array.isArray(perspective.options) && perspective.options.map((option, optIndex) => {
                         const responseKey = `${currentQuestion.id}_${perspective.id}`;
                         const selectedValues = responses[responseKey] || [];
                         // Normalize comparison: handle type mismatch for array values
                         const isSelected = Array.isArray(selectedValues) && 
                           selectedValues.some(val => String(val) === String(option.value));
                         
-                        return (
+                        return isEditMode ? (
+                          <EditableOptionInput
+                            key={option.value}
+                            value={option.label}
+                            onChange={(e) => handleOptionEdit(perspective.id, optIndex, e.target.value)}
+                            placeholder="Enter option label..."
+                          />
+                        ) : (
                           <MultiSelectOption
                             key={option.value}
                             selected={isSelected}

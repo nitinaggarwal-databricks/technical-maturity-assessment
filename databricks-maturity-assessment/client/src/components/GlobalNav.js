@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -516,7 +516,7 @@ const GlobalNav = () => {
       }
       
       console.log('[GlobalNav] Assessment ID:', assessmentId);
-      toast.success('Sample assessment created!', { id: 'sample-assessment' });
+      
       
       // Longer delay to ensure assessment is fully saved
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -526,7 +526,7 @@ const GlobalNav = () => {
       navigate(`/assessment/${assessmentId}/platform_governance`);
     } catch (error) {
       console.error('[GlobalNav] Error creating sample assessment:', error);
-      toast.error(error.message || 'Failed to create sample assessment', { id: 'sample-assessment' });
+      
     }
   };
 
@@ -877,7 +877,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(testUser));
                           setCurrentUser(testUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched to Author role (Test Mode)');
+                          
                           window.location.reload();
                         }}>
                           <FiUsers />
@@ -888,7 +888,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(testUser));
                           setCurrentUser(testUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched to Consumer role (Test Mode)');
+                          
                           window.location.reload();
                         }}>
                           <FiUsers />
@@ -905,7 +905,7 @@ const GlobalNav = () => {
                             localStorage.setItem('user', JSON.stringify(testUser));
                             setCurrentUser(testUser);
                             setAdminDropdownOpen(false);
-                            toast.success('Switched to Author role (Test Mode)');
+                            
                             window.location.reload();
                           }}>
                             <FiUsers />
@@ -918,7 +918,7 @@ const GlobalNav = () => {
                             localStorage.setItem('user', JSON.stringify(testUser));
                             setCurrentUser(testUser);
                             setAdminDropdownOpen(false);
-                            toast.success('Switched to Consumer role (Test Mode)');
+                            
                             window.location.reload();
                           }}>
                             <FiUsers />
@@ -931,7 +931,7 @@ const GlobalNav = () => {
                           localStorage.setItem('user', JSON.stringify(originalUser));
                           setCurrentUser(originalUser);
                           setAdminDropdownOpen(false);
-                          toast.success('Switched back to Admin role');
+                          
                           window.location.reload();
                         }}>
                           <FiUser />
@@ -942,7 +942,7 @@ const GlobalNav = () => {
                     )}
                 <DropdownItem onClick={() => {
                   setAdminDropdownOpen(false);
-                  toast('Change password feature coming soon!', { icon: 'ℹ️' });
+                  
                 }}>
                       <FiLock />
                       Change Password
@@ -956,11 +956,37 @@ const GlobalNav = () => {
                       Logout
                     </DropdownItem>
                     <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      navigate('/feedback');
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiMessageSquare />
+                      Give Feedback
+                    </DropdownItem>
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
+                      <>
+                        <DropdownItem onClick={() => {
+                          navigate('/admin/feedback');
+                          setAdminDropdownOpen(false);
+                        }}>
+                          <FiMessageSquare />
+                          View All Feedback
+                        </DropdownItem>
+                        <DropdownItem onClick={() => {
+                          navigate('/admin/questions');
+                          setAdminDropdownOpen(false);
+                        }}>
+                          <FiSettings />
+                          Manage Questions
+                        </DropdownItem>
+                      </>
+                    )}
+                    <DropdownDivider />
                     <DropdownEmailLink 
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText('nitin.aggarwal@databricks.com');
-                        toast.success('Email copied to clipboard!');
+                        
                         setAdminDropdownOpen(false);
                       }}
                     >
@@ -987,10 +1013,7 @@ const GlobalNav = () => {
                   <FiLogIn size={14} />
                   Login
                 </SecondaryCTAButton>
-                <CTAButton onClick={() => {
-                  toast.error('Please login to start an assessment');
-                  setShowLoginModal(true);
-                }}>
+                <CTAButton onClick={() => setShowLoginModal(true)}>
                   Start Assessment →
                 </CTAButton>
               </>
@@ -1072,7 +1095,6 @@ const GlobalNav = () => {
             </MobileSecondaryCTAButton>
             <MobileCTAButton onClick={() => {
               closeMobileMenu();
-              toast.error('Please login to start an assessment');
               setShowLoginModal(true);
             }}>
               Start Assessment →
