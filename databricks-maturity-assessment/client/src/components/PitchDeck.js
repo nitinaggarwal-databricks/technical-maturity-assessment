@@ -1006,7 +1006,7 @@ const PitchDeck = () => {
               color: 'rgba(255, 255, 255, 0.9)',
               margin: 0
             }}>
-              Contact us at: <strong>support@databricks-assessment.com</strong>
+              Contact us at: <strong>nitin.aggarwal@databricks.com</strong>
             </p>
           </div>
         </SlideContent>
