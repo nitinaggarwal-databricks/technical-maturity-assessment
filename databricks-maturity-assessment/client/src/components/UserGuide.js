@@ -48,7 +48,8 @@ const PageContainer = styled.div`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 108px 0 80px 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 
   &::before {
     content: '';
