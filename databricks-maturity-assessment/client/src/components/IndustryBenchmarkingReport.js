@@ -2217,9 +2217,9 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Executive Summary + Competitive Position Slide */}
                     {currentSlide === 1 && executiveSummary && competitivePositioning && (
-                      <div style={{ width: '100%', height: '100%', overflow: 'auto', padding: '20px 50px' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '16px' }}>
                         {/* Report Header */}
-                        <div style={{ marginBottom: '20px', padding: '20px 30px', background: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px' }}>
+                        <div style={{ marginBottom: '8px', padding: '16px 24px', background: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px' }}>
                           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6', letterSpacing: '0.1em', marginBottom: '8px' }}>
                             DATABRICKS MATURITY ASSESSMENT
                           </div>
@@ -2231,8 +2231,8 @@ const IndustryBenchmarkingReport = () => {
                           </div>
                         </div>
                         
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', marginBottom: '20px' }}>
-                          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px', marginBottom: '12px' }}>
+                          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1e293b', marginBottom: '12px' }}>
                             ⚡ Executive Summary
                           </h2>
                           <div style={{ fontSize: '1rem', fontWeight: 600, color: '#475569', marginBottom: '16px', lineHeight: '1.5' }}>
@@ -2251,8 +2251,8 @@ const IndustryBenchmarkingReport = () => {
                           </div>
                         </div>
                         
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px' }}>
-                          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '20px', textAlign: 'center' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px' }}>
+                          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px', textAlign: 'center' }}>
                             🎯 Your Competitive Position
                           </h2>
                           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -2302,7 +2302,7 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Detailed Pillar Analysis Slide */}
                     {currentSlide === 2 && pillarAnalysis && (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 60px' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             📊 Detailed Pillar Analysis
@@ -2369,7 +2369,7 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Competitive Intelligence Slide */}
                     {currentSlide === 3 && (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 60px' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             🛡️ Competitive Vulnerabilities
@@ -2412,8 +2412,8 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Strategic Recommendations Slide */}
                     {currentSlide === 4 && (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 80px' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px', maxHeight: '75vh', overflow: 'auto' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             🎯 Strategic Recommendations
                           </h2>
@@ -2493,8 +2493,8 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Methodology Slide */}
                     {currentSlide === 5 && (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 80px' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', maxHeight: '75vh', overflow: 'auto' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             📋 Methodology & Data Sources
                           </h2>
@@ -2550,7 +2550,6 @@ const IndustryBenchmarkingReport = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        padding: '60px',
                         gap: '30px'
                       }}>
                         <div style={{
