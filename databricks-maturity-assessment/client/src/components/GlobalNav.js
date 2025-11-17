@@ -957,6 +957,14 @@ const GlobalNav = () => {
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownItem onClick={() => {
+                      navigate('/user-guide');
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiBook />
+                      User Guide
+                    </DropdownItem>
+                    
+                    <DropdownItem onClick={() => {
                       navigate('/feedback');
                       setAdminDropdownOpen(false);
                     }}>

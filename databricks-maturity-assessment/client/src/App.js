@@ -31,6 +31,7 @@ import FeedbackForm from './components/FeedbackForm';
 import FeedbackList from './components/FeedbackList';
 import QuestionManager from './components/QuestionManager';
 import ChatWidget from './components/ChatWidget';
+import UserGuide from './components/UserGuide';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -471,6 +472,11 @@ function App() {
                 <QuestionManager />
               </ProtectedRoute>
             }
+          />
+          
+          <Route 
+            path="/user-guide" 
+            element={<UserGuide />}
           />
           
           <Route 
