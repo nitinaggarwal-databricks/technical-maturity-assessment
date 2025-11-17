@@ -733,39 +733,82 @@ const AssessmentHistory = () => {
           <DetailsSection>
             <DetailsTitle>Impact Analysis</DetailsTitle>
             
-            {/* Show impact badges */}
-            <ImpactGrid style={{ marginBottom: '16px' }}>
-              {event.impact.maturityScoreChanged && (
-                <ImpactBadge $bg="#fef3c7" $border="#fbbf24" $color="#92400e">
-                  <FiTrendingUp /> Maturity Score
-                </ImpactBadge>
+            {/* Show specific impact details */}
+            <ChangesList style={{ marginBottom: '16px' }}>
+              {event.impact.maturityScoreChanged && event.changes && event.changes.pillar && (
+                <ChangeItem $color="#f59e0b">
+                  <ChangeLabel>
+                    <FiTrendingUp style={{ marginRight: '8px' }} />
+                    Maturity Score Impact
+                  </ChangeLabel>
+                  <ChangeValue style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                    <div>
+                      <strong>{event.changes.pillar.name || 'Pillar'}</strong> maturity score will be recalculated
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                      This affects your overall maturity level, pillar-specific recommendations, and strategic roadmap priorities
+                    </div>
+                  </ChangeValue>
+                </ChangeItem>
               )}
+              
               {event.impact.recommendationsChanged && (
-                <ImpactBadge $bg="#dbeafe" $border="#60a5fa" $color="#1e40af">
-                  <FiZap /> Recommendations
+                <ImpactBadge $bg="#dbeafe" $border="#60a5fa" $color="#1e40af" style={{ marginBottom: '12px' }}>
+                  <FiZap /> Recommendations will be regenerated based on new responses
                 </ImpactBadge>
               )}
+              
               {event.impact.executiveSummaryChanged && (
-                <ImpactBadge $bg="#e9d5ff" $border="#c084fc" $color="#6b21a8">
-                  <FiShield /> Executive Summary
+                <ImpactBadge $bg="#e9d5ff" $border="#c084fc" $color="#6b21a8" style={{ marginBottom: '12px' }}>
+                  <FiShield /> Executive Summary will reflect updated maturity assessment
                 </ImpactBadge>
               )}
+              
               {event.impact.strategicRoadmapChanged && (
-                <ImpactBadge $bg="#d1fae5" $border="#6ee7b7" $color="#065f46">
-                  <FiTarget /> Strategic Roadmap
+                <ImpactBadge $bg="#d1fae5" $border="#6ee7b7" $color="#065f46" style={{ marginBottom: '12px' }}>
+                  <FiTarget /> Strategic Roadmap phases will be adjusted based on new priorities
                 </ImpactBadge>
               )}
+              
               {event.impact.benchmarkingChanged && (
-                <ImpactBadge $bg="#fce7f3" $border="#f9a8d4" $color="#9f1239">
-                  <FiBarChart2 /> Benchmarking
+                <ImpactBadge $bg="#fce7f3" $border="#f9a8d4" $color="#9f1239" style={{ marginBottom: '12px' }}>
+                  <FiBarChart2 /> Industry Benchmarking position will be recalculated
                 </ImpactBadge>
               )}
-              {event.impact.pillarResultsAvailable && (
-                <ImpactBadge $bg="#dcfce7" $border="#86efac" $color="#15803d">
-                  <FiDatabase /> Pillar Results
-                </ImpactBadge>
+              
+              {event.impact.pillarResultsAvailable && event.changes && event.changes.pillar && (
+                <ChangeItem $color="#10b981">
+                  <ChangeLabel>
+                    <FiDatabase style={{ marginRight: '8px' }} />
+                    Pillar Results Now Available
+                  </ChangeLabel>
+                  <ChangeValue style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                    <div>
+                      <strong>{event.changes.pillar.name || 'This pillar'}</strong> is now complete and results are available
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                      View detailed insights, recommendations, and next steps in the full report
+                    </div>
+                  </ChangeValue>
+                </ChangeItem>
               )}
-            </ImpactGrid>
+              
+              {!event.impact.maturityScoreChanged && !event.impact.recommendationsChanged && 
+               !event.impact.executiveSummaryChanged && !event.impact.strategicRoadmapChanged && 
+               !event.impact.benchmarkingChanged && !event.impact.pillarResultsAvailable && (
+                <div style={{ 
+                  padding: '16px', 
+                  background: '#f8f9fa', 
+                  borderRadius: '8px',
+                  color: '#64748b',
+                  fontSize: '0.9rem',
+                  textAlign: 'center'
+                }}>
+                  <FiAlertCircle style={{ marginRight: '8px' }} />
+                  This change had minimal impact on reports. Refresh the assessment page to see updated responses.
+                </div>
+              )}
+            </ChangesList>
             
             {/* Show detailed impact comparison if both before and after snapshots exist */}
             {event.beforeSnapshot && event.afterSnapshot && (
