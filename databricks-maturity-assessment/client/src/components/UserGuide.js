@@ -1797,27 +1797,6 @@ const UserGuide = () => {
           >
             Master the Databricks Technical Maturity Assessment Tool
           </HeroSubtitle>
-
-          <QuickLinksGrid
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {quickLinks.map((link, index) => (
-              <QuickLinkCard
-                key={link.id}
-                onClick={() => setActiveSection(link.id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-              >
-                <link.icon />
-                <span>{link.label}</span>
-              </QuickLinkCard>
-            ))}
-          </QuickLinksGrid>
         </HeroSection>
 
         <ContentGrid>
