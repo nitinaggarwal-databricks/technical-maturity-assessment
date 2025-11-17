@@ -97,7 +97,7 @@ pkill -f web_app.py
 ### Restart the Server:
 ```bash
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 python3 web_app.py
 ```
 

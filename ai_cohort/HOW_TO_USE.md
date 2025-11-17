@@ -20,7 +20,7 @@ Run the interactive menu:
 
 ```bash
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 python3 demo.py
 ```
 
@@ -54,7 +54,7 @@ Ask any question directly:
 
 ```bash
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 
 # Examples:
 python3 analytical_agent.py "What are the top products?"
@@ -69,7 +69,7 @@ python3 analytical_agent.py "What is the average order value?"
 
 ```bash
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 
 python3 analytical_agent.py --predefined
 ```
@@ -110,7 +110,7 @@ Copy and paste these to try different analyses:
 
 ```bash
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 
 # Business questions
 python3 analytical_agent.py "What is our average order value?"
@@ -163,7 +163,7 @@ python3 analytical_agent.py "Show correlation between price and sales volume"
 cd /Users/nitin.aggarwal/BMAD-METHOD/ai_cohort
 
 # Set API key (do this once per terminal session)
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='your-openai-api-key-here'
 
 # Run interactive demo
 python3 demo.py
