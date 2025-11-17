@@ -2303,7 +2303,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Detailed Pillar Analysis Slide */}
                     {currentSlide === 2 && pillarAnalysis && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             📊 Detailed Pillar Analysis
                           </h2>
@@ -2370,7 +2370,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Competitive Intelligence Slide */}
                     {currentSlide === 3 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1400px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             🛡️ Competitive Vulnerabilities
                           </h2>
@@ -2413,7 +2413,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Strategic Recommendations Slide */}
                     {currentSlide === 4 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', overflow: 'hidden' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             🎯 Strategic Recommendations
                           </h2>
@@ -2494,7 +2494,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Methodology Slide */}
                     {currentSlide === 5 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '1200px', overflow: 'hidden' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             📋 Methodology & Data Sources
                           </h2>
