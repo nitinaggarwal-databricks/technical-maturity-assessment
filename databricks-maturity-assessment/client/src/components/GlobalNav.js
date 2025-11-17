@@ -758,6 +758,8 @@ const GlobalNav = () => {
           <TopNav>
             <NavLink onClick={handleLogoClick}>Home</NavLink>
             <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
+            <NavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</NavLink>
+            <NavLink onClick={() => handleNavigate('/user-guide')}>User Guide</NavLink>
           </TopNav>
 
           <ActionButtons>
@@ -954,22 +956,6 @@ const GlobalNav = () => {
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownItem onClick={() => {
-                      navigate('/pitch-deck');
-                      setAdminDropdownOpen(false);
-                    }}>
-                      <FiMonitor />
-                      Pitch Deck
-                    </DropdownItem>
-                    
-                    <DropdownItem onClick={() => {
-                      navigate('/user-guide');
-                      setAdminDropdownOpen(false);
-                    }}>
-                      <FiBook />
-                      User Guide
-                    </DropdownItem>
-                    
-                    <DropdownItem onClick={() => {
                       navigate('/feedback');
                       setAdminDropdownOpen(false);
                     }}>
@@ -1043,6 +1029,8 @@ const GlobalNav = () => {
       <MobileMenu $isOpen={mobileMenuOpen}>
         <MobileNavLink onClick={handleLogoClick}>Home</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavigate('/user-guide')}>User Guide</MobileNavLink>
         
         {currentUser ? (
           <>
