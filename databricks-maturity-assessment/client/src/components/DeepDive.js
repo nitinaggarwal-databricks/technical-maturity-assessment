@@ -155,12 +155,12 @@ const PresentationButton = styled(motion.button)`
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
   border: none;
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -169,8 +169,9 @@ const PresentationButton = styled(motion.button)`
   z-index: 999;
 
   &:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
   }
 
   @media (max-width: 1024px) {

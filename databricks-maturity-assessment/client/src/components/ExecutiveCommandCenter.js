@@ -359,20 +359,21 @@ const FloatingSlideshowButton = styled.button`
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   transition: all 0.3s ease;
   white-space: nowrap;
   z-index: 999;
 
   &:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
   }
