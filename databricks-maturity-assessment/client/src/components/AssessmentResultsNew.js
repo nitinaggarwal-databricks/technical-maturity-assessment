@@ -5788,7 +5788,7 @@ const AssessmentResultsNew = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       height: '100%',
-                      padding: '20px 60px',
+                      padding: '60px 60px 20px 60px',
                       gap: '24px'
                     }}>
                       {/* Three Cards Section - Top */}
@@ -5824,7 +5824,7 @@ const AssessmentResultsNew = () => {
                           🎯
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
+                            fontSize: '0.85rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5834,7 +5834,7 @@ const AssessmentResultsNew = () => {
                             CURRENT MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.4rem',
+                            fontSize: '1.6rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5843,7 +5843,7 @@ const AssessmentResultsNew = () => {
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.9rem',
                             color: 'rgba(255, 255, 255, 0.75)',
                             lineHeight: '1.4',
                             overflow: 'hidden',
