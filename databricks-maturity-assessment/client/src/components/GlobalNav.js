@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiPresentation } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -956,6 +956,14 @@ const GlobalNav = () => {
                       Logout
                     </DropdownItem>
                     <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      navigate('/pitch-deck');
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiPresentation />
+                      Pitch Deck
+                    </DropdownItem>
+                    
                     <DropdownItem onClick={() => {
                       navigate('/user-guide');
                       setAdminDropdownOpen(false);

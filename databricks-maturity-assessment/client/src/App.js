@@ -32,6 +32,7 @@ import FeedbackList from './components/FeedbackList';
 import QuestionManager from './components/QuestionManager';
 import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
+import PitchDeck from './components/PitchDeck';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -477,6 +478,11 @@ function App() {
           <Route 
             path="/user-guide" 
             element={<UserGuide />}
+          />
+          
+          <Route 
+            path="/pitch-deck" 
+            element={<PitchDeck />}
           />
           
           <Route 
