@@ -6133,8 +6133,8 @@ const AssessmentResultsNew = () => {
                     </div>
                   )}
 
-                  {/* Pillar Overview Slides (Slides 2,5,8,11,14,17,20) - slideType 0 */}
-                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 0 && (() => {
+                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - What's Working & Challenges */}
+                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6297,8 +6297,8 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Dimension Breakdown Slides (Slides 3,6,9,12,15,18) - slideType 1 */}
-                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 1 && (() => {
+                  {/* Dimension Breakdown / Maturity Chart Slides (Slides 2,5,8,11,14,17,20) - slideType 0 */}
+                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 0 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
