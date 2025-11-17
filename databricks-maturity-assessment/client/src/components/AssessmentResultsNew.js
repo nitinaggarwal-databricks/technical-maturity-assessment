@@ -5675,7 +5675,7 @@ const AssessmentResultsNew = () => {
             </NavigationButton>
             
             <SlideHeading>
-              {currentSlide === 0 ? '' : 
+              {currentSlide === 0 || currentSlide === 20 ? '' : 
                currentSlide === 1 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
@@ -5696,7 +5696,7 @@ const AssessmentResultsNew = () => {
                 return '';
               })()}
             </SlideHeading>
-            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 20</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 21</SlideCounter>
 
             {/* Print Button - Always visible on hover */}
             <PrintButton
@@ -5733,7 +5733,7 @@ const AssessmentResultsNew = () => {
                   transition={{ duration: 0.3 }}
                   style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
-                  {/* Title Slide - Matches Report Header */}
+                  {/* Title Slide - Cool Graphics */}
                   {currentSlide === 0 && (
                     <div style={{
                       display: 'flex',
@@ -5742,64 +5742,89 @@ const AssessmentResultsNew = () => {
                       alignItems: 'center',
                       height: '100%',
                       textAlign: 'center',
-                      gap: '20px',
+                      gap: '40px',
                       padding: '0 80px'
                     }}>
                       <div style={{
-                        fontSize: '4.5rem',
-                        fontWeight: 700,
-                        color: 'white',
-                        marginBottom: '16px',
-                        lineHeight: '1.2'
+                        fontSize: '6rem',
+                        marginBottom: '20px',
+                        filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
                       }}>
-                        {results.assessmentInfo?.assessmentName || 'Enterprise Data & AI Maturity Report'}
+                        📊
                       </div>
                       <div style={{
-                        fontSize: '1.6rem',
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        marginBottom: '40px'
+                        fontSize: '4.5rem',
+                        fontWeight: 900,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        letterSpacing: '-0.02em',
+                        lineHeight: '1.2'
                       }}>
-                        Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'} | {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        Enterprise Data & AI<br/>Maturity Report
                       </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6'
+                      }}>
+                        Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'}
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginTop: '20px'
+                      }}>
+                        {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </div>
+                    </div>
+                  )}
 
-                      {/* Three Cards Section - Like Report Header */}
+                  {/* Slide 1: Maturity Snapshot with Cards */}
+                  {currentSlide === 1 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                      padding: '20px 60px',
+                      gap: '24px'
+                    }}>
+                      {/* Three Cards Section - Top */}
                       <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '24px',
-                        width: '100%',
-                        maxWidth: '1300px',
-                        marginTop: '40px'
+                        gap: '20px',
+                        flexShrink: 0
                       }}>
                       {/* Current Maturity Card */}
                       <div style={{
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
-                          padding: '28px 24px',
+                          padding: '16px 20px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
+                          gap: '8px',
                           overflow: 'hidden'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'rgba(59, 130, 246, 0.3)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0
                         }}>
                           🎯
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
+                            fontSize: '0.65rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5809,7 +5834,7 @@ const AssessmentResultsNew = () => {
                             CURRENT MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
+                            fontSize: '1.25rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5818,17 +5843,17 @@ const AssessmentResultsNew = () => {
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.7rem',
                             color: 'rgba(255, 255, 255, 0.75)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.current?.description || 
-                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 180)}
+                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 150)}
                         </div>
                       </div>
 
@@ -5837,30 +5862,28 @@ const AssessmentResultsNew = () => {
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
-                          padding: '28px 24px',
+                          padding: '16px 20px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
+                          gap: '8px',
                           overflow: 'hidden'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'rgba(16, 185, 129, 0.3)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0
                         }}>
                           📈
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
+                            fontSize: '0.65rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5870,7 +5893,7 @@ const AssessmentResultsNew = () => {
                             TARGET MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
+                            fontSize: '1.25rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5879,17 +5902,17 @@ const AssessmentResultsNew = () => {
                             Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Optimize'}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.7rem',
                             color: 'rgba(255, 255, 255, 0.75)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.target?.description || 
-                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 180)}
+                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 150)}
                         </div>
                       </div>
 
@@ -5898,30 +5921,28 @@ const AssessmentResultsNew = () => {
                           background: 'rgba(255, 255, 255, 0.12)',
                           border: '2px solid rgba(255, 255, 255, 0.25)',
                           borderRadius: '12px',
-                          padding: '28px 24px',
+                          padding: '16px 20px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
+                          gap: '8px',
                           overflow: 'hidden'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'rgba(245, 158, 11, 0.3)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0
                         }}>
                           ⚡
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
+                            fontSize: '0.65rem',
                             color: 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 500,
                           textTransform: 'uppercase',
@@ -5931,7 +5952,7 @@ const AssessmentResultsNew = () => {
                             IMPROVEMENT POTENTIAL
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
+                            fontSize: '1.25rem',
                             fontWeight: 800,
                             color: 'white',
                             lineHeight: '1.2',
@@ -5940,25 +5961,23 @@ const AssessmentResultsNew = () => {
                           +{improvementLevel} Level
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.7rem',
                             color: 'rgba(255, 255, 255, 0.75)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.improvement?.description || 
-                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 180)}
+                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 150)}
                         </div>
                         </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* Maturity Snapshot Chart Slide (Slide 1) */}
-                  {currentSlide === 1 && (() => {
+                      {/* Maturity Snapshot Chart - Below Cards */}
+                      {(() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', icon: '🧱', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', icon: '💾', color: '#ef4444' },
@@ -6111,9 +6130,11 @@ const AssessmentResultsNew = () => {
                       </div>
                     );
                   })()}
+                    </div>
+                  )}
 
-                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - slideType 1 - Moved from old slideType 0 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 1 && (() => {
+                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - slideType 1 */}
+                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 0 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6276,8 +6297,8 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Dimension Breakdown Slides (Slides 2,5,8,11,14,17) - slideType 0 - Moved from old slideType 1 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 0 && (() => {
+                  {/* Dimension Breakdown Slides (Slides 2,5,8,11,14,17) - slideType 0 */}
+                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
