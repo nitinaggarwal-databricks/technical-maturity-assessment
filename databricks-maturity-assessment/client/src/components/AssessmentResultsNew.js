@@ -5675,7 +5675,7 @@ const AssessmentResultsNew = () => {
             </NavigationButton>
             
             <SlideHeading>
-              {currentSlide === 0 || currentSlide === 20 ? '' : 
+              {currentSlide === 0 || currentSlide === 21 ? '' : 
                currentSlide === 1 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
@@ -5685,8 +5685,8 @@ const AssessmentResultsNew = () => {
                   { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
                   { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
                 ];
-                // Slides 2-19: 6 pillars x 3 slides each (dimensions, overview, next steps)
-                if (currentSlide >= 2 && currentSlide <= 19) {
+                // Slides 2-20: 6 pillars x 3 slides each (dimensions, overview, next steps)
+                if (currentSlide >= 2 && currentSlide <= 20) {
                   const pillarIndex = Math.floor((currentSlide - 2) / 3);
                   const slideType = (currentSlide - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
                   const pillarName = pillarsArray[pillarIndex]?.name || '';
@@ -5696,7 +5696,7 @@ const AssessmentResultsNew = () => {
                 return '';
               })()}
             </SlideHeading>
-            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 21</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 22</SlideCounter>
 
             {/* Print Button - Always visible on hover */}
             <PrintButton
@@ -6133,8 +6133,8 @@ const AssessmentResultsNew = () => {
                     </div>
                   )}
 
-                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - slideType 1 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 0 && (() => {
+                  {/* Pillar Overview Slides (Slides 2,5,8,11,14,17,20) - slideType 0 */}
+                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 0 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6297,8 +6297,8 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Dimension Breakdown Slides (Slides 2,5,8,11,14,17) - slideType 0 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 1 && (() => {
+                  {/* Dimension Breakdown Slides (Slides 3,6,9,12,15,18) - slideType 1 */}
+                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6521,7 +6521,7 @@ const AssessmentResultsNew = () => {
                   })()}
 
                   {/* Next Steps Slides (Slides 4,7,10,13,16,19) - slideType 2 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 2 && (() => {
+                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 2 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6626,8 +6626,8 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Thank You Slide (Slide 20) */}
-                  {currentSlide === 20 && (
+                  {/* Thank You Slide (Slide 21) */}
+                  {currentSlide === 21 && (
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
