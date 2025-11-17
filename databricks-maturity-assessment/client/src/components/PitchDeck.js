@@ -1074,9 +1074,6 @@ const PitchDeck = () => {
         <HeroSubtitle>
           A comprehensive, executive-grade assessment that maps your current state, identifies gaps, and provides a clear roadmap to data & AI excellence with Databricks.
         </HeroSubtitle>
-        <CTAButton onClick={handleGetStarted}>
-          Start Your Assessment <FiArrowRight />
-        </CTAButton>
       </HeroSection>
 
       {/* Stats Section */}
