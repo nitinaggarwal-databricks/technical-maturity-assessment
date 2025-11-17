@@ -148,6 +148,7 @@ const ContentGrid = styled.div`
   grid-template-columns: 280px 1fr;
   gap: 32px;
   align-items: start;
+  position: relative;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
@@ -160,10 +161,11 @@ const Sidebar = styled.div`
   padding: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 140px;
-  align-self: flex-start;
-  max-height: calc(100vh - 160px);
+  top: 120px;
+  align-self: start;
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
+  z-index: 10;
 
   @media (max-width: 1024px) {
     position: relative;
