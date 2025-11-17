@@ -2217,9 +2217,9 @@ const IndustryBenchmarkingReport = () => {
                     
                     {/* Executive Summary + Competitive Position Slide */}
                     {currentSlide === 1 && executiveSummary && competitivePositioning && (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '16px' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
                         {/* Report Header */}
-                        <div style={{ marginBottom: '8px', padding: '16px 24px', background: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px' }}>
+                        <div style={{ padding: '16px 24px', background: 'rgba(255, 255, 255, 0.95)', borderRadius: '12px', flexShrink: 0 }}>
                           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6', letterSpacing: '0.1em', marginBottom: '8px' }}>
                             DATABRICKS MATURITY ASSESSMENT
                           </div>
@@ -2231,7 +2231,7 @@ const IndustryBenchmarkingReport = () => {
                           </div>
                         </div>
                         
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px', marginBottom: '12px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                           <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1e293b', marginBottom: '12px' }}>
                             ⚡ Executive Summary
                           </h2>
@@ -2251,7 +2251,7 @@ const IndustryBenchmarkingReport = () => {
                           </div>
                         </div>
                         
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                           <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px', textAlign: 'center' }}>
                             🎯 Your Competitive Position
                           </h2>
