@@ -2303,11 +2303,11 @@ const IndustryBenchmarkingReport = () => {
                     {/* Detailed Pillar Analysis Slide */}
                     {currentSlide === 2 && pillarAnalysis && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%' }}>
-                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
                             📊 Detailed Pillar Analysis
                           </h2>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', flex: 1 }}>
                             {Object.entries(pillarAnalysis).slice(0, 6).map(([pillarId, data]) => {
                               const percentileColor = getPercentileColor(data.percentileRank);
                               const gap = (data.customerScore - data.industryAverage).toFixed(1);
@@ -2370,14 +2370,14 @@ const IndustryBenchmarkingReport = () => {
                     {/* Competitive Intelligence Slide */}
                     {currentSlide === 3 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%' }}>
-                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
                             🛡️ Competitive Vulnerabilities
                           </h2>
                           
                           {/* Vulnerabilities in 3x2 Grid */}
                           {competitiveIntelligence?.vulnerabilities?.length > 0 ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', flex: 1 }}>
                               {competitiveIntelligence.vulnerabilities.slice(0, 6).map((vuln, idx) => (
                                 <div key={idx} style={{ background: '#fee2e2', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
                                   <div style={{ fontSize: '1rem', fontWeight: 700, color: '#991b1b', marginBottom: '12px' }}>
@@ -2413,7 +2413,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Strategic Recommendations Slide */}
                     {currentSlide === 4 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', overflow: 'hidden' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             🎯 Strategic Recommendations
                           </h2>
@@ -2494,7 +2494,7 @@ const IndustryBenchmarkingReport = () => {
                     {/* Methodology Slide */}
                     {currentSlide === 5 && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', overflow: 'hidden' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', marginBottom: '32px', textAlign: 'center' }}>
                             📋 Methodology & Data Sources
                           </h2>
