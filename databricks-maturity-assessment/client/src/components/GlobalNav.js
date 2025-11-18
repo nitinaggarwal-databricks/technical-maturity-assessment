@@ -813,6 +813,15 @@ const GlobalNav = () => {
                       <FiList />
                       All Assessments
                     </DropdownItem>
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
+                      <DropdownItem onClick={() => {
+                        navigate('/admin/questions');
+                        setAssessmentsDropdownOpen(false);
+                      }}>
+                        <FiSettings />
+                        Manage Questions
+                      </DropdownItem>
+                    )}
                   </DropdownMenu>
                 </DropdownContainer>
 
@@ -970,13 +979,6 @@ const GlobalNav = () => {
                         }}>
                           <FiMessageSquare />
                           View All Feedback
-                        </DropdownItem>
-                        <DropdownItem onClick={() => {
-                          navigate('/admin/questions');
-                          setAdminDropdownOpen(false);
-                        }}>
-                          <FiSettings />
-                          Manage Questions
                         </DropdownItem>
                       </>
                     )}
