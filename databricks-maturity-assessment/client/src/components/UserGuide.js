@@ -814,9 +814,9 @@ const UserGuide = () => {
           color: '#667eea',
           steps: [
             'Login as Admin or Author',
-            'Click "Start Assessment" or "Create New"',
+            'Click "Start Assessment"',
             'Enter organization details',
-            'Assessment is created and ready'
+            'Assessment created and ready'
           ]
         },
         {
@@ -824,10 +824,10 @@ const UserGuide = () => {
           title: 'Assign Users',
           color: '#10b981',
           steps: [
-            'Navigate to Assignments dropdown',
-            'Click "Assign Users"',
-            'Select assessment and add user emails',
-            'Users receive access to complete assessment'
+            'Go to Assignments → Assign Users',
+            'Select assessment',
+            'Add user emails',
+            'Users receive access'
           ]
         },
         {
@@ -835,10 +835,10 @@ const UserGuide = () => {
           title: 'Complete Assessment',
           color: '#f59e0b',
           steps: [
-            'Login as assigned Consumer',
+            'Login as Consumer',
             'View "My Assessments"',
             'Answer questions for each pillar',
-            'Rate current/future state and add notes',
+            'Rate current/future state',
             'Submit when complete'
           ]
         },
@@ -847,9 +847,9 @@ const UserGuide = () => {
           title: 'View Reports',
           color: '#ec4899',
           steps: [
-            'Navigate to completed assessment',
+            'Navigate to assessment',
             'Click "View Report"',
-            'Explore maturity scores and insights',
+            'Explore maturity scores',
             'View Executive Command Center',
             'Check Industry Benchmarks',
             'Export or print reports'
@@ -864,64 +864,66 @@ const UserGuide = () => {
           <div style={{
             background: 'rgba(255, 255, 255, 0.98)',
             borderRadius: '30px',
-            padding: '60px',
+            padding: '50px 60px',
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)'
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)',
+            overflow: 'hidden'
           }}>
             <div style={{
-              width: '80px',
-              height: '80px',
+              width: '70px',
+              height: '70px',
               borderRadius: '50%',
               background: workflow.color,
               color: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '3rem',
+              fontSize: '2.5rem',
               fontWeight: 800,
-              marginBottom: '30px'
+              marginBottom: '25px'
             }}>
               {workflow.number}
             </div>
             <h2 style={{
-              fontSize: '3rem',
+              fontSize: '2.5rem',
               fontWeight: 700,
               color: '#1e293b',
-              marginBottom: '40px'
+              marginBottom: '35px'
             }}>
               {workflow.title}
             </h2>
             <div style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
-              flex: 1
+              gap: '18px',
+              flex: 1,
+              overflow: 'auto'
             }}>
               {workflow.steps.map((step, idx) => (
                 <div key={idx} style={{
                   background: '#f8fafc',
-                  borderRadius: '15px',
-                  padding: '25px 30px',
+                  borderRadius: '12px',
+                  padding: '20px 25px',
                   borderLeft: `5px solid ${workflow.color}`,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '20px',
-                  fontSize: '1.3rem',
+                  gap: '18px',
+                  fontSize: '1.2rem',
                   color: '#475569',
-                  lineHeight: 1.6
+                  lineHeight: 1.5
                 }}>
                   <div style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     background: workflow.color,
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.2rem',
+                    fontSize: '1.1rem',
                     fontWeight: 700,
                     flexShrink: 0
                   }}>
