@@ -104,7 +104,7 @@ const SectionTitle = styled.h2`
   font-weight: 700;
   color: white;
   margin-bottom: 25px;
-  text-align: center;
+  text-align: left;
 `;
 
 const Grid = styled.div`
