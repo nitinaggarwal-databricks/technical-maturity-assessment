@@ -1380,16 +1380,6 @@ const UserGuide = () => {
               <FAQItem>
                 <FAQQuestion>
                   <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                  Can I customize assessment questions?
-                </FAQQuestion>
-                <FAQAnswer>
-                  Yes, admins can add custom questions to any pillar. Custom questions can include maturity levels, pain points, and notes, just like standard questions.
-                </FAQAnswer>
-              </FAQItem>
-
-              <FAQItem>
-                <FAQQuestion>
-                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
                   Who can view assessment results?
                 </FAQQuestion>
                 <FAQAnswer>
