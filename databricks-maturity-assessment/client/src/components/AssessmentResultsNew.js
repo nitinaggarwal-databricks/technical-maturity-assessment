@@ -6308,6 +6308,7 @@ const AssessmentResultsNew = () => {
                   })()}
 
                   {/* Dimension Breakdown / Maturity Chart Slides (Slides 2,5,8,11,14,17,20) - slideType 0 */}
+                  {/* NEW LAYOUT: Chart (left) + What's Working (top right) + Key Challenges (bottom right) */}
                   {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 0 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
@@ -6324,6 +6325,11 @@ const AssessmentResultsNew = () => {
                     // Get dimensions for this pillar (same logic as report section)
                     const resultsData = results?.data || results;
                     let dimensions = [];
+                    
+                    // Get pillar data for What's Working and Key Challenges
+                    const pillarData = getPillarData(pillarDef.id);
+                    const theGood = pillarData?.theGood || [];
+                    const theBad = pillarData?.theBad || [];
                     
                     // First, try to get from results data
                     if (resultsData?.categoryDetails?.[pillarDef.id]?.dimensions) {
@@ -6358,14 +6364,23 @@ const AssessmentResultsNew = () => {
                     
                     return (
                       <SlideContent>
-                              <div style={{
-                          background: 'rgba(255, 255, 255, 0.98)',
-                          borderRadius: '20px',
-                          padding: '40px 60px',
-                          maxWidth: '2375px',
-                          margin: '0 auto',
-                          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+                        {/* 2-Column Layout: Chart (Left) + Cards (Right) */}
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: '55% 45%',
+                          gap: '30px',
+                          height: '100%',
+                          padding: '20px 40px'
                         }}>
+                          {/* LEFT: Maturity Chart */}
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.98)',
+                            borderRadius: '20px',
+                            padding: '30px 40px',
+                            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+                            display: 'flex',
+                            flexDirection: 'column'
+                          }}>
                           {/* Header with maturity levels scale */}
                           <div style={{
                             display: 'grid',
@@ -6524,6 +6539,61 @@ const AssessmentResultsNew = () => {
                                 </div>
                               );
                             })}
+                          </div>
+                          </div>
+                          
+                          {/* RIGHT: What's Working (Top) + Key Challenges (Bottom) */}
+                          <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            height: '100%'
+                          }}>
+                            {/* What's Working */}
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.98)',
+                              borderRadius: '16px',
+                              padding: '24px',
+                              border: '4px solid #10b981',
+                              flex: 1,
+                              overflow: 'auto',
+                              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                            }}>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#10b981', marginBottom: '14px' }}>
+                                ✓ What's Working
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {theGood.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Key Challenges */}
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.98)',
+                              borderRadius: '16px',
+                              padding: '24px',
+                              border: '4px solid #ef4444',
+                              flex: 1,
+                              overflow: 'auto',
+                              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                            }}>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ef4444', marginBottom: '14px' }}>
+                                ⚠ Key Challenges
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {theBad.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </SlideContent>
