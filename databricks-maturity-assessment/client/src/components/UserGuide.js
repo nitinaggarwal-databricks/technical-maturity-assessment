@@ -502,6 +502,9 @@ const UserGuide = () => {
     { id: 'workflow-2', title: 'Assign Users', type: 'workflow', index: 1 },
     { id: 'workflow-3', title: 'Complete Assessment', type: 'workflow', index: 2 },
     { id: 'workflow-4', title: 'View Reports', type: 'workflow', index: 3 },
+    { id: 'features', title: 'Key Features', type: 'features' },
+    { id: 'reports', title: 'Reports', type: 'reports' },
+    { id: 'faq', title: 'FAQ & Troubleshooting', type: 'faq-troubleshooting' },
     { id: 'thank-you', title: 'Thank You', type: 'thank-you' }
   ];
 
@@ -927,6 +930,244 @@ const UserGuide = () => {
                   {step}
                 </div>
               ))}
+            </div>
+          </div>
+        </SlideContent>
+      );
+    }
+
+    // Key Features Slide
+    if (slide.type === 'features') {
+      const features = [
+        { icon: '📊', title: 'Maturity Scoring', color: '#667eea' },
+        { icon: '🎯', title: 'Gap Analysis', color: '#10b981' },
+        { icon: '⚡', title: 'Quick Wins', color: '#f59e0b' },
+        { icon: '📈', title: 'Progress Tracking', color: '#ec4899' },
+        { icon: '✓', title: 'Best Practices', color: '#8b5cf6' },
+        { icon: '👥', title: 'Stakeholder Alignment', color: '#06b6d4' },
+        { icon: '💻', title: 'Executive Dashboards', color: '#f43f5e' },
+        { icon: '🛡️', title: 'Industry Benchmarks', color: '#14b8a6' },
+        { icon: '📚', title: 'Comprehensive Reports', color: '#a855f7' }
+      ];
+
+      return (
+        <SlideContent data-slide-content="true">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            borderRadius: '30px',
+            padding: '50px',
+            height: '100%',
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)',
+            overflow: 'auto'
+          }}>
+            <h2 style={{
+              fontSize: '3rem',
+              fontWeight: 700,
+              color: '#1e293b',
+              marginBottom: '40px',
+              textAlign: 'center'
+            }}>
+              Key Features
+            </h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '25px'
+            }}>
+              {features.map((feature, idx) => (
+                <div key={idx} style={{
+                  background: '#f8fafc',
+                  borderRadius: '16px',
+                  padding: '25px',
+                  textAlign: 'center',
+                  borderTop: `4px solid ${feature.color}`
+                }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '15px' }}>{feature.icon}</div>
+                  <h3 style={{
+                    fontSize: '1.3rem',
+                    fontWeight: 700,
+                    color: '#1e293b',
+                    margin: 0
+                  }}>
+                    {feature.title}
+                  </h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SlideContent>
+      );
+    }
+
+    // Reports Slide
+    if (slide.type === 'reports') {
+      const reports = [
+        { icon: '📄', title: 'Maturity Assessment Report', color: '#667eea' },
+        { icon: '📊', title: 'Executive Command Center', color: '#10b981' },
+        { icon: '📈', title: 'Industry Benchmarks', color: '#f59e0b' },
+        { icon: '💻', title: 'Insights Dashboard', color: '#ec4899' }
+      ];
+
+      return (
+        <SlideContent data-slide-content="true">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            borderRadius: '30px',
+            padding: '60px',
+            height: '100%',
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <h2 style={{
+              fontSize: '3rem',
+              fontWeight: 700,
+              color: '#1e293b',
+              marginBottom: '40px',
+              textAlign: 'center'
+            }}>
+              Available Reports
+            </h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '30px',
+              flex: 1
+            }}>
+              {reports.map((report, idx) => (
+                <div key={idx} style={{
+                  background: '#f8fafc',
+                  borderRadius: '20px',
+                  padding: '35px',
+                  borderLeft: `6px solid ${report.color}`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{report.icon}</div>
+                  <h3 style={{
+                    fontSize: '1.6rem',
+                    fontWeight: 700,
+                    color: '#1e293b',
+                    margin: 0
+                  }}>
+                    {report.title}
+                  </h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SlideContent>
+      );
+    }
+
+    // FAQ & Troubleshooting Slide
+    if (slide.type === 'faq-troubleshooting') {
+      return (
+        <SlideContent data-slide-content="true">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            borderRadius: '30px',
+            padding: '50px',
+            height: '100%',
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)',
+            overflow: 'auto'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '40px',
+              height: '100%'
+            }}>
+              {/* FAQ */}
+              <div>
+                <h2 style={{
+                  fontSize: '2.2rem',
+                  fontWeight: 700,
+                  color: '#667eea',
+                  marginBottom: '25px'
+                }}>
+                  ❓ FAQ
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {[
+                    { q: 'How long does an assessment take?', a: '30-45 minutes' },
+                    { q: 'Can I edit responses?', a: 'Yes, admins can edit anytime' },
+                    { q: 'How are scores calculated?', a: 'Average of all dimensions' },
+                    { q: 'Can I export data?', a: 'Yes, to Excel and PDF' },
+                    { q: 'How often to reassess?', a: 'Every 6-12 months' },
+                    { q: 'Who can view results?', a: 'Role-based access control' }
+                  ].map((item, idx) => (
+                    <div key={idx} style={{
+                      background: '#f8fafc',
+                      borderRadius: '12px',
+                      padding: '15px',
+                      borderLeft: '4px solid #667eea'
+                    }}>
+                      <div style={{
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: '#1e293b',
+                        marginBottom: '6px'
+                      }}>
+                        {item.q}
+                      </div>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: '#64748b'
+                      }}>
+                        {item.a}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Troubleshooting */}
+              <div>
+                <h2 style={{
+                  fontSize: '2.2rem',
+                  fontWeight: 700,
+                  color: '#ef4444',
+                  marginBottom: '25px'
+                }}>
+                  🔧 Troubleshooting
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {[
+                    { issue: 'Can\'t see assessments', fix: 'Check login email' },
+                    { issue: 'Progress not saving', fix: 'Check internet connection' },
+                    { issue: 'Reports not generating', fix: 'Complete at least one pillar' },
+                    { issue: 'Excel import failing', fix: 'Use original template' },
+                    { issue: 'Can\'t assign users', fix: 'Verify role permissions' },
+                    { issue: 'Need help?', fix: 'Contact support' }
+                  ].map((item, idx) => (
+                    <div key={idx} style={{
+                      background: '#fef2f2',
+                      borderRadius: '12px',
+                      padding: '15px',
+                      borderLeft: '4px solid #ef4444'
+                    }}>
+                      <div style={{
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: '#1e293b',
+                        marginBottom: '6px'
+                      }}>
+                        {item.issue}
+                      </div>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: '#64748b'
+                      }}>
+                        {item.fix}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </SlideContent>
