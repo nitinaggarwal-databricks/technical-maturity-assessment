@@ -1333,7 +1333,7 @@ const UserGuide = () => {
                   How long does an assessment take?
                 </FAQQuestion>
                 <FAQAnswer>
-                  A typical assessment takes 30-45 minutes to complete, depending on the depth of responses. You can save progress and return later if needed.
+                  A typical assessment takes 30-45 minutes to complete, depending on the depth of responses and the number of pillars being assessed. You can save your progress at any time and return later to complete the assessment. The system automatically saves your responses after each question.
                 </FAQAnswer>
               </FAQItem>
 
@@ -1343,7 +1343,7 @@ const UserGuide = () => {
                   Can I edit my responses after submission?
                 </FAQQuestion>
                 <FAQAnswer>
-                  Yes, admins can edit assessment responses at any time. Changes are tracked in the assessment history for audit purposes.
+                  Yes, admins can edit assessment responses at any time using the inline edit feature on the assessment page. All changes are automatically tracked in the assessment history for audit purposes, showing what was changed, when, and by whom.
                 </FAQAnswer>
               </FAQItem>
 
@@ -1353,7 +1353,7 @@ const UserGuide = () => {
                   How are maturity scores calculated?
                 </FAQQuestion>
                 <FAQAnswer>
-                  Maturity scores are calculated based on your responses across all dimensions within each pillar. Each dimension is weighted equally, and the overall pillar score is the average of its dimensions.
+                  Maturity scores are calculated based on your responses across all dimensions within each pillar. Each dimension is weighted equally, and the overall pillar score is the average of its dimensions. Scores range from 1 (Initial) to 5 (Optimized) following industry-standard maturity models.
                 </FAQAnswer>
               </FAQItem>
 
@@ -1363,7 +1363,7 @@ const UserGuide = () => {
                   Can I export assessment data?
                 </FAQQuestion>
                 <FAQAnswer>
-                  Yes, admins can export assessments to Excel format, make changes offline, and re-import them. All reports can also be printed or saved as PDFs.
+                  Yes, admins can export assessments to Excel format with all questions, responses, pain points, and notes. You can make changes offline and re-import the Excel file to update the assessment. All reports can also be printed or saved as PDFs directly from the slideshow mode.
                 </FAQAnswer>
               </FAQItem>
 
@@ -1373,7 +1373,7 @@ const UserGuide = () => {
                   How often should we reassess?
                 </FAQQuestion>
                 <FAQAnswer>
-                  We recommend reassessing every 6-12 months to track progress and measure the impact of implemented improvements. This helps demonstrate ROI and identify new opportunities.
+                  We recommend reassessing every 6-12 months to track progress and measure the impact of implemented improvements. Regular reassessments help demonstrate ROI, identify new opportunities, and ensure your maturity roadmap stays aligned with business objectives and technology evolution.
                 </FAQAnswer>
               </FAQItem>
 
@@ -1383,7 +1383,7 @@ const UserGuide = () => {
                   Who can view assessment results?
                 </FAQQuestion>
                 <FAQAnswer>
-                  Admins can view all assessments. Authors can view assessments they created or are assigned to. Consumers can view assessments they've been assigned to complete. Access is role-based and secure.
+                  Admins can view all assessments across the organization. Authors can view assessments they created or are assigned to manage. Consumers can view assessments they've been assigned to complete. All access is role-based and secure, ensuring data privacy and proper governance.
                 </FAQAnswer>
               </FAQItem>
             </div>
