@@ -1096,14 +1096,22 @@ const UserGuide = () => {
         {/* Key Features */}
         <Section>
           <SectionTitle>Key Features</SectionTitle>
-          <Grid>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+            marginBottom: '30px'
+          }}>
             {[
               { icon: <FiBarChart2 />, title: 'Maturity Scoring', desc: 'Quantified maturity levels across all dimensions', color: '#667eea' },
               { icon: <FiTarget />, title: 'Gap Analysis', desc: 'Clear visualization of gaps between current and target state', color: '#10b981' },
               { icon: <FiZap />, title: 'Quick Wins', desc: 'Immediate opportunities for impact in 30-90 days', color: '#f59e0b' },
               { icon: <FiTrendingUp />, title: 'Progress Tracking', desc: 'Re-assess over time to measure improvement', color: '#ec4899' },
               { icon: <FiCheckCircle />, title: 'Best Practices', desc: 'Access to proven patterns and frameworks', color: '#8b5cf6' },
-              { icon: <FiUsers />, title: 'Stakeholder Alignment', desc: 'Reports tailored for different audiences', color: '#06b6d4' }
+              { icon: <FiUsers />, title: 'Stakeholder Alignment', desc: 'Reports tailored for different audiences', color: '#06b6d4' },
+              { icon: <FiMonitor />, title: 'Executive Dashboards', desc: 'High-level insights for leadership teams', color: '#f43f5e' },
+              { icon: <FiShield />, title: 'Industry Benchmarks', desc: 'Compare against industry standards', color: '#14b8a6' },
+              { icon: <FiBook />, title: 'Comprehensive Reports', desc: 'Detailed analysis and recommendations', color: '#a855f7' }
             ].map((feature, idx) => (
               <Card
                 key={idx}
@@ -1118,7 +1126,7 @@ const UserGuide = () => {
                 <CardDescription>{feature.desc}</CardDescription>
               </Card>
             ))}
-          </Grid>
+          </div>
         </Section>
       </ContentWrapper>
     </PageContainer>
