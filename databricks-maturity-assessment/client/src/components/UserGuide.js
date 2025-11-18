@@ -1277,14 +1277,6 @@ const UserGuide = () => {
       </FloatingSlideshowButton>
 
       <ContentWrapper>
-        {/* Hero Section */}
-        <HeroSection>
-          <HeroTitle>User Guide</HeroTitle>
-          <HeroSubtitle>
-            Everything you need to know about the Databricks Technical Maturity Assessment tool
-          </HeroSubtitle>
-        </HeroSection>
-
         {/* User Roles */}
         <Section>
           <SectionTitle>User Roles</SectionTitle>
