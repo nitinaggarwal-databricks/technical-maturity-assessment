@@ -1386,6 +1386,16 @@ const UserGuide = () => {
                   Yes, admins can add custom questions to any pillar. Custom questions can include maturity levels, pain points, and notes, just like standard questions.
                 </FAQAnswer>
               </FAQItem>
+
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  Who can view assessment results?
+                </FAQQuestion>
+                <FAQAnswer>
+                  Admins can view all assessments. Authors can view assessments they created or are assigned to. Consumers can view assessments they've been assigned to complete. Access is role-based and secure.
+                </FAQAnswer>
+              </FAQItem>
             </div>
 
             {/* Troubleshooting - Right Side */}
