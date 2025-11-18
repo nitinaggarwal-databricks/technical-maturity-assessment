@@ -1316,135 +1316,141 @@ const UserGuide = () => {
           </Grid>
         </Section>
 
-        {/* FAQ */}
+        {/* FAQ & Troubleshooting Side by Side */}
         <Section>
-          <SectionTitle>Frequently Asked Questions</SectionTitle>
-          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                How long does an assessment take?
-              </FAQQuestion>
-              <FAQAnswer>
-                A typical assessment takes 30-45 minutes to complete, depending on the depth of responses. You can save progress and return later if needed.
-              </FAQAnswer>
-            </FAQItem>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '30px',
+            alignItems: 'start'
+          }}>
+            {/* FAQ - Left Side */}
+            <div>
+              <SectionTitle style={{ textAlign: 'left', marginBottom: '20px' }}>Frequently Asked Questions</SectionTitle>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  How long does an assessment take?
+                </FAQQuestion>
+                <FAQAnswer>
+                  A typical assessment takes 30-45 minutes to complete, depending on the depth of responses. You can save progress and return later if needed.
+                </FAQAnswer>
+              </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                Can I edit my responses after submission?
-              </FAQQuestion>
-              <FAQAnswer>
-                Yes, admins can edit assessment responses at any time. Changes are tracked in the assessment history for audit purposes.
-              </FAQAnswer>
-            </FAQItem>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  Can I edit my responses after submission?
+                </FAQQuestion>
+                <FAQAnswer>
+                  Yes, admins can edit assessment responses at any time. Changes are tracked in the assessment history for audit purposes.
+                </FAQAnswer>
+              </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                How are maturity scores calculated?
-              </FAQQuestion>
-              <FAQAnswer>
-                Maturity scores are calculated based on your responses across all dimensions within each pillar. Each dimension is weighted equally, and the overall pillar score is the average of its dimensions.
-              </FAQAnswer>
-            </FAQItem>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  How are maturity scores calculated?
+                </FAQQuestion>
+                <FAQAnswer>
+                  Maturity scores are calculated based on your responses across all dimensions within each pillar. Each dimension is weighted equally, and the overall pillar score is the average of its dimensions.
+                </FAQAnswer>
+              </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                Can I export assessment data?
-              </FAQQuestion>
-              <FAQAnswer>
-                Yes, admins can export assessments to Excel format, make changes offline, and re-import them. All reports can also be printed or saved as PDFs.
-              </FAQAnswer>
-            </FAQItem>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  Can I export assessment data?
+                </FAQQuestion>
+                <FAQAnswer>
+                  Yes, admins can export assessments to Excel format, make changes offline, and re-import them. All reports can also be printed or saved as PDFs.
+                </FAQAnswer>
+              </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                How often should we reassess?
-              </FAQQuestion>
-              <FAQAnswer>
-                We recommend reassessing every 6-12 months to track progress and measure the impact of implemented improvements. This helps demonstrate ROI and identify new opportunities.
-              </FAQAnswer>
-            </FAQItem>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  How often should we reassess?
+                </FAQQuestion>
+                <FAQAnswer>
+                  We recommend reassessing every 6-12 months to track progress and measure the impact of implemented improvements. This helps demonstrate ROI and identify new opportunities.
+                </FAQAnswer>
+              </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>
-                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
-                Can I customize assessment questions?
-              </FAQQuestion>
-              <FAQAnswer>
-                Yes, admins can add custom questions to any pillar. Custom questions can include maturity levels, pain points, and notes, just like standard questions.
-              </FAQAnswer>
-            </FAQItem>
-          </div>
-        </Section>
+              <FAQItem>
+                <FAQQuestion>
+                  <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                  Can I customize assessment questions?
+                </FAQQuestion>
+                <FAQAnswer>
+                  Yes, admins can add custom questions to any pillar. Custom questions can include maturity levels, pain points, and notes, just like standard questions.
+                </FAQAnswer>
+              </FAQItem>
+            </div>
 
-        {/* Troubleshooting */}
-        <Section>
-          <SectionTitle>Troubleshooting</SectionTitle>
-          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                I can't see my assigned assessments
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Solution:</strong> Make sure you're logged in with the correct email address that was used for the assignment. Check the "My Assessments" section under the Assessments dropdown. If the issue persists, contact your admin to verify the assignment.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+            {/* Troubleshooting - Right Side */}
+            <div>
+              <SectionTitle style={{ textAlign: 'left', marginBottom: '20px' }}>Troubleshooting</SectionTitle>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  I can't see my assigned assessments
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Solution:</strong> Make sure you're logged in with the correct email address that was used for the assignment. Check the "My Assessments" section under the Assessments dropdown. If the issue persists, contact your admin to verify the assignment.
+                </TroubleshootSolution>
+              </TroubleshootCard>
 
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                Assessment progress is not saving
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Solution:</strong> Ensure you have a stable internet connection. The system auto-saves after each question, but you can also manually click "Save Progress". Clear your browser cache and try again if the issue continues.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  Assessment progress is not saving
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Solution:</strong> Ensure you have a stable internet connection. The system auto-saves after each question, but you can also manually click "Save Progress". Clear your browser cache and try again if the issue continues.
+                </TroubleshootSolution>
+              </TroubleshootCard>
 
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                Reports are not generating or showing errors
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Solution:</strong> Reports require at least one completed pillar. Ensure the assessment has sufficient data. Try refreshing the page or logging out and back in. If the error persists, contact support with the assessment ID.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  Reports are not generating or showing errors
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Solution:</strong> Reports require at least one completed pillar. Ensure the assessment has sufficient data. Try refreshing the page or logging out and back in. If the error persists, contact support with the assessment ID.
+                </TroubleshootSolution>
+              </TroubleshootCard>
 
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                Excel import is failing
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Solution:</strong> Ensure you're using the exact Excel file exported from the system without changing column headers or structure. Check that all required fields are filled and data types match (e.g., numbers for scores). Re-download a fresh template if needed.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  Excel import is failing
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Solution:</strong> Ensure you're using the exact Excel file exported from the system without changing column headers or structure. Check that all required fields are filled and data types match (e.g., numbers for scores). Re-download a fresh template if needed.
+                </TroubleshootSolution>
+              </TroubleshootCard>
 
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                Unable to assign users to assessments
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Solution:</strong> Verify you have Author or Admin role permissions. Ensure the email addresses are valid and properly formatted. Check that the assessment exists and is not archived. Users will receive access immediately upon assignment.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  Unable to assign users to assessments
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Solution:</strong> Verify you have Author or Admin role permissions. Ensure the email addresses are valid and properly formatted. Check that the assessment exists and is not archived. Users will receive access immediately upon assignment.
+                </TroubleshootSolution>
+              </TroubleshootCard>
 
-            <TroubleshootCard>
-              <TroubleshootTitle>
-                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
-                Need additional help?
-              </TroubleshootTitle>
-              <TroubleshootSolution>
-                <strong>Contact Support:</strong> For issues not covered here, reach out to <strong>nitin.aggarwal@databricks.com</strong> with your assessment ID, role, and a description of the problem. Include screenshots if possible.
-              </TroubleshootSolution>
-            </TroubleshootCard>
+              <TroubleshootCard>
+                <TroubleshootTitle>
+                  <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                  Need additional help?
+                </TroubleshootTitle>
+                <TroubleshootSolution>
+                  <strong>Contact Support:</strong> For issues not covered here, reach out to <strong>nitin.aggarwal@databricks.com</strong> with your assessment ID, role, and a description of the problem. Include screenshots if possible.
+                </TroubleshootSolution>
+              </TroubleshootCard>
+            </div>
           </div>
         </Section>
       </ContentWrapper>
