@@ -1285,27 +1285,6 @@ const UserGuide = () => {
           </HeroSubtitle>
         </HeroSection>
 
-        {/* What is this tool */}
-        <Section>
-          <SectionTitle>What is this tool?</SectionTitle>
-          <Card
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{
-              background: 'rgba(255, 255, 255, 0.98)',
-              border: '3px solid rgba(255, 255, 255, 0.5)',
-              maxWidth: '1100px',
-              margin: '0 auto',
-              padding: '35px'
-            }}
-          >
-            <CardDescription style={{ fontSize: '1.1rem', textAlign: 'center', marginBottom: 0, color: '#1e293b', lineHeight: 1.7 }}>
-              A comprehensive assessment platform that evaluates your organization's data & analytics maturity across 6 key pillars: <strong>Platform & Governance</strong>, <strong>Data Engineering</strong>, <strong>Machine Learning</strong>, <strong>GenAI & Advanced Analytics</strong>, <strong>Enablement & Adoption</strong>, and <strong>Business Value & Strategy</strong>.
-            </CardDescription>
-          </Card>
-        </Section>
-
         {/* User Roles */}
         <Section>
           <SectionTitle>User Roles</SectionTitle>
