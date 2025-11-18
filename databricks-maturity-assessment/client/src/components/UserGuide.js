@@ -1321,8 +1321,7 @@ const UserGuide = () => {
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '30px',
-            alignItems: 'start'
+            gap: '30px'
           }}>
             {/* FAQ - Left Side */}
             <div>
