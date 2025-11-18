@@ -859,12 +859,22 @@ const UserGuide = () => {
 
       const workflow = workflows[slide.index];
 
+      // Adjust spacing based on number of steps
+      const hasMoreSteps = workflow.steps.length > 4;
+      const stepGap = hasMoreSteps ? '12px' : '18px';
+      const stepPadding = hasMoreSteps ? '16px 22px' : '20px 25px';
+      const badgeSize = hasMoreSteps ? '60px' : '70px';
+      const badgeFontSize = hasMoreSteps ? '2rem' : '2.5rem';
+      const titleSize = hasMoreSteps ? '2.2rem' : '2.5rem';
+      const titleMargin = hasMoreSteps ? '20px' : '35px';
+      const containerPadding = hasMoreSteps ? '40px 60px' : '50px 60px';
+
       return (
         <SlideContent data-slide-content="true">
           <div style={{
             background: 'rgba(255, 255, 255, 0.98)',
             borderRadius: '30px',
-            padding: '50px 60px',
+            padding: containerPadding,
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -872,32 +882,32 @@ const UserGuide = () => {
             overflow: 'hidden'
           }}>
             <div style={{
-              width: '70px',
-              height: '70px',
+              width: badgeSize,
+              height: badgeSize,
               borderRadius: '50%',
               background: workflow.color,
               color: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '2.5rem',
+              fontSize: badgeFontSize,
               fontWeight: 800,
-              marginBottom: '25px'
+              marginBottom: '20px'
             }}>
               {workflow.number}
             </div>
             <h2 style={{
-              fontSize: '2.5rem',
+              fontSize: titleSize,
               fontWeight: 700,
               color: '#1e293b',
-              marginBottom: '35px'
+              marginBottom: titleMargin
             }}>
               {workflow.title}
             </h2>
             <div style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '18px',
+              gap: stepGap,
               flex: 1,
               overflow: 'auto'
             }}>
@@ -905,7 +915,7 @@ const UserGuide = () => {
                 <div key={idx} style={{
                   background: '#f8fafc',
                   borderRadius: '12px',
-                  padding: '20px 25px',
+                  padding: stepPadding,
                   borderLeft: `5px solid ${workflow.color}`,
                   display: 'flex',
                   alignItems: 'center',
