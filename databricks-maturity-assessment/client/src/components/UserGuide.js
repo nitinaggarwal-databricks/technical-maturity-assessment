@@ -19,7 +19,10 @@ import {
   FiPrinter,
   FiZap,
   FiTrendingUp,
-  FiShield
+  FiShield,
+  FiHelpCircle,
+  FiAlertCircle,
+  FiFileText
 } from 'react-icons/fi';
 
 // =======================
@@ -220,6 +223,100 @@ const WorkflowStep = styled.div`
   font-size: 0.9rem;
   color: #475569;
   line-height: 1.4;
+`;
+
+const FAQItem = styled.div`
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+`;
+
+const FAQQuestion = styled.h4`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const FAQAnswer = styled.p`
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+`;
+
+const ReportCard = styled(Card)`
+  border-left: 5px solid ${props => props.borderColor || '#667eea'};
+`;
+
+const ReportTitle = styled.h4`
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+`;
+
+const ReportDescription = styled.p`
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 12px;
+`;
+
+const ReportFeatures = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const ReportFeature = styled.li`
+  font-size: 0.85rem;
+  color: #475569;
+  padding-left: 20px;
+  position: relative;
+  
+  &:before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: ${props => props.color || '#667eea'};
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+`;
+
+const TroubleshootCard = styled.div`
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 16px;
+  border-left: 5px solid #ef4444;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+`;
+
+const TroubleshootTitle = styled.h4`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const TroubleshootSolution = styled.p`
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
 `;
 
 // Slideshow Styles
@@ -1126,6 +1223,228 @@ const UserGuide = () => {
                 <CardDescription>{feature.desc}</CardDescription>
               </Card>
             ))}
+          </div>
+        </Section>
+
+        {/* Reports */}
+        <Section>
+          <SectionTitle>Reports</SectionTitle>
+          <Grid>
+            <ReportCard
+              borderColor="#667eea"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <IconWrapper color="#667eea">
+                <FiFileText />
+              </IconWrapper>
+              <ReportTitle>Maturity Assessment Report</ReportTitle>
+              <ReportDescription>
+                Comprehensive analysis of your organization's maturity across all pillars
+              </ReportDescription>
+              <ReportFeatures>
+                <ReportFeature color="#667eea">Current vs. target state comparison</ReportFeature>
+                <ReportFeature color="#667eea">Pillar-specific maturity scores</ReportFeature>
+                <ReportFeature color="#667eea">Dimension-level breakdown</ReportFeature>
+                <ReportFeature color="#667eea">Improvement recommendations</ReportFeature>
+              </ReportFeatures>
+            </ReportCard>
+
+            <ReportCard
+              borderColor="#10b981"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <IconWrapper color="#10b981">
+                <FiBarChart2 />
+              </IconWrapper>
+              <ReportTitle>Executive Command Center</ReportTitle>
+              <ReportDescription>
+                High-level strategic insights for leadership and stakeholders
+              </ReportDescription>
+              <ReportFeatures>
+                <ReportFeature color="#10b981">Top strategic imperatives</ReportFeature>
+                <ReportFeature color="#10b981">Quick wins and priorities</ReportFeature>
+                <ReportFeature color="#10b981">Risk assessment</ReportFeature>
+                <ReportFeature color="#10b981">Executive summary</ReportFeature>
+              </ReportFeatures>
+            </ReportCard>
+
+            <ReportCard
+              borderColor="#f59e0b"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <IconWrapper color="#f59e0b">
+                <FiTrendingUp />
+              </IconWrapper>
+              <ReportTitle>Industry Benchmarks</ReportTitle>
+              <ReportDescription>
+                Compare your maturity against industry standards and peers
+              </ReportDescription>
+              <ReportFeatures>
+                <ReportFeature color="#f59e0b">Competitive positioning</ReportFeature>
+                <ReportFeature color="#f59e0b">Industry averages by pillar</ReportFeature>
+                <ReportFeature color="#f59e0b">Gap analysis vs. leaders</ReportFeature>
+                <ReportFeature color="#f59e0b">Strategic recommendations</ReportFeature>
+              </ReportFeatures>
+            </ReportCard>
+
+            <ReportCard
+              borderColor="#ec4899"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <IconWrapper color="#ec4899">
+                <FiMonitor />
+              </IconWrapper>
+              <ReportTitle>Insights Dashboard</ReportTitle>
+              <ReportDescription>
+                Real-time analytics and progress tracking across assessments
+              </ReportDescription>
+              <ReportFeatures>
+                <ReportFeature color="#ec4899">Assessment completion rates</ReportFeature>
+                <ReportFeature color="#ec4899">Maturity trends over time</ReportFeature>
+                <ReportFeature color="#ec4899">User engagement metrics</ReportFeature>
+                <ReportFeature color="#ec4899">Cross-pillar insights</ReportFeature>
+              </ReportFeatures>
+            </ReportCard>
+          </Grid>
+        </Section>
+
+        {/* FAQ */}
+        <Section>
+          <SectionTitle>Frequently Asked Questions</SectionTitle>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                How long does an assessment take?
+              </FAQQuestion>
+              <FAQAnswer>
+                A typical assessment takes 30-45 minutes to complete, depending on the depth of responses. You can save progress and return later if needed.
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                Can I edit my responses after submission?
+              </FAQQuestion>
+              <FAQAnswer>
+                Yes, admins can edit assessment responses at any time. Changes are tracked in the assessment history for audit purposes.
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                How are maturity scores calculated?
+              </FAQQuestion>
+              <FAQAnswer>
+                Maturity scores are calculated based on your responses across all dimensions within each pillar. Each dimension is weighted equally, and the overall pillar score is the average of its dimensions.
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                Can I export assessment data?
+              </FAQQuestion>
+              <FAQAnswer>
+                Yes, admins can export assessments to Excel format, make changes offline, and re-import them. All reports can also be printed or saved as PDFs.
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                How often should we reassess?
+              </FAQQuestion>
+              <FAQAnswer>
+                We recommend reassessing every 6-12 months to track progress and measure the impact of implemented improvements. This helps demonstrate ROI and identify new opportunities.
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem>
+              <FAQQuestion>
+                <FiHelpCircle style={{ color: '#667eea', flexShrink: 0 }} />
+                Can I customize assessment questions?
+              </FAQQuestion>
+              <FAQAnswer>
+                Yes, admins can add custom questions to any pillar. Custom questions can include maturity levels, pain points, and notes, just like standard questions.
+              </FAQAnswer>
+            </FAQItem>
+          </div>
+        </Section>
+
+        {/* Troubleshooting */}
+        <Section>
+          <SectionTitle>Troubleshooting</SectionTitle>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                I can't see my assigned assessments
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Solution:</strong> Make sure you're logged in with the correct email address that was used for the assignment. Check the "My Assessments" section under the Assessments dropdown. If the issue persists, contact your admin to verify the assignment.
+              </TroubleshootSolution>
+            </TroubleshootCard>
+
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                Assessment progress is not saving
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Solution:</strong> Ensure you have a stable internet connection. The system auto-saves after each question, but you can also manually click "Save Progress". Clear your browser cache and try again if the issue continues.
+              </TroubleshootSolution>
+            </TroubleshootCard>
+
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                Reports are not generating or showing errors
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Solution:</strong> Reports require at least one completed pillar. Ensure the assessment has sufficient data. Try refreshing the page or logging out and back in. If the error persists, contact support with the assessment ID.
+              </TroubleshootSolution>
+            </TroubleshootCard>
+
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                Excel import is failing
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Solution:</strong> Ensure you're using the exact Excel file exported from the system without changing column headers or structure. Check that all required fields are filled and data types match (e.g., numbers for scores). Re-download a fresh template if needed.
+              </TroubleshootSolution>
+            </TroubleshootCard>
+
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                Unable to assign users to assessments
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Solution:</strong> Verify you have Author or Admin role permissions. Ensure the email addresses are valid and properly formatted. Check that the assessment exists and is not archived. Users will receive access immediately upon assignment.
+              </TroubleshootSolution>
+            </TroubleshootCard>
+
+            <TroubleshootCard>
+              <TroubleshootTitle>
+                <FiAlertCircle style={{ color: '#ef4444', flexShrink: 0 }} />
+                Need additional help?
+              </TroubleshootTitle>
+              <TroubleshootSolution>
+                <strong>Contact Support:</strong> For issues not covered here, reach out to <strong>nitin.aggarwal@databricks.com</strong> with your assessment ID, role, and a description of the problem. Include screenshots if possible.
+              </TroubleshootSolution>
+            </TroubleshootCard>
           </div>
         </Section>
       </ContentWrapper>
