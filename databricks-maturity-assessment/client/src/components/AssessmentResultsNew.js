@@ -267,6 +267,16 @@ const ActionButton = styled(motion.button)`
   background: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
+  
+  /* Hide icons by default, show on hover */
+  svg {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  &:hover svg {
+    opacity: 1;
+  }
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
