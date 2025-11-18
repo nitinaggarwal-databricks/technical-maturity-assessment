@@ -29,7 +29,7 @@ import {
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 100px 0 60px 0;
+  padding: 100px 0 40px 0;
   position: relative;
   overflow: hidden;
 `;
@@ -64,27 +64,27 @@ const FloatingSlideshowButton = styled.button`
 `;
 
 const ContentWrapper = styled.div`
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 40px;
 `;
 
 const HeroSection = styled.div`
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   color: white;
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 900;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: white;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 `;
 
 const HeroSubtitle = styled.p`
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   opacity: 0.95;
   max-width: 800px;
   margin: 0 auto;
@@ -93,67 +93,67 @@ const HeroSubtitle = styled.p`
 `;
 
 const Section = styled.div`
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: white;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   text-align: center;
 `;
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 30px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
 `;
 
 const Card = styled(motion.div)`
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
   transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
   }
 `;
 
 const IconWrapper = styled.div`
-  width: 70px;
-  height: 70px;
-  border-radius: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
   background: ${props => props.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   
   svg {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
     color: white;
   }
 `;
 
 const CardTitle = styled.h3`
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 `;
 
 const CardDescription = styled.p`
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: #64748b;
-  line-height: 1.7;
-  margin-bottom: 20px;
+  line-height: 1.6;
+  margin-bottom: 16px;
 `;
 
 const CardList = styled.ul`
@@ -163,12 +163,12 @@ const CardList = styled.ul`
 `;
 
 const CardListItem = styled.li`
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #475569;
-  padding: 10px 0;
-  padding-left: 30px;
+  padding: 8px 0;
+  padding-left: 25px;
   position: relative;
-  line-height: 1.5;
+  line-height: 1.4;
   
   &:before {
     content: '✓';
@@ -176,7 +176,7 @@ const CardListItem = styled.li`
     left: 0;
     color: #10b981;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 `;
 
@@ -185,41 +185,41 @@ const WorkflowCard = styled(Card)`
 `;
 
 const WorkflowNumber = styled.div`
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   background: ${props => props.color || '#667eea'};
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 800;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  margin-bottom: 16px;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
 `;
 
 const WorkflowTitle = styled.h3`
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 `;
 
 const WorkflowSteps = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 `;
 
 const WorkflowStep = styled.div`
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: #f8fafc;
-  border-radius: 10px;
+  border-radius: 8px;
   border-left: 4px solid ${props => props.color || '#667eea'};
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #475569;
-  line-height: 1.5;
+  line-height: 1.4;
 `;
 
 // Slideshow Styles
@@ -942,14 +942,15 @@ const UserGuide = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             style={{
-              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              maxWidth: '900px',
-              margin: '0 auto'
+              background: 'rgba(255, 255, 255, 0.98)',
+              border: '3px solid rgba(255, 255, 255, 0.5)',
+              maxWidth: '1100px',
+              margin: '0 auto',
+              padding: '35px'
             }}
           >
-            <CardDescription style={{ fontSize: '1.2rem', textAlign: 'center', marginBottom: 0 }}>
-              A comprehensive assessment platform that evaluates your organization's data & analytics maturity across 6 key pillars: Platform & Governance, Data Engineering, Machine Learning, GenAI & Advanced Analytics, Enablement & Adoption, and Business Value & Strategy.
+            <CardDescription style={{ fontSize: '1.1rem', textAlign: 'center', marginBottom: 0, color: '#1e293b', lineHeight: 1.7 }}>
+              A comprehensive assessment platform that evaluates your organization's data & analytics maturity across 6 key pillars: <strong>Platform & Governance</strong>, <strong>Data Engineering</strong>, <strong>Machine Learning</strong>, <strong>GenAI & Advanced Analytics</strong>, <strong>Enablement & Adoption</strong>, and <strong>Business Value & Strategy</strong>.
             </CardDescription>
           </Card>
         </Section>
