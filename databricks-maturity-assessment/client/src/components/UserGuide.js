@@ -849,8 +849,9 @@ const UserGuide = () => {
           steps: [
             'Navigate to assessment',
             'Click "View Report"',
-            'Explore maturity scores and insights',
-            'View Executive Command Center & Benchmarks',
+            'Explore maturity scores',
+            'View Executive Command Center',
+            'Check Industry Benchmarks',
             'Export or print reports'
           ]
         }
@@ -860,13 +861,14 @@ const UserGuide = () => {
 
       // Adjust spacing based on number of steps
       const hasMoreSteps = workflow.steps.length > 4;
-      const stepGap = hasMoreSteps ? '12px' : '18px';
-      const stepPadding = hasMoreSteps ? '16px 22px' : '20px 25px';
-      const badgeSize = hasMoreSteps ? '60px' : '70px';
-      const badgeFontSize = hasMoreSteps ? '2rem' : '2.5rem';
-      const titleSize = hasMoreSteps ? '2.2rem' : '2.5rem';
-      const titleMargin = hasMoreSteps ? '20px' : '35px';
-      const containerPadding = hasMoreSteps ? '40px 60px' : '50px 60px';
+      const stepGap = hasMoreSteps ? '10px' : '18px';
+      const stepPadding = hasMoreSteps ? '14px 20px' : '20px 25px';
+      const stepFontSize = hasMoreSteps ? '1.05rem' : '1.2rem';
+      const badgeSize = hasMoreSteps ? '55px' : '70px';
+      const badgeFontSize = hasMoreSteps ? '1.8rem' : '2.5rem';
+      const titleSize = hasMoreSteps ? '2rem' : '2.5rem';
+      const titleMargin = hasMoreSteps ? '18px' : '35px';
+      const containerPadding = hasMoreSteps ? '35px 60px' : '50px 60px';
 
       return (
         <SlideContent data-slide-content="true">
@@ -918,21 +920,21 @@ const UserGuide = () => {
                   borderLeft: `5px solid ${workflow.color}`,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '18px',
-                  fontSize: '1.2rem',
+                  gap: '16px',
+                  fontSize: stepFontSize,
                   color: '#475569',
-                  lineHeight: 1.5
+                  lineHeight: 1.4
                 }}>
                   <div style={{
-                    width: '38px',
-                    height: '38px',
+                    width: hasMoreSteps ? '34px' : '38px',
+                    height: hasMoreSteps ? '34px' : '38px',
                     borderRadius: '50%',
                     background: workflow.color,
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.1rem',
+                    fontSize: hasMoreSteps ? '1rem' : '1.1rem',
                     fontWeight: 700,
                     flexShrink: 0
                   }}>
