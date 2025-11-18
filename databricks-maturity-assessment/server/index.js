@@ -44,6 +44,7 @@ const chatRoutes = require('./routes/chat');
 const customQuestionsRoutes = require('./routes/custom-questions');
 const excelRoutes = require('./routes/excel');
 const questionEditsRoutes = require('./routes/questionEdits');
+const questionAssignmentsRoutes = require('./routes/questionAssignments');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -54,6 +55,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/custom-questions', customQuestionsRoutes);
 app.use('/api/assessment-excel', excelRoutes);
 app.use('/api/question-edits', questionEditsRoutes);
+app.use('/api/question-assignments', questionAssignmentsRoutes);
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
