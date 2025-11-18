@@ -849,9 +849,8 @@ const UserGuide = () => {
           steps: [
             'Navigate to assessment',
             'Click "View Report"',
-            'Explore maturity scores',
-            'View Executive Command Center',
-            'Check Industry Benchmarks',
+            'Explore maturity scores and insights',
+            'View Executive Command Center & Benchmarks',
             'Export or print reports'
           ]
         }
