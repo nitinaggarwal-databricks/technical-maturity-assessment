@@ -833,7 +833,7 @@ const GlobalNav = () => {
                         setAssignmentsDropdownOpen(false);
                       }}>
                         <FiFileText />
-                        Assignments
+                        View Assignments
                       </DropdownItem>
                       <DropdownItem onClick={() => {
                         navigate('/assign-assessment');
@@ -848,7 +848,7 @@ const GlobalNav = () => {
                           setAssignmentsDropdownOpen(false);
                         }}>
                           <FiUsers />
-                          Manage Users
+                          Manage Assignments
                         </DropdownItem>
                       )}
                     </DropdownMenu>
@@ -1052,13 +1052,13 @@ const GlobalNav = () => {
             {(currentUser.role === 'admin' || currentUser.role === 'author') && (
               <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assignments')}>
                 <FiFileText size={16} />
-                My Assignments
+                View Assignments
               </MobileSecondaryCTAButton>
             )}
             {currentUser.role === 'admin' && (
               <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
                 <FiUsers size={16} />
-                Manage Users
+                Manage Assignments
               </MobileSecondaryCTAButton>
             )}
             <MobileCTAButton onClick={() => handleNavigate('/start')}>
