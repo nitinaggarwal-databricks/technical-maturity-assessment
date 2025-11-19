@@ -6196,25 +6196,38 @@ const AssessmentResultsNew = () => {
                     
                     return (
                       <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '16px',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '20px',
                         height: '92%',
                         padding: '40px 60px'
                       }}>
-                        {/* Top: Key Recommendations */}
+                        {/* Left: Key Recommendations */}
                         <div style={{
-                          background: 'rgba(255, 255, 255, 0.95)',
-                          borderRadius: '16px',
-                          padding: '24px',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+                          borderRadius: '20px',
+                          padding: '28px',
                           border: `4px solid ${pillar.color}`,
-                          flex: 1,
-                          overflow: 'auto'
+                          boxShadow: `0 8px 32px ${pillar.color}30`,
+                          overflow: 'auto',
+                          display: 'flex',
+                          flexDirection: 'column'
                         }}>
-                          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
+                          <div style={{ 
+                            fontSize: '1.6rem', 
+                            fontWeight: 700, 
+                            color: pillar.color,
+                            marginBottom: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            paddingBottom: '16px',
+                            borderBottom: `3px solid ${pillar.color}20`
+                          }}>
+                            <span style={{ fontSize: '1.8rem' }}>💡</span>
                             Key Recommendations
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {pillar.recommendations.slice(0, 8).map((rec, idx) => {
                               let recText = '';
                               if (typeof rec === 'string') {
@@ -6231,47 +6244,65 @@ const AssessmentResultsNew = () => {
                               return (
                                 <div key={idx} style={{
                                   display: 'flex',
-                                  gap: '10px',
+                                  gap: '12px',
                                   alignItems: 'flex-start',
-                                  fontSize: '0.9rem',
-                                  color: '#334155',
-                                  lineHeight: '1.4'
+                                  fontSize: '0.95rem',
+                                  color: '#1e293b',
+                                  lineHeight: '1.5',
+                                  padding: '12px',
+                                  background: `${pillar.color}08`,
+                                  borderRadius: '12px',
+                                  transition: 'all 0.2s ease'
                                 }}>
                                   <div style={{
                                     flexShrink: 0,
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '50%',
-                                    background: pillar.color,
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
                                     color: 'white',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontWeight: 700,
-                                    fontSize: '0.85rem'
+                                    fontSize: '0.9rem',
+                                    boxShadow: `0 4px 12px ${pillar.color}40`
                                   }}>
                                     {idx + 1}
                                   </div>
-                                  <div style={{ flex: 1, paddingTop: '2px' }}>{recText}</div>
+                                  <div style={{ flex: 1, paddingTop: '4px', fontWeight: 500 }}>{recText}</div>
                                 </div>
                               );
                             })}
                           </div>
                         </div>
 
-                        {/* Bottom: Next Steps */}
+                        {/* Right: Next Steps */}
                         <div style={{
-                          background: 'rgba(255, 255, 255, 0.95)',
-                          borderRadius: '16px',
-                          padding: '24px',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+                          borderRadius: '20px',
+                          padding: '28px',
                           border: `4px solid ${pillar.color}`,
-                          flex: 1,
-                          overflow: 'auto'
+                          boxShadow: `0 8px 32px ${pillar.color}30`,
+                          overflow: 'auto',
+                          display: 'flex',
+                          flexDirection: 'column'
                         }}>
-                          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
+                          <div style={{ 
+                            fontSize: '1.6rem', 
+                            fontWeight: 700, 
+                            color: pillar.color,
+                            marginBottom: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            paddingBottom: '16px',
+                            borderBottom: `3px solid ${pillar.color}20`
+                          }}>
+                            <span style={{ fontSize: '1.8rem' }}>🎯</span>
                             Next Steps
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {pillar.nextSteps.slice(0, 8).map((step, idx) => {
                               let stepText = '';
                               if (typeof step === 'string') {
@@ -6288,28 +6319,33 @@ const AssessmentResultsNew = () => {
                               return (
                                 <div key={idx} style={{
                                   display: 'flex',
-                                  gap: '10px',
+                                  gap: '12px',
                                   alignItems: 'flex-start',
-                                  fontSize: '0.9rem',
-                                  color: '#334155',
-                                  lineHeight: '1.4'
+                                  fontSize: '0.95rem',
+                                  color: '#1e293b',
+                                  lineHeight: '1.5',
+                                  padding: '12px',
+                                  background: `${pillar.color}08`,
+                                  borderRadius: '12px',
+                                  transition: 'all 0.2s ease'
                                 }}>
                                   <div style={{
                                     flexShrink: 0,
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '50%',
-                                    background: pillar.color,
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
                                     color: 'white',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontWeight: 700,
-                                    fontSize: '0.85rem'
+                                    fontSize: '0.9rem',
+                                    boxShadow: `0 4px 12px ${pillar.color}40`
                                   }}>
                                     {idx + 1}
                                   </div>
-                                  <div style={{ flex: 1, paddingTop: '2px' }}>{stepText}</div>
+                                  <div style={{ flex: 1, paddingTop: '4px', fontWeight: 500 }}>{stepText}</div>
                                 </div>
                               );
                             })}
