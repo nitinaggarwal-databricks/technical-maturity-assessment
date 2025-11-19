@@ -5685,7 +5685,7 @@ const AssessmentResultsNew = () => {
             </NavigationButton>
             
             <SlideHeading>
-              {currentSlide === 0 || currentSlide === 21 ? '' : 
+              {currentSlide === 0 || currentSlide === 15 ? '' : 
                currentSlide === 1 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
@@ -5695,18 +5695,16 @@ const AssessmentResultsNew = () => {
                   { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
                   { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
                 ];
-                // Slides 2-20: 6 pillars x 3 slides each (dimensions, overview, next steps)
-                if (currentSlide >= 2 && currentSlide <= 20) {
-                  const pillarIndex = Math.floor((currentSlide - 2) / 3);
-                  const slideType = (currentSlide - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
+                // Slides 2-13: 6 pillars x 2 slides each (maturity chart, recommendations/next steps)
+                if (currentSlide >= 2 && currentSlide <= 13) {
+                  const pillarIndex = Math.floor((currentSlide - 2) / 2);
                   const pillarName = pillarsArray[pillarIndex]?.name || '';
-                  // All slide types just show pillar name (no suffix)
                   return pillarName;
                 }
                 return '';
               })()}
             </SlideHeading>
-            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 22</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 16</SlideCounter>
 
             {/* Print Button - Always visible on hover */}
             <PrintButton
@@ -6173,8 +6171,8 @@ const AssessmentResultsNew = () => {
                     </div>
                   )}
 
-                  {/* Pillar Overview Slides (Slides 4,7,10,13,16,19) - Key Recommendations & Next Steps */}
-                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 1 && (() => {
+                  {/* Pillar Overview Slides (Slides 3,5,7,9,11,13) - Key Recommendations & Next Steps */}
+                  {currentSlide >= 2 && currentSlide <= 13 && (currentSlide - 2) % 2 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6183,7 +6181,7 @@ const AssessmentResultsNew = () => {
                       { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
                       { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
                     ];
-                    const pillarIndex = Math.floor((currentSlide - 2) / 3);
+                    const pillarIndex = Math.floor((currentSlide - 2) / 2);
                     const pillarDef = pillarsArray[pillarIndex];
                     if (!pillarDef) return null;
                     
@@ -6385,9 +6383,9 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Dimension Breakdown / Maturity Chart Slides (Slides 2,5,8,11,14,17,20) - slideType 0 */}
+                  {/* Dimension Breakdown / Maturity Chart Slides (Slides 2,4,6,8,10,12) - slideType 0 */}
                   {/* NEW LAYOUT: Chart (left) + What's Working (top right) + Key Challenges (bottom right) */}
-                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 0 && (() => {
+                  {currentSlide >= 2 && currentSlide <= 13 && (currentSlide - 2) % 2 === 0 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6396,7 +6394,7 @@ const AssessmentResultsNew = () => {
                       { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
                       { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
                     ];
-                    const pillarIndex = Math.floor((currentSlide - 2) / 3);
+                    const pillarIndex = Math.floor((currentSlide - 2) / 2);
                     const pillarDef = pillarsArray[pillarIndex];
                     if (!pillarDef) return null;
                     
@@ -6678,8 +6676,8 @@ const AssessmentResultsNew = () => {
                     );
                   })()}
 
-                  {/* Next Steps Slides (Slides 4,7,10,13,16,19) - slideType 2 */}
-                  {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 2 && (() => {
+                  {/* Next Steps Slides - REMOVED */}
+                  {false && currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 2 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6688,7 +6686,7 @@ const AssessmentResultsNew = () => {
                       { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', color: '#8b5cf6' },
                       { id: 'operational_excellence', name: 'Operational Excellence & Adoption', color: '#06b6d4' }
                     ];
-                    const pillarIndex = Math.floor((currentSlide - 2) / 3);
+                    const pillarIndex = Math.floor((currentSlide - 2) / 2);
                     const pillarDef = pillarsArray[pillarIndex];
                     if (!pillarDef) return null;
                     
@@ -6785,7 +6783,7 @@ const AssessmentResultsNew = () => {
                   })()}
 
                   {/* Thank You Slide (Slide 21) */}
-                  {currentSlide === 21 && (
+                  {currentSlide === 15 && (
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
