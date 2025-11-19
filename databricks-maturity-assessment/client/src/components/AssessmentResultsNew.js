@@ -6143,7 +6143,7 @@ const AssessmentResultsNew = () => {
                     </div>
                   )}
 
-                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - What's Working & Challenges */}
+                  {/* Pillar Overview Slides (Slides 4,7,10,13,16,19) - Key Recommendations & Next Steps */}
                   {currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
@@ -6202,80 +6202,35 @@ const AssessmentResultsNew = () => {
                         height: '92%',
                         padding: '40px 60px'
                       }}>
-                        {/* Top Row: What's Working & Key Challenges */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', flex: 0.7 }}>
-                          {/* What's Working */}
-                          <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '24px',
-                            border: `4px solid #10b981`,
-                            overflow: 'auto'
-                          }}>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#10b981', marginBottom: '14px' }}>
-                              ✓ What's Working
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                              {(pillar.good || []).slice(0, 6).map((item, idx) => (
-                                <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
-                                  <span style={{ position: 'absolute', left: 0 }}>•</span>
-                                  {item}
-                            </div>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          {/* Key Challenges */}
-                            <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '24px',
-                            border: `4px solid #ef4444`,
-                            overflow: 'auto'
-                          }}>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ef4444', marginBottom: '14px' }}>
-                              ⚠ Key Challenges
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                              {(pillar.bad || []).slice(0, 6).map((item, idx) => (
-                                <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
-                                  <span style={{ position: 'absolute', left: 0 }}>•</span>
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                            </div>
-                          </div>
-
-                        {/* Bottom: Recommendations */}
-                          <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
+                        {/* Top: Key Recommendations */}
+                        <div style={{
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: '16px',
                           padding: '24px',
-                            border: `4px solid ${pillar.color}`,
-                          flex: 1.3,
+                          border: `4px solid ${pillar.color}`,
+                          flex: 1,
                           overflow: 'auto'
                         }}>
                           <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
-                              Key Recommendations
-                            </div>
+                            Key Recommendations
+                          </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             {pillar.recommendations.slice(0, 8).map((rec, idx) => {
-                                  let recText = '';
-                                  if (typeof rec === 'string') {
-                                    recText = rec;
-                                  } else if (rec.name) {
-                                    recText = rec.name;
-                                    if (rec.description) {
-                                      recText += ` - ${rec.description}`;
-                                    }
-                                  } else {
-                                    recText = rec.message || rec.recommendationText || rec.title || '';
-                                  }
-                                  
-                                  return (
-                                    <div key={idx} style={{
-                                      display: 'flex',
+                              let recText = '';
+                              if (typeof rec === 'string') {
+                                recText = rec;
+                              } else if (rec.name) {
+                                recText = rec.name;
+                                if (rec.description) {
+                                  recText += ` - ${rec.description}`;
+                                }
+                              } else {
+                                recText = rec.message || rec.recommendationText || rec.title || '';
+                              }
+                              
+                              return (
+                                <div key={idx} style={{
+                                  display: 'flex',
                                   gap: '10px',
                                   alignItems: 'flex-start',
                                   fontSize: '0.9rem',
@@ -6292,16 +6247,73 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                        fontWeight: 700,
+                                    fontWeight: 700,
                                     fontSize: '0.85rem'
                                   }}>
                                     {idx + 1}
                                   </div>
                                   <div style={{ flex: 1, paddingTop: '2px' }}>{recText}</div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Bottom: Next Steps */}
+                        <div style={{
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: '16px',
+                          padding: '24px',
+                          border: `4px solid ${pillar.color}`,
+                          flex: 1,
+                          overflow: 'auto'
+                        }}>
+                          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
+                            Next Steps
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {pillar.nextSteps.slice(0, 8).map((step, idx) => {
+                              let stepText = '';
+                              if (typeof step === 'string') {
+                                stepText = step;
+                              } else if (step.action) {
+                                stepText = step.action;
+                                if (step.description) {
+                                  stepText += ` - ${step.description}`;
+                                }
+                              } else {
+                                stepText = step.message || step.text || step.title || '';
+                              }
+                              
+                              return (
+                                <div key={idx} style={{
+                                  display: 'flex',
+                                  gap: '10px',
+                                  alignItems: 'flex-start',
+                                  fontSize: '0.9rem',
+                                  color: '#334155',
+                                  lineHeight: '1.4'
+                                }}>
+                                  <div style={{
+                                    flexShrink: 0,
+                                    width: '26px',
+                                    height: '26px',
+                                    borderRadius: '50%',
+                                    background: pillar.color,
+                                    color: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.85rem'
+                                  }}>
+                                    {idx + 1}
+                                  </div>
+                                  <div style={{ flex: 1, paddingTop: '2px' }}>{stepText}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     );
