@@ -211,61 +211,200 @@ router.get('/conversations', async (req, res) => {
 
 // Helper function to get follow-up questions based on topic and context
 function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData) {
+  // Specific Databricks features mentioned
+  if (messageLower.includes('delta lake')) {
+    return [
+      "How does time travel work in Delta Lake?",
+      "What are ACID transactions?",
+      "How do I implement Delta Lake?",
+      "Tell me about Unity Catalog"
+    ];
+  }
+  
+  if (messageLower.includes('unity catalog')) {
+    return [
+      "How does data lineage work?",
+      "What are fine-grained permissions?",
+      "How do I set up Unity Catalog?",
+      "Tell me about Delta Lake"
+    ];
+  }
+  
+  if (messageLower.includes('mlflow')) {
+    return [
+      "How do I track experiments?",
+      "What is the Model Registry?",
+      "How do I deploy models?",
+      "Tell me about Model Serving"
+    ];
+  }
+  
+  if (messageLower.includes('delta live tables') || messageLower.includes('dlt')) {
+    return [
+      "How do I build DLT pipelines?",
+      "What are data quality expectations?",
+      "How does auto-scaling work?",
+      "Tell me about Auto Loader"
+    ];
+  }
+  
+  if (messageLower.includes('photon')) {
+    return [
+      "How much faster is Photon?",
+      "Does it work with my existing code?",
+      "What workloads benefit most?",
+      "How do I enable Photon?"
+    ];
+  }
+  
+  if (messageLower.includes('model serving')) {
+    return [
+      "How do I deploy a model?",
+      "What about real-time inference?",
+      "How does auto-scaling work?",
+      "Tell me about MLflow"
+    ];
+  }
+  
+  if (messageLower.includes('ai gateway')) {
+    return [
+      "How do I access different LLMs?",
+      "What security features are included?",
+      "How do I track costs?",
+      "Tell me about RAG applications"
+    ];
+  }
+  
+  // Specific pillars mentioned
+  if (messageLower.includes('platform') && messageLower.includes('governance')) {
+    return [
+      "Tell me about Unity Catalog",
+      "How do I implement access controls?",
+      "What about data lineage?",
+      "Tell me about Data Engineering"
+    ];
+  }
+  
+  if (messageLower.includes('data engineering')) {
+    return [
+      "Tell me about Delta Lake",
+      "What is Delta Live Tables?",
+      "How do I ensure data quality?",
+      "Tell me about Analytics & BI"
+    ];
+  }
+  
+  if (messageLower.includes('analytics') || (messageLower.includes('bi') && !messageLower.includes('databricks'))) {
+    return [
+      "What is Photon?",
+      "How do I create dashboards?",
+      "Can I connect to Power BI?",
+      "Tell me about Machine Learning"
+    ];
+  }
+  
+  if (messageLower.includes('machine learning') || messageLower.includes('mlops')) {
+    return [
+      "Tell me about MLflow",
+      "What is Model Serving?",
+      "How do I track experiments?",
+      "Tell me about Generative AI"
+    ];
+  }
+  
+  if (messageLower.includes('generative ai') || messageLower.includes('gen ai') || messageLower.includes('llm')) {
+    return [
+      "Tell me about AI Gateway",
+      "What is RAG?",
+      "How do I fine-tune models?",
+      "Tell me about Operational Excellence"
+    ];
+  }
+  
+  if (messageLower.includes('operational excellence') || messageLower.includes('operations')) {
+    return [
+      "How do I optimize costs?",
+      "What monitoring tools are available?",
+      "How do I improve performance?",
+      "Tell me about Platform Governance"
+    ];
+  }
+  
   // Questions about starting/getting started
   if (messageLower.includes('start') || messageLower.includes('begin')) {
     return [
       "What are the 6 pillars?",
       "How long does it take?",
-      "Can I save and resume later?",
-      "What information do I need?"
+      "What information do I need?",
+      "Can I see a demo?"
     ];
   }
   
-  // Questions about pillars
-  if (messageLower.includes('pillar') || messageLower.includes('categories')) {
+  // Questions about pillars (general)
+  if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('6 pillars')) {
     return [
+      "Tell me about Platform Governance",
       "Tell me about Data Engineering",
-      "What is Platform Governance?",
-      "Explain the maturity levels",
-      "How are pillars scored?"
+      "Tell me about Machine Learning",
+      "What are maturity levels?"
     ];
   }
   
   // Questions about maturity levels/scores
-  if (messageLower.includes('maturity') || messageLower.includes('level') || messageLower.includes('score')) {
+  if (messageLower.includes('maturity level') || messageLower.includes('level') || messageLower.includes('1-5') || messageLower.includes('explore') || messageLower.includes('transform')) {
     if (hasAssessmentData) {
       return [
-        "How can I improve my scores?",
         "What are my biggest gaps?",
+        "How can I improve my scores?",
         "Show me recommendations",
-        "What should I prioritize?"
+        "Which pillar should I focus on?"
       ];
     }
     return [
       "How do I rate maturity?",
-      "What's the difference between levels?",
       "What's a good score?",
-      "How are scores calculated?"
+      "How are scores calculated?",
+      "What are the 6 pillars?"
+    ];
+  }
+  
+  // Questions about scores/results
+  if (messageLower.includes('score') && hasAssessmentData) {
+    return [
+      "What are my biggest gaps?",
+      "How can I improve?",
+      "Show me Databricks recommendations",
+      "What should I prioritize?"
+    ];
+  }
+  
+  // Questions about gaps/improvement
+  if (messageLower.includes('gap') || messageLower.includes('improve') || messageLower.includes('priority')) {
+    return [
+      "Show me specific recommendations",
+      "What Databricks features should I adopt?",
+      "How do I create a roadmap?",
+      "What are quick wins?"
+    ];
+  }
+  
+  // Questions about recommendations
+  if (messageLower.includes('recommendation') || messageLower.includes('suggest')) {
+    return [
+      "How do I implement these?",
+      "What's the ROI?",
+      "What are the next steps?",
+      "Can I customize recommendations?"
     ];
   }
   
   // Questions about reports/results
-  if (messageLower.includes('report') || messageLower.includes('result') || messageLower.includes('recommendation')) {
+  if (messageLower.includes('report') || messageLower.includes('result')) {
     return [
       "Can I edit the report?",
       "How do I export to PDF?",
-      "Can I customize the content?",
-      "How do I share this?"
-    ];
-  }
-  
-  // Questions about Databricks features
-  if (messageLower.includes('databricks') || messageLower.includes('feature') || messageLower.includes('product')) {
-    return [
-      "Tell me about Delta Lake",
-      "What is Unity Catalog?",
-      "Explain MLflow",
-      "What's Delta Live Tables?"
+      "How do I share this?",
+      "What's in the Executive Dashboard?"
     ];
   }
   
@@ -275,7 +414,7 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
       "What can I edit?",
       "Can I change colors?",
       "How do I add content?",
-      "Can I delete sections?"
+      "Are changes saved automatically?"
     ];
   }
   
@@ -295,7 +434,7 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
       "What's in the Excel file?",
       "Can I edit and re-upload?",
       "How do I import changes?",
-      "What format is the export?"
+      "Can I share with my team?"
     ];
   }
   
@@ -309,29 +448,69 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
     ];
   }
   
-  // Page-specific follow-ups
+  // Questions about pain points
+  if (messageLower.includes('pain point') || messageLower.includes('challenge')) {
+    return [
+      "How do pain points affect recommendations?",
+      "What are common challenges?",
+      "How specific should I be?",
+      "Can I add more pain points later?"
+    ];
+  }
+  
+  // Questions about time/duration
+  if (messageLower.includes('time') || messageLower.includes('long') || messageLower.includes('duration')) {
+    return [
+      "Can I save and resume?",
+      "What's the quickest way?",
+      "Can I skip questions?",
+      "How do I start?"
+    ];
+  }
+  
+  // Questions about help/confusion
+  if (messageLower.includes('help') || messageLower.includes('stuck') || messageLower.includes('confused')) {
+    return [
+      "Show me the user guide",
+      "What can I do on this page?",
+      "How do I navigate?",
+      "Can I see examples?"
+    ];
+  }
+  
+  // Questions about comparison/benchmarks
+  if (messageLower.includes('benchmark') || messageLower.includes('compare') || messageLower.includes('percentile')) {
+    return [
+      "What's a good percentile?",
+      "How do I improve my ranking?",
+      "What's the industry average?",
+      "Can I see detailed comparisons?"
+    ];
+  }
+  
+  // Page-specific follow-ups (only if no specific topic matched)
   const pageFollowUps = {
     home: [
       "How do I start an assessment?",
-      "What can I do here?",
+      "What are the 6 pillars?",
       "Show me a demo",
-      "Where's the user guide?"
+      "What's the Deep Dive?"
     ],
     assessment: [
       "How do I rate maturity?",
       "What are pain points?",
       "Can I skip questions?",
-      "How do I save progress?"
+      "How is progress saved?"
     ],
     maturity_report: [
-      "How can I improve?",
-      "Show me recommendations",
-      "Can I edit this?",
-      "How do I export this?"
+      "What are my biggest gaps?",
+      "Show me Databricks recommendations",
+      "Can I edit this report?",
+      "How do I export to PDF?"
     ],
     executive_dashboard: [
-      "Explain Strategic Imperatives",
-      "Show me the roadmap",
+      "What are Strategic Imperatives?",
+      "Show me the investment roadmap",
       "What are success metrics?",
       "How do I present this?"
     ],
@@ -342,14 +521,14 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
       "How do I export data?"
     ],
     industry_benchmarks: [
-      "What's my percentile?",
-      "How do I compare?",
+      "What's my percentile ranking?",
+      "How do I compare to industry?",
       "What's a good ranking?",
       "How can I improve?"
     ],
     deep_dive: [
-      "Explain the pillars",
-      "What's the framework?",
+      "What are the 6 pillars?",
+      "What's the maturity framework?",
       "How is it scored?",
       "What do you assess?"
     ],
