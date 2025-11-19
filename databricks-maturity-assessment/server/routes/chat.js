@@ -376,17 +376,483 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   return pageFollowUps[pageType] || pageFollowUps.home;
 }
 
+// Advanced NLP Helper Functions
+function extractIntent(message) {
+  const lower = message.toLowerCase();
+  
+  // Question words
+  if (lower.match(/^(what|where|when|why|who|which|whose)\b/)) {
+    if (lower.includes('what is') || lower.includes('what are') || lower.includes('what does')) return 'definition';
+    if (lower.includes('where') && (lower.includes('find') || lower.includes('located') || lower.includes('see'))) return 'navigation';
+    if (lower.includes('why')) return 'explanation';
+    if (lower.includes('who')) return 'audience';
+    if (lower.includes('which')) return 'comparison';
+    return 'information';
+  }
+  
+  if (lower.match(/^(how|can|could|should|would)\b/)) {
+    if (lower.includes('how do i') || lower.includes('how to') || lower.includes('how can')) return 'instruction';
+    if (lower.includes('can i') || lower.includes('could i')) return 'capability';
+    if (lower.includes('should i')) return 'recommendation';
+    return 'instruction';
+  }
+  
+  // Action verbs
+  if (lower.match(/^(show|tell|explain|describe|list|give|provide)\b/)) return 'request';
+  if (lower.match(/^(start|begin|create|add|delete|edit|update|change)\b/)) return 'action';
+  if (lower.match(/^(help|assist|guide|support)\b/)) return 'help';
+  if (lower.match(/^(compare|difference|versus|vs)\b/)) return 'comparison';
+  
+  // Sentiment
+  if (lower.match(/\b(thank|thanks|appreciate|grateful)\b/)) return 'gratitude';
+  if (lower.match(/\b(bye|goodbye|see you|later)\b/)) return 'farewell';
+  if (lower.match(/\b(hi|hello|hey|greetings)\b/)) return 'greeting';
+  if (lower.match(/\b(stuck|confused|lost|don't understand|unclear)\b/)) return 'confusion';
+  if (lower.match(/\b(problem|issue|error|bug|broken|not working)\b/)) return 'problem';
+  
+  return 'general';
+}
+
+function extractEntities(message) {
+  const lower = message.toLowerCase();
+  const entities = {
+    pillars: [],
+    features: [],
+    actions: [],
+    pages: [],
+    concepts: []
+  };
+  
+  // Pillars
+  if (lower.match(/\b(platform|governance|platform & governance|platform and governance)\b/)) entities.pillars.push('platform_governance');
+  if (lower.match(/\b(data engineering|data integration|etl|pipeline)\b/)) entities.pillars.push('data_engineering');
+  if (lower.match(/\b(analytics|bi|business intelligence|reporting|dashboard)\b/)) entities.pillars.push('analytics_bi');
+  if (lower.match(/\b(machine learning|ml|mlops|model)\b/)) entities.pillars.push('machine_learning');
+  if (lower.match(/\b(generative ai|gen ai|genai|llm|ai)\b/)) entities.pillars.push('generative_ai');
+  if (lower.match(/\b(operational excellence|operations|monitoring|optimization)\b/)) entities.pillars.push('operational_excellence');
+  
+  // Databricks Features
+  if (lower.match(/\b(delta lake|delta)\b/)) entities.features.push('delta_lake');
+  if (lower.match(/\b(unity catalog|catalog)\b/)) entities.features.push('unity_catalog');
+  if (lower.match(/\b(mlflow)\b/)) entities.features.push('mlflow');
+  if (lower.match(/\b(delta live tables|dlt)\b/)) entities.features.push('delta_live_tables');
+  if (lower.match(/\b(photon)\b/)) entities.features.push('photon');
+  if (lower.match(/\b(model serving|serving)\b/)) entities.features.push('model_serving');
+  if (lower.match(/\b(ai gateway|gateway)\b/)) entities.features.push('ai_gateway');
+  if (lower.match(/\b(auto loader|autoloader)\b/)) entities.features.push('auto_loader');
+  
+  // Actions
+  if (lower.match(/\b(start|begin|create|new)\b/)) entities.actions.push('start');
+  if (lower.match(/\b(edit|modify|change|update|customize)\b/)) entities.actions.push('edit');
+  if (lower.match(/\b(export|download|save)\b/)) entities.actions.push('export');
+  if (lower.match(/\b(import|upload|load)\b/)) entities.actions.push('import');
+  if (lower.match(/\b(share|collaborate|assign)\b/)) entities.actions.push('share');
+  if (lower.match(/\b(view|see|show|display)\b/)) entities.actions.push('view');
+  if (lower.match(/\b(print|pdf)\b/)) entities.actions.push('print');
+  if (lower.match(/\b(slideshow|present|presentation)\b/)) entities.actions.push('slideshow');
+  
+  // Pages
+  if (lower.match(/\b(home|homepage|main page)\b/)) entities.pages.push('home');
+  if (lower.match(/\b(dashboard|assessments)\b/)) entities.pages.push('dashboard');
+  if (lower.match(/\b(report|results|maturity report)\b/)) entities.pages.push('maturity_report');
+  if (lower.match(/\b(executive|command center|strategic)\b/)) entities.pages.push('executive_dashboard');
+  if (lower.match(/\b(insights|analytics)\b/)) entities.pages.push('insights_dashboard');
+  if (lower.match(/\b(benchmark|industry|comparison)\b/)) entities.pages.push('industry_benchmarks');
+  if (lower.match(/\b(deep dive|methodology)\b/)) entities.pages.push('deep_dive');
+  if (lower.match(/\b(user guide|guide|help|documentation)\b/)) entities.pages.push('user_guide');
+  if (lower.match(/\b(admin|administration|manage users)\b/)) entities.pages.push('admin');
+  
+  // Concepts
+  if (lower.match(/\b(maturity|level|score|rating)\b/)) entities.concepts.push('maturity');
+  if (lower.match(/\b(gap|difference|improvement)\b/)) entities.concepts.push('gap');
+  if (lower.match(/\b(recommendation|suggestion|advice)\b/)) entities.concepts.push('recommendation');
+  if (lower.match(/\b(pain point|challenge|issue|problem)\b/)) entities.concepts.push('pain_point');
+  if (lower.match(/\b(roadmap|timeline|phase|plan)\b/)) entities.concepts.push('roadmap');
+  if (lower.match(/\b(metric|kpi|measure)\b/)) entities.concepts.push('metric');
+  if (lower.match(/\b(percentile|rank|ranking)\b/)) entities.concepts.push('percentile');
+  
+  return entities;
+}
+
+function buildContextualResponse(intent, entities, pageType, assessmentData, conversationHistory) {
+  // Analyze conversation history for context
+  const previousTopics = conversationHistory.slice(-3).map(msg => msg.content.toLowerCase());
+  const hasDiscussedPillars = previousTopics.some(t => t.includes('pillar'));
+  const hasDiscussedMaturity = previousTopics.some(t => t.includes('maturity') || t.includes('level'));
+  const hasDiscussedRecommendations = previousTopics.some(t => t.includes('recommendation'));
+  
+  return {
+    intent,
+    entities,
+    pageType,
+    hasAssessmentData: !!assessmentData,
+    conversationContext: {
+      hasDiscussedPillars,
+      hasDiscussedMaturity,
+      hasDiscussedRecommendations,
+      messageCount: conversationHistory.length
+    }
+  };
+}
+
 // Super Smart Context-Aware AI Response Generator
 async function generateSmartAIResponse(userMessage, conversationHistory, context, assessmentData, pool) {
   const messageLower = userMessage.toLowerCase();
   const pageType = context?.pageType || 'home';
   const hasAssessmentData = !!assessmentData;
   
+  // Extract intent and entities for smarter responses
+  const intent = extractIntent(userMessage);
+  const entities = extractEntities(userMessage);
+  const contextualInfo = buildContextualResponse(intent, entities, pageType, assessmentData, conversationHistory);
+  
   // Helper to return response with suggested questions
   const respond = (text) => {
     const suggestedQuestions = getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData);
     return { response: text, suggestedQuestions };
   };
+  
+  // ===== INTELLIGENT ENTITY-BASED RESPONSES =====
+  
+  // Handle specific Databricks feature questions
+  if (entities.features.length > 0) {
+    const featureDetails = {
+      delta_lake: {
+        name: "Delta Lake",
+        description: "**Delta Lake** is an open-source storage framework that brings ACID transactions to data lakes.",
+        keyFeatures: [
+          "**ACID Transactions** - Ensures data reliability and consistency",
+          "**Time Travel** - Query historical versions of your data",
+          "**Schema Evolution** - Automatically handle schema changes",
+          "**Unified Batch & Streaming** - Process both types with one framework",
+          "**Scalable Metadata** - Handle petabyte-scale tables efficiently"
+        ],
+        useCase: "Perfect for building reliable data pipelines and ensuring data quality.",
+        pillar: "Data Engineering"
+      },
+      unity_catalog: {
+        name: "Unity Catalog",
+        description: "**Unity Catalog** provides unified governance for all your data and AI assets across clouds.",
+        keyFeatures: [
+          "**Centralized Governance** - Single place to manage all data assets",
+          "**Fine-Grained Access Control** - Row/column level security",
+          "**Data Lineage** - Track data flow end-to-end",
+          "**Audit Logging** - Complete visibility into data access",
+          "**Cross-Cloud** - Works across AWS, Azure, and GCP"
+        ],
+        useCase: "Essential for enterprise data governance and compliance.",
+        pillar: "Platform & Governance"
+      },
+      mlflow: {
+        name: "MLflow",
+        description: "**MLflow** is an open-source platform for managing the complete ML lifecycle.",
+        keyFeatures: [
+          "**Experiment Tracking** - Log parameters, metrics, and artifacts",
+          "**Model Registry** - Version and manage ML models",
+          "**Model Deployment** - Deploy models to production",
+          "**Project Packaging** - Reproducible ML workflows",
+          "**Integration** - Works with any ML library"
+        ],
+        useCase: "Critical for MLOps and managing ML model lifecycle.",
+        pillar: "Machine Learning"
+      },
+      delta_live_tables: {
+        name: "Delta Live Tables (DLT)",
+        description: "**Delta Live Tables** is a declarative framework for building reliable data pipelines.",
+        keyFeatures: [
+          "**Declarative Pipelines** - Define what you want, not how to build it",
+          "**Auto-Scaling** - Automatically scales compute resources",
+          "**Data Quality** - Built-in expectations and monitoring",
+          "**Dependency Management** - Automatic pipeline orchestration",
+          "**Continuous Processing** - Real-time and batch in one framework"
+        ],
+        useCase: "Simplifies building production-grade data pipelines.",
+        pillar: "Data Engineering"
+      },
+      photon: {
+        name: "Photon",
+        description: "**Photon** is a high-performance query engine that accelerates Spark workloads.",
+        keyFeatures: [
+          "**3-5x Faster** - Significantly faster than standard Spark",
+          "**Lower Cost** - Better price/performance ratio",
+          "**Vectorized Processing** - Modern CPU optimization",
+          "**Compatible** - Works with existing Spark code",
+          "**Automatic** - No code changes required"
+        ],
+        useCase: "Accelerates analytics, ETL, and data science workloads.",
+        pillar: "Data Engineering & Analytics"
+      },
+      model_serving: {
+        name: "Model Serving",
+        description: "**Model Serving** provides scalable, low-latency serving of ML models.",
+        keyFeatures: [
+          "**Real-Time Inference** - Low-latency predictions",
+          "**Auto-Scaling** - Scales based on demand",
+          "**Multi-Model** - Serve multiple models simultaneously",
+          "**Monitoring** - Built-in performance tracking",
+          "**Easy Deployment** - One-click model deployment"
+        ],
+        useCase: "Deploy ML models to production with enterprise-grade reliability.",
+        pillar: "Machine Learning"
+      },
+      ai_gateway: {
+        name: "AI Gateway",
+        description: "**AI Gateway** provides secure, governed access to LLMs and GenAI applications.",
+        keyFeatures: [
+          "**Unified Interface** - Access multiple LLM providers",
+          "**Security** - PII detection and redaction",
+          "**Cost Control** - Rate limiting and usage tracking",
+          "**Monitoring** - Track quality and performance",
+          "**Governance** - Centralized policy enforcement"
+        ],
+        useCase: "Build secure, enterprise-grade GenAI applications.",
+        pillar: "Generative AI"
+      },
+      auto_loader: {
+        name: "Auto Loader",
+        description: "**Auto Loader** incrementally and efficiently processes new data files as they arrive.",
+        keyFeatures: [
+          "**Incremental Processing** - Only processes new files",
+          "**Schema Inference** - Automatically detects schema",
+          "**Scalable** - Handles millions of files",
+          "**Fault Tolerant** - Exactly-once processing guarantees",
+          "**Cloud Native** - Works with S3, ADLS, GCS"
+        ],
+        useCase: "Efficiently ingest streaming data from cloud storage.",
+        pillar: "Data Engineering"
+      }
+    };
+    
+    const feature = entities.features[0];
+    const details = featureDetails[feature];
+    
+    if (details) {
+      let response = `${details.description}\n\n**Key Capabilities:**\n${details.keyFeatures.map(f => `• ${f}`).join('\n')}\n\n**Use Case:** ${details.useCase}\n\n**Related Pillar:** ${details.pillar}`;
+      
+      if (intent === 'instruction' && messageLower.includes('use')) {
+        response += `\n\n**Getting Started:**\n• Check your ${details.pillar} maturity score\n• Review recommendations in your maturity report\n• Start with pilot projects to build expertise\n• Leverage Databricks documentation and training`;
+      }
+      
+      return respond(response);
+    }
+  }
+  
+  // Handle specific pillar questions with deep context
+  if (entities.pillars.length > 0 && (intent === 'definition' || intent === 'information' || intent === 'explanation')) {
+    const pillarDetails = {
+      platform_governance: {
+        name: "Platform & Governance",
+        icon: "🏛️",
+        description: "Focuses on security, compliance, access control, and unified governance across your data platform.",
+        keyAreas: [
+          "**Unity Catalog** - Centralized data governance",
+          "**Access Controls** - Fine-grained permissions (row/column level)",
+          "**Data Lineage** - Track data flow and transformations",
+          "**Audit & Compliance** - Complete audit trails",
+          "**Security** - Encryption, network isolation, SSO"
+        ],
+        whyMatters: "Critical for enterprise data security, regulatory compliance, and data democratization with proper controls.",
+        typicalChallenges: [
+          "Fragmented governance across multiple systems",
+          "Lack of centralized access control",
+          "Difficulty tracking data lineage",
+          "Compliance reporting complexity"
+        ]
+      },
+      data_engineering: {
+        name: "Data Engineering & Integration",
+        icon: "🔷",
+        description: "Covers data pipelines, ETL/ELT processes, data quality, and integration patterns.",
+        keyAreas: [
+          "**Delta Lake** - Reliable data lake storage",
+          "**Delta Live Tables** - Declarative pipeline framework",
+          "**Auto Loader** - Incremental file ingestion",
+          "**Data Quality** - Expectations and monitoring",
+          "**Pipeline Orchestration** - Workflow management"
+        ],
+        whyMatters: "Foundation for all data initiatives - without reliable data engineering, analytics and ML efforts fail.",
+        typicalChallenges: [
+          "Data quality issues and inconsistencies",
+          "Complex pipeline maintenance",
+          "Slow batch processing",
+          "Difficulty handling schema changes"
+        ]
+      },
+      analytics_bi: {
+        name: "Analytics & BI Modernization",
+        icon: "📊",
+        description: "Encompasses SQL analytics, reporting, dashboards, and business intelligence capabilities.",
+        keyAreas: [
+          "**SQL Warehouses** - High-performance SQL engine",
+          "**Dashboards** - Interactive visualizations",
+          "**Photon Engine** - 3-5x faster queries",
+          "**BI Tool Integration** - Tableau, Power BI, Looker",
+          "**Semantic Layer** - Consistent business metrics"
+        ],
+        whyMatters: "Enables data-driven decision making across the organization with fast, reliable analytics.",
+        typicalChallenges: [
+          "Slow query performance",
+          "Inconsistent metrics across tools",
+          "Limited self-service capabilities",
+          "High cost of analytics infrastructure"
+        ]
+      },
+      machine_learning: {
+        name: "Machine Learning & MLOps",
+        icon: "🤖",
+        description: "Covers ML model development, training, deployment, monitoring, and lifecycle management.",
+        keyAreas: [
+          "**MLflow** - ML lifecycle management",
+          "**Feature Store** - Centralized feature repository",
+          "**Model Serving** - Real-time and batch inference",
+          "**AutoML** - Automated model training",
+          "**Model Monitoring** - Track model performance"
+        ],
+        whyMatters: "Operationalizes ML at scale, moving from experimental models to production AI systems.",
+        typicalChallenges: [
+          "Models stuck in development, not production",
+          "Lack of model versioning and tracking",
+          "Difficulty reproducing results",
+          "Model drift and performance degradation"
+        ]
+      },
+      generative_ai: {
+        name: "Generative AI & Agentic Capabilities",
+        icon: "✨",
+        description: "Focuses on LLMs, GenAI applications, RAG systems, and AI agents.",
+        keyAreas: [
+          "**AI Gateway** - Secure LLM access",
+          "**Vector Search** - Semantic search capabilities",
+          "**RAG Applications** - Retrieval-augmented generation",
+          "**Fine-Tuning** - Customize models for your domain",
+          "**AI Agents** - Autonomous AI systems"
+        ],
+        whyMatters: "Unlocks next-generation AI capabilities for customer service, content generation, and intelligent automation.",
+        typicalChallenges: [
+          "Security and governance concerns with LLMs",
+          "High costs of LLM API calls",
+          "Hallucinations and accuracy issues",
+          "Difficulty integrating with enterprise data"
+        ]
+      },
+      operational_excellence: {
+        name: "Operational Excellence & Adoption",
+        icon: "⚙️",
+        description: "Encompasses monitoring, optimization, cost management, and platform adoption.",
+        keyAreas: [
+          "**Cost Optimization** - Right-sizing and auto-scaling",
+          "**Monitoring & Alerting** - Platform health tracking",
+          "**Performance Tuning** - Query and job optimization",
+          "**User Adoption** - Training and enablement",
+          "**Best Practices** - Standards and governance"
+        ],
+        whyMatters: "Ensures sustainable, cost-effective operations and maximizes ROI on data platform investments.",
+        typicalChallenges: [
+          "Unpredictable or high costs",
+          "Performance bottlenecks",
+          "Low user adoption",
+          "Lack of monitoring and observability"
+        ]
+      }
+    };
+    
+    const pillar = entities.pillars[0];
+    const details = pillarDetails[pillar];
+    
+    if (details) {
+      let response = `${details.icon} **${details.name}**\n\n${details.description}\n\n**Key Areas:**\n${details.keyAreas.map(a => `• ${a}`).join('\n')}\n\n**Why It Matters:**\n${details.whyMatters}`;
+      
+      if (hasAssessmentData && assessmentData.results?.categoryDetails?.[pillar]) {
+        const pillarData = assessmentData.results.categoryDetails[pillar];
+        const score = pillarData.score || 0;
+        const targetScore = pillarData.targetScore || 0;
+        const gap = (targetScore - score).toFixed(1);
+        
+        response += `\n\n**Your Current Status:**\n• Current Maturity: **${score.toFixed(1)}** / 5.0\n• Target Maturity: **${targetScore.toFixed(1)}** / 5.0\n• Gap to Close: **${gap}** points`;
+        
+        if (gap > 0) {
+          response += `\n\n**Recommended Focus:** Close the ${gap}-point gap by addressing the challenges below.`;
+        }
+      }
+      
+      response += `\n\n**Common Challenges:**\n${details.typicalChallenges.map(c => `• ${c}`).join('\n')}`;
+      
+      return respond(response);
+    }
+  }
+  
+  // Handle comparison questions
+  if (intent === 'comparison' || entities.concepts.includes('gap')) {
+    if (hasAssessmentData && assessmentData.results?.categoryDetails) {
+      const categoryDetails = assessmentData.results.categoryDetails;
+      const gaps = Object.entries(categoryDetails).map(([pillarId, data]) => ({
+        pillar: pillarId,
+        name: pillarId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        current: data.score || 0,
+        target: data.targetScore || 0,
+        gap: (data.targetScore || 0) - (data.score || 0)
+      })).sort((a, b) => b.gap - a.gap);
+      
+      let response = "**Your Maturity Gaps Analysis:**\n\n";
+      response += "Here's where you have the biggest opportunities for improvement:\n\n";
+      
+      gaps.forEach((item, index) => {
+        const priority = index === 0 ? "🔴 **Highest Priority**" : index === 1 ? "🟠 **High Priority**" : index === 2 ? "🟡 **Medium Priority**" : "🟢 **Lower Priority**";
+        response += `${index + 1}. **${item.name}**\n`;
+        response += `   ${priority}\n`;
+        response += `   Current: ${item.current.toFixed(1)} → Target: ${item.target.toFixed(1)} (Gap: ${item.gap.toFixed(1)})\n\n`;
+      });
+      
+      response += `**Strategic Recommendation:**\nFocus on the top 2-3 pillars with the largest gaps for maximum impact. Start with quick wins in ${gaps[0].name} to build momentum.`;
+      
+      return respond(response);
+    }
+  }
+  
+  // Handle greeting with context
+  if (intent === 'greeting') {
+    const greetings = [
+      `Hello! 👋 I'm your Databricks Maturity Assessment assistant. You're currently on the **${pageType.replace('_', ' ')}** page.`,
+      `Hi there! 😊 Welcome to the Databricks Maturity Assessment. I can help you with anything on this page.`,
+      `Hey! 🎯 Ready to explore the assessment? I'm here to guide you through the **${pageType.replace('_', ' ')}** section.`
+    ];
+    
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    return respond(`${greeting}\n\nWhat would you like to know?`);
+  }
+  
+  // Handle confusion/help requests
+  if (intent === 'confusion' || intent === 'help') {
+    let response = "I'm here to help! Let me guide you through this.\n\n";
+    
+    if (pageType === 'assessment') {
+      response += "**You're taking an assessment.** Here's what to do:\n\n";
+      response += "1. **Rate Current Maturity** - Where are you today? (1-5)\n";
+      response += "2. **Rate Target Maturity** - Where do you want to be? (1-5)\n";
+      response += "3. **Add Pain Points** - What challenges are you facing?\n";
+      response += "4. **Add Notes** - Any additional context\n";
+      response += "5. **Click Next** - Move to the next question\n\n";
+      response += "Your progress is auto-saved - you can come back anytime!";
+    } else if (pageType === 'maturity_report') {
+      response += "**You're viewing your Maturity Report.** Here's what you can do:\n\n";
+      response += "• **Review Scores** - See your maturity levels for each pillar\n";
+      response += "• **Check Gaps** - Identify areas for improvement\n";
+      response += "• **Read Recommendations** - Get specific Databricks features to adopt\n";
+      response += "• **Edit Content** - Hover over cards to customize\n";
+      response += "• **Export** - Use slideshow mode to create PDFs\n\n";
+      response += "What specific aspect would you like help with?";
+    } else {
+      response += `**You're on the ${pageType.replace('_', ' ')} page.**\n\n`;
+      response += "I can help you:\n";
+      response += "• Understand what's on this page\n";
+      response += "• Navigate to other sections\n";
+      response += "• Learn about assessment features\n";
+      response += "• Answer specific questions\n\n";
+      response += "Just ask me anything!";
+    }
+    
+    return respond(response);
+  }
   
   // ===== PAGE-SPECIFIC CONTEXT RESPONSES =====
   
