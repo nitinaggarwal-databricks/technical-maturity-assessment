@@ -210,7 +210,37 @@ router.get('/conversations', async (req, res) => {
 });
 
 // Helper function to get follow-up questions based on topic and context
-function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData) {
+function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData, conversationHistory = []) {
+  // Get recently asked questions to avoid repeating
+  const recentUserMessages = conversationHistory
+    .filter(msg => msg.role === 'user')
+    .slice(-5)
+    .map(msg => msg.content.toLowerCase());
+  
+  // Helper to filter out recently asked questions and add variety
+  const getVariedQuestions = (questionPool) => {
+    // Filter out questions similar to recent ones
+    const filtered = questionPool.filter(q => {
+      const qLower = q.toLowerCase();
+      return !recentUserMessages.some(recent => {
+        // Check if question is too similar to recent message
+        const similarity = qLower.includes(recent.substring(0, 15)) || 
+                          recent.includes(qLower.substring(0, 15));
+        return similarity;
+      });
+    });
+    
+    // If we filtered out too many, add some back
+    if (filtered.length < 4) {
+      // Add questions from the pool that weren't filtered
+      const remaining = questionPool.filter(q => !filtered.includes(q));
+      return [...filtered, ...remaining].slice(0, 4);
+    }
+    
+    // Shuffle for variety
+    const shuffled = filtered.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 4);
+  };
   // Specific Databricks features mentioned
   if (messageLower.includes('delta lake')) {
     return [
@@ -332,22 +362,30 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   
   // Questions about starting/getting started
   if (messageLower.includes('start') || messageLower.includes('begin')) {
-    return [
+    return getVariedQuestions([
       "What are the 6 pillars?",
       "How long does it take?",
       "What information do I need?",
-      "Can I see a demo?"
-    ];
+      "Can I see a demo?",
+      "Can I save and resume later?",
+      "What are maturity levels?",
+      "Who should take this assessment?",
+      "What will I get from this?"
+    ]);
   }
   
   // Questions about pillars (general)
   if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('6 pillars')) {
-    return [
+    return getVariedQuestions([
       "Tell me about Platform Governance",
       "Tell me about Data Engineering",
       "Tell me about Machine Learning",
-      "What are maturity levels?"
-    ];
+      "Tell me about Analytics & BI",
+      "Tell me about Generative AI",
+      "Tell me about Operational Excellence",
+      "What are maturity levels?",
+      "How are pillars scored?"
+    ]);
   }
   
   // Questions about maturity levels/scores
@@ -687,7 +725,10 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
   
   // Helper to return response with suggested questions
   const respond = (text) => {
-    const suggestedQuestions = getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData);
+    const suggestedQuestions = getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData, conversationHistory);
+    console.log('[AI] User asked:', userMessage);
+    console.log('[AI] Recent messages:', conversationHistory.filter(m => m.role === 'user').slice(-3).map(m => m.content));
+    console.log('[AI] Suggested questions:', suggestedQuestions);
     return { response: text, suggestedQuestions };
   };
   
