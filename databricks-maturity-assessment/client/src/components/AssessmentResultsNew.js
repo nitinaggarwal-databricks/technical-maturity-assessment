@@ -5798,14 +5798,14 @@ const AssessmentResultsNew = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       height: '100%',
-                      padding: '60px 60px 20px 60px',
-                      gap: '28px'
+                      padding: '50px 50px 30px 50px',
+                      gap: '20px'
                     }}>
                       {/* Three Cards Section - Top */}
                       <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '24px',
+                        gap: '18px',
                         flexShrink: 0
                       }}>
                       {/* Current Maturity Card */}
@@ -5813,31 +5813,31 @@ const AssessmentResultsNew = () => {
                           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
                           backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '16px',
-                          padding: '20px 24px',
+                          borderRadius: '14px',
+                          padding: '14px 18px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '10px',
+                          gap: '6px',
                           overflow: 'hidden',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+                          boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0,
-                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                            boxShadow: '0 3px 10px rgba(59, 130, 246, 0.3)'
                         }}>
                           🎯
                         </div>
                         <div style={{
-                            fontSize: '0.9rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.9)',
                             fontWeight: 600,
                           textTransform: 'uppercase',
@@ -5847,27 +5847,27 @@ const AssessmentResultsNew = () => {
                             CURRENT MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                             fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
                             flexShrink: 0,
-                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                            textShadow: '0 2px 6px rgba(0, 0, 0, 0.2)'
                           }}>
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
                         </div>
                         <div style={{
-                            fontSize: '0.95rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.8)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 3,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.current?.description || 
-                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 150)}
+                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 120)}
                         </div>
                       </div>
 
@@ -5876,31 +5876,31 @@ const AssessmentResultsNew = () => {
                           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
                           backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '16px',
-                          padding: '20px 24px',
+                          borderRadius: '14px',
+                          padding: '14px 18px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '10px',
+                          gap: '6px',
                           overflow: 'hidden',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+                          boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0,
-                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                            boxShadow: '0 3px 10px rgba(16, 185, 129, 0.3)'
                         }}>
                           📈
                         </div>
                         <div style={{
-                            fontSize: '0.9rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.9)',
                             fontWeight: 600,
                           textTransform: 'uppercase',
@@ -5910,27 +5910,27 @@ const AssessmentResultsNew = () => {
                             TARGET MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                             fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
                             flexShrink: 0,
-                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                            textShadow: '0 2px 6px rgba(0, 0, 0, 0.2)'
                           }}>
                             Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Optimize'}
                         </div>
                         <div style={{
-                            fontSize: '0.95rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.8)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 3,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.target?.description || 
-                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 150)}
+                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 120)}
                         </div>
                       </div>
 
@@ -5939,31 +5939,31 @@ const AssessmentResultsNew = () => {
                           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
                           backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '16px',
-                          padding: '20px 24px',
+                          borderRadius: '14px',
+                          padding: '14px 18px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '10px',
+                          gap: '6px',
                           overflow: 'hidden',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+                          boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '12px',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
                             background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
-                            marginBottom: '4px',
+                            fontSize: '1.1rem',
+                            marginBottom: '2px',
                             flexShrink: 0,
-                            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
+                            boxShadow: '0 3px 10px rgba(245, 158, 11, 0.3)'
                         }}>
                           ⚡
                         </div>
                         <div style={{
-                            fontSize: '0.9rem',
+                            fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.9)',
                             fontWeight: 600,
                           textTransform: 'uppercase',
@@ -5973,27 +5973,27 @@ const AssessmentResultsNew = () => {
                             IMPROVEMENT POTENTIAL
                         </div>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                             fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
                             flexShrink: 0,
-                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                            textShadow: '0 2px 6px rgba(0, 0, 0, 0.2)'
                         }}>
                           +{improvementLevel} Level
                         </div>
                         <div style={{
-                            fontSize: '0.95rem',
+                            fontSize: '0.8rem',
                             color: 'rgba(255, 255, 255, 0.8)',
-                            lineHeight: '1.5',
+                            lineHeight: '1.4',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 3,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.improvement?.description || 
-                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 150)}
+                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 120)}
                         </div>
                         </div>
                       </div>
@@ -6015,9 +6015,9 @@ const AssessmentResultsNew = () => {
                       <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '16px',
-                        paddingTop: '20px',
-                        paddingBottom: '20px',
+                        gap: '12px',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
                         maxWidth: '1400px',
                         margin: '0 auto',
                         width: '100%'
@@ -6026,29 +6026,29 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'flex',
                           justifyContent: 'center',
-                          gap: '40px',
-                          marginBottom: '16px'
+                          gap: '32px',
+                          marginBottom: '8px'
                         }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <div style={{ 
-                              width: 20, 
-                              height: 20, 
-                              borderRadius: 6, 
+                              width: 18, 
+                              height: 18, 
+                              borderRadius: 5, 
                               background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
-                              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
+                              boxShadow: '0 3px 10px rgba(59, 130, 246, 0.4)'
                             }} />
-                            <span style={{ fontSize: '1.2rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Today</span>
+                            <span style={{ fontSize: '1.05rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Today</span>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <div style={{ 
-                              width: 20, 
-                              height: 20, 
-                              borderRadius: 6, 
+                              width: 18, 
+                              height: 18, 
+                              borderRadius: 5, 
                               background: 'transparent', 
-                              border: '3px solid #10b981',
-                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                              border: '2.5px solid #10b981',
+                              boxShadow: '0 3px 10px rgba(16, 185, 129, 0.3)'
                             }} />
-                            <span style={{ fontSize: '1.2rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Tomorrow</span>
+                            <span style={{ fontSize: '1.05rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Tomorrow</span>
                           </div>
                         </div>
 
@@ -6056,8 +6056,8 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(2, 1fr)',
-                          gap: '20px',
-                          padding: '0 40px'
+                          gap: '14px',
+                          padding: '0 30px'
                         }}>
                         {pillarsArray.map((pillar) => {
                             const categoryData = resultsData?.categoryDetails?.[pillar.id] || {};
@@ -6067,24 +6067,24 @@ const AssessmentResultsNew = () => {
                           return (
                               <div key={pillar.id} style={{
                                 background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%)',
-                                borderRadius: '14px',
-                                padding: '18px 22px',
-                                borderLeft: `4px solid ${pillar.color}`,
+                                borderRadius: '12px',
+                                padding: '12px 16px',
+                                borderLeft: `3px solid ${pillar.color}`,
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '14px',
-                                boxShadow: `0 4px 16px ${pillar.color}20`,
+                                gap: '10px',
+                                boxShadow: `0 3px 12px ${pillar.color}20`,
                                 transition: 'all 0.3s ease'
                               }}>
                                 {/* Pillar Header */}
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                  gap: '12px'
+                                  gap: '10px'
                                 }}>
-                                  <span style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }}>{pillar.icon}</span>
+                                  <span style={{ fontSize: '1.3rem', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }}>{pillar.icon}</span>
                                   <span style={{
-                                    fontSize: '1rem',
+                                    fontSize: '0.85rem',
                                     fontWeight: 700,
                                     color: pillar.color,
                                     flex: 1,
@@ -6097,7 +6097,7 @@ const AssessmentResultsNew = () => {
                                 {/* Scores Container */}
                                 <div style={{
                                   display: 'flex',
-                                gap: '16px',
+                                gap: '12px',
                                   justifyContent: 'space-around'
                                 }}>
                                   {/* Today Score */}
@@ -6105,27 +6105,27 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.7rem',
+                                      fontSize: '0.6rem',
                                 fontWeight: 700,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
-                                      letterSpacing: '0.8px'
+                                      letterSpacing: '0.6px'
                               }}>
                                       TODAY
                               </div>
                                 <div style={{
                                       background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
                                       color: 'white',
-                                      padding: '8px 18px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.3rem',
+                                      padding: '6px 14px',
+                                  borderRadius: '7px',
+                                      fontSize: '1.1rem',
                                       fontWeight: 800,
-                                      minWidth: '65px',
+                                      minWidth: '55px',
                                       textAlign: 'center',
-                                      boxShadow: `0 4px 12px ${pillar.color}40`
+                                      boxShadow: `0 3px 10px ${pillar.color}40`
                                     }}>
                                       {currentScore}
                                     </div>
@@ -6136,28 +6136,28 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.7rem',
+                                      fontSize: '0.6rem',
                                       fontWeight: 700,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
-                                      letterSpacing: '0.8px'
+                                      letterSpacing: '0.6px'
                                     }}>
                                       TOMORROW
                                 </div>
                                 <div style={{
                                   background: 'white',
                                       color: pillar.color,
-                                      padding: '8px 18px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.3rem',
+                                      padding: '6px 14px',
+                                  borderRadius: '7px',
+                                      fontSize: '1.1rem',
                                   fontWeight: 800,
-                                      border: `3px solid ${pillar.color}`,
-                                      minWidth: '65px',
+                                      border: `2.5px solid ${pillar.color}`,
+                                      minWidth: '55px',
                                       textAlign: 'center',
-                                      boxShadow: `0 4px 12px ${pillar.color}30`
+                                      boxShadow: `0 3px 10px ${pillar.color}30`
                                 }}>
                                       {futureScore}
                                     </div>
