@@ -141,10 +141,17 @@ router.post('/message', async (req, res) => {
       [convId]
     );
 
+    // Ensure suggestedQuestions is always an array
+    const finalSuggestedQuestions = Array.isArray(suggestedQuestions) && suggestedQuestions.length > 0 
+      ? suggestedQuestions 
+      : ["Tell me more", "What else?", "How does this work?", "Show me examples"];
+    
+    console.log('[API] Sending response with questions:', finalSuggestedQuestions);
+    
     res.json({
       conversationId: convId,
       response: aiResponse,
-      suggestedQuestions: suggestedQuestions || []
+      suggestedQuestions: finalSuggestedQuestions
     });
   } catch (error) {
     console.error('Error processing message:', error);
