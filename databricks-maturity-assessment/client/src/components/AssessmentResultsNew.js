@@ -6309,8 +6309,8 @@ const AssessmentResultsNew = () => {
                             paddingBottom: '16px',
                             borderBottom: `3px solid ${pillar.color}20`
                           }}>
-                            <span style={{ fontSize: '1.8rem' }}>💡</span>
-                            Key Recommendations
+                            <span style={{ fontSize: '1.8rem' }}>🧱</span>
+                            Databricks Recommendations
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {pillar.recommendations.slice(0, 8).map((rec, idx) => {
