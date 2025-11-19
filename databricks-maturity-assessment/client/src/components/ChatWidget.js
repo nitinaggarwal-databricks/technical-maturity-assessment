@@ -118,6 +118,40 @@ const ChatMessages = styled.div`
   }
 `;
 
+const SuggestedQuestions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+`;
+
+const QuestionButton = styled(motion.button)`
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+    color: #667eea;
+    transform: translateX(4px);
+  }
+
+  &::before {
+    content: '💬';
+    font-size: 1rem;
+  }
+`;
+
 const Message = styled(motion.div)`
   display: flex;
   justify-content: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
@@ -228,6 +262,7 @@ const ChatWidget = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [conversationId, setConversationId] = useState(null);
+  const [suggestedQuestions, setSuggestedQuestions] = useState([]);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -294,15 +329,99 @@ const ChatWidget = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, suggestedQuestions]);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
+  // Initialize with suggested questions when opening
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      const context = getPageContext();
+      const initialQuestions = getInitialSuggestedQuestions(context.pageType);
+      setSuggestedQuestions(initialQuestions);
+    }
+  }, [isOpen]);
+
+  // Get initial suggested questions based on page type
+  const getInitialSuggestedQuestions = (pageType) => {
+    const questionsByPage = {
+      home: [
+        "How do I start an assessment?",
+        "What are the 6 pillars?",
+        "How long does it take?",
+        "Can I save and resume later?"
+      ],
+      assessment: [
+        "How do I rate maturity levels?",
+        "What are pain points?",
+        "Can I skip questions?",
+        "How do I save my progress?"
+      ],
+      maturity_report: [
+        "What do my scores mean?",
+        "How can I improve my maturity?",
+        "What are Databricks Recommendations?",
+        "Can I edit this report?"
+      ],
+      executive_dashboard: [
+        "What are Strategic Imperatives?",
+        "How do I use the roadmap?",
+        "Can I present this to executives?",
+        "What are the success metrics?"
+      ],
+      insights_dashboard: [
+        "What metrics are shown here?",
+        "How do I track progress over time?",
+        "Can I compare assessments?",
+        "How do I export this data?"
+      ],
+      industry_benchmarks: [
+        "What do percentile rankings mean?",
+        "How do I compare to industry?",
+        "What's a good percentile?",
+        "How can I improve my ranking?"
+      ],
+      deep_dive: [
+        "What does this page explain?",
+        "What are the 6 pillars in detail?",
+        "What is the maturity framework?",
+        "How is the assessment scored?"
+      ],
+      user_guide: [
+        "How do I get started?",
+        "What features are available?",
+        "Where can I find help?",
+        "How do I troubleshoot issues?"
+      ],
+      dashboard: [
+        "How do I view my assessments?",
+        "How do I start a new assessment?",
+        "Can I export to Excel?",
+        "How do I share assessments?"
+      ],
+      admin: [
+        "How do I manage users?",
+        "How do I assign assessments?",
+        "Can I add custom questions?",
+        "How do I view feedback?"
+      ],
+      pitch_deck: [
+        "What is this assessment about?",
+        "Who should take this assessment?",
+        "What value does it provide?",
+        "How do I get started?"
+      ]
+    };
+
+    return questionsByPage[pageType] || questionsByPage.home;
+  };
+
+  const handleSendMessage = async (e, messageText = null) => {
+    if (e) e.preventDefault();
     
-    if (!inputValue.trim() || isTyping) return;
+    const userMessage = messageText || inputValue.trim();
+    if (!userMessage || isTyping) return;
 
-    const userMessage = inputValue.trim();
     setInputValue('');
+    setSuggestedQuestions([]); // Clear suggestions while processing
 
     // Add user message to UI
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
@@ -330,6 +449,11 @@ const ChatWidget = () => {
       setTimeout(() => {
         setMessages(prev => [...prev, { role: 'assistant', content: response.response }]);
         setIsTyping(false);
+        
+        // Set new suggested questions based on response
+        if (response.suggestedQuestions && response.suggestedQuestions.length > 0) {
+          setSuggestedQuestions(response.suggestedQuestions);
+        }
       }, 500);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -339,6 +463,10 @@ const ChatWidget = () => {
       }]);
       setIsTyping(false);
     }
+  };
+
+  const handleQuestionClick = (question) => {
+    handleSendMessage(null, question);
   };
 
   const handleClose = () => {
@@ -395,8 +523,7 @@ const ChatWidget = () => {
                   <WelcomeIcon>👋</WelcomeIcon>
                   <WelcomeText>
                     Hi! I'm your Databricks Maturity Assessment assistant. 
-                    Ask me anything about getting started, understanding pillars, 
-                    or navigating the assessment!
+                    Click a question below or type your own!
                   </WelcomeText>
                 </WelcomeMessage>
               ) : (
@@ -432,6 +559,25 @@ const ChatWidget = () => {
                     />
                   </TypingIndicator>
                 </Message>
+              )}
+
+              {/* Suggested Questions */}
+              {!isTyping && suggestedQuestions.length > 0 && (
+                <SuggestedQuestions>
+                  {suggestedQuestions.map((question, index) => (
+                    <QuestionButton
+                      key={index}
+                      onClick={() => handleQuestionClick(question)}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {question}
+                    </QuestionButton>
+                  ))}
+                </SuggestedQuestions>
               )}
 
               <div ref={messagesEndRef} />
