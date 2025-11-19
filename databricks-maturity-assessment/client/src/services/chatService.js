@@ -21,13 +21,14 @@ const chatService = {
   },
 
   // Send a message and get AI response
-  async sendMessage(message, conversationId = null, sessionId, userEmail = null) {
+  async sendMessage(message, conversationId = null, sessionId, userEmail = null, context = null) {
     try {
       const response = await axios.post(`${API_URL}/chat/message`, {
         message,
         conversationId,
         sessionId,
-        userEmail
+        userEmail,
+        context
       });
       return response.data;
     } catch (error) {

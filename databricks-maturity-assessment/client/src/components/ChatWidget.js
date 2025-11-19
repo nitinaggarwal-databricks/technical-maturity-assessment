@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMessageCircle, FiX, FiSend, FiMinimize2 } from 'react-icons/fi';
+import { useLocation } from 'react-router-dom';
 import chatService from '../services/chatService';
 
 const ChatButton = styled(motion.button)`
@@ -228,10 +229,64 @@ const ChatWidget = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [conversationId, setConversationId] = useState(null);
   const messagesEndRef = useRef(null);
+  const location = useLocation();
 
   const sessionId = localStorage.getItem('sessionId') || 'anonymous';
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const userEmail = user?.email || null;
+
+  // Get current page context
+  const getPageContext = () => {
+    const path = location.pathname;
+    const search = location.search;
+    
+    // Extract assessment ID from URL if present
+    const assessmentIdMatch = path.match(/\/results\/([^/]+)/);
+    const assessmentId = assessmentIdMatch ? assessmentIdMatch[1] : null;
+    
+    // Determine page type
+    let pageType = 'home';
+    let pageData = {};
+    
+    if (path === '/') {
+      pageType = 'home';
+    } else if (path.startsWith('/assessment')) {
+      pageType = 'assessment';
+      // Try to get current assessment data
+      const currentAssessment = JSON.parse(localStorage.getItem('currentAssessment') || 'null');
+      if (currentAssessment) {
+        pageData = {
+          assessmentId: currentAssessment.id,
+          organization: currentAssessment.organization,
+          progress: currentAssessment.progress
+        };
+      }
+    } else if (path.startsWith('/results')) {
+      pageType = 'maturity_report';
+      pageData = { assessmentId };
+    } else if (path.startsWith('/executive-command-center')) {
+      pageType = 'executive_dashboard';
+      pageData = { assessmentId };
+    } else if (path.startsWith('/insights-dashboard')) {
+      pageType = 'insights_dashboard';
+      pageData = { assessmentId };
+    } else if (path.startsWith('/industry-benchmarks')) {
+      pageType = 'industry_benchmarks';
+      pageData = { assessmentId };
+    } else if (path.startsWith('/deep-dive')) {
+      pageType = 'deep_dive';
+    } else if (path.startsWith('/dashboard')) {
+      pageType = 'dashboard';
+    } else if (path.startsWith('/user-guide')) {
+      pageType = 'user_guide';
+    } else if (path.startsWith('/pitch-deck')) {
+      pageType = 'pitch_deck';
+    } else if (path.startsWith('/admin')) {
+      pageType = 'admin';
+    }
+    
+    return { pageType, pageData, path };
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -254,11 +309,16 @@ const ChatWidget = () => {
     setIsTyping(true);
 
     try {
+      // Get current page context
+      const context = getPageContext();
+      
+      // Send message with context
       const response = await chatService.sendMessage(
         userMessage,
         conversationId,
         sessionId,
-        userEmail
+        userEmail,
+        context
       );
 
       // Update conversation ID if new
