@@ -167,10 +167,49 @@ const MessageBubble = styled.div`
   };
   color: ${props => props.$isUser ? 'white' : '#1e293b'};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  line-height: 1.5;
+  line-height: 1.6;
   font-size: 0.95rem;
   white-space: pre-wrap;
   word-wrap: break-word;
+
+  /* Markdown-style formatting */
+  strong {
+    font-weight: 700;
+    color: ${props => props.$isUser ? 'white' : '#0f172a'};
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  ul, ol {
+    margin: 8px 0;
+    padding-left: 20px;
+  }
+
+  li {
+    margin: 4px 0;
+  }
+
+  code {
+    background: ${props => props.$isUser ? 'rgba(255, 255, 255, 0.2)' : '#f1f5f9'};
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  p:first-child {
+    margin-top: 0;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const ChatInput = styled.form`
@@ -269,6 +308,56 @@ const ChatWidget = () => {
   const sessionId = localStorage.getItem('sessionId') || 'anonymous';
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const userEmail = user?.email || null;
+
+  // Simple Markdown to HTML converter
+  const formatMessage = (text) => {
+    if (!text) return '';
+    
+    let formatted = text;
+    
+    // Bold: **text** -> <strong>text</strong>
+    formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Italic: *text* -> <em>text</em>
+    formatted = formatted.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
+    
+    // Code: `text` -> <code>text</code>
+    formatted = formatted.replace(/`(.+?)`/g, '<code>$1</code>');
+    
+    // Bullet points: • text -> proper list items
+    const lines = formatted.split('\n');
+    let inList = false;
+    const processedLines = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim().startsWith('•')) {
+        if (!inList) {
+          processedLines.push('<ul style="margin: 8px 0; padding-left: 20px;">');
+          inList = true;
+        }
+        processedLines.push(`<li style="margin: 4px 0;">${line.trim().substring(1).trim()}</li>`);
+      } else {
+        if (inList) {
+          processedLines.push('</ul>');
+          inList = false;
+        }
+        processedLines.push(line);
+      }
+    }
+    
+    if (inList) {
+      processedLines.push('</ul>');
+    }
+    
+    formatted = processedLines.join('\n');
+    
+    // Preserve line breaks
+    formatted = formatted.replace(/\n\n/g, '<br/><br/>');
+    formatted = formatted.replace(/\n/g, '<br/>');
+    
+    return formatted;
+  };
 
   // Get current page context
   const getPageContext = () => {
@@ -451,8 +540,18 @@ const ChatWidget = () => {
         setIsTyping(false);
         
         // Set new suggested questions based on response
+        console.log('[ChatWidget] Response:', response);
+        console.log('[ChatWidget] Suggested questions:', response.suggestedQuestions);
+        
         if (response.suggestedQuestions && response.suggestedQuestions.length > 0) {
+          console.log('[ChatWidget] Setting suggested questions:', response.suggestedQuestions);
           setSuggestedQuestions(response.suggestedQuestions);
+        } else {
+          console.log('[ChatWidget] No suggested questions in response, using defaults');
+          // Fallback to page-specific questions if none returned
+          const context = getPageContext();
+          const defaultQuestions = getInitialSuggestedQuestions(context.pageType);
+          setSuggestedQuestions(defaultQuestions);
         }
       }, 500);
     } catch (error) {
@@ -535,9 +634,10 @@ const ChatWidget = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <MessageBubble $isUser={msg.role === 'user'}>
-                      {msg.content}
-                    </MessageBubble>
+                    <MessageBubble 
+                      $isUser={msg.role === 'user'}
+                      dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }}
+                    />
                   </Message>
                 ))
               )}
