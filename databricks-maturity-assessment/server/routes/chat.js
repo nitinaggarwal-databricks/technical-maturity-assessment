@@ -211,51 +211,22 @@ router.get('/conversations', async (req, res) => {
 
 // Helper function to get follow-up questions based on topic and context
 function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData, conversationHistory = []) {
-  // Get recently asked questions to avoid repeating
-  const recentUserMessages = conversationHistory
-    .filter(msg => msg.role === 'user')
-    .slice(-5)
-    .map(msg => msg.content.toLowerCase());
+  // Count how many messages in this conversation
+  const messageCount = conversationHistory.length;
   
-  // Helper to filter out recently asked questions and add variety
-  const getVariedQuestions = (questionPool) => {
-    // Use timestamp-based seed for consistent randomization per second
-    // This ensures different results each time but deterministic for testing
-    const seed = Math.floor(Date.now() / 1000); // Changes every second
-    
-    // Fisher-Yates shuffle with seed
-    const shuffled = [...questionPool];
-    let random = seed;
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      random = (random * 9301 + 49297) % 233280;
-      const j = Math.floor((random / 233280) * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    
-    // Filter out questions that were recently asked
-    const filtered = shuffled.filter(q => {
-      const qLower = q.toLowerCase();
-      // Check against recent user messages
-      const isRecent = recentUserMessages.some(recent => {
-        // Simple substring match - if question appears in recent message or vice versa
-        return qLower.includes(recent.substring(0, 20)) || 
-               recent.includes(qLower.substring(0, 20));
-      });
-      return !isRecent;
-    });
-    
-    console.log('[Questions] Pool size:', questionPool.length);
-    console.log('[Questions] Recent user messages:', recentUserMessages.length);
-    console.log('[Questions] After filtering:', filtered.length);
-    console.log('[Questions] Seed:', seed);
-    
-    // Return 4 questions, preferring filtered ones
-    if (filtered.length >= 4) {
-      return filtered.slice(0, 4);
-    }
-    
-    // If not enough after filtering, use shuffled originals
-    return shuffled.slice(0, 4);
+  // Use message count to rotate through different question sets
+  const rotationIndex = messageCount % 3; // Rotate through 3 different sets
+  
+  console.log('[Questions] Message count:', messageCount);
+  console.log('[Questions] Rotation index:', rotationIndex);
+  console.log('[Questions] User message:', messageLower.substring(0, 50));
+  
+  // Helper to get questions from multiple sets based on rotation
+  const getRotatedQuestions = (set1, set2, set3) => {
+    const sets = [set1, set2, set3];
+    const selected = sets[rotationIndex];
+    console.log('[Questions] Returning set', rotationIndex + 1, ':', selected);
+    return selected;
   };
   // Specific Databricks features mentioned
   if (messageLower.includes('delta lake')) {
@@ -378,30 +349,20 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   
   // Questions about starting/getting started
   if (messageLower.includes('start') || messageLower.includes('begin')) {
-    return getVariedQuestions([
-      "What are the 6 pillars?",
-      "How long does it take?",
-      "What information do I need?",
-      "Can I see a demo?",
-      "Can I save and resume later?",
-      "What are maturity levels?",
-      "Who should take this assessment?",
-      "What will I get from this?"
-    ]);
+    return getRotatedQuestions(
+      ["What are the 6 pillars?", "How long does it take?", "What information do I need?", "Can I see a demo?"],
+      ["Can I save and resume later?", "What are maturity levels?", "Who should take this assessment?", "What will I get from this?"],
+      ["What are the 6 pillars?", "Can I skip questions?", "Is there a sample?", "How is it scored?"]
+    );
   }
   
   // Questions about pillars (general)
   if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('6 pillars')) {
-    return getVariedQuestions([
-      "Tell me about Platform Governance",
-      "Tell me about Data Engineering",
-      "Tell me about Machine Learning",
-      "Tell me about Analytics & BI",
-      "Tell me about Generative AI",
-      "Tell me about Operational Excellence",
-      "What are maturity levels?",
-      "How are pillars scored?"
-    ]);
+    return getRotatedQuestions(
+      ["Tell me about Platform Governance", "Tell me about Data Engineering", "Tell me about Machine Learning", "What are maturity levels?"],
+      ["Tell me about Analytics & BI", "Tell me about Generative AI", "Tell me about Operational Excellence", "How are pillars scored?"],
+      ["Tell me about Data Engineering", "Tell me about Machine Learning", "How do I rate maturity?", "What's the framework?"]
+    );
   }
   
   // Questions about maturity levels/scores
