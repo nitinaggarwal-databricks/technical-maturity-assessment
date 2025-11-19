@@ -219,27 +219,34 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   
   // Helper to filter out recently asked questions and add variety
   const getVariedQuestions = (questionPool) => {
+    // Always shuffle first for maximum variety
+    const shuffled = [...questionPool].sort(() => Math.random() - 0.5);
+    
     // Filter out questions similar to recent ones
-    const filtered = questionPool.filter(q => {
+    const filtered = shuffled.filter(q => {
       const qLower = q.toLowerCase();
       return !recentUserMessages.some(recent => {
-        // Check if question is too similar to recent message
-        const similarity = qLower.includes(recent.substring(0, 15)) || 
-                          recent.includes(qLower.substring(0, 15));
-        return similarity;
+        // Check if question is too similar to recent message (more strict matching)
+        const qWords = qLower.split(' ').filter(w => w.length > 3);
+        const recentWords = recent.split(' ').filter(w => w.length > 3);
+        
+        // If 3+ words match, consider it similar
+        const matchCount = qWords.filter(w => recentWords.includes(w)).length;
+        return matchCount >= 3;
       });
     });
     
-    // If we filtered out too many, add some back
+    console.log('[Questions] Pool size:', questionPool.length);
+    console.log('[Questions] Recent messages:', recentUserMessages);
+    console.log('[Questions] Filtered to:', filtered.length);
+    console.log('[Questions] Returning:', filtered.slice(0, 4));
+    
+    // If we filtered out too many, return shuffled originals
     if (filtered.length < 4) {
-      // Add questions from the pool that weren't filtered
-      const remaining = questionPool.filter(q => !filtered.includes(q));
-      return [...filtered, ...remaining].slice(0, 4);
+      return shuffled.slice(0, 4);
     }
     
-    // Shuffle for variety
-    const shuffled = filtered.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 4);
+    return filtered.slice(0, 4);
   };
   // Specific Databricks features mentioned
   if (messageLower.includes('delta lake')) {
