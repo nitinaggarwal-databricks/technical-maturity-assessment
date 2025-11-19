@@ -219,34 +219,43 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   
   // Helper to filter out recently asked questions and add variety
   const getVariedQuestions = (questionPool) => {
-    // Always shuffle first for maximum variety
-    const shuffled = [...questionPool].sort(() => Math.random() - 0.5);
+    // Use timestamp-based seed for consistent randomization per second
+    // This ensures different results each time but deterministic for testing
+    const seed = Math.floor(Date.now() / 1000); // Changes every second
     
-    // Filter out questions similar to recent ones
+    // Fisher-Yates shuffle with seed
+    const shuffled = [...questionPool];
+    let random = seed;
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      random = (random * 9301 + 49297) % 233280;
+      const j = Math.floor((random / 233280) * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // Filter out questions that were recently asked
     const filtered = shuffled.filter(q => {
       const qLower = q.toLowerCase();
-      return !recentUserMessages.some(recent => {
-        // Check if question is too similar to recent message (more strict matching)
-        const qWords = qLower.split(' ').filter(w => w.length > 3);
-        const recentWords = recent.split(' ').filter(w => w.length > 3);
-        
-        // If 3+ words match, consider it similar
-        const matchCount = qWords.filter(w => recentWords.includes(w)).length;
-        return matchCount >= 3;
+      // Check against recent user messages
+      const isRecent = recentUserMessages.some(recent => {
+        // Simple substring match - if question appears in recent message or vice versa
+        return qLower.includes(recent.substring(0, 20)) || 
+               recent.includes(qLower.substring(0, 20));
       });
+      return !isRecent;
     });
     
     console.log('[Questions] Pool size:', questionPool.length);
-    console.log('[Questions] Recent messages:', recentUserMessages);
-    console.log('[Questions] Filtered to:', filtered.length);
-    console.log('[Questions] Returning:', filtered.slice(0, 4));
+    console.log('[Questions] Recent user messages:', recentUserMessages.length);
+    console.log('[Questions] After filtering:', filtered.length);
+    console.log('[Questions] Seed:', seed);
     
-    // If we filtered out too many, return shuffled originals
-    if (filtered.length < 4) {
-      return shuffled.slice(0, 4);
+    // Return 4 questions, preferring filtered ones
+    if (filtered.length >= 4) {
+      return filtered.slice(0, 4);
     }
     
-    return filtered.slice(0, 4);
+    // If not enough after filtering, use shuffled originals
+    return shuffled.slice(0, 4);
   };
   // Specific Databricks features mentioned
   if (messageLower.includes('delta lake')) {
