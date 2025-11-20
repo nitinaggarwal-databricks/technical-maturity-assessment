@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 80px 0 20px 0;
+  padding: 80px 0 10px 0;
   overflow-x: hidden;
   
   @media print {
@@ -232,16 +232,16 @@ const PrintButton = styled.button`
 
 const HeroSection = styled.div`
   max-width: 1400px;
-  margin: 0 auto 40px auto;
-  padding: 40px 40px 0 40px;
+  margin: 0 auto 20px auto;
+  padding: 20px 40px 0 40px;
   text-align: center;
   color: white;
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   line-height: 1.2;
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
   -webkit-background-clip: text;
@@ -254,12 +254,12 @@ const HeroTitle = styled.h1`
 `;
 
 const HeroSubtitle = styled.p`
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.95);
   max-width: 900px;
   margin: 0 auto;
-  line-height: 1.5;
+  line-height: 1.4;
   
   @media (max-width: 768px) {
     font-size: 1rem;
@@ -295,10 +295,10 @@ const ContentSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   color: white;
   
   @media (max-width: 768px) {
@@ -403,7 +403,7 @@ const CardListItem = styled.li`
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 15px;
   margin: 0;
 `;
 
@@ -411,7 +411,7 @@ const StatCard = styled.div`
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: 25px;
+  padding: 20px;
   text-align: center;
   border: 2px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;

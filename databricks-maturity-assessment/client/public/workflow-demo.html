@@ -154,6 +154,37 @@
             transform: translateY(-50%) scale(0.98);
         }
 
+        .exit-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .exit-btn:hover {
+            opacity: 1 !important;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .demo-container:hover .exit-btn {
+            opacity: 0.7;
+        }
+
         .nav-btn:disabled {
             opacity: 0.3;
             cursor: not-allowed;
@@ -592,6 +623,10 @@
 </head>
 <body>
     <div class="container">
+        <button class="exit-btn" onclick="window.location.href='/'" title="Exit Demo">
+            ✕
+        </button>
+        
         <div class="header">
             <h1>🚀 Databricks Maturity Assessment</h1>
             <p>Interactive Workflow Demo - See How It Works</p>
