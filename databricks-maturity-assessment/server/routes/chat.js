@@ -239,26 +239,33 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
     const sets = [set1, set2, set3];
     let selected = sets[rotationIndex];
     
-    // Filter out questions too similar to the current user message
-    const userMessageWords = messageLower.split(' ').filter(w => w.length > 3);
+    // Filter out questions that are EXACTLY or VERY similar to what user just asked
+    const userMessageNormalized = messageLower.replace(/[?!.,]/g, '').trim();
     const filtered = selected.filter(q => {
-      const qWords = q.toLowerCase().split(' ').filter(w => w.length > 3);
-      const matchCount = qWords.filter(w => userMessageWords.includes(w)).length;
-      // If 2+ words match, it's too similar
-      return matchCount < 2;
+      const qNormalized = q.toLowerCase().replace(/[?!.,]/g, '').trim();
+      // Exact match or very high similarity (>80% of words match)
+      if (qNormalized === userMessageNormalized) return false;
+      
+      const userWords = userMessageNormalized.split(' ').filter(w => w.length > 3);
+      const qWords = qNormalized.split(' ').filter(w => w.length > 3);
+      const matchCount = qWords.filter(w => userWords.includes(w)).length;
+      const similarity = matchCount / Math.max(userWords.length, qWords.length);
+      
+      // Only filter if >70% similar
+      return similarity < 0.7;
     });
     
     // If we filtered out too many, try next set
     if (filtered.length < 3) {
       const nextIndex = (rotationIndex + 1) % 3;
       selected = sets[nextIndex];
-      console.log('[Questions] Switched to set', nextIndex + 1, 'due to similarity');
+      console.log('[Questions] Switched to set', nextIndex + 1, 'due to similarity filtering');
     } else {
       selected = filtered;
     }
     
-    console.log('[Questions] User asked:', messageLower.substring(0, 40));
-    console.log('[Questions] Returning set', rotationIndex + 1, ':', selected);
+    console.log('[Questions] User asked:', messageLower.substring(0, 50));
+    console.log('[Questions] Returning', selected.length, 'questions:', selected);
     return selected.slice(0, 4);
   };
   // Specific Databricks features mentioned
