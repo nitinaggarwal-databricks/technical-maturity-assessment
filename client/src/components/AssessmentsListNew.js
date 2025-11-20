@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
+import excelService from '../services/excelService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
 
 // =======================
@@ -628,6 +629,8 @@ const AssessmentsListNew = () => {
   const [industryFilter, setIndustryFilter] = useState('all');
   const [completionRangeFilter, setCompletionRangeFilter] = useState('all');
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [uploadingExcel, setUploadingExcel] = useState(null); // Track which assessment is being uploaded
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     fetchAssessments();
@@ -734,6 +737,99 @@ const AssessmentsListNew = () => {
     } catch (error) {
       console.error('Error deleting assessment:', error);
       
+    }
+  };
+
+  // Handle Excel Export
+  const handleExportToExcel = async (assessment, e) => {
+    e?.stopPropagation();
+    
+    try {
+      toast.loading(`Generating Excel file for ${assessment.assessment_name}...`, { id: 'excel-export' });
+      
+      const blob = await excelService.exportAssessment(assessment.id);
+      const fileName = `${assessment.assessment_name || 'Assessment'}_${assessment.id}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      excelService.downloadFile(blob, fileName);
+      
+      toast.success(`✅ Excel file downloaded successfully!`, { id: 'excel-export' });
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      toast.error(`Failed to export: ${error.message}`, { id: 'excel-export' });
+    }
+  };
+
+  // Handle Excel Import
+  const handleImportFromExcel = async (assessment, e) => {
+    e?.stopPropagation();
+    setUploadingExcel(assessment.id);
+    
+    // Trigger file input click
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('data-assessment-id', assessment.id);
+      fileInputRef.current.click();
+    }
+  };
+
+  // Handle file selection
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    const assessmentId = e.target.getAttribute('data-assessment-id');
+    
+    if (!file || !assessmentId) {
+      setUploadingExcel(null);
+      return;
+    }
+    
+    // Validate file type
+    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      toast.error('Please upload a valid Excel file (.xlsx or .xls)');
+      setUploadingExcel(null);
+      e.target.value = ''; // Reset input
+      return;
+    }
+    
+    try {
+      toast.loading(`Importing Excel file...`, { id: 'excel-import' });
+      
+      const result = await excelService.importAssessment(assessmentId, file);
+      
+      toast.success(
+        `✅ ${result.message}\n${result.stats.updated} questions updated`,
+        { id: 'excel-import', duration: 5000 }
+      );
+      
+      // Clear any cached assessment data in localStorage
+      const currentAssessmentKey = `assessment_${assessmentId}`;
+      if (localStorage.getItem(currentAssessmentKey)) {
+        localStorage.removeItem(currentAssessmentKey);
+      }
+      
+      // Refresh assessments list
+      await fetchAssessments();
+      
+      // Show a helpful message if user has the assessment open
+      setTimeout(() => {
+        toast.success(
+          '💡 If you have this assessment open in another tab, refresh the page to see your changes.',
+          { duration: 7000 }
+        );
+      }, 500);
+      
+      // Show detailed error report if there are errors
+      if (result.errors && result.errors.length > 0) {
+        console.warn('Import errors:', result.errors);
+        toast.error(
+          `⚠️ ${result.errors.length} row(s) had issues. Check console for details.`,
+          { duration: 5000 }
+        );
+      }
+    } catch (error) {
+      console.error('Error importing Excel:', error);
+      toast.error(`Failed to import: ${error.message}`, { id: 'excel-import' });
+    } finally {
+      setUploadingExcel(null);
+      e.target.value = ''; // Reset input
     }
   };
 
@@ -1164,16 +1260,30 @@ const AssessmentsListNew = () => {
                           console.log(`[AssessmentsListNew] Edit clicked, navigating to: /assessment/${assessmentId}/platform_governance`);
                           navigate(`/assessment/${assessmentId}/platform_governance`);
                         }}
+                        title="Edit assessment"
                       >
                         <FiEdit2 />
-                        Edit
+                      </ActionButton>
+                      <ActionButton
+                        onClick={(e) => handleExportToExcel(assessment, e)}
+                        title="Download as Excel"
+                        style={{ color: '#10b981' }}
+                      >
+                        <FiDownload />
+                      </ActionButton>
+                      <ActionButton
+                        onClick={(e) => handleImportFromExcel(assessment, e)}
+                        title="Upload Excel to update"
+                        style={{ color: '#3b82f6' }}
+                        disabled={uploadingExcel === assessmentId}
+                      >
+                        <FiUpload />
                       </ActionButton>
                       <ActionButton
                         onClick={(e) => handleCloneAssessment(assessment, e)}
                         title="Clone this assessment"
                       >
                         <FiCopy />
-                        Clone
                       </ActionButton>
                       <ActionButton
                         onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessment_name, e)}
@@ -1181,7 +1291,6 @@ const AssessmentsListNew = () => {
                         style={{ color: '#ef4444' }}
                       >
                         <FiTrash2 />
-                        Delete
                       </ActionButton>
                       <ActionButton
                         className="primary"
@@ -1197,7 +1306,6 @@ const AssessmentsListNew = () => {
                         title={progress === 0 || status === 'not_started' ? 'Complete at least one pillar to view report' : 'View assessment report'}
                       >
                         <FiStar />
-                        View Report
                       </ActionButton>
                     </div>
                   </div>
@@ -1283,6 +1391,15 @@ const AssessmentsListNew = () => {
           </div>
         </div>
       )}
+      
+      {/* Hidden file input for Excel upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx,.xls"
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+      />
     </PageContainer>
   );
 };

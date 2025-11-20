@@ -2,8 +2,10 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiChevronLeft, FiChevronRight, FiPlay } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiArrowUp, FiArrowDown, FiX, FiChevronLeft, FiChevronRight, FiPlay, FiPrinter } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import Footer from './Footer';
 
 // =======================
@@ -148,33 +150,42 @@ const PageHeader = styled.div`
 // Slideshow/Presentation Mode Styles
 const PresentationButton = styled(motion.button)`
   position: fixed;
-  bottom: 32px;
+  top: 100px;
   right: 32px;
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
   border: none;
-  padding: 16px 24px;
-  border-radius: 12px;
+  padding: 14px 28px;
+  border-radius: 16px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
   display: flex;
   align-items: center;
-  gap: 12px;
-  z-index: 999;
+  gap: 10px;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 999;
 
   &:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
   }
 
-  @media (max-width: 768px) {
-    bottom: 16px;
-    right: 16px;
+  @media (max-width: 1024px) {
+    top: 90px;
+    right: 24px;
     padding: 12px 20px;
     font-size: 14px;
+  }
+  
+  @media (max-width: 768px) {
+    top: 80px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 `;
 
@@ -191,6 +202,159 @@ const SlideshowOverlay = styled(motion.div)`
   justify-content: center;
 `;
 
+// Define these components first so SlideContainer can reference them
+const SlideCounter = styled.div`
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+    padding: 10px 16px;
+    bottom: 24px;
+    right: 24px;
+  }
+`;
+
+const ExitButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1;
+  z-index: 10002;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+  
+  @media (max-width: 768px) {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+const PrintButton = styled(motion.button)`
+  position: absolute;
+  top: 20px;
+  right: 90px;
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  z-index: 10002;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+    background: rgba(34, 197, 94, 1);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.6);
+  }
+
+  @media (max-width: 768px) {
+    top: 16px;
+    right: 70px;
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+const ClickArea = styled.div`
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
+  z-index: 1;
+  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
+`;
+
+const NavigationButton = styled(motion.button)`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${props => props.$direction === 'left' ? 'left: 32px;' : 'right: 32px;'}
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-50%) scale(1);
+    }
+  }
+`;
+
 const SlideContainer = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -202,19 +366,44 @@ const SlideContainer = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
+
+  &:hover ${NavigationButton} {
+    opacity: 1;
+  }
+
+  &:hover ${SlideCounter} {
+    opacity: 1;
+  }
+
+  &:hover ${ExitButton} {
+    opacity: 1;
+  }
+
+  &:hover ${PrintButton} {
+    opacity: 1;
+  }
 `;
 
 const SlideContent = styled(motion.div)`
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 75px;
+  left: 95px;
+  right: 95px;
+  bottom: 90px;
   background: transparent;
-  padding: 80px 60px 120px 60px;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
-    padding: 60px 32px 100px 32px;
+    top: 70px;
+    left: 80px;
+    right: 80px;
+    bottom: 80px;
   }
   
   @media print {
@@ -267,113 +456,6 @@ const NavButton = styled(motion.button)`
   @media (max-width: 768px) {
     padding: 10px 16px;
     font-size: 14px;
-  }
-`;
-
-const SlideCounter = styled.div`
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  
-  @media (max-width: 768px) {
-    font-size: 16px;
-    padding: 10px 16px;
-  }
-`;
-
-const ExitButton = styled(motion.button)`
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  background: rgba(239, 68, 68, 0.9);
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 300;
-  line-height: 1;
-  z-index: 10002;
-  opacity: 0.4;
-  transition: all 0.3s ease;
-  pointer-events: auto;
-
-  &:hover {
-    opacity: 1;
-    transform: scale(1.15);
-    background: rgba(239, 68, 68, 1);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
-  }
-  
-  @media (max-width: 768px) {
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-  }
-`;
-
-const ClickArea = styled.div`
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  cursor: ${props => props.$direction === 'left' ? 'w-resize' : 'e-resize'};
-  z-index: 1;
-  ${props => props.$direction === 'left' ? 'left: 0;' : 'right: 0;'}
-`;
-
-const NavigationButton = styled(motion.button)`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  ${props => props.$direction === 'left' ? 'left: 32px;' : 'right: 32px;'}
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid rgba(59, 130, 246, 0.3);
-  color: #3b82f6;
-  font-size: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-    transform: translateY(-50%) scale(1.1);
-  }
-  
-  &:active {
-    transform: translateY(-50%) scale(0.95);
-  }
-  
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.95);
-      color: #3b82f6;
-      border-color: rgba(59, 130, 246, 0.3);
-      transform: translateY(-50%) scale(1);
-    }
   }
 `;
 
@@ -1773,6 +1855,11 @@ const DeepDive = () => {
   // Define slides - combining sections to maximize space
   const slides = [
     {
+      id: 'title',
+      title: 'Deep Dive Analysis',
+      type: 'title'
+    },
+    {
       id: 'objectives',
       title: 'Strategic Objectives',
       type: 'single'
@@ -1879,6 +1966,92 @@ const DeepDive = () => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
     }
+  };
+
+  const handlePrintSlideshow = async () => {
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'px',
+      format: 'letter'
+    });
+
+    const totalSlides = slides.length;
+    
+    for (let i = 0; i < totalSlides; i++) {
+      setCurrentSlide(i);
+      
+      // Wait longer for animations and content to render
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Additional delay for DOM update
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Find all elements to hide during screenshot
+      const elementsToHide = document.querySelectorAll('[data-hide-on-print="true"]');
+      
+      // Store original display values and hide elements
+      const originalDisplayValues = Array.from(elementsToHide).map(el => {
+        const originalDisplay = el.style.display;
+        el.style.display = 'none';
+        return originalDisplay;
+      });
+
+      // Temporarily hide body overflow and scrollbars
+      const originalOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+
+      // Scroll to top to ensure we capture from the beginning
+      window.scrollTo(0, 0);
+
+      // Wait a bit more after hiding elements
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Capture the full viewport
+      const canvas = await html2canvas(document.body, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#1e3a8a',
+        logging: false,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
+        scrollX: 0,
+        scrollY: 0,
+        foreignObjectRendering: true
+      });
+
+      // Restore body overflow
+      document.body.style.overflow = originalOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+
+      // Restore original display values
+      elementsToHide.forEach((el, index) => {
+        el.style.display = originalDisplayValues[index];
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+
+      // Calculate dimensions to maintain aspect ratio
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = (pdfHeight - imgHeight * ratio) / 2;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    }
+
+    pdf.save('deep-dive-presentation.pdf');
   };
 
   // Keyboard navigation for slideshow
@@ -4032,6 +4205,18 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
           </div>
           
         </PageHeader>
+        
+        {/* Floating Start Slideshow Button */}
+        {!presentationMode && (
+          <PresentationButton
+            onClick={startPresentation}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FiPlay size={18} />
+            Slideshow
+          </PresentationButton>
+        )}
 
         {/* Objectives Section */}
         <Section order={sectionOrder.indexOf('objectives')}>
@@ -5101,18 +5286,6 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
         )}
       </AnimatePresence>
 
-      {/* Presentation Mode Button */}
-      {!presentationMode && (
-        <PresentationButton
-          onClick={startPresentation}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <FiPlay size={20} />
-          Start Slideshow
-        </PresentationButton>
-      )}
-
       {/* Slideshow/Presentation Mode */}
       <AnimatePresence>
         {presentationMode && (
@@ -5122,11 +5295,12 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
             exit={{ opacity: 0 }}
           >
             <SlideContainer>
-              <ClickArea $direction="left" onClick={previousSlide} />
-              <ClickArea $direction="right" onClick={nextSlide} />
+              <ClickArea data-hide-on-print="true" $direction="left" onClick={previousSlide} />
+              <ClickArea data-hide-on-print="true" $direction="right" onClick={nextSlide} />
               
               {/* Navigation Buttons - Show on hover */}
               <NavigationButton
+                data-hide-on-print="true"
                 $direction="left"
                 onClick={previousSlide}
                 disabled={currentSlide === 0}
@@ -5136,6 +5310,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
               </NavigationButton>
               
               <NavigationButton
+                data-hide-on-print="true"
                 $direction="right"
                 onClick={nextSlide}
                 whileTap={{ scale: 0.9 }}
@@ -5143,18 +5318,32 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 →
               </NavigationButton>
               
-              <SlideHeading>{slides[currentSlide].title}</SlideHeading>
-              <SlideCounter style={{ position: 'absolute', bottom: '20px', right: '60px', color: 'white' }}>
+              {slides[currentSlide].id !== 'thank-you' && slides[currentSlide].id !== 'title' && (
+                <SlideHeading>{slides[currentSlide].title}</SlideHeading>
+              )}
+              <SlideCounter 
+                data-hide-on-print="true"
+              >
                 {currentSlide + 1} / {slides.length}
               </SlideCounter>
               
               <ExitButton
+                data-hide-on-print="true"
                 onClick={exitPresentation}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 ×
               </ExitButton>
+
+              <PrintButton
+                data-hide-on-print="true"
+                onClick={handlePrintSlideshow}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <FiPrinter size={20} />
+              </PrintButton>
               
               <SlideContent
                 key={currentSlide}
@@ -5162,91 +5351,96 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
-                style={{ overflow: 'auto' }}
               >
 
                 {/* Slide 1: Strategic Objectives */}
                 {slides[currentSlide].id === 'objectives' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '20px', paddingBottom: '10px', height: '100%', alignContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', justifyContent: 'space-evenly' }}>
-                      {objectives.map((obj) => (
-                        <div key={obj.id} style={{ 
-                          background: 'white',
-                          borderRadius: '12px',
-                          border: `3px solid ${obj.borderColor}`,
-                          padding: '20px',
-                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                          flex: 1,
+                  <div style={{ 
+                    width: '100%', 
+                    maxWidth: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '18px',
+                    padding: '0',
+                    marginTop: '0',
+                    height: '100%'
+                  }}>
+                    {objectives.map((obj) => (
+                      <div key={obj.id} style={{ 
+                        background: 'white',
+                        borderRadius: '16px',
+                        border: `4px solid ${obj.borderColor}`,
+                        padding: '24px 32px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1
+                      }}>
+                        <div style={{ 
                           display: 'flex',
-                          flexDirection: 'column',
-                          minHeight: 0
+                          alignItems: 'center',
+                          marginBottom: '14px',
+                          paddingBottom: '12px',
+                          borderBottom: `3px solid ${obj.borderColor}`
                         }}>
-                          <div style={{ 
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginBottom: '14px',
-                            paddingBottom: '10px',
-                            borderBottom: `2px solid ${obj.borderColor}`
+                          <span style={{ fontSize: '2.4rem', marginRight: '16px' }}>{obj.icon}</span>
+                          <h3 style={{ 
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            color: '#1e293b',
+                            margin: 0,
+                            lineHeight: 1.3
                           }}>
-                            <span style={{ fontSize: '2.2rem', marginRight: '12px' }}>{obj.icon}</span>
-                            <h3 style={{ 
-                              fontSize: '1.35rem',
-                              fontWeight: 700,
-                              color: '#1e293b',
-                              margin: 0,
-                              lineHeight: 1.3
-                            }}>
-                              {obj.title}
-                            </h3>
-                          </div>
-                          <div style={{ 
-                            fontSize: '1.1rem',
-                            lineHeight: '1.55',
-                            color: '#475569',
-                            flex: 1,
-                            overflow: 'auto'
-                          }}>
-                            {obj.content || 'No content available'}
-                          </div>
+                            {obj.title}
+                          </h3>
                         </div>
-                      ))}
-                    </div>
-                  </SlideGrid>
+                        <div style={{ 
+                          fontSize: '1.15rem',
+                          lineHeight: '1.6',
+                          color: '#475569'
+                        }}>
+                          {obj.content || 'No content available'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
 
                 {/* Slide 2: Category Structure - Part 1 (First 3 Categories) */}
                 {slides[currentSlide].id === 'categories-1' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '20px', gap: '14px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '0', gap: '14px', width: '100%', height: '100%', display: 'grid' }}>
                     {categories.slice(0, 3).map((cat) => (
-                      <CompactCard key={cat.id} $color={cat.color}>
+                      <CompactCard key={cat.id} $color={cat.color} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '16px', 
+                          padding: '20px', 
                           borderRadius: '10px 10px 0 0',
-                          marginBottom: '12px',
-                          marginTop: '-12px',
-                          marginLeft: '-12px',
-                          marginRight: '-12px'
+                          marginBottom: '16px',
+                          marginTop: '-16px',
+                          marginLeft: '-16px',
+                          marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '10px', fontSize: '1.2rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '0.95rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.4rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1.05rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
-                        <div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly' }}>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '10px', 
-                              padding: '8px 0',
+                              justifyContent: 'center',
+                              gap: '14px', 
+                              padding: '12px 0',
+                              flex: 1,
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '38px',
+                                height: '38px',
                                 borderRadius: '7px',
                                 background: cat.bgColor,
                                 color: 'white',
@@ -5254,17 +5448,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.05rem',
+                                fontSize: '1.2rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1rem', 
+                                fontSize: '1.1rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
-                                lineHeight: '1.35'
+                                lineHeight: '1.4'
                               }}>
                                 {subCat.name}
                               </div>
@@ -5278,37 +5472,39 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Category Structure - Part 2 (Last 3 Categories) */}
                 {slides[currentSlide].id === 'categories-2' && (
-                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '20px', gap: '14px' }}>
+                  <SlideGrid $columns="repeat(3, 1fr)" style={{ paddingTop: '0', gap: '14px', width: '100%', height: '100%', display: 'grid' }}>
                     {categories.slice(3, 6).map((cat) => (
-                      <CompactCard key={cat.id} $color={cat.color}>
+                      <CompactCard key={cat.id} $color={cat.color} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <div style={{ 
                           background: cat.bgColor, 
                           color: 'white', 
-                          padding: '16px', 
+                          padding: '20px', 
                           borderRadius: '10px 10px 0 0',
-                          marginBottom: '12px',
-                          marginTop: '-12px',
-                          marginLeft: '-12px',
-                          marginRight: '-12px'
+                          marginBottom: '16px',
+                          marginTop: '-16px',
+                          marginLeft: '-16px',
+                          marginRight: '-16px'
                         }}>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '8px', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '10px', textTransform: 'uppercase' }}>
                             {cat.label}
                           </div>
-                          <h4 style={{ color: 'white', marginBottom: '10px', fontSize: '1.2rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
-                          <p style={{ fontSize: '0.95rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
+                          <h4 style={{ color: 'white', marginBottom: '12px', fontSize: '1.4rem', fontWeight: 700, lineHeight: 1.3 }}>{cat.title}</h4>
+                          <p style={{ fontSize: '1.05rem', opacity: 1, lineHeight: '1.5', color: 'rgba(255, 255, 255, 0.95)' }}>{cat.description}</p>
                         </div>
-                        <div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly' }}>
                           {cat.subCategories && cat.subCategories.map((subCat, idx) => (
                             <div key={idx} style={{ 
                               display: 'flex', 
                               alignItems: 'center', 
-                              gap: '10px', 
-                              padding: '8px 0',
+                              justifyContent: 'center',
+                              gap: '14px', 
+                              padding: '12px 0',
+                              flex: 1,
                               borderBottom: idx < cat.subCategories.length - 1 ? '1px solid #e2e8f0' : 'none'
                             }}>
                               <div style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '38px',
+                                height: '38px',
                                 borderRadius: '7px',
                                 background: cat.bgColor,
                                 color: 'white',
@@ -5316,17 +5512,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontWeight: 700,
-                                fontSize: '1.05rem',
+                                fontSize: '1.2rem',
                                 flexShrink: 0
                               }}>
                                 {subCat.letter}
                               </div>
                               <div style={{ 
-                                fontSize: '1rem', 
+                                fontSize: '1.1rem', 
                                 color: '#1e293b',
                                 fontWeight: 600,
                                 flex: 1,
-                                lineHeight: '1.35'
+                                lineHeight: '1.4'
                               }}>
                                 {subCat.name}
                               </div>
@@ -5340,23 +5536,24 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 3: Technical Success Plan - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '6px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '100%' }}>
                       {technicalSuccessPlan.slice(0, 3).map((plan) => (
                         <div key={plan.id} style={{ 
-                          border: `3px solid ${plan.color}`,
-                          borderRadius: '10px',
+                          border: `4px solid ${plan.color}`,
+                          borderRadius: '12px',
                           overflow: 'hidden',
                           background: 'white',
                           display: 'flex',
-                          flexDirection: 'column'
+                          flexDirection: 'column',
+                          flex: 1
                         }}>
                           <div style={{ 
                             background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
                             color: 'white',
-                            padding: 'clamp(10px, 1.2vh, 14px) clamp(14px, 1.6vw, 20px)',
+                            padding: 'clamp(14px, 1.6vh, 20px) clamp(18px, 2vw, 26px)',
                             fontWeight: 700,
-                            fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)'
+                            fontSize: 'clamp(1rem, 1.4vw, 1.5rem)'
                           }}>
                             {plan.category}
                           </div>
@@ -5366,16 +5563,16 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             gap: '0'
                           }}>
                             <div style={{ 
-                              padding: 'clamp(12px, 1.6vh, 18px)',
+                              padding: 'clamp(16px, 2vh, 24px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1.05rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: 'clamp(8px, 1vh, 12px)',
+                                marginBottom: 'clamp(10px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5383,23 +5580,23 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.8rem, 0.95vw, 1.05rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.need || 'No need defined'}
                               </div>
                             </div>
                             <div style={{ 
-                              padding: 'clamp(12px, 1.6vh, 18px)',
+                              padding: 'clamp(16px, 2vh, 24px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1.05rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: 'clamp(8px, 1vh, 12px)',
+                                marginBottom: 'clamp(10px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5407,26 +5604,26 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <ul style={{ 
                                 margin: 0,
-                                paddingLeft: 'clamp(16px, 1.8vw, 22px)',
+                                paddingLeft: 'clamp(18px, 2vw, 26px)',
                                 color: '#475569',
-                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.8rem, 0.95vw, 1.05rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
-                                  <li key={idx} style={{ marginBottom: 'clamp(4px, 0.6vh, 6px)' }}>{activity}</li>
+                                  <li key={idx} style={{ marginBottom: 'clamp(5px, 0.7vh, 9px)' }}>{activity}</li>
                                 ))}
                               </ul>
                             </div>
                             <div style={{ 
-                              padding: 'clamp(12px, 1.6vh, 18px)',
+                              padding: 'clamp(16px, 2vh, 24px)',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1vw, 1.15rem)',
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1.05rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: 'clamp(8px, 1vh, 12px)',
+                                marginBottom: 'clamp(10px, 1.2vh, 14px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5434,8 +5631,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: 'clamp(0.85rem, 1vw, 1.1rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.8rem, 0.95vw, 1.05rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
                               </div>
@@ -5449,8 +5646,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 4: Technical Success Plan - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'success-plan-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '15px', paddingBottom: '10px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
                       {technicalSuccessPlan.slice(3, 6).map((plan) => (
                         <div key={plan.id} style={{ 
                           border: `4px solid ${plan.color}`,
@@ -5458,14 +5655,15 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           overflow: 'visible',
                           background: 'white',
                           display: 'flex',
-                          flexDirection: 'column'
+                          flexDirection: 'column',
+                          flex: 1
                         }}>
                           <div style={{ 
                             background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)`,
                             color: 'white',
-                            padding: 'clamp(10px, 1.5vh, 18px) clamp(16px, 2vw, 24px)',
+                            padding: 'clamp(8px, 1.2vh, 14px) clamp(12px, 1.5vw, 18px)',
                             fontWeight: 700,
-                            fontSize: 'clamp(1.2rem, 1.8vw, 2rem)'
+                            fontSize: 'clamp(0.95rem, 1.4vw, 1.5rem)'
                           }}>
                             {plan.category}
                           </div>
@@ -5475,16 +5673,16 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             gap: '0'
                           }}>
                             <div style={{ 
-                              padding: 'clamp(14px, 2vh, 26px)',
+                              padding: 'clamp(10px, 1.5vh, 18px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
+                                fontSize: 'clamp(0.7rem, 0.9vw, 1rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: 'clamp(8px, 1.2vh, 14px)',
+                                marginBottom: 'clamp(6px, 0.8vh, 10px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5492,20 +5690,20 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.need || 'No need defined'}
                               </div>
                             </div>
                             <div style={{ 
-                              padding: 'clamp(14px, 2vh, 26px)',
+                              padding: 'clamp(10px, 1.5vh, 18px)',
                               borderRight: '2px solid #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
+                                fontSize: 'clamp(0.7rem, 0.9vw, 1rem)',
                                 fontWeight: 700,
                                 color: plan.color,
                                 marginBottom: 'clamp(8px, 1.2vh, 14px)',
@@ -5516,26 +5714,26 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <ul style={{ 
                                 margin: 0,
-                                paddingLeft: 'clamp(18px, 2vw, 26px)',
+                                paddingLeft: 'clamp(14px, 1.5vw, 20px)',
                                 color: '#475569',
-                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.activities && plan.activities.map((activity, idx) => (
-                                  <li key={idx} style={{ marginBottom: 'clamp(5px, 0.7vh, 9px)' }}>{activity}</li>
+                                  <li key={idx} style={{ marginBottom: 'clamp(4px, 0.5vh, 7px)' }}>{activity}</li>
                                 ))}
                               </ul>
                             </div>
                             <div style={{ 
-                              padding: 'clamp(14px, 2vh, 26px)',
+                              padding: 'clamp(10px, 1.5vh, 18px)',
                               display: 'flex',
                               flexDirection: 'column'
                             }}>
                               <h4 style={{ 
-                                fontSize: 'clamp(0.85rem, 1.1vw, 1.3rem)',
+                                fontSize: 'clamp(0.7rem, 0.9vw, 1rem)',
                                 fontWeight: 700,
                                 color: plan.color,
-                                marginBottom: 'clamp(8px, 1.2vh, 14px)',
+                                marginBottom: 'clamp(6px, 0.8vh, 10px)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.05em'
                               }}>
@@ -5543,8 +5741,8 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                               </h4>
                               <div style={{ 
                                 color: '#475569',
-                                fontSize: 'clamp(0.9rem, 1.15vw, 1.25rem)',
-                                lineHeight: '1.5'
+                                fontSize: 'clamp(0.75rem, 0.95vw, 1rem)',
+                                lineHeight: '1.4'
                               }}>
                                 {plan.outcome || 'No outcome defined'}
                               </div>
@@ -5558,45 +5756,52 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 5: Engagement & Enablement Plan */}
                 {slides[currentSlide].id === 'engagement-plan' && (
-                  <SlideGrid $columns="1fr">
-                    <div>
+                  <SlideGrid $columns="1fr" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <div style={{ 
-                        border: '2px solid #e2e8f0',
-                        borderRadius: '12px',
+                        border: '3px solid #e2e8f0',
+                        borderRadius: '14px',
                         overflow: 'hidden',
-                        background: 'white'
+                        background: 'white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1
                       }}>
                         <div style={{ 
                           display: 'grid',
                           gridTemplateColumns: 'repeat(3, 1fr)',
                           background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                           color: 'white',
-                          padding: '12px 0',
+                          padding: '18px 0',
                           fontWeight: 700,
-                          fontSize: '1.175rem'
+                          fontSize: '1.4rem'
                         }}>
-                          <div style={{ padding: '0 16px' }}>Time</div>
-                          <div style={{ padding: '0 16px' }}>Engagement</div>
-                          <div style={{ padding: '0 16px' }}>Focus Area</div>
+                          <div style={{ padding: '0 20px' }}>Time</div>
+                          <div style={{ padding: '0 20px' }}>Engagement</div>
+                          <div style={{ padding: '0 20px' }}>Focus Area</div>
                         </div>
-                        {engagementPlan.map((item, idx) => (
-                          <div key={item.id} style={{ 
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            borderBottom: idx < engagementPlan.length - 1 ? '1px solid #e2e8f0' : 'none',
-                            padding: '12px 0'
-                          }}>
-                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#1e293b', fontWeight: 600 }}>
-                              {item.time || 'Not specified'}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          {engagementPlan.map((item, idx) => (
+                            <div key={item.id} style={{ 
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(3, 1fr)',
+                              borderBottom: idx < engagementPlan.length - 1 ? '1px solid #e2e8f0' : 'none',
+                              padding: '18px 0',
+                              flex: 1,
+                              alignItems: 'center'
+                            }}>
+                              <div style={{ padding: '0 20px', fontSize: '1.35rem', color: '#1e293b', fontWeight: 600 }}>
+                                {item.time || 'Not specified'}
+                              </div>
+                              <div style={{ padding: '0 20px', fontSize: '1.35rem', color: '#475569' }}>
+                                {item.engagement || 'Not specified'}
+                              </div>
+                              <div style={{ padding: '0 20px', fontSize: '1.35rem', color: '#475569' }}>
+                                {item.focusArea || 'Not specified'}
+                              </div>
                             </div>
-                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#475569' }}>
-                              {item.engagement || 'Not specified'}
-                            </div>
-                            <div style={{ padding: '0 16px', fontSize: '1.175rem', color: '#475569' }}>
-                              {item.focusArea || 'Not specified'}
-                            </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </SlideGrid>
@@ -5604,15 +5809,15 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 7: Analysis & Actions - Part 1 (First 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-1' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '8px', paddingBottom: '4px', gap: '6px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', gap: '10px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     {analysisActions.slice(0, 3).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '0' }}>
+                      <div key={analysis.id} style={{ marginBottom: '0', flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: 'clamp(8px, 1vh, 12px) clamp(12px, 1.4vw, 18px)',
+                          padding: 'clamp(6px, 0.8vh, 10px) clamp(10px, 1.2vw, 14px)',
                           fontWeight: 700,
-                          fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)',
+                          fontSize: 'clamp(0.97rem, 1.3vw, 1.37rem)',
                           borderRadius: '8px 8px 0 0',
                           border: `2px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5622,40 +5827,41 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: 'clamp(4px, 0.6vw, 8px)',
-                          padding: 'clamp(8px, 1vh, 12px)',
+                          gap: 'clamp(3px, 0.5vw, 6px)',
+                          padding: 'clamp(6px, 0.8vh, 10px)',
                           background: 'white',
                           border: `2px solid ${analysis.color}`,
                           borderTop: 'none',
-                          borderRadius: '0 0 8px 8px'
+                          borderRadius: '0 0 8px 8px',
+                          flex: 1
                         }}>
                           {analysis.levels && analysis.levels.map((level, idx) => (
                             <div key={idx} style={{
                               background: '#f8fafc',
                               borderRadius: '6px',
-                              padding: 'clamp(6px, 0.9vh, 10px)',
+                              padding: 'clamp(5px, 0.7vh, 8px)',
                               border: `1px solid ${analysis.color}30`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: 'clamp(3px, 0.5vh, 6px)',
-                                fontSize: 'clamp(0.95rem, 1.2vw, 1.4rem)'
+                                marginBottom: 'clamp(2px, 0.4vh, 5px)',
+                                fontSize: 'clamp(0.82rem, 1.06vw, 1.17rem)'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: 'clamp(0.75rem, 0.9vw, 1rem)',
+                                fontSize: 'clamp(0.72rem, 0.86vw, 0.92rem)',
                                 color: '#475569',
-                                lineHeight: '1.35',
-                                marginBottom: 'clamp(3px, 0.5vh, 6px)'
+                                lineHeight: '1.3',
+                                marginBottom: 'clamp(2px, 0.4vh, 5px)'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: 'clamp(0.7rem, 0.85vw, 0.95rem)',
+                                fontSize: 'clamp(0.67rem, 0.81vw, 0.87rem)',
                                 color: '#64748b',
-                                lineHeight: '1.3'
+                                lineHeight: '1.25'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
                               </div>
@@ -5669,15 +5875,15 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Slide 8: Analysis & Actions - Part 2 (Last 3 Pillars) */}
                 {slides[currentSlide].id === 'analysis-2' && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '8px', paddingBottom: '4px', gap: '6px' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', gap: '10px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     {analysisActions.slice(3, 6).map((analysis) => (
-                      <div key={analysis.id} style={{ marginBottom: '0' }}>
+                      <div key={analysis.id} style={{ marginBottom: '0', flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <div style={{
                           background: analysis.bgColor,
                           color: 'white',
-                          padding: 'clamp(8px, 1vh, 12px) clamp(12px, 1.4vw, 18px)',
+                          padding: 'clamp(6px, 0.8vh, 10px) clamp(10px, 1.2vw, 14px)',
                           fontWeight: 700,
-                          fontSize: 'clamp(1.1rem, 1.5vw, 1.7rem)',
+                          fontSize: 'clamp(0.97rem, 1.3vw, 1.37rem)',
                           borderRadius: '8px 8px 0 0',
                           border: `2px solid ${analysis.color}`,
                           borderBottom: 'none'
@@ -5687,40 +5893,41 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: 'clamp(4px, 0.6vw, 8px)',
-                          padding: 'clamp(8px, 1vh, 12px)',
+                          gap: 'clamp(3px, 0.5vw, 6px)',
+                          padding: 'clamp(6px, 0.8vh, 10px)',
                           background: 'white',
                           border: `2px solid ${analysis.color}`,
                           borderTop: 'none',
-                          borderRadius: '0 0 8px 8px'
+                          borderRadius: '0 0 8px 8px',
+                          flex: 1
                         }}>
                           {analysis.levels && analysis.levels.map((level, idx) => (
                             <div key={idx} style={{
                               background: '#f8fafc',
                               borderRadius: '6px',
-                              padding: 'clamp(6px, 0.9vh, 10px)',
+                              padding: 'clamp(5px, 0.7vh, 8px)',
                               border: `1px solid ${analysis.color}30`
                             }}>
                               <div style={{
                                 fontWeight: 700,
                                 color: analysis.color,
-                                marginBottom: 'clamp(3px, 0.5vh, 6px)',
-                                fontSize: 'clamp(0.95rem, 1.2vw, 1.4rem)'
+                                marginBottom: 'clamp(2px, 0.4vh, 5px)',
+                                fontSize: 'clamp(0.82rem, 1.06vw, 1.17rem)'
                               }}>
                                 {level.stage}
                               </div>
                               <div style={{
-                                fontSize: 'clamp(0.75rem, 0.9vw, 1rem)',
+                                fontSize: 'clamp(0.72rem, 0.86vw, 0.92rem)',
                                 color: '#475569',
-                                lineHeight: '1.35',
-                                marginBottom: 'clamp(3px, 0.5vh, 6px)'
+                                lineHeight: '1.3',
+                                marginBottom: 'clamp(2px, 0.4vh, 5px)'
                               }}>
                                 {level.description}
                               </div>
                               <div style={{
-                                fontSize: 'clamp(0.7rem, 0.85vw, 0.95rem)',
+                                fontSize: 'clamp(0.67rem, 0.81vw, 0.87rem)',
                                 color: '#64748b',
-                                lineHeight: '1.3'
+                                lineHeight: '1.25'
                               }}>
                                 <strong>Helpful Tools:</strong> {level.tools}
                               </div>
@@ -5775,17 +5982,17 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderBottom: 'none',
                             flexShrink: 0
                           }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.4rem', marginBottom: '8px', lineHeight: '1.3' }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.375rem', marginBottom: '6px', lineHeight: '1.2' }}>
                               {scenario.title}
                             </div>
-                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                               {maturityLevels.map((level, levelIdx) => (
                                 <div key={levelIdx} style={{
-                                  padding: '4px 8px',
+                                  padding: '3px 6px',
                                   background: levelIdx < scenario.maturityLevel ? 'white' : 'rgba(255,255,255,0.3)',
                                   color: levelIdx < scenario.maturityLevel ? scenario.color : 'white',
                                   borderRadius: '4px',
-                                  fontSize: '1.1rem',
+                                  fontSize: '1.125rem',
                                   fontWeight: 600,
                                   lineHeight: '1'
                                 }}>
@@ -5796,13 +6003,13 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                           </div>
                           <div style={{
                             background: 'white',
-                            padding: '14px 16px',
+                            padding: '12px 14px',
                             border: `3px solid ${scenario.color}`,
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             fontSize: '1.175rem',
                             color: '#475569',
-                            lineHeight: '1.5',
+                            lineHeight: '1.3',
                             flex: 1,
                             minHeight: 0,
                             overflow: 'auto'
@@ -5835,7 +6042,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
 
                 {/* Matrix Slides - One per Pillar */}
                 {slides[currentSlide].id === 'matrices-1' && maturityMatrices[0] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[0];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -5859,9 +6066,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -5897,7 +6106,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-2' && maturityMatrices[1] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[1];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -5921,9 +6130,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -5959,7 +6170,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-3' && maturityMatrices[2] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[2];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -5983,9 +6194,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -6021,7 +6234,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-4' && maturityMatrices[3] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[3];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -6045,9 +6258,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -6083,7 +6298,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-5' && maturityMatrices[4] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[4];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -6107,9 +6322,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -6145,7 +6362,7 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                 )}
 
                 {slides[currentSlide].id === 'matrices-6' && maturityMatrices[5] && (
-                  <SlideGrid $columns="1fr" style={{ paddingTop: '10px', paddingBottom: '10px', height: '100%' }}>
+                  <SlideGrid $columns="1fr" style={{ paddingTop: '0', paddingBottom: '0', width: '100%', height: '100%' }}>
                     {(() => {
                       const matrix = maturityMatrices[5];
                       const maturityLevels = ['1. Explore', '2. Experiment', '3. Formalize', '4. Optimize', '5. Transform'];
@@ -6169,9 +6386,11 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                             borderTop: 'none',
                             borderRadius: '0 0 10px 10px',
                             overflow: 'auto',
-                            flex: 1
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+                            <table style={{ width: '100%', height: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                               <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                   <th style={{ padding: '14px 16px', border: '2px solid #e2e8f0', textAlign: 'left', fontWeight: 700, color: '#1e293b', width: '14%' }}>
@@ -6204,6 +6423,90 @@ Transform: Fully governed multi-domain Lakehouse with automation.`;
                       );
                     })()}
                   </SlideGrid>
+                )}
+
+                {/* Title Slide */}
+                {slides[currentSlide].id === 'title' && (
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '60px',
+                    gap: '40px'
+                  }}>
+                    <div style={{
+                      fontSize: '6rem',
+                      marginBottom: '20px',
+                      filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                    }}>
+                      🔍
+                    </div>
+                    <div style={{
+                      fontSize: '4.5rem',
+                      fontWeight: 900,
+                      color: 'white',
+                      marginBottom: '20px',
+                      textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                      letterSpacing: '-0.02em'
+                    }}>
+                      Deep Dive Analysis
+                    </div>
+                    <div style={{
+                      fontSize: '2rem',
+                      fontWeight: 400,
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      lineHeight: '1.6',
+                      maxWidth: '900px'
+                    }}>
+                      Technical Maturity Assessment
+                    </div>
+                    <div style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 400,
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      marginTop: '20px'
+                    }}>
+                      Comprehensive insights and strategic recommendations
+                    </div>
+                  </div>
+                )}
+
+                {/* Thank You Slide */}
+                {slides[currentSlide].id === 'thank-you' && (
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '60px',
+                    gap: '30px'
+                  }}>
+                    <div style={{
+                      fontSize: '4rem',
+                      fontWeight: 800,
+                      color: 'white',
+                      marginBottom: '20px',
+                      textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      Thank You
+                    </div>
+                    <div style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 400,
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      lineHeight: '1.6',
+                      maxWidth: '800px'
+                    }}>
+                      For your time and participation in the Technical Maturity Assessment
+                    </div>
+                  </div>
                 )}
               </SlideContent>
             </SlideContainer>

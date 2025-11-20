@@ -267,6 +267,16 @@ const ActionButton = styled(motion.button)`
   background: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
+  
+  /* Hide icons by default, show on hover */
+  svg {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  &:hover svg {
+    opacity: 1;
+  }
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -304,6 +314,51 @@ const ActionButton = styled(motion.button)`
     padding: 10px 18px;
     font-size: 0.813rem;
     justify-content: center;
+  }
+`;
+
+const FloatingSlideshowButton = styled(motion.button)`
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 10;
+
+  &:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
+  }
+
+  @media (max-width: 1024px) {
+    top: 20px;
+    right: 24px;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  @media (max-width: 768px) {
+    top: 140px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  @media print {
+    display: none !important;
   }
 `;
 
@@ -3086,6 +3141,7 @@ const AssessmentResultsNew = () => {
   return (
     <PageContainer>
       <PrintStyles />
+      
       <ReportContainer>
         {/* 🚨 NO COMPLETED PILLARS WARNING */}
         {hasNoCompletedPillars && (
@@ -3176,6 +3232,23 @@ const AssessmentResultsNew = () => {
         
         {/* Header - Always show */}
         <ReportHeader>
+          {/* Floating Start Slideshow Button */}
+          {!presentationMode && (
+            <FloatingSlideshowButton
+              onClick={() => { 
+                setPresentationMode(true); 
+                setCurrentSlide(0); 
+                document.body.style.overflow = 'hidden'; 
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="View Maturity Report in presentation slideshow mode"
+            >
+              <FiMonitor size={18} />
+              Slideshow
+            </FloatingSlideshowButton>
+          )}
+          
           <HeaderTop>
             <TitleSection>
               <h1>Enterprise Data & AI Maturity Report</h1>
@@ -3237,26 +3310,6 @@ const AssessmentResultsNew = () => {
                 >
                   <FiRefreshCw size={16} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
                   {refreshing ? 'Refreshing...' : 'Refresh'}
-                </ActionButton>
-              </ButtonGroup>
-
-              <ButtonSeparator />
-
-              {/* Slideshow Group - Purple */}
-              <ButtonGroup>
-                <ActionButton
-                  onClick={() => { 
-                    setPresentationMode(true); 
-                    setCurrentSlide(0); 
-                    document.body.style.overflow = 'hidden'; 
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
-                  title="View Maturity Report in presentation slideshow mode"
-                >
-                  <FiMonitor size={16} />
-                  Start Slideshow
                 </ActionButton>
               </ButtonGroup>
 
@@ -5632,7 +5685,7 @@ const AssessmentResultsNew = () => {
             </NavigationButton>
             
             <SlideHeading>
-              {currentSlide === 0 ? '' : 
+              {currentSlide === 0 || currentSlide === 21 ? '' : 
                currentSlide === 1 ? 'Maturity Snapshot by Pillar' : (() => {
                 const pillarsArray = [
                   { id: 'platform_governance', name: 'Platform & Governance' },
@@ -5642,18 +5695,18 @@ const AssessmentResultsNew = () => {
                   { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities' },
                   { id: 'operational_excellence', name: 'Operational Excellence & Adoption' }
                 ];
-                // Slides 2-19: 6 pillars x 3 slides each (dimensions, overview, next steps)
+                // Slides 2-19: 6 pillars x 3 slides each (title, maturity chart, recommendations/next steps)
                 if (currentSlide >= 2 && currentSlide <= 19) {
                   const pillarIndex = Math.floor((currentSlide - 2) / 3);
-                  const slideType = (currentSlide - 2) % 3; // 0=dimensions, 1=overview, 2=next steps
+                  const slideType = (currentSlide - 2) % 3; // 0=title, 1=chart, 2=recommendations
                   const pillarName = pillarsArray[pillarIndex]?.name || '';
-                  // All slide types just show pillar name (no suffix)
-                  return pillarName;
+                  // Hide heading for pillar title slides
+                  return slideType === 0 ? '' : pillarName;
                 }
                 return '';
               })()}
             </SlideHeading>
-            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 20</SlideCounter>
+            <SlideCounter data-hide-on-print="true">{currentSlide + 1} / 22</SlideCounter>
 
             {/* Print Button - Always visible on hover */}
             <PrintButton
@@ -5690,7 +5743,7 @@ const AssessmentResultsNew = () => {
                   transition={{ duration: 0.3 }}
                   style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
-                  {/* Title Slide - Matches Report Header */}
+                  {/* Title Slide - Cool Graphics */}
                   {currentSlide === 0 && (
                     <div style={{
                       display: 'flex',
@@ -5699,223 +5752,255 @@ const AssessmentResultsNew = () => {
                       alignItems: 'center',
                       height: '100%',
                       textAlign: 'center',
-                      gap: '20px',
+                      gap: '40px',
                       padding: '0 80px'
                     }}>
                       <div style={{
-                        fontSize: '4.5rem',
-                        fontWeight: 700,
-                        color: 'white',
-                        marginBottom: '16px',
-                        lineHeight: '1.2'
+                        fontSize: '6rem',
+                        marginBottom: '20px',
+                        filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
                       }}>
-                        {results.assessmentInfo?.assessmentName || 'Enterprise Data & AI Maturity Report'}
+                        📊
                       </div>
                       <div style={{
-                        fontSize: '1.6rem',
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        marginBottom: '40px'
+                        fontSize: '4.5rem',
+                        fontWeight: 900,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        letterSpacing: '-0.02em',
+                        lineHeight: '1.2'
                       }}>
-                        Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'} | {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        Enterprise Data & AI<br/>Maturity Report
                       </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6'
+                      }}>
+                        Prepared for {results.assessmentInfo?.organizationName || 'Your Organization'}
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginTop: '20px'
+                      }}>
+                        {new Date(results.assessmentInfo?.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </div>
+                    </div>
+                  )}
 
-                      {/* Three Cards Section - Like Report Header */}
+                  {/* Slide 1: Maturity Snapshot with Cards */}
+                  {currentSlide === 1 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                      padding: '45px 60px 35px 60px',
+                      gap: '24px',
+                      justifyContent: 'space-between'
+                    }}>
+                      {/* Three Cards Section - Top */}
                       <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
                         gap: '24px',
-                        width: '100%',
-                        maxWidth: '1300px',
-                        marginTop: '40px'
+                        flexShrink: 0
                       }}>
                       {/* Current Maturity Card */}
                       <div style={{
-                          background: 'rgba(255, 255, 255, 0.12)',
-                          border: '2px solid rgba(255, 255, 255, 0.25)',
-                          borderRadius: '12px',
-                          padding: '28px 24px',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '16px',
+                          padding: '20px 24px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
-                          overflow: 'hidden'
+                          gap: '10px',
+                          overflow: 'hidden',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '12px',
-                            background: 'rgba(59, 130, 246, 0.3)',
+                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
+                            fontSize: '1.5rem',
                             marginBottom: '4px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
                         }}>
                           🎯
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.85)',
-                            fontWeight: 500,
+                            fontSize: '0.85rem',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            fontWeight: 600,
                           textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.08em',
                             flexShrink: 0
                         }}>
                             CURRENT MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
-                            fontWeight: 800,
+                            fontSize: '1.7rem',
+                            fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                           }}>
                             Level {currentMaturity} — {resultsData?.maturitySummary?.current?.level || 'Experiment'}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
-                            color: 'rgba(255, 255, 255, 0.75)',
+                            fontSize: '0.9rem',
+                            color: 'rgba(255, 255, 255, 0.8)',
                             lineHeight: '1.5',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.current?.description || 
-                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 180)}
+                             'Positioned to accelerate Data and GenAI capabilities through automation and modernization').slice(0, 130)}
                         </div>
                       </div>
 
                       {/* Target Maturity Card */}
                       <div style={{
-                          background: 'rgba(255, 255, 255, 0.12)',
-                          border: '2px solid rgba(255, 255, 255, 0.25)',
-                          borderRadius: '12px',
-                          padding: '28px 24px',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '16px',
+                          padding: '20px 24px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
-                          overflow: 'hidden'
+                          gap: '10px',
+                          overflow: 'hidden',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '12px',
-                            background: 'rgba(16, 185, 129, 0.3)',
+                            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
+                            fontSize: '1.5rem',
                             marginBottom: '4px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
                         }}>
                           📈
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.85)',
-                            fontWeight: 500,
+                            fontSize: '0.85rem',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            fontWeight: 600,
                           textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.08em',
                             flexShrink: 0
                         }}>
                             TARGET MATURITY
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
-                            fontWeight: 800,
+                            fontSize: '1.7rem',
+                            fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                           }}>
                             Level {targetMaturity} — {resultsData?.maturitySummary?.target?.level || 'Optimize'}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
-                            color: 'rgba(255, 255, 255, 0.75)',
+                            fontSize: '0.9rem',
+                            color: 'rgba(255, 255, 255, 0.8)',
                             lineHeight: '1.5',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.target?.description || 
-                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 180)}
+                             'Advanced capabilities in Analytics self-service analytics accelerating decision velocity').slice(0, 130)}
                         </div>
                       </div>
 
                       {/* Improvement Potential Card */}
                       <div style={{
-                          background: 'rgba(255, 255, 255, 0.12)',
-                          border: '2px solid rgba(255, 255, 255, 0.25)',
-                          borderRadius: '12px',
-                          padding: '28px 24px',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '16px',
+                          padding: '20px 24px',
                         display: 'flex',
                         flexDirection: 'column',
-                          gap: '12px',
-                          minHeight: '280px',
-                          maxHeight: '320px',
-                          overflow: 'hidden'
+                          gap: '10px',
+                          overflow: 'hidden',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
                       }}>
                         <div style={{
-                            width: '44px',
-                            height: '44px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '12px',
-                            background: 'rgba(245, 158, 11, 0.3)',
+                            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0.25) 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                            fontSize: '1.3rem',
+                            fontSize: '1.5rem',
                             marginBottom: '4px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
                         }}>
                           ⚡
                         </div>
                         <div style={{
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.85)',
-                            fontWeight: 500,
+                            fontSize: '0.85rem',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            fontWeight: 600,
                           textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.08em',
                             flexShrink: 0
                         }}>
                             IMPROVEMENT POTENTIAL
                         </div>
                         <div style={{
-                            fontSize: '1.6rem',
-                            fontWeight: 800,
+                            fontSize: '1.7rem',
+                            fontWeight: 900,
                             color: 'white',
                             lineHeight: '1.2',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                         }}>
                           +{improvementLevel} Level
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
-                            color: 'rgba(255, 255, 255, 0.75)',
+                            fontSize: '0.9rem',
+                            color: 'rgba(255, 255, 255, 0.8)',
                             lineHeight: '1.5',
                             overflow: 'hidden',
                             display: '-webkit-box',
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
                           }}>
                             {(resultsData?.maturitySummary?.improvement?.description || 
-                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 180)}
+                             'Implement self-service analytics and real-time insights, ML automation and lifecycle management').slice(0, 130)}
                         </div>
                         </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* Maturity Snapshot Chart Slide (Slide 1) */}
-                  {currentSlide === 1 && (() => {
+                      {/* Maturity Snapshot Chart - Below Cards */}
+                      {(() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', icon: '🧱', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', icon: '💾', color: '#ef4444' },
@@ -5931,9 +6016,9 @@ const AssessmentResultsNew = () => {
                       <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '20px',
-                        paddingTop: '50px',
-                        paddingBottom: '40px',
+                        gap: '12px',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
                         maxWidth: '1400px',
                         margin: '0 auto',
                         width: '100%'
@@ -5942,16 +6027,29 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'flex',
                           justifyContent: 'center',
-                          gap: '40px',
-                          marginBottom: '20px'
+                          gap: '32px',
+                          marginBottom: '8px'
                         }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, background: '#3b82f6', border: '2px solid #3b82f6' }} />
-                            <span style={{ fontSize: '1.3rem', color: 'white', fontWeight: 600 }}>Today</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ 
+                              width: 18, 
+                              height: 18, 
+                              borderRadius: 5, 
+                              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
+                              boxShadow: '0 3px 10px rgba(59, 130, 246, 0.4)'
+                            }} />
+                            <span style={{ fontSize: '1.05rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Today</span>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, background: 'transparent', border: '2px solid #10b981' }} />
-                            <span style={{ fontSize: '1.3rem', color: 'white', fontWeight: 600 }}>Tomorrow</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ 
+                              width: 18, 
+                              height: 18, 
+                              borderRadius: 5, 
+                              background: 'transparent', 
+                              border: '2.5px solid #10b981',
+                              boxShadow: '0 3px 10px rgba(16, 185, 129, 0.3)'
+                            }} />
+                            <span style={{ fontSize: '1.05rem', color: 'white', fontWeight: 700, textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Tomorrow</span>
                           </div>
                         </div>
 
@@ -5959,8 +6057,8 @@ const AssessmentResultsNew = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(2, 1fr)',
-                          gap: '24px',
-                          padding: '0 40px'
+                          gap: '14px',
+                          padding: '0 30px'
                         }}>
                         {pillarsArray.map((pillar) => {
                             const categoryData = resultsData?.categoryDetails?.[pillar.id] || {};
@@ -5969,26 +6067,29 @@ const AssessmentResultsNew = () => {
                           
                           return (
                               <div key={pillar.id} style={{
-                                background: 'rgba(255, 255, 255, 0.95)',
+                                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%)',
                                 borderRadius: '12px',
-                                padding: '20px 24px',
-                                borderLeft: `4px solid ${pillar.color}`,
+                                padding: '12px 16px',
+                                borderLeft: `3px solid ${pillar.color}`,
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '16px'
+                                gap: '10px',
+                                boxShadow: `0 3px 12px ${pillar.color}20`,
+                                transition: 'all 0.3s ease'
                               }}>
                                 {/* Pillar Header */}
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                  gap: '12px'
+                                  gap: '10px'
                                 }}>
-                                  <span style={{ fontSize: '1.8rem' }}>{pillar.icon}</span>
+                                  <span style={{ fontSize: '1.3rem', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }}>{pillar.icon}</span>
                                   <span style={{
-                                    fontSize: '1.1rem',
-                                    fontWeight: 600,
+                                    fontSize: '0.85rem',
+                                    fontWeight: 700,
                                     color: pillar.color,
-                                    flex: 1
+                                    flex: 1,
+                                    lineHeight: '1.3'
                                   }}>
                                     {pillar.name}
                                   </span>
@@ -5997,7 +6098,7 @@ const AssessmentResultsNew = () => {
                                 {/* Scores Container */}
                                 <div style={{
                                   display: 'flex',
-                                gap: '16px',
+                                gap: '12px',
                                   justifyContent: 'space-around'
                                 }}>
                                   {/* Today Score */}
@@ -6005,26 +6106,27 @@ const AssessmentResultsNew = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.75rem',
-                                fontWeight: 600,
+                                      fontSize: '0.6rem',
+                                fontWeight: 700,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
-                                      letterSpacing: '0.5px'
+                                      letterSpacing: '0.6px'
                               }}>
                                       TODAY
                               </div>
                                 <div style={{
-                                      background: pillar.color,
+                                      background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
                                       color: 'white',
-                                      padding: '8px 20px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.5rem',
-                                      fontWeight: 700,
-                                      minWidth: '70px',
-                                      textAlign: 'center'
+                                      padding: '6px 14px',
+                                  borderRadius: '7px',
+                                      fontSize: '1.1rem',
+                                      fontWeight: 800,
+                                      minWidth: '55px',
+                                      textAlign: 'center',
+                                      boxShadow: `0 3px 10px ${pillar.color}40`
                                     }}>
                                       {currentScore}
                                     </div>
@@ -6032,30 +6134,31 @@ const AssessmentResultsNew = () => {
 
                                   {/* Tomorrow Score */}
                                   <div style={{
-                                  display: 'flex',
+                                    display: 'flex',
                                     flexDirection: 'column',
-                                  alignItems: 'center',
-                                    gap: '8px'
+                                    alignItems: 'center',
+                                    gap: '6px'
                                   }}>
                                     <div style={{
-                                      fontSize: '0.75rem',
-                                      fontWeight: 600,
+                                      fontSize: '0.6rem',
+                                      fontWeight: 700,
                                       color: '#64748b',
                                       textTransform: 'uppercase',
-                                      letterSpacing: '0.5px'
+                                      letterSpacing: '0.6px'
                                     }}>
                                       TOMORROW
                                 </div>
                                 <div style={{
-                                  background: 'transparent',
+                                  background: 'white',
                                       color: pillar.color,
-                                      padding: '8px 20px',
-                                  borderRadius: '8px',
-                                      fontSize: '1.5rem',
-                                  fontWeight: 700,
-                                      border: `2px solid ${pillar.color}`,
-                                      minWidth: '70px',
-                                      textAlign: 'center'
+                                      padding: '6px 14px',
+                                  borderRadius: '7px',
+                                      fontSize: '1.1rem',
+                                  fontWeight: 800,
+                                      border: `2.5px solid ${pillar.color}`,
+                                      minWidth: '55px',
+                                      textAlign: 'center',
+                                      boxShadow: `0 3px 10px ${pillar.color}30`
                                 }}>
                                       {futureScore}
                                     </div>
@@ -6068,9 +6171,65 @@ const AssessmentResultsNew = () => {
                       </div>
                     );
                   })()}
+                    </div>
+                  )}
 
-                  {/* Pillar Overview Slides (Slides 3,6,9,12,15,18) - slideType 1 - Moved from old slideType 0 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 1 && (() => {
+                  {/* Pillar Title Slides (Slides 2,5,8,11,14,17) - Pillar Introduction */}
+                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 0 && (() => {
+                    const pillarsArray = [
+                      { id: 'platform_governance', name: 'Platform & Governance', icon: '🧱', color: '#3b82f6', emoji: '🏛️' },
+                      { id: 'data_engineering', name: 'Data Engineering & Integration', icon: '💾', color: '#10b981', emoji: '🔄' },
+                      { id: 'analytics_bi', name: 'Analytics & BI Modernization', icon: '📈', color: '#ec4899', emoji: '📊' },
+                      { id: 'machine_learning', name: 'Machine Learning & MLOps', icon: '🤖', color: '#f59e0b', emoji: '🧠' },
+                      { id: 'generative_ai', name: 'Generative AI & Agentic Capabilities', icon: '💡', color: '#8b5cf6', emoji: '✨' },
+                      { id: 'operational_excellence', name: 'Operational Excellence & Adoption', icon: '⚙️', color: '#06b6d4', emoji: '🎯' }
+                    ];
+                    const pillarIndex = Math.floor((currentSlide - 2) / 3);
+                    const pillar = pillarsArray[pillarIndex];
+                    if (!pillar) return null;
+                    
+                    return (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        textAlign: 'center',
+                        gap: '40px',
+                        padding: '0 80px'
+                      }}>
+                        <div style={{
+                          fontSize: '8rem',
+                          marginBottom: '20px',
+                          filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                        }}>
+                          {pillar.emoji}
+                        </div>
+                        <div style={{
+                          fontSize: '4rem',
+                          fontWeight: 900,
+                          color: 'white',
+                          marginBottom: '20px',
+                          textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                          letterSpacing: '-0.02em',
+                          lineHeight: '1.2'
+                        }}>
+                          {pillar.name}
+                        </div>
+                        <div style={{
+                          width: '200px',
+                          height: '6px',
+                          background: `linear-gradient(90deg, transparent, ${pillar.color}, transparent)`,
+                          borderRadius: '3px',
+                          boxShadow: `0 4px 12px ${pillar.color}60`
+                        }} />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Pillar Overview Slides (Slides 4,7,10,13,16,19) - Key Recommendations & Next Steps */}
+                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 2 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6122,119 +6281,168 @@ const AssessmentResultsNew = () => {
                     
                     return (
                       <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '16px',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '20px',
                         height: '92%',
                         padding: '40px 60px'
                       }}>
-                        {/* Top Row: What's Working & Key Challenges */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', flex: 0.7 }}>
-                          {/* What's Working */}
-                          <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '24px',
-                            border: `4px solid #10b981`,
-                            overflow: 'auto'
-                          }}>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#10b981', marginBottom: '14px' }}>
-                              ✓ What's Working
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                              {(pillar.good || []).slice(0, 6).map((item, idx) => (
-                                <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
-                                  <span style={{ position: 'absolute', left: 0 }}>•</span>
-                                  {item}
-                            </div>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          {/* Key Challenges */}
-                            <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                            padding: '24px',
-                            border: `4px solid #ef4444`,
-                            overflow: 'auto'
-                          }}>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ef4444', marginBottom: '14px' }}>
-                              ⚠ Key Challenges
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                              {(pillar.bad || []).slice(0, 6).map((item, idx) => (
-                                <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
-                                  <span style={{ position: 'absolute', left: 0 }}>•</span>
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                            </div>
-                          </div>
-
-                        {/* Bottom: Recommendations */}
-                          <div style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            borderRadius: '16px',
-                          padding: '24px',
-                            border: `4px solid ${pillar.color}`,
-                          flex: 1.3,
-                          overflow: 'auto'
+                        {/* Left: Key Recommendations */}
+                        <div style={{
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+                          borderRadius: '20px',
+                          padding: '28px',
+                          border: `4px solid ${pillar.color}`,
+                          boxShadow: `0 8px 32px ${pillar.color}30`,
+                          overflow: 'auto',
+                          display: 'flex',
+                          flexDirection: 'column'
                         }}>
-                          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '16px' }}>
-                              Key Recommendations
-                            </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div style={{ 
+                            fontSize: '1.6rem', 
+                            fontWeight: 700, 
+                            color: pillar.color,
+                            marginBottom: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            paddingBottom: '16px',
+                            borderBottom: `3px solid ${pillar.color}20`
+                          }}>
+                            <span style={{ fontSize: '1.8rem' }}>🧱</span>
+                            Databricks Recommendations
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {pillar.recommendations.slice(0, 8).map((rec, idx) => {
-                                  let recText = '';
-                                  if (typeof rec === 'string') {
-                                    recText = rec;
-                                  } else if (rec.name) {
-                                    recText = rec.name;
-                                    if (rec.description) {
-                                      recText += ` - ${rec.description}`;
-                                    }
-                                  } else {
-                                    recText = rec.message || rec.recommendationText || rec.title || '';
-                                  }
-                                  
-                                  return (
-                                    <div key={idx} style={{
-                                      display: 'flex',
-                                  gap: '10px',
+                              let recText = '';
+                              if (typeof rec === 'string') {
+                                recText = rec;
+                              } else if (rec.name) {
+                                recText = rec.name;
+                                if (rec.description) {
+                                  recText += ` - ${rec.description}`;
+                                }
+                              } else {
+                                recText = rec.message || rec.recommendationText || rec.title || '';
+                              }
+                              
+                              return (
+                                <div key={idx} style={{
+                                  display: 'flex',
+                                  gap: '12px',
                                   alignItems: 'flex-start',
-                                  fontSize: '0.9rem',
-                                  color: '#334155',
-                                  lineHeight: '1.4'
+                                  fontSize: '0.95rem',
+                                  color: '#1e293b',
+                                  lineHeight: '1.5',
+                                  padding: '12px',
+                                  background: `${pillar.color}08`,
+                                  borderRadius: '12px',
+                                  transition: 'all 0.2s ease'
                                 }}>
                                   <div style={{
                                     flexShrink: 0,
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '50%',
-                                    background: pillar.color,
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
                                     color: 'white',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                        fontWeight: 700,
-                                    fontSize: '0.85rem'
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    boxShadow: `0 4px 12px ${pillar.color}40`
                                   }}>
                                     {idx + 1}
                                   </div>
-                                  <div style={{ flex: 1, paddingTop: '2px' }}>{recText}</div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                                  <div style={{ flex: 1, paddingTop: '4px', fontWeight: 500 }}>{recText}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Right: Next Steps */}
+                        <div style={{
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+                          borderRadius: '20px',
+                          padding: '28px',
+                          border: `4px solid ${pillar.color}`,
+                          boxShadow: `0 8px 32px ${pillar.color}30`,
+                          overflow: 'auto',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}>
+                          <div style={{ 
+                            fontSize: '1.6rem', 
+                            fontWeight: 700, 
+                            color: pillar.color,
+                            marginBottom: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            paddingBottom: '16px',
+                            borderBottom: `3px solid ${pillar.color}20`
+                          }}>
+                            <span style={{ fontSize: '1.8rem' }}>🎯</span>
+                            Next Steps
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            {pillar.nextSteps.slice(0, 8).map((step, idx) => {
+                              let stepText = '';
+                              if (typeof step === 'string') {
+                                stepText = step;
+                              } else if (step.action) {
+                                stepText = step.action;
+                                if (step.description) {
+                                  stepText += ` - ${step.description}`;
+                                }
+                              } else {
+                                stepText = step.message || step.text || step.title || '';
+                              }
+                              
+                              return (
+                                <div key={idx} style={{
+                                  display: 'flex',
+                                  gap: '12px',
+                                  alignItems: 'flex-start',
+                                  fontSize: '0.95rem',
+                                  color: '#1e293b',
+                                  lineHeight: '1.5',
+                                  padding: '12px',
+                                  background: `${pillar.color}08`,
+                                  borderRadius: '12px',
+                                  transition: 'all 0.2s ease'
+                                }}>
+                                  <div style={{
+                                    flexShrink: 0,
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    background: `linear-gradient(135deg, ${pillar.color} 0%, ${pillar.color}dd 100%)`,
+                                    color: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    boxShadow: `0 4px 12px ${pillar.color}40`
+                                  }}>
+                                    {idx + 1}
+                                  </div>
+                                  <div style={{ flex: 1, paddingTop: '4px', fontWeight: 500 }}>{stepText}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     );
                   })()}
 
-                  {/* Dimension Breakdown Slides (Slides 2,5,8,11,14,17) - slideType 0 - Moved from old slideType 1 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 0 && (() => {
+                  {/* Dimension Breakdown / Maturity Chart Slides (Slides 3,6,9,12,15,18) - slideType 1 */}
+                  {/* NEW LAYOUT: Chart (left) + What's Working (top right) + Key Challenges (bottom right) */}
+                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 1 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6250,6 +6458,11 @@ const AssessmentResultsNew = () => {
                     // Get dimensions for this pillar (same logic as report section)
                     const resultsData = results?.data || results;
                     let dimensions = [];
+                    
+                    // Get pillar data for What's Working and Key Challenges
+                    const pillarData = getPillarData(pillarDef.id);
+                    const theGood = pillarData?.theGood || [];
+                    const theBad = pillarData?.theBad || [];
                     
                     // First, try to get from results data
                     if (resultsData?.categoryDetails?.[pillarDef.id]?.dimensions) {
@@ -6284,14 +6497,23 @@ const AssessmentResultsNew = () => {
                     
                     return (
                       <SlideContent>
-                              <div style={{
-                          background: 'rgba(255, 255, 255, 0.98)',
-                          borderRadius: '20px',
-                          padding: '40px 60px',
-                          maxWidth: '2375px',
-                          margin: '0 auto',
-                          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+                        {/* 2-Column Layout: Chart (Left) + Cards (Right) */}
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: '55% 45%',
+                          gap: '30px',
+                          height: '100%',
+                          padding: '20px 40px'
                         }}>
+                          {/* LEFT: Maturity Chart */}
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.98)',
+                            borderRadius: '20px',
+                            padding: '30px 40px',
+                            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+                            display: 'flex',
+                            flexDirection: 'column'
+                          }}>
                           {/* Header with maturity levels scale */}
                           <div style={{
                             display: 'grid',
@@ -6451,13 +6673,68 @@ const AssessmentResultsNew = () => {
                               );
                             })}
                           </div>
+                          </div>
+                          
+                          {/* RIGHT: What's Working (Top) + Key Challenges (Bottom) */}
+                          <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            height: '100%'
+                          }}>
+                            {/* What's Working */}
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.98)',
+                              borderRadius: '16px',
+                              padding: '24px',
+                              border: '4px solid #10b981',
+                              flex: 1,
+                              overflow: 'auto',
+                              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                            }}>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#10b981', marginBottom: '14px' }}>
+                                ✓ What's Working
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {theGood.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Key Challenges */}
+                            <div style={{
+                              background: 'rgba(255, 255, 255, 0.98)',
+                              borderRadius: '16px',
+                              padding: '24px',
+                              border: '4px solid #ef4444',
+                              flex: 1,
+                              overflow: 'auto',
+                              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                            }}>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ef4444', marginBottom: '14px' }}>
+                                ⚠ Key Challenges
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {theBad.slice(0, 4).map((item, idx) => (
+                                  <div key={idx} style={{ fontSize: '0.9rem', color: '#334155', paddingLeft: '18px', position: 'relative', lineHeight: '1.4' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </SlideContent>
                     );
                   })()}
 
-                  {/* Next Steps Slides (Slides 4,7,10,13,16,19) - slideType 2 */}
-                  {currentSlide >= 2 && currentSlide <= 19 && (currentSlide - 2) % 3 === 2 && (() => {
+                  {/* Next Steps Slides - REMOVED */}
+                  {false && currentSlide >= 2 && currentSlide <= 20 && (currentSlide - 2) % 3 === 2 && (() => {
                     const pillarsArray = [
                       { id: 'platform_governance', name: 'Platform & Governance', color: '#3b82f6' },
                       { id: 'data_engineering', name: 'Data Engineering & Integration', color: '#10b981' },
@@ -6561,6 +6838,55 @@ const AssessmentResultsNew = () => {
                           </div>
                     );
                   })()}
+
+                  {/* Thank You Slide (Slide 21) */}
+                  {currentSlide === 21 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      textAlign: 'center',
+                      gap: '40px',
+                      padding: '0 80px'
+                    }}>
+                      <div style={{
+                        fontSize: '6rem',
+                        marginBottom: '20px',
+                        filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                      }}>
+                        ✨
+                      </div>
+                      <div style={{
+                        fontSize: '4.5rem',
+                        fontWeight: 900,
+                        color: 'white',
+                        marginBottom: '20px',
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        letterSpacing: '-0.02em'
+                      }}>
+                        Thank You
+                      </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        lineHeight: '1.6',
+                        maxWidth: '900px'
+                      }}>
+                        For your time and participation in the Technical Maturity Assessment
+                      </div>
+                      <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginTop: '20px'
+                      }}>
+                        For support: nitin.aggarwal@databricks.com
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </SlideContent>

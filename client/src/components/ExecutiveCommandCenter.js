@@ -352,6 +352,51 @@ const ActionButton = styled(motion.button)`
   }
 `;
 
+const FloatingSlideshowButton = styled.button`
+  position: fixed;
+  top: 138px;
+  right: 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 999;
+
+  &:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6);
+  }
+
+  @media (max-width: 1024px) {
+    top: 128px;
+    right: 24px;
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    top: 118px;
+    right: 16px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  @media print {
+    display: none !important;
+  }
+`;
+
 const ContentContainer = styled.div`
   width: 100%;
   padding: 0 40px;
@@ -1585,6 +1630,16 @@ const ExecutiveCommandCenter = () => {
 
   return (
     <PageContainer>
+      {/* Floating Start Slideshow Button */}
+      {!presentationMode && (
+        <FloatingSlideshowButton
+          onClick={startPresentation}
+        >
+          <FiMonitor size={18} />
+          Slideshow
+        </FloatingSlideshowButton>
+      )}
+      
       {/* 🖨️ PRINT MODE: Render all slides for printing */}
       {printMode && results && (
         <div style={{ display: 'none' }} className="print-slides-container">
@@ -1686,17 +1741,6 @@ const ExecutiveCommandCenter = () => {
             />
           </LogoContainer>
         </div>
-
-        <ActionButtons>
-          <ActionButton
-            onClick={startPresentation}
-            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
-            title="View Executive Command Center in presentation slideshow mode"
-          >
-            <FiMonitor />
-            Start Slideshow
-          </ActionButton>
-        </ActionButtons>
       </PageHeader>
 
       <ContentContainer>

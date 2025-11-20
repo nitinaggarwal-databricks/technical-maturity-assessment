@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
@@ -18,6 +19,7 @@ const IntelligentRecommendationEngine = require('./services/intelligentRecommend
 const featureDB = require('./services/databricksFeatureDatabase');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 const industryBenchmarkingService = require('./services/industryBenchmarkingService');
+const db = require('./db/connection');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,6 +28,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max file size
+  abortOnLimit: true
+}));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
@@ -33,11 +39,23 @@ app.use(cookieParser());
 const authRoutes = require('./routes/auth');
 const assignmentRoutes = require('./routes/assignments');
 const notificationRoutes = require('./routes/notifications');
+const feedbackRoutes = require('./routes/feedback');
+const chatRoutes = require('./routes/chat');
+const customQuestionsRoutes = require('./routes/custom-questions');
+const excelRoutes = require('./routes/excel');
+const questionEditsRoutes = require('./routes/questionEdits');
+const questionAssignmentsRoutes = require('./routes/questionAssignments');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/custom-questions', customQuestionsRoutes);
+app.use('/api/assessment-excel', excelRoutes);
+app.use('/api/question-edits', questionEditsRoutes);
+app.use('/api/question-assignments', questionAssignmentsRoutes);
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -502,6 +520,102 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
     } else if (area.questions) {
       // Fallback for old structure
       questions.push(...area.questions);
+    }
+    
+    // Fetch and inject custom questions for this pillar and assessment
+    // NOTE: Custom questions are automatically included in scoring calculations
+    // because they follow the same response format (questionId_perspectiveId).
+    // The 'weight' field is stored for potential future weighted scoring implementation.
+    try {
+      // Fetch custom questions that are either:
+      // 1. Assigned specifically to this assessment, OR
+      // 2. Set to apply_to_all_assessments = true
+      const customQuestionsResult = await db.query(
+        `SELECT DISTINCT cq.* 
+         FROM custom_questions cq
+         LEFT JOIN assessment_custom_questions acq 
+           ON cq.id = acq.custom_question_id AND acq.assessment_id = $1
+         WHERE cq.is_active = true 
+         AND (cq.pillar = $2 OR cq.pillar = 'all')
+         AND (acq.id IS NOT NULL OR cq.apply_to_all_assessments = true)
+         ORDER BY cq.created_at ASC`,
+        [id, categoryId]
+      );
+      
+      // Transform custom questions to match framework structure
+      customQuestionsResult.rows.forEach((customQ, index) => {
+        // Build maturity level options array
+        const maturityOptions = [
+          customQ.maturity_level_1 ? { value: 1, label: `Level 1: ${customQ.maturity_level_1}`, score: 1 } : null,
+          customQ.maturity_level_2 ? { value: 2, label: `Level 2: ${customQ.maturity_level_2}`, score: 2 } : null,
+          customQ.maturity_level_3 ? { value: 3, label: `Level 3: ${customQ.maturity_level_3}`, score: 3 } : null,
+          customQ.maturity_level_4 ? { value: 4, label: `Level 4: ${customQ.maturity_level_4}`, score: 4 } : null,
+          customQ.maturity_level_5 ? { value: 5, label: `Level 5: ${customQ.maturity_level_5}`, score: 5 } : null
+        ].filter(Boolean);
+        
+        // Generic pain point options
+        const technicalPainOptions = [
+          { value: 'manual_processes', label: 'Manual and time-consuming processes', score: 4 },
+          { value: 'scalability_issues', label: 'Scalability and performance issues', score: 4 },
+          { value: 'integration_complexity', label: 'Integration complexity and technical debt', score: 3 },
+          { value: 'lack_automation', label: 'Lack of automation and standardization', score: 3 },
+          { value: 'monitoring_gaps', label: 'Inadequate monitoring and observability', score: 3 }
+        ];
+        
+        const businessPainOptions = [
+          { value: 'slow_delivery', label: 'Slow time-to-market and delivery cycles', score: 4 },
+          { value: 'high_costs', label: 'High operational and maintenance costs', score: 3 },
+          { value: 'quality_issues', label: 'Quality and reliability concerns', score: 5 },
+          { value: 'resource_constraints', label: 'Resource bottlenecks and constraints', score: 4 },
+          { value: 'compliance_risks', label: 'Compliance and governance risks', score: 5 }
+        ];
+        
+        const customQuestion = {
+          id: `custom_${customQ.id}`,
+          question: customQ.question_text,
+          topic: customQ.category || 'Custom Question',
+          isCustom: true,
+          customQuestionId: customQ.id,
+          weight: customQ.weight,
+          category: customQ.category,
+          perspectives: [
+            {
+              id: 'current_state',
+              label: 'Current State',
+              type: 'single_choice',
+              options: maturityOptions
+            },
+            {
+              id: 'future_state',
+              label: 'Future State Vision',
+              type: 'single_choice',
+              options: maturityOptions
+            },
+            {
+              id: 'technical_pain',
+              label: 'Technical Pain Points',
+              type: 'multiple_choice',
+              options: technicalPainOptions
+            },
+            {
+              id: 'business_pain',
+              label: 'Business Pain Points',
+              type: 'multiple_choice',
+              options: businessPainOptions
+            }
+          ],
+          commentBox: {
+            label: 'Notes',
+            placeholder: 'Share specific details about your challenges or goals...'
+          }
+        };
+        questions.push(customQuestion);
+      });
+      
+      console.log(`✅ Injected ${customQuestionsResult.rows.length} custom question(s) for assessment ${id}, pillar ${categoryId}`);
+    } catch (error) {
+      console.error('Error fetching custom questions:', error);
+      // Continue without custom questions if fetch fails
     }
     
     questions.forEach(question => {

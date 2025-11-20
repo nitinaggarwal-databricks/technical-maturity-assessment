@@ -1,6 +1,6 @@
 /**
  * Databricks Maturity Assessment Application
- * Version: 2.1.0 - Added editable pillar & roadmap cards - Oct 27, 2025
+ * Version: 2.2.0 - Added floating slideshow buttons and version history - Nov 17, 2025
  */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -27,6 +27,12 @@ import AssignAssessmentMulti from './components/AssignAssessmentMulti';
 import AuthorAssignments from './components/AuthorAssignments';
 import UserDetails from './components/UserDetails';
 import AssessmentDetails from './components/AssessmentDetails';
+import FeedbackForm from './components/FeedbackForm';
+import FeedbackList from './components/FeedbackList';
+import QuestionManager from './components/QuestionManager';
+import ChatWidget from './components/ChatWidget';
+import UserGuide from './components/UserGuide';
+import PitchDeck from './components/PitchDeck';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -262,6 +268,7 @@ function App() {
           <div className="App">
             <GlobalNav />
             <LoadingSpinner message="Loading assessment framework..." />
+            <ChatWidget />
           </div>
         </Router>
       </>
@@ -446,10 +453,45 @@ function App() {
           />
           
           <Route 
+            path="/feedback" 
+            element={<FeedbackForm />} 
+          />
+          
+          <Route 
+            path="/admin/feedback" 
+            element={
+              <ProtectedRoute>
+                <FeedbackList />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/admin/questions" 
+            element={
+              <ProtectedRoute>
+                <QuestionManager />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/user-guide" 
+            element={<UserGuide />}
+          />
+          
+          <Route 
+            path="/pitch-deck" 
+            element={<PitchDeck />}
+          />
+          
+          <Route 
             path="*" 
             element={<Navigate to="/" replace />} 
           />
         </Routes>
+
+        <ChatWidget />
 
         <Toaster 
           position="top-right"

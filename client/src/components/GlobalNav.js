@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiMonitor } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -757,10 +757,10 @@ const GlobalNav = () => {
           {/* Desktop Navigation */}
           <TopNav>
             <NavLink onClick={handleLogoClick}>Home</NavLink>
-            <NavLink onClick={() => scrollToSection('why-assessment')}>Overview</NavLink>
-            <NavLink onClick={() => scrollToSection('how-it-works')}>How It Works</NavLink>
-            <NavLink onClick={() => scrollToSection('pillars')}>Framework</NavLink>
             <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
+            <NavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</NavLink>
+            <NavLink onClick={() => handleNavigate('/user-guide')}>User Guide</NavLink>
+            <NavLink onClick={() => window.open('/workflow-demo.html', '_blank')}>Workflow Demo</NavLink>
           </TopNav>
 
           <ActionButtons>
@@ -814,6 +814,15 @@ const GlobalNav = () => {
                       <FiList />
                       All Assessments
                     </DropdownItem>
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
+                      <DropdownItem onClick={() => {
+                        navigate('/admin/questions');
+                        setAssessmentsDropdownOpen(false);
+                      }}>
+                        <FiSettings />
+                        Manage Questions
+                      </DropdownItem>
+                    )}
                   </DropdownMenu>
                 </DropdownContainer>
 
@@ -834,7 +843,7 @@ const GlobalNav = () => {
                         setAssignmentsDropdownOpen(false);
                       }}>
                         <FiFileText />
-                        Assignments
+                        View Assignments
                       </DropdownItem>
                       <DropdownItem onClick={() => {
                         navigate('/assign-assessment');
@@ -849,7 +858,7 @@ const GlobalNav = () => {
                           setAssignmentsDropdownOpen(false);
                         }}>
                           <FiUsers />
-                          Manage Users
+                          Manage Assignments
                         </DropdownItem>
                       )}
                     </DropdownMenu>
@@ -956,6 +965,25 @@ const GlobalNav = () => {
                       Logout
                     </DropdownItem>
                     <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      navigate('/feedback');
+                      setAdminDropdownOpen(false);
+                    }}>
+                      <FiMessageSquare />
+                      Give Feedback
+                    </DropdownItem>
+                    {currentUser.role === 'admin' && !currentUser.testMode && (
+                      <>
+                        <DropdownItem onClick={() => {
+                          navigate('/admin/feedback');
+                          setAdminDropdownOpen(false);
+                        }}>
+                          <FiMessageSquare />
+                          View All Feedback
+                        </DropdownItem>
+                      </>
+                    )}
+                    <DropdownDivider />
                     <DropdownEmailLink 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1003,10 +1031,10 @@ const GlobalNav = () => {
       {/* Mobile Menu */}
       <MobileMenu $isOpen={mobileMenuOpen}>
         <MobileNavLink onClick={handleLogoClick}>Home</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('why-assessment')}>Overview</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('how-it-works')}>How It Works</MobileNavLink>
-        <MobileNavLink onClick={() => scrollToSection('pillars')}>Framework</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</MobileNavLink>
+        <MobileNavLink onClick={() => handleNavigate('/user-guide')}>User Guide</MobileNavLink>
+        <MobileNavLink onClick={() => window.open('/workflow-demo.html', '_blank')}>Workflow Demo</MobileNavLink>
         
         {currentUser ? (
           <>
@@ -1028,13 +1056,13 @@ const GlobalNav = () => {
             {(currentUser.role === 'admin' || currentUser.role === 'author') && (
               <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assignments')}>
                 <FiFileText size={16} />
-                My Assignments
+                View Assignments
               </MobileSecondaryCTAButton>
             )}
             {currentUser.role === 'admin' && (
               <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
                 <FiUsers size={16} />
-                Manage Users
+                Manage Assignments
               </MobileSecondaryCTAButton>
             )}
             <MobileCTAButton onClick={() => handleNavigate('/start')}>
