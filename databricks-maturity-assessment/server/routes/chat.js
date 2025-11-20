@@ -141,12 +141,18 @@ router.post('/message', async (req, res) => {
       [convId]
     );
 
+    console.log('[API] AI Response type:', typeof aiResponse);
+    console.log('[API] AI Response keys:', aiResponse ? Object.keys(aiResponse) : 'null');
+    console.log('[API] suggestedQuestions type:', typeof suggestedQuestions);
+    console.log('[API] suggestedQuestions value:', suggestedQuestions);
+    
     // Ensure suggestedQuestions is always an array
     const finalSuggestedQuestions = Array.isArray(suggestedQuestions) && suggestedQuestions.length > 0 
       ? suggestedQuestions 
       : ["Tell me more", "What else?", "How does this work?", "Show me examples"];
     
-    console.log('[API] Sending response with questions:', finalSuggestedQuestions);
+    console.log('[API] Final suggested questions:', finalSuggestedQuestions);
+    console.log('[API] Sending response...');
     
     res.json({
       conversationId: convId,
