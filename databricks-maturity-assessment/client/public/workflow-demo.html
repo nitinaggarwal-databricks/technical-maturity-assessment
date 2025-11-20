@@ -27,25 +27,25 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 10px 20px;
             box-sizing: border-box;
         }
 
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 1.6rem;
+            margin-bottom: 3px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .header p {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
@@ -56,52 +56,48 @@
             overflow: hidden;
             flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
         }
 
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 40px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .btn {
-            padding: 12px 24px;
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 50%;
+            font-size: 1.5rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-primary {
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        #prevBtn {
+            left: 30px;
+            background: white;
+            color: #667eea;
+        }
+
+        #nextBtn {
+            right: 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #e9ecef;
-            color: #495057;
-        }
-
-        .btn-secondary:hover {
-            background: #dee2e6;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         .progress-bar {
@@ -120,57 +116,63 @@
 
         .step-indicator {
             display: flex;
-            justify-content: space-between;
-            padding: 20px 40px;
-            background: white;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 2px solid #e9ecef;
+            min-width: 120px;
         }
 
         .step {
-            flex: 1;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
-            padding: 10px;
+            padding: 15px 0;
         }
 
         .step::before {
             content: '';
             position: absolute;
-            top: 15px;
-            left: 0;
-            right: 0;
-            height: 2px;
+            left: 17px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
             background: #e9ecef;
             z-index: 0;
         }
 
         .step:first-child::before {
-            left: 50%;
+            top: 50%;
         }
 
         .step:last-child::before {
-            right: 50%;
+            bottom: 50%;
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: #e9ecef;
             color: #6c757d;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 10px;
+            margin-bottom: 8px;
             font-weight: 700;
+            font-size: 0.9rem;
             position: relative;
             z-index: 1;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .step.active .step-number {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: scale(1.2);
+            transform: scale(1.15);
         }
 
         .step.completed .step-number {
@@ -179,9 +181,11 @@
         }
 
         .step-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #6c757d;
             font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
         }
 
         .step.active .step-label {
@@ -190,13 +194,14 @@
         }
 
         .content-area {
-            padding: 30px 40px;
+            padding: 20px 40px;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow-y: auto;
+            background: white;
         }
 
         .step-content {
@@ -230,23 +235,23 @@
         }
 
         .step-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #1e293b;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .step-icon {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         .step-description {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #475569;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            line-height: 1.5;
+            margin-bottom: 15px;
         }
 
         .feature-list {
@@ -276,18 +281,18 @@
 
         .mockup {
             background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 15px;
             border: 2px solid #e9ecef;
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         .mockup-header {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #e9ecef;
         }
 
