@@ -231,9 +231,29 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   // Helper to get questions from multiple sets based on rotation
   const getRotatedQuestions = (set1, set2, set3) => {
     const sets = [set1, set2, set3];
-    const selected = sets[rotationIndex];
+    let selected = sets[rotationIndex];
+    
+    // Filter out questions too similar to the current user message
+    const userMessageWords = messageLower.split(' ').filter(w => w.length > 3);
+    const filtered = selected.filter(q => {
+      const qWords = q.toLowerCase().split(' ').filter(w => w.length > 3);
+      const matchCount = qWords.filter(w => userMessageWords.includes(w)).length;
+      // If 2+ words match, it's too similar
+      return matchCount < 2;
+    });
+    
+    // If we filtered out too many, try next set
+    if (filtered.length < 3) {
+      const nextIndex = (rotationIndex + 1) % 3;
+      selected = sets[nextIndex];
+      console.log('[Questions] Switched to set', nextIndex + 1, 'due to similarity');
+    } else {
+      selected = filtered;
+    }
+    
+    console.log('[Questions] User asked:', messageLower.substring(0, 40));
     console.log('[Questions] Returning set', rotationIndex + 1, ':', selected);
-    return selected;
+    return selected.slice(0, 4);
   };
   // Specific Databricks features mentioned
   if (messageLower.includes('delta lake')) {
@@ -358,8 +378,8 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
   if (messageLower.includes('start') || messageLower.includes('begin')) {
     return getRotatedQuestions(
       ["What are the 6 pillars?", "How long does it take?", "What information do I need?", "Can I see a demo?"],
-      ["Can I save and resume later?", "What are maturity levels?", "Who should take this assessment?", "What will I get from this?"],
-      ["What are the 6 pillars?", "Can I skip questions?", "Is there a sample?", "How is it scored?"]
+      ["Can I save and resume later?", "What are maturity levels?", "Who should take this assessment?", "Tell me about Data Engineering"],
+      ["Tell me about Platform Governance", "Can I skip questions?", "Is there a sample assessment?", "How is the assessment scored?"]
     );
   }
   
@@ -368,7 +388,7 @@ function getSuggestedFollowUpQuestions(messageLower, pageType, hasAssessmentData
     return getRotatedQuestions(
       ["Tell me about Platform Governance", "Tell me about Data Engineering", "Tell me about Machine Learning", "What are maturity levels?"],
       ["Tell me about Analytics & BI", "Tell me about Generative AI", "Tell me about Operational Excellence", "How are pillars scored?"],
-      ["Tell me about Data Engineering", "Tell me about Machine Learning", "How do I rate maturity?", "What's the framework?"]
+      ["What is Delta Lake?", "What is Unity Catalog?", "How do I rate maturity?", "How long does it take?"]
     );
   }
   
