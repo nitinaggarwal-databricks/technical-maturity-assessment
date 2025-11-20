@@ -126,32 +126,55 @@
             }
         }
 
-        .nav-btn {
+        .nav-arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
         }
 
-        .nav-btn:hover:not(:disabled) {
-            transform: translateY(-50%) scale(1.05);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        .content-area:hover .nav-arrow {
+            opacity: 0.6;
         }
 
-        .nav-btn:active:not(:disabled) {
-            transform: translateY(-50%) scale(0.98);
+        .nav-arrow:hover {
+            opacity: 1 !important;
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        .nav-arrow:active {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-arrow svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: #667eea;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-arrow:hover svg {
+            stroke: #764ba2;
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0 !important;
+            cursor: not-allowed;
         }
 
         .exit-btn {
@@ -173,6 +196,7 @@
             opacity: 0;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            border: none;
         }
 
         .exit-btn:hover {
@@ -185,27 +209,12 @@
             opacity: 0.7;
         }
 
-        .nav-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
         #prevBtn {
-            left: -70px;
-            transform: translateY(-50%);
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            min-width: 100px;
+            left: -65px;
         }
 
         #nextBtn {
-            right: -70px;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: 2px solid transparent;
-            min-width: 100px;
+            right: -65px;
         }
 
         .progress-bar {
@@ -670,13 +679,15 @@
             </div>
 
             <div class="content-area">
-                <button class="nav-btn" id="prevBtn" disabled>
-                    <span>←</span>
-                    <span>Previous</span>
+                <button class="nav-arrow" id="prevBtn" disabled>
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
                 </button>
-                <button class="nav-btn" id="nextBtn">
-                    <span>Next</span>
-                    <span>→</span>
+                <button class="nav-arrow" id="nextBtn">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                 </button>
                 
                 <!-- Step 1: Homepage -->
@@ -1059,11 +1070,7 @@
 
             // Update buttons
             prevBtn.disabled = currentStep === 1;
-            if (currentStep === totalSteps) {
-                nextBtn.innerHTML = '<span>Finish</span><span>✓</span>';
-            } else {
-                nextBtn.innerHTML = '<span>Next</span><span>→</span>';
-            }
+            nextBtn.disabled = false;
 
             // Update progress bar
             const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
