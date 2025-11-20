@@ -1257,7 +1257,7 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
   }
   
   if (messageLower.includes('bye') || messageLower.includes('goodbye')) {
-    return respond("Goodbye! 👋 I'll be here whenever you need assistance. Good luck with your assessment!";
+    return respond("Goodbye! 👋 I'll be here whenever you need assistance. Good luck with your assessment!");
   }
   
   // ===== CONTEXT-AWARE DEFAULT =====
