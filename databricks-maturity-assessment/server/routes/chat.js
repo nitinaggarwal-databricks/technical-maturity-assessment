@@ -1224,22 +1224,37 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
   // ADMIN
   if (pageType === 'admin') {
     if (messageLower.includes('what') || messageLower.includes('this page') || messageLower.includes('admin')) {
-      return respond("You're in the **Admin Section** - management tools.\n\nAdmin capabilities:\n• **Manage users** - Create, edit, assign roles\n• **Manage assessments** - View all, assign to users\n• **Custom questions** - Add organization-specific questions\n• **View feedback** - See user feedback and analytics\n• **Manage assignments** - Track who's doing what\n• **Role switching** - Test as different user types\n\nPowerful tools for assessment administrators!");
+      return respond("You're in the **Admin Section** - management tools.\n\n**Quick Links:**\n👥 [Manage Users](/admin/users)\n📋 [All Assessments](/admin/assessments)\n❓ [Custom Questions](/admin/questions)\n📊 [Assign Users](/admin/assign)\n💬 [View Feedback](/admin/feedback)\n\n**Admin Capabilities:**\n• Create & manage users\n• Assign assessments to teams\n• Add custom questions\n• View all feedback & analytics\n• Track assignments & progress\n• Test different user roles");
     }
+  }
+  
+  // DEMO / SAMPLE REQUESTS
+  if (messageLower.includes('demo') || messageLower.includes('sample') || messageLower.includes('try') || messageLower.includes('example')) {
+    return respond("**Try a Sample Assessment!** 🎯\n\n[Launch Sample Assessment](/try-sample) - Pre-filled demo with realistic data\n\n**What you'll see:**\n• All 6 pillars with sample responses\n• Current & target maturity levels\n• Pain points and notes\n• Full maturity report\n• Executive dashboard\n• Industry benchmarks\n\n**Perfect for:**\n• Understanding the assessment flow\n• Seeing what reports look like\n• Learning before starting your own\n\nNo signup required - just click and explore!");
+  }
+  
+  // REPORTS / RESULTS
+  if (messageLower.includes('report') && !messageLower.includes('maturity report')) {
+    return respond("**Your Assessment Reports:** 📊\n\n**Main Reports:**\n📈 [Maturity Report](/results) - Detailed scores & analysis\n🎯 [Executive Dashboard](/executive-dashboard) - C-level summary\n💡 [Insights Dashboard](/insights-dashboard) - Analytics & trends\n📊 [Industry Benchmarks](/industry-benchmarks) - Compare with peers\n\n**Features:**\n• 🎬 Slideshow mode for presentations\n• 🖨️ Print to PDF\n• ✏️ Edit & customize content\n• 📤 Export to Excel\n\n**Not started yet?**\n🚀 [Start Assessment](/assessment/start)\n🎯 [Try Sample First](/try-sample)");
+  }
+  
+  // EXPORT / EXCEL
+  if (messageLower.includes('export') || messageLower.includes('excel') || messageLower.includes('download')) {
+    return respond("**Export Your Data:** 📥\n\n**Excel Export:**\n1. Go to [Your Dashboard](/dashboard)\n2. Find your assessment\n3. Click the Excel icon (📊)\n4. Download, edit, and re-upload!\n\n**PDF Export:**\n1. Open any report ([Maturity](/results), [Executive](/executive-dashboard), etc.)\n2. Click **Slideshow** button\n3. Click **Print** icon in slideshow\n4. Use browser's Print to PDF\n\n**What's included:**\n• All questions & responses\n• Maturity scores (current & target)\n• Pain points & notes\n• Organized by pillar\n\n[View My Dashboard](/dashboard)");
   }
   
   // ===== GENERAL KNOWLEDGE RESPONSES =====
   
   if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('areas')) {
-    return respond("**The 6 Assessment Pillars:**\n\n🏛️ **Platform & Governance** - Security, compliance, access control, Unity Catalog\n\n🔷 **Data Engineering** - Data pipelines, ETL, data quality, Delta Lake\n\n📊 **Analytics & BI** - Reporting, dashboards, SQL analytics, visualization\n\n🤖 **Machine Learning** - ML models, MLOps, MLflow, model deployment\n\n✨ **Generative AI** - LLMs, AI applications, AI Gateway, RAG\n\n⚙️ **Operational Excellence** - Monitoring, cost optimization, reliability\n\nEach pillar has 5-8 sub-dimensions for detailed assessment.");
+    return respond("**The 6 Assessment Pillars:**\n\n🏛️ **[Platform & Governance](/deep-dive#platform-governance)**\nSecurity, compliance, Unity Catalog, access control\n\n🔷 **[Data Engineering](/deep-dive#data-engineering)**\nData pipelines, ETL, Delta Lake, data quality\n\n📊 **[Analytics & BI](/deep-dive#analytics-bi)**\nReporting, dashboards, SQL analytics, visualization\n\n🤖 **[Machine Learning](/deep-dive#machine-learning)**\nML models, MLOps, MLflow, model deployment\n\n✨ **[Generative AI](/deep-dive#generative-ai)**\nLLMs, AI applications, AI Gateway, RAG patterns\n\n⚙️ **[Operational Excellence](/deep-dive#operational-excellence)**\nMonitoring, cost optimization, reliability\n\n📚 [View Full Deep Dive](/deep-dive) - Detailed explanation of all pillars\n🚀 [Start Assessment](/assessment/start) - Begin now");
   }
   
   if (messageLower.includes('databricks') && (messageLower.includes('feature') || messageLower.includes('product') || messageLower.includes('capability'))) {
-    return respond("**Key Databricks Capabilities:**\n\n**Data Engineering:**\n• Delta Lake - ACID transactions, time travel\n• Delta Live Tables - Declarative pipelines\n• Auto Loader - Incremental data ingestion\n\n**Governance:**\n• Unity Catalog - Unified governance\n• Data lineage - Track data flow\n• Access controls - Fine-grained permissions\n\n**ML & AI:**\n• MLflow - ML lifecycle management\n• Model Serving - Deploy models at scale\n• AI Gateway - Secure GenAI development\n\n**Performance:**\n• Photon - High-speed query engine\n• Serverless - Auto-scaling compute\n\nWant details on any specific feature?");
+    return respond("**Key Databricks Capabilities:**\n\n**Data Engineering:**\n• [Delta Lake](/deep-dive#data-engineering) - ACID transactions, time travel\n• Delta Live Tables - Declarative pipelines\n• Auto Loader - Incremental data ingestion\n\n**Governance:**\n• [Unity Catalog](/deep-dive#platform-governance) - Unified governance\n• Data lineage - Track data flow\n• Access controls - Fine-grained permissions\n\n**ML & AI:**\n• [MLflow](/deep-dive#machine-learning) - ML lifecycle management\n• Model Serving - Deploy models at scale\n• [AI Gateway](/deep-dive#generative-ai) - Secure GenAI development\n\n**Performance:**\n• Photon - High-speed query engine\n• Serverless - Auto-scaling compute\n\n📚 [Learn More - Deep Dive](/deep-dive)\n🚀 [Start Assessment](/assessment/start)");
   }
   
   if (messageLower.includes('how to start') || messageLower.includes('how do i start') || messageLower.includes('begin')) {
-    return respond("**Starting Your Assessment:**\n\n1. Click **'Start Assessment'** in the navigation\n2. Enter your **organization details**\n3. Answer questions for each pillar:\n   • Rate **current maturity** (1-5)\n   • Rate **target maturity** (1-5)\n   • Add **pain points** (technical & business)\n   • Add **notes** for context\n4. Review and **submit**\n5. View your **Maturity Report**\n\n⏱️ Takes 15-20 minutes. Auto-saves progress!");
+    return respond("**Ready to start your assessment?** 🚀\n\n**Option 1: Start Fresh**\n[Start New Assessment](/assessment/start) - Begin your maturity assessment now\n\n**Option 2: Try a Demo**\n[Try Sample Assessment](/try-sample) - See how it works with pre-filled data\n\n**Option 3: Learn More First**\n[Deep Dive Guide](/deep-dive) - Understand what we assess\n[User Guide](/user-guide) - Complete walkthrough\n\n**Quick Overview:**\n• 6 pillars, 15-20 minutes\n• Rate current & target maturity (1-5)\n• Auto-saves, resume anytime\n• Get instant reports & recommendations\n\nWhich option works best for you?");
   }
   
   if (messageLower.includes('slideshow') || messageLower.includes('present') || messageLower.includes('print')) {
@@ -1285,7 +1300,21 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
     'pitch_deck': "You're viewing the pitch deck. Ask me about presenting this to customers or the value proposition!"
   };
   
-  return respond(`I'm your Databricks Maturity Assessment Assistant! 🤖\n\n${pageContext[pageType] || "I can help with any questions about the assessment!"}\n\nI can help you with:\n• **This page** - What you're looking at right now\n• **Assessment process** - How to complete assessments\n• **Reports & dashboards** - Understanding your results\n• **Databricks features** - Product capabilities\n• **Best practices** - How to use the tool effectively\n\nWhat would you like to know?`);
+  // Smart default response with contextual links
+  const contextualLinks = {
+    home: "**Quick Actions:**\n🚀 [Start New Assessment](/assessment/start)\n📊 [View My Dashboard](/dashboard)\n🎯 [Try Sample Assessment](/try-sample)\n📚 [Learn More - Deep Dive](/deep-dive)\n📖 [User Guide](/user-guide)",
+    assessment: "**Assessment Help:**\n❓ [What are the 6 pillars?](/deep-dive)\n💾 [How to save progress?](/user-guide#saving)\n📝 [Understanding maturity levels](/deep-dive#maturity-framework)\n🏠 [Back to Home](/)",
+    maturity_report: "**Report Actions:**\n📥 [Export to PDF](#) (Print button in slideshow)\n📊 [View Dashboard](/dashboard)\n🎯 [Executive Summary](/executive-dashboard)\n📈 [Industry Benchmarks](/industry-benchmarks)\n🔍 [Deep Dive Analysis](/deep-dive)",
+    executive_dashboard: "**Executive Tools:**\n📊 [Full Maturity Report](/results)\n📈 [Industry Benchmarks](/industry-benchmarks)\n💡 [Insights Dashboard](/insights-dashboard)\n🏠 [Back to Home](/)",
+    insights_dashboard: "**Analytics:**\n📊 [Maturity Report](/results)\n🎯 [Executive Dashboard](/executive-dashboard)\n📈 [Industry Benchmarks](/industry-benchmarks)\n🏠 [Back to Home](/)",
+    industry_benchmarks: "**Benchmarking:**\n📊 [Your Maturity Report](/results)\n🎯 [Executive Dashboard](/executive-dashboard)\n💡 [Insights Dashboard](/insights-dashboard)\n🏠 [Back to Home](/)",
+    deep_dive: "**Learn More:**\n🚀 [Start Assessment](/assessment/start)\n📖 [User Guide](/user-guide)\n🎯 [Try Sample](/try-sample)\n🏠 [Back to Home](/)",
+    user_guide: "**Resources:**\n🚀 [Start Assessment](/assessment/start)\n📚 [Deep Dive](/deep-dive)\n🎯 [Try Sample](/try-sample)\n💬 [Give Feedback](/feedback)\n🏠 [Back to Home](/)",
+    dashboard: "**Dashboard Actions:**\n🚀 [Start New Assessment](/assessment/start)\n📊 [View All Assessments](/dashboard)\n📈 [Export to Excel](#) (Click Excel icon)\n🏠 [Back to Home](/)",
+    admin: "**Admin Tools:**\n👥 [Manage Users](/admin/users)\n📋 [Manage Assessments](/admin/assessments)\n❓ [Custom Questions](/admin/questions)\n💬 [View Feedback](/admin/feedback)\n🏠 [Back to Home](/)"
+  };
+  
+  return respond(`I'm your **AI Assessment Assistant**! 🤖\n\n${pageContext[pageType] || "I can help with any questions about the assessment!"}\n\n${contextualLinks[pageType] || contextualLinks.home}\n\n**Ask me anything:**\n• "How do I start?" • "What are the 6 pillars?"\n• "Show me a demo" • "How long does it take?"\n• "What reports do I get?" • "Can I export to Excel?"`);
 }
 
 module.exports = router;

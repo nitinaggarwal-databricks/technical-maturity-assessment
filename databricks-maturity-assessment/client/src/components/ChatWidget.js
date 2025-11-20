@@ -315,6 +315,9 @@ const ChatWidget = () => {
     
     let formatted = text;
     
+    // Links FIRST (before bold/italic): [text](/url) or [text](url) -> <a>text</a>
+    formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #667eea; font-weight: 600; text-decoration: underline; cursor: pointer;">$1</a>');
+    
     // Bold: **text** -> <strong>text</strong>
     formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     
