@@ -61,9 +61,8 @@
 
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 20px;
+            justify-content: space-between;
+            padding: 20px 40px;
             background: #f8f9fa;
             border-bottom: 2px solid #e9ecef;
         }
@@ -431,9 +430,6 @@
                 <button class="btn btn-primary" id="nextBtn">
                     Next →
                 </button>
-                <button class="btn btn-secondary" id="restartBtn">
-                    🔄 Restart
-                </button>
             </div>
 
             <div class="progress-bar">
@@ -798,7 +794,6 @@
 
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        const restartBtn = document.getElementById('restartBtn');
         const progressFill = document.getElementById('progressFill');
 
         function updateUI() {
@@ -850,11 +845,6 @@
                 currentStep--;
                 updateUI();
             }
-        });
-
-        restartBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateUI();
         });
 
         // Keyboard navigation
