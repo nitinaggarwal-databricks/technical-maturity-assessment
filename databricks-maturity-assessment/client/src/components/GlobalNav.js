@@ -760,6 +760,7 @@ const GlobalNav = () => {
             <NavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</NavLink>
             <NavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</NavLink>
             <NavLink onClick={() => handleNavigate('/user-guide')}>User Guide</NavLink>
+            <NavLink onClick={() => window.open('/workflow-demo.html', '_blank')}>Workflow Demo</NavLink>
           </TopNav>
 
           <ActionButtons>
@@ -1033,6 +1034,7 @@ const GlobalNav = () => {
         <MobileNavLink onClick={() => handleNavigate('/deep-dive')}>Deep Dive</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/pitch-deck')}>Pitch Deck</MobileNavLink>
         <MobileNavLink onClick={() => handleNavigate('/user-guide')}>User Guide</MobileNavLink>
+        <MobileNavLink onClick={() => window.open('/workflow-demo.html', '_blank')}>Workflow Demo</MobileNavLink>
         
         {currentUser ? (
           <>
