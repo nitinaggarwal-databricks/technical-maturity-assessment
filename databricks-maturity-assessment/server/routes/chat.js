@@ -1094,11 +1094,18 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
     return respond(response);
   }
   
+  // ===== GENERAL KNOWLEDGE RESPONSES (MUST COME FIRST) =====
+  
+  // Questions about pillars (general) - MOVED UP for priority
+  if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('areas') || messageLower.includes('6 pillars')) {
+    return respond("**The 6 Assessment Pillars:**\n\n🏛️ **[Platform & Governance](/deep-dive#platform-governance)**\nSecurity, compliance, Unity Catalog, access control\n\n🔷 **[Data Engineering](/deep-dive#data-engineering)**\nData pipelines, ETL, Delta Lake, data quality\n\n📊 **[Analytics & BI](/deep-dive#analytics-bi)**\nReporting, dashboards, SQL analytics, visualization\n\n🤖 **[Machine Learning](/deep-dive#machine-learning)**\nML models, MLOps, MLflow, model deployment\n\n✨ **[Generative AI](/deep-dive#generative-ai)**\nLLMs, AI applications, AI Gateway, RAG patterns\n\n⚙️ **[Operational Excellence](/deep-dive#operational-excellence)**\nMonitoring, cost optimization, reliability\n\n📚 [View Full Deep Dive](/deep-dive) - Detailed explanation of all pillars\n🚀 [Start Assessment](/assessment/start) - Begin now");
+  }
+  
   // ===== PAGE-SPECIFIC CONTEXT RESPONSES =====
   
   // HOME PAGE
   if (pageType === 'home') {
-    if (messageLower.includes('what') || messageLower.includes('this page') || messageLower.includes('here')) {
+    if ((messageLower.includes('what') || messageLower.includes('this page') || messageLower.includes('here')) && !messageLower.includes('pillar')) {
       return respond("You're on the **Home Page** of the Databricks Maturity Assessment tool.\n\nFrom here you can:\n• **Start a new assessment** - Click 'Start Assessment'\n• **Try a sample** - See a demo assessment\n• **View your dashboard** - See all your assessments\n• **Learn more** - Check out the Deep Dive, User Guide, or Pitch Deck\n\nWhat would you like to do?");
     }
   }
@@ -1244,10 +1251,6 @@ async function generateSmartAIResponse(userMessage, conversationHistory, context
   }
   
   // ===== GENERAL KNOWLEDGE RESPONSES =====
-  
-  if (messageLower.includes('pillar') || messageLower.includes('categories') || messageLower.includes('areas')) {
-    return respond("**The 6 Assessment Pillars:**\n\n🏛️ **[Platform & Governance](/deep-dive#platform-governance)**\nSecurity, compliance, Unity Catalog, access control\n\n🔷 **[Data Engineering](/deep-dive#data-engineering)**\nData pipelines, ETL, Delta Lake, data quality\n\n📊 **[Analytics & BI](/deep-dive#analytics-bi)**\nReporting, dashboards, SQL analytics, visualization\n\n🤖 **[Machine Learning](/deep-dive#machine-learning)**\nML models, MLOps, MLflow, model deployment\n\n✨ **[Generative AI](/deep-dive#generative-ai)**\nLLMs, AI applications, AI Gateway, RAG patterns\n\n⚙️ **[Operational Excellence](/deep-dive#operational-excellence)**\nMonitoring, cost optimization, reliability\n\n📚 [View Full Deep Dive](/deep-dive) - Detailed explanation of all pillars\n🚀 [Start Assessment](/assessment/start) - Begin now");
-  }
   
   if (messageLower.includes('databricks') && (messageLower.includes('feature') || messageLower.includes('product') || messageLower.includes('capability'))) {
     return respond("**Key Databricks Capabilities:**\n\n**Data Engineering:**\n• [Delta Lake](/deep-dive#data-engineering) - ACID transactions, time travel\n• Delta Live Tables - Declarative pipelines\n• Auto Loader - Incremental data ingestion\n\n**Governance:**\n• [Unity Catalog](/deep-dive#platform-governance) - Unified governance\n• Data lineage - Track data flow\n• Access controls - Fine-grained permissions\n\n**ML & AI:**\n• [MLflow](/deep-dive#machine-learning) - ML lifecycle management\n• Model Serving - Deploy models at scale\n• [AI Gateway](/deep-dive#generative-ai) - Secure GenAI development\n\n**Performance:**\n• Photon - High-speed query engine\n• Serverless - Auto-scaling compute\n\n📚 [Learn More - Deep Dive](/deep-dive)\n🚀 [Start Assessment](/assessment/start)");
