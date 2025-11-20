@@ -177,6 +177,20 @@ const MessageBubble = styled.div`
     font-weight: 700;
     color: ${props => props.$isUser ? 'white' : '#0f172a'};
   }
+  
+  /* Links */
+  a {
+    color: ${props => props.$isUser ? '#fde68a' : '#667eea'};
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: ${props => props.$isUser ? '#fcd34d' : '#4f46e5'};
+      text-decoration: underline;
+    }
+  }
 
   em {
     font-style: italic;
@@ -316,7 +330,10 @@ const ChatWidget = () => {
     let formatted = text;
     
     // Links FIRST (before bold/italic): [text](/url) or [text](url) -> <a>text</a>
+    const linkCount = (text.match(/\[([^\]]+)\]\(([^)]+)\)/g) || []).length;
+    console.log('[ChatWidget] Formatting message with', linkCount, 'links');
     formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #667eea; font-weight: 600; text-decoration: underline; cursor: pointer;">$1</a>');
+    console.log('[ChatWidget] After replacement, has <a> tags:', formatted.includes('<a href'));
     
     // Bold: **text** -> <strong>text</strong>
     formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
