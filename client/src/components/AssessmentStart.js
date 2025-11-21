@@ -232,11 +232,11 @@ const INDUSTRIES = [
 
 const PILLARS = [
   { id: 'platform_governance', name: '🧱 Platform & Governance' },
-  { id: 'data_engineering', name: '🔧 Data Engineering' },
+  { id: 'data_engineering', name: '💾 Data Engineering' },
   { id: 'analytics_bi', name: '📊 Analytics & BI' },
   { id: 'machine_learning', name: '🤖 Machine Learning' },
-  { id: 'genai', name: '✨ Generative AI' },
-  { id: 'enablement', name: '📚 Enablement & Adoption' }
+  { id: 'generative_ai', name: '✨ Generative AI' },
+  { id: 'operational_excellence', name: '⚡ Operational Excellence' }
 ];
 
 const AssessmentStart = ({ onStart }) => {
