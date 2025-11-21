@@ -1022,7 +1022,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   // Calculate and update progress
   const updateProgress = useCallback(() => {
     if (framework && currentAssessment && onUpdateStatus) {
-      const totalQuestions = framework.assessmentAreas.reduce((total, area) => {
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      
+      const totalQuestions = availablePillars.reduce((total, area) => {
         return total + (area.dimensions?.reduce((dimTotal, dim) => {
           return dimTotal + (dim.questions?.length || 0);
         }, 0) || 0);
@@ -1733,11 +1737,14 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setCurrentQuestionIndex(prev => prev - 1);
     } else {
       // On first question - navigate to previous pillar's last question
-      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      const currentPillarIndex = availablePillars.findIndex(area => area.id === categoryId);
       
       if (currentPillarIndex > 0) {
         // Go to previous pillar
-        const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
+        const previousPillar = availablePillars[currentPillarIndex - 1];
         navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
         
       } else {
@@ -1775,11 +1782,14 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       const completedCategories = updatedAssessment?.completedCategories || currentAssessment?.completedCategories || [];
       
       // Find the next pillar in sequence (regardless of completion status)
-      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
-      const nextPillar = framework.assessmentAreas[currentPillarIndex + 1]; // Get next pillar in sequence
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      const currentPillarIndex = availablePillars.findIndex(area => area.id === categoryId);
+      const nextPillar = availablePillars[currentPillarIndex + 1]; // Get next pillar in sequence
       
       // Show appropriate message if all pillars completed
-      if (!nextPillar && completedCategories.length === framework.assessmentAreas.length) {
+      if (!nextPillar && completedCategories.length === availablePillars.length) {
         toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
           duration: 5000
         });

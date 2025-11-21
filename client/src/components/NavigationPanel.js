@@ -569,7 +569,17 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       )}
 
       <PillarList>
-        {framework.assessmentAreas?.map((pillar) => {
+        {framework.assessmentAreas
+          ?.filter(pillar => {
+            // Filter to show only selected pillars
+            const selectedPillars = currentAssessment?.selectedPillars;
+            if (!selectedPillars || selectedPillars.length === 0) {
+              // If no pillars selected (old assessments), show all
+              return true;
+            }
+            return selectedPillars.includes(pillar.id);
+          })
+          .map((pillar) => {
           const isExpanded = expandedPillars.has(pillar.id);
           const isActive = categoryId === pillar.id;
           const isCompleted = pillarProgress[pillar.id]?.completed || false;
