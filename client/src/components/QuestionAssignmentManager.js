@@ -369,6 +369,8 @@ const QuestionAssignmentManager = () => {
       
       const framework = await frameworkResponse.json();
       
+      console.log('📚 Framework loaded:', framework);
+      
       // Extract all questions from all pillars
       const allQuestions = [];
       framework.assessmentAreas?.forEach(pillar => {
@@ -384,6 +386,8 @@ const QuestionAssignmentManager = () => {
         });
       });
       
+      console.log(`📝 Extracted ${allQuestions.length} framework questions`);
+      
       // Load custom questions for this assessment
       const customResponse = await fetch(
         `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/custom-questions?assessmentId=${assessmentId}`,
@@ -398,6 +402,8 @@ const QuestionAssignmentManager = () => {
         const customResult = await customResponse.json();
         const customQuestions = customResult.questions || customResult;
         
+        console.log('🎨 Custom questions loaded:', customQuestions);
+        
         if (Array.isArray(customQuestions)) {
           customQuestions.forEach(q => {
             allQuestions.push({
@@ -409,9 +415,11 @@ const QuestionAssignmentManager = () => {
               isCustom: true
             });
           });
+          console.log(`✅ Added ${customQuestions.length} custom questions`);
         }
       }
       
+      console.log(`🎯 Total questions loaded: ${allQuestions.length}`);
       setQuestions(allQuestions);
     } catch (err) {
       console.error('Error loading questions:', err);
@@ -608,31 +616,51 @@ const QuestionAssignmentManager = () => {
               <h2 style={{ marginBottom: '20px', color: '#333' }}>
                 Select Questions from {selectedAssessment?.organization_name}
               </h2>
-              {Object.entries(groupQuestionsByPillar()).map(([pillarName, pillarQuestions]) => (
-                <div key={pillarName} style={{ marginBottom: '30px' }}>
-                  <h3 style={{ color: '#667eea', marginBottom: '15px', fontSize: '1.2rem' }}>
-                    {pillarName} ({pillarQuestions.length} questions)
-                  </h3>
-                  <SelectionGrid>
-                    {pillarQuestions.map(question => {
-                      const isSelected = selectedQuestions.find(q => q.id === question.id);
-                      return (
-                        <QuestionCard
-                          key={question.id}
-                          selected={isSelected}
-                          onClick={() => handleQuestionToggle(question)}
-                        >
-                          <QuestionText>{question.question}</QuestionText>
-                          <QuestionMeta>
-                            <Badge selected={isSelected}>{question.dimension}</Badge>
-                            {question.isCustom && <Badge selected={isSelected}>Custom</Badge>}
-                          </QuestionMeta>
-                        </QuestionCard>
-                      );
-                    })}
-                  </SelectionGrid>
+              
+              {questions.length === 0 ? (
+                <div style={{ 
+                  padding: '40px', 
+                  textAlign: 'center', 
+                  background: '#f8f9fa', 
+                  borderRadius: '12px',
+                  color: '#666'
+                }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '20px' }}>📝</div>
+                  <h3 style={{ color: '#333', marginBottom: '10px' }}>No Questions Available</h3>
+                  <p>There are no questions loaded for this assessment.</p>
+                  <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
+                    This could mean the assessment framework hasn't loaded yet or there was an error.
+                  </p>
                 </div>
-              ))}
+              ) : (
+                <>
+                  {Object.entries(groupQuestionsByPillar()).map(([pillarName, pillarQuestions]) => (
+                    <div key={pillarName} style={{ marginBottom: '30px' }}>
+                      <h3 style={{ color: '#667eea', marginBottom: '15px', fontSize: '1.2rem' }}>
+                        {pillarName} ({pillarQuestions.length} questions)
+                      </h3>
+                      <SelectionGrid>
+                        {pillarQuestions.map(question => {
+                          const isSelected = selectedQuestions.find(q => q.id === question.id);
+                          return (
+                            <QuestionCard
+                              key={question.id}
+                              selected={isSelected}
+                              onClick={() => handleQuestionToggle(question)}
+                            >
+                              <QuestionText>{question.question}</QuestionText>
+                              <QuestionMeta>
+                                <Badge selected={isSelected}>{question.dimension}</Badge>
+                                {question.isCustom && <Badge selected={isSelected}>Custom</Badge>}
+                              </QuestionMeta>
+                            </QuestionCard>
+                          );
+                        })}
+                      </SelectionGrid>
+                    </div>
+                  ))}
+                </>
+              )}
               
               <ButtonGroup>
                 <SecondaryButton onClick={() => setCurrentStep(1)}>← Back</SecondaryButton>
