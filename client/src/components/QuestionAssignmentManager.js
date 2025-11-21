@@ -367,7 +367,8 @@ const QuestionAssignmentManager = () => {
       const frameworkResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/assessment/framework`);
       if (!frameworkResponse.ok) throw new Error('Failed to load framework');
       
-      const framework = await frameworkResponse.json();
+      const frameworkResult = await frameworkResponse.json();
+      const framework = frameworkResult.data || frameworkResult;
       
       console.log('📚 Framework loaded:', framework);
       
