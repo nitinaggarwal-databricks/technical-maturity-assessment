@@ -1217,12 +1217,6 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     console.log(`Questions answered: ${answeredQuestions} of ${totalQuestions}`);
     
-    // Filter to only selected pillars
-    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
-    const availableAreas = assessmentFramework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
-    console.log(`📊 Selected pillars: ${selectedPillars.join(', ')}`);
-    console.log(`📊 Available areas for calculation: ${availableAreas.length}`);
-    
     // Find areas with any responses (completed or partial)
     const areasWithResponses = hasAnyResponses 
       ? availableAreas.filter(area => {
