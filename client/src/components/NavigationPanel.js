@@ -578,16 +578,22 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       <PillarList>
         {framework.assessmentAreas?.map((pillar) => {
           // Check if this pillar is selected for this assessment
-          const selectedPillars = currentAssessment?.selectedPillars || [];
-          // If selectedPillars is empty array, it means this is an old assessment before the feature was added
-          // In that case, treat all pillars as selected for backward compatibility
-          const isOldAssessment = !currentAssessment?.selectedPillars;
-          const isSelected = isOldAssessment ? true : selectedPillars.includes(pillar.id);
+          const selectedPillars = currentAssessment?.selectedPillars;
+          // Backward compatibility logic:
+          // - If selectedPillars is undefined/null: old assessment before feature → allow all pillars
+          // - If selectedPillars is empty array []: old assessment or data issue → allow all pillars for safety
+          // - If selectedPillars has items: only allow those specific pillars
+          const isOldOrEmptyAssessment = !selectedPillars || (Array.isArray(selectedPillars) && selectedPillars.length === 0);
+          const isSelected = isOldOrEmptyAssessment || selectedPillars.includes(pillar.id);
           
           // Debug logging (only log once per pillar)
           if (pillar.id === 'platform_governance') {
             console.log('🔍 NavigationPanel Debug:', {
               assessmentId: currentAssessment?.assessmentId,
+              rawSelectedPillars: currentAssessment?.selectedPillars,
+              selectedPillarsType: typeof currentAssessment?.selectedPillars,
+              selectedPillarsIsArray: Array.isArray(currentAssessment?.selectedPillars),
+              selectedPillarsLength: currentAssessment?.selectedPillars?.length,
               selectedPillars,
               isOldAssessment,
               currentPillar: pillar.id,
