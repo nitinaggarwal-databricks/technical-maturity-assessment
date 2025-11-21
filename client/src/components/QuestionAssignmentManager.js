@@ -491,6 +491,11 @@ const QuestionAssignmentManager = () => {
             due_date: dueDate || null
           };
           
+          console.log('📤 Creating assignment:', assignment);
+          console.log('Question:', question);
+          console.log('User:', user);
+          console.log('Current User:', currentUser);
+          
           const response = await fetch(
             `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/question-assignments`,
             {
