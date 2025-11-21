@@ -323,7 +323,7 @@ const QuestionAssignmentManager = () => {
   const loadAssessments = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/assessment/all`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/assessments`, {
         headers: {
           'x-session-id': localStorage.getItem('sessionId')
         }
@@ -331,8 +331,8 @@ const QuestionAssignmentManager = () => {
       
       if (!response.ok) throw new Error('Failed to load assessments');
       
-      const data = await response.json();
-      setAssessments(data);
+      const result = await response.json();
+      setAssessments(result.data || result);
     } catch (err) {
       console.error('Error loading assessments:', err);
       setError('Failed to load assessments: ' + err.message);
