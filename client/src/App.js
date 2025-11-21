@@ -476,6 +476,15 @@ function App() {
           />
           
           <Route 
+            path="/question-assignments" 
+            element={
+              <ProtectedRoute>
+                <QuestionManager />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
             path="/user-guide" 
             element={<UserGuide />}
           />
