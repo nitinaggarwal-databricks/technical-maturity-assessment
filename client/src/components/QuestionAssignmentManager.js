@@ -395,17 +395,21 @@ const QuestionAssignmentManager = () => {
       );
       
       if (customResponse.ok) {
-        const customQuestions = await customResponse.json();
-        customQuestions.forEach(q => {
-          allQuestions.push({
-            id: q.id,
-            question: q.question_text,
-            pillar: q.pillar,
-            pillarName: q.pillar.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            dimension: 'Custom Question',
-            isCustom: true
+        const customResult = await customResponse.json();
+        const customQuestions = customResult.questions || customResult;
+        
+        if (Array.isArray(customQuestions)) {
+          customQuestions.forEach(q => {
+            allQuestions.push({
+              id: q.id,
+              question: q.question_text,
+              pillar: q.pillar,
+              pillarName: q.pillar.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+              dimension: 'Custom Question',
+              isCustom: true
+            });
           });
-        });
+        }
       }
       
       setQuestions(allQuestions);
