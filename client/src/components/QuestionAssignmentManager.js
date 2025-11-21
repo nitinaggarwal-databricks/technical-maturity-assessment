@@ -312,13 +312,31 @@ const QuestionAssignmentManager = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [assignmentNotes, setAssignmentNotes] = useState('');
   const [dueDate, setDueDate] = useState('');
-
-  const currentUser = authService.getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     loadAssessments();
     loadUsers();
+    loadCurrentUser();
   }, []);
+
+  const loadCurrentUser = async () => {
+    try {
+      // Try to get from localStorage first (synchronous)
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+      } else {
+        // Fallback to API call
+        const user = await authService.getCurrentUser();
+        if (user) {
+          setCurrentUser(user);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading current user:', err);
+    }
+  };
 
   const loadAssessments = async () => {
     try {
@@ -469,6 +487,11 @@ const QuestionAssignmentManager = () => {
     
     if (selectedUsers.length === 0) {
       setError('Please select at least one user');
+      return;
+    }
+
+    if (!currentUser || !currentUser.email) {
+      setError('User session not loaded. Please refresh the page.');
       return;
     }
 
