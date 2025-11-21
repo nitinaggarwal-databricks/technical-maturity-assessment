@@ -351,8 +351,9 @@ const QuestionAssignmentManager = () => {
       
       if (!response.ok) throw new Error('Failed to load users');
       
-      const data = await response.json();
-      setUsers(data);
+      const result = await response.json();
+      const usersData = result.users || result;
+      setUsers(Array.isArray(usersData) ? usersData : []);
     } catch (err) {
       console.error('Error loading users:', err);
       setError('Failed to load users: ' + err.message);
