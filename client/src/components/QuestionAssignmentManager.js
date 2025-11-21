@@ -47,17 +47,17 @@ const StepContainer = styled.div`
 `;
 
 const StepCard = styled.div`
-  background: ${props => props.active ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f8f9fa'};
-  color: ${props => props.active ? 'white' : '#333'};
+  background: ${props => props.$active ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f8f9fa'};
+  color: ${props => props.$active ? 'white' : '#333'};
   border-radius: 12px;
   padding: 20px;
-  cursor: ${props => props.clickable ? 'pointer' : 'default'};
+  cursor: ${props => props.$clickable ? 'pointer' : 'default'};
   transition: all 0.3s ease;
-  border: 2px solid ${props => props.active ? '#667eea' : '#e0e0e0'};
+  border: 2px solid ${props => props.$active ? '#667eea' : '#e0e0e0'};
 
   &:hover {
-    transform: ${props => props.clickable ? 'translateY(-2px)' : 'none'};
-    box-shadow: ${props => props.clickable ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
+    transform: ${props => props.$clickable ? 'translateY(-2px)' : 'none'};
+    box-shadow: ${props => props.$clickable ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
   }
 `;
 
@@ -65,8 +65,8 @@ const StepNumber = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.2)' : '#667eea'};
-  color: ${props => props.active ? 'white' : 'white'};
+  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.2)' : '#667eea'};
+  color: ${props => props.$active ? 'white' : 'white'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,9 +94,9 @@ const SelectionGrid = styled.div`
 `;
 
 const SelectableCard = styled.div`
-  background: ${props => props.selected ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'};
-  color: ${props => props.selected ? 'white' : '#333'};
-  border: 2px solid ${props => props.selected ? '#667eea' : '#e0e0e0'};
+  background: ${props => props.$selected ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'};
+  color: ${props => props.$selected ? 'white' : '#333'};
+  border: 2px solid ${props => props.$selected ? '#667eea' : '#e0e0e0'};
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -140,8 +140,8 @@ const QuestionMeta = styled.div`
 `;
 
 const Badge = styled.span`
-  background: ${props => props.selected ? 'rgba(255, 255, 255, 0.2)' : '#667eea'};
-  color: ${props => props.selected ? 'white' : 'white'};
+  background: ${props => props.$selected ? 'rgba(255, 255, 255, 0.2)' : '#667eea'};
+  color: ${props => props.$selected ? 'white' : 'white'};
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -583,32 +583,32 @@ const QuestionAssignmentManager = () => {
 
         <Card>
           <StepContainer>
-            <StepCard active={currentStep === 1} clickable={true} onClick={() => setCurrentStep(1)}>
-              <StepNumber active={currentStep === 1}>1</StepNumber>
+            <StepCard $active={currentStep === 1} $clickable={true} onClick={() => setCurrentStep(1)}>
+              <StepNumber $active={currentStep === 1}>1</StepNumber>
               <StepTitle>Select Assessment</StepTitle>
               <StepDescription>
                 {selectedAssessment ? selectedAssessment.organization_name : 'Choose an assessment'}
               </StepDescription>
             </StepCard>
 
-            <StepCard active={currentStep === 2} clickable={selectedAssessment !== null} onClick={() => selectedAssessment && setCurrentStep(2)}>
-              <StepNumber active={currentStep === 2}>2</StepNumber>
+            <StepCard $active={currentStep === 2} $clickable={selectedAssessment !== null} onClick={() => selectedAssessment && setCurrentStep(2)}>
+              <StepNumber $active={currentStep === 2}>2</StepNumber>
               <StepTitle>Select Questions</StepTitle>
               <StepDescription>
                 {selectedQuestions.length > 0 ? `${selectedQuestions.length} selected` : 'Choose questions to assign'}
               </StepDescription>
             </StepCard>
 
-            <StepCard active={currentStep === 3} clickable={selectedQuestions.length > 0} onClick={() => selectedQuestions.length > 0 && setCurrentStep(3)}>
-              <StepNumber active={currentStep === 3}>3</StepNumber>
+            <StepCard $active={currentStep === 3} $clickable={selectedQuestions.length > 0} onClick={() => selectedQuestions.length > 0 && setCurrentStep(3)}>
+              <StepNumber $active={currentStep === 3}>3</StepNumber>
               <StepTitle>Select Users</StepTitle>
               <StepDescription>
                 {selectedUsers.length > 0 ? `${selectedUsers.length} selected` : 'Choose users to assign'}
               </StepDescription>
             </StepCard>
 
-            <StepCard active={currentStep === 4} clickable={selectedUsers.length > 0} onClick={() => selectedUsers.length > 0 && setCurrentStep(4)}>
-              <StepNumber active={currentStep === 4}>4</StepNumber>
+            <StepCard $active={currentStep === 4} $clickable={selectedUsers.length > 0} onClick={() => selectedUsers.length > 0 && setCurrentStep(4)}>
+              <StepNumber $active={currentStep === 4}>4</StepNumber>
               <StepTitle>Review & Submit</StepTitle>
               <StepDescription>Confirm and create assignments</StepDescription>
             </StepCard>
@@ -627,7 +627,7 @@ const QuestionAssignmentManager = () => {
                 {assessments.map(assessment => (
                   <SelectableCard
                     key={assessment.id}
-                    selected={selectedAssessment?.id === assessment.id}
+                    $selected={selectedAssessment?.id === assessment.id}
                     onClick={() => handleAssessmentSelect(assessment)}
                   >
                     <CardTitle>{assessment.organization_name}</CardTitle>
@@ -675,13 +675,13 @@ const QuestionAssignmentManager = () => {
                           return (
                             <QuestionCard
                               key={question.id}
-                              selected={isSelected}
+                              $selected={isSelected}
                               onClick={() => handleQuestionToggle(question)}
                             >
                               <QuestionText>{question.question}</QuestionText>
                               <QuestionMeta>
-                                <Badge selected={isSelected}>{question.dimension}</Badge>
-                                {question.isCustom && <Badge selected={isSelected}>Custom</Badge>}
+                                <Badge $selected={isSelected}>{question.dimension}</Badge>
+                                {question.isCustom && <Badge $selected={isSelected}>Custom</Badge>}
                               </QuestionMeta>
                             </QuestionCard>
                           );
@@ -714,7 +714,7 @@ const QuestionAssignmentManager = () => {
                   return (
                     <SelectableCard
                       key={user.email}
-                      selected={isSelected}
+                      $selected={isSelected}
                       onClick={() => handleUserToggle(user)}
                     >
                       <CardTitle>{user.name}</CardTitle>
