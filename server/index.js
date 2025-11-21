@@ -352,7 +352,7 @@ app.get('/api/assessment/framework', async (req, res) => {
 // Start new assessment
 app.post('/api/assessment/start', async (req, res) => {
   try {
-    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
+    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription, selectedPillars } = req.body;
     
     if (!contactEmail) {
       return res.status(400).json({
@@ -368,8 +368,25 @@ app.post('/api/assessment/start', async (req, res) => {
       });
     }
 
+    if (!industry) {
+      return res.status(400).json({
+        success: false,
+        message: 'Industry is required'
+      });
+    }
+
+    if (!selectedPillars || selectedPillars.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one pillar must be selected'
+      });
+    }
+
     const assessmentRepo = require('./db/assessmentRepository');
     const assessmentId = uuidv4();
+    
+    // Get the first selected pillar as the starting category
+    const firstPillar = selectedPillars[0];
     
     await assessmentRepo.create({
       id: assessmentId,
@@ -377,10 +394,11 @@ app.post('/api/assessment/start', async (req, res) => {
       assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || 'Not specified',
       contactEmail,
-      industry: industry || 'Not specified',
+      industry,
+      selectedPillars: selectedPillars, // Store selected pillars
       status: 'in_progress',
       progress: 0,
-      currentCategory: assessmentFramework.assessmentAreas[0].id,
+      currentCategory: firstPillar,
       completedCategories: [],
       responses: {},
       editHistory: [],
@@ -391,10 +409,11 @@ app.post('/api/assessment/start', async (req, res) => {
       success: true,
       data: {
       assessmentId,
-      currentCategory: assessmentFramework.assessmentAreas[0].id,
-      totalCategories: assessmentFramework.assessmentAreas.length,
+      currentCategory: firstPillar,
+      totalCategories: selectedPillars.length,
       assessmentName,
-      assessmentDescription
+      assessmentDescription,
+      selectedPillars
       }
     });
   } catch (error) {
