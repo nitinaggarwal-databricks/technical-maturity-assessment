@@ -595,7 +595,7 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
               selectedPillarsIsArray: Array.isArray(currentAssessment?.selectedPillars),
               selectedPillarsLength: currentAssessment?.selectedPillars?.length,
               selectedPillars,
-              isOldAssessment,
+              isOldOrEmptyAssessment,
               currentPillar: pillar.id,
               isSelected
             });
