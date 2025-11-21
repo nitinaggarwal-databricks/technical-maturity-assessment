@@ -336,8 +336,9 @@ const AssessmentStart = ({ onStart }) => {
       const assessment = await onStart(formData);
       
       
-      // Navigate to first assessment area (Platform & Governance)
-      navigate(`/assessment/${assessment.assessmentId}/platform_governance`);
+      // Navigate to first selected pillar
+      const firstPillar = formData.selectedPillars[0];
+      navigate(`/assessment/${assessment.assessmentId}/${firstPillar}`);
     } catch (error) {
       console.error('Error starting assessment:', error);
       

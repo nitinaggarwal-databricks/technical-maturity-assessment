@@ -469,7 +469,9 @@ app.get('/api/assessment/:id/status', async (req, res) => {
     }
 
     const completedCats = assessment.completedCategories || [];
-    const progress = (completedCats.length / assessmentFramework.assessmentAreas.length) * 100;
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    const totalPillars = selectedPillars.length;
+    const progress = (completedCats.length / totalPillars) * 100;
 
     res.json({
       success: true,
@@ -483,6 +485,7 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         contactName: assessment.contactName || '',
         contactRole: assessment.contactRole || '',
         industry: assessment.industry,
+        selectedPillars: selectedPillars, // Include selected pillars
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
