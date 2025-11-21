@@ -853,13 +853,22 @@ const GlobalNav = () => {
                         Assign Users
                       </DropdownItem>
                       {currentUser.role === 'admin' && (
-                        <DropdownItem onClick={() => {
-                          navigate('/user-management');
-                          setAssignmentsDropdownOpen(false);
-                        }}>
-                          <FiUsers />
-                          Manage Assignments
-                        </DropdownItem>
+                        <>
+                          <DropdownItem onClick={() => {
+                            navigate('/question-assignments');
+                            setAssignmentsDropdownOpen(false);
+                          }}>
+                            <FiFileText />
+                            Assign Questions
+                          </DropdownItem>
+                          <DropdownItem onClick={() => {
+                            navigate('/user-management');
+                            setAssignmentsDropdownOpen(false);
+                          }}>
+                            <FiUsers />
+                            Manage Assignments
+                          </DropdownItem>
+                        </>
                       )}
                     </DropdownMenu>
                   </DropdownContainer>
@@ -1060,10 +1069,16 @@ const GlobalNav = () => {
               </MobileSecondaryCTAButton>
             )}
             {currentUser.role === 'admin' && (
-              <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
-                <FiUsers size={16} />
-                Manage Assignments
-              </MobileSecondaryCTAButton>
+              <>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/question-assignments')}>
+                  <FiFileText size={16} />
+                  Assign Questions
+                </MobileSecondaryCTAButton>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
+                  <FiUsers size={16} />
+                  Manage Assignments
+                </MobileSecondaryCTAButton>
+              </>
             )}
             <MobileCTAButton onClick={() => handleNavigate('/start')}>
               Start Assessment →

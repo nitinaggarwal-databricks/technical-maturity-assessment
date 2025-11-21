@@ -30,6 +30,7 @@ import AssessmentDetails from './components/AssessmentDetails';
 import FeedbackForm from './components/FeedbackForm';
 import FeedbackList from './components/FeedbackList';
 import QuestionManager from './components/QuestionManager';
+import QuestionAssignmentManager from './components/QuestionAssignmentManager';
 import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
@@ -479,7 +480,7 @@ function App() {
             path="/question-assignments" 
             element={
               <ProtectedRoute>
-                <QuestionManager />
+                <QuestionAssignmentManager />
               </ProtectedRoute>
             }
           />
