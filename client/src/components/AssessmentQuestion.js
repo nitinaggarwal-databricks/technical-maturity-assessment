@@ -975,6 +975,25 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     setIsAdmin(currentUser && currentUser.role === 'admin' && !currentUser.testMode);
   }, []);
 
+  // Check if current pillar is selected - redirect if not
+  useEffect(() => {
+    if (currentAssessment && categoryId && framework) {
+      const selectedPillars = currentAssessment.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      
+      if (!selectedPillars.includes(categoryId)) {
+        console.warn(`⚠️ Pillar ${categoryId} is not selected for this assessment. Redirecting to first selected pillar.`);
+        
+        // Redirect to first selected pillar
+        if (selectedPillars.length > 0) {
+          navigate(`/assessment/${assessmentId}/${selectedPillars[0]}`, { replace: true });
+        } else {
+          // No pillars selected? Redirect to assessment list
+          navigate('/assessments', { replace: true });
+        }
+      }
+    }
+  }, [currentAssessment, categoryId, framework, assessmentId, navigate]);
+
   // Note: Question edits are now loaded and applied within loadAreaData useEffect above
   // This ensures edits are applied immediately when the area data is fetched
 

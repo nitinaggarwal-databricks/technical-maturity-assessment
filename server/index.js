@@ -519,6 +519,16 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
       });
     }
 
+    // Check if this pillar is selected for this assessment
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    if (!selectedPillars.includes(categoryId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'This pillar is not selected for this assessment',
+        selectedPillars
+      });
+    }
+
     const area = assessmentFramework.assessmentAreas.find(a => a.id === categoryId);
     if (!area) {
       return res.status(404).json({
@@ -1173,8 +1183,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('Assessment responses:', JSON.stringify(assessment.responses, null, 2));
     console.log('Has responses:', hasAnyResponses, 'Completed categories:', assessment.completedCategories.length);
     
-    // Calculate total questions and answered questions
-    const totalQuestions = assessmentFramework.assessmentAreas.reduce((total, area) => {
+    // Filter to only selected pillars
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    const availableAreas = assessmentFramework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+    console.log(`📊 Selected pillars: ${selectedPillars.join(', ')}`);
+    console.log(`📊 Available areas for calculation: ${availableAreas.length}`);
+    
+    // Calculate total questions and answered questions (only for selected pillars)
+    const totalQuestions = availableAreas.reduce((total, area) => {
       return total + area.dimensions.reduce((dimTotal, dim) => {
         return dimTotal + (dim.questions?.length || 0);
       }, 0);
@@ -1201,9 +1217,15 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     console.log(`Questions answered: ${answeredQuestions} of ${totalQuestions}`);
     
+    // Filter to only selected pillars
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    const availableAreas = assessmentFramework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+    console.log(`📊 Selected pillars: ${selectedPillars.join(', ')}`);
+    console.log(`📊 Available areas for calculation: ${availableAreas.length}`);
+    
     // Find areas with any responses (completed or partial)
     const areasWithResponses = hasAnyResponses 
-      ? assessmentFramework.assessmentAreas.filter(area => {
+      ? availableAreas.filter(area => {
           // Check if there are any responses for this area
           const hasAreaResponses = Object.keys(assessment.responses).some(key => {
             // Skip comment and skipped keys
