@@ -1144,6 +1144,7 @@ const IndustryBenchmarkingReport = () => {
   const assessment = results?.assessmentInfo;
   const overallScore = results?.overall?.currentScore || results?.overallScore || 0;
   const pillarScores = results?.categoryDetails || {};
+  const selectedPillars = results?.selectedPillars || results?.assessmentInfo?.selectedPillars || [];
 
   useEffect(() => {
     // Original loading simulation
@@ -1419,10 +1420,37 @@ const IndustryBenchmarkingReport = () => {
   const TierIcon = getTierIcon(competitivePositioning?.overallRanking?.tier);
   const tierColors = getTierColor(competitivePositioning?.overallRanking?.tier);
 
-  // Use score from metadata if available (preferred), otherwise fallback to prop or calculate from pillars
+  // Filter pillar analysis to only include selected pillars
+  const filteredPillarAnalysis = React.useMemo(() => {
+    if (!pillarAnalysis) return {};
+    
+    // If no pillars selected (old assessment or empty), show all
+    if (!selectedPillars || selectedPillars.length === 0) {
+      return pillarAnalysis;
+    }
+    
+    // Filter to only selected pillars
+    const filtered = {};
+    Object.entries(pillarAnalysis).forEach(([pillarId, data]) => {
+      if (selectedPillars.includes(pillarId)) {
+        filtered[pillarId] = data;
+      }
+    });
+    
+    console.log('📊 [Benchmark] Filtered pillars:', {
+      total: Object.keys(pillarAnalysis).length,
+      selected: selectedPillars.length,
+      filtered: Object.keys(filtered).length,
+      pillarIds: Object.keys(filtered)
+    });
+    
+    return filtered;
+  }, [pillarAnalysis, selectedPillars]);
+
+  // Use score from metadata if available (preferred), otherwise fallback to prop or calculate from filtered pillars
   const actualScore = metadata?.overallScore || overallScore || (
-    pillarAnalysis ? 
-      Object.values(pillarAnalysis).reduce((sum, p) => sum + (p.customerScore || 0), 0) / Object.values(pillarAnalysis).length 
+    filteredPillarAnalysis ? 
+      Object.values(filteredPillarAnalysis).reduce((sum, p) => sum + (p.customerScore || 0), 0) / Object.values(filteredPillarAnalysis).length 
       : 0
   );
 
@@ -1430,7 +1458,8 @@ const IndustryBenchmarkingReport = () => {
     metadataScore: metadata?.overallScore, 
     propScore: overallScore, 
     actualScore,
-    pillarCount: pillarAnalysis ? Object.keys(pillarAnalysis).length : 0
+    pillarCount: filteredPillarAnalysis ? Object.keys(filteredPillarAnalysis).length : 0,
+    selectedPillars: selectedPillars.length
   });
 
   return (
@@ -1692,7 +1721,7 @@ const IndustryBenchmarkingReport = () => {
             <SectionTitle>
               <FiBarChart2 color="#3b82f6" />
               Detailed Pillar Analysis
-              <SectionBadge $color="#3b82f6">6 Pillars</SectionBadge>
+              <SectionBadge $color="#3b82f6">{Object.keys(filteredPillarAnalysis || {}).length} Pillars</SectionBadge>
             </SectionTitle>
             {collapsedSections['pillars'] ? <FiChevronDown size={24} style={{ marginLeft: 'auto' }} /> : <FiChevronUp size={24} style={{ marginLeft: 'auto' }} />}
           </div>
@@ -1700,10 +1729,10 @@ const IndustryBenchmarkingReport = () => {
             <ActionButton title="Add Pillar" onClick={() => handleAdd('pillar')}>
               <FiPlus size={16} />
             </ActionButton>
-            <ActionButton title="Edit Section" onClick={() => handleEdit('pillar-section', pillarAnalysis)}>
+            <ActionButton title="Edit Section" onClick={() => handleEdit('pillar-section', filteredPillarAnalysis)}>
               <FiEdit2 size={16} />
             </ActionButton>
-            <ActionButton title="Delete Section" onClick={() => handleDelete('pillar-section', pillarAnalysis)}>
+            <ActionButton title="Delete Section" onClick={() => handleDelete('pillar-section', filteredPillarAnalysis)}>
               <FiTrash2 size={16} />
             </ActionButton>
           </SectionActions>
@@ -1719,7 +1748,7 @@ const IndustryBenchmarkingReport = () => {
               style={{ overflow: 'hidden' }}
             >
               <PillarGrid>
-                {Object.entries(pillarAnalysis || {}).map(([pillarId, data]) => {
+                {Object.entries(filteredPillarAnalysis || {}).map(([pillarId, data]) => {
                   const percentileColor = getPercentileColor(data.percentileRank);
                   const gap = (data.customerScore - data.industryAverage).toFixed(1);
                   const isAbove = gap >= 0;
@@ -2302,14 +2331,14 @@ const IndustryBenchmarkingReport = () => {
                     )}
                     
                     {/* Detailed Pillar Analysis Slide */}
-                    {currentSlide === 2 && pillarAnalysis && (
+                    {currentSlide === 2 && filteredPillarAnalysis && (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', padding: '30px', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                           <h2 style={{ fontSize: '1.875rem', fontWeight: 700, color: '#1e293b', marginBottom: '24px', textAlign: 'center' }}>
                             📊 Detailed Pillar Analysis
                           </h2>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', flex: 1 }}>
-                            {Object.entries(pillarAnalysis).slice(0, 6).map(([pillarId, data]) => {
+                            {Object.entries(filteredPillarAnalysis).slice(0, 6).map(([pillarId, data]) => {
                               const percentileColor = getPercentileColor(data.percentileRank);
                               const gap = (data.customerScore - data.industryAverage).toFixed(1);
                               const isAbove = gap >= 0;
