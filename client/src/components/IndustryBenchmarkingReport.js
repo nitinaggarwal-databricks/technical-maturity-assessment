@@ -1146,6 +1146,34 @@ const IndustryBenchmarkingReport = () => {
   const pillarScores = results?.categoryDetails || {};
   const selectedPillars = results?.selectedPillars || results?.assessmentInfo?.selectedPillars || [];
 
+  // Filter pillar analysis to only include selected pillars (must be before early returns)
+  const filteredPillarAnalysis = React.useMemo(() => {
+    const pillarAnalysis = benchmarkData?.pillarAnalysis;
+    if (!pillarAnalysis) return {};
+    
+    // If no pillars selected (old assessment or empty), show all
+    if (!selectedPillars || selectedPillars.length === 0) {
+      return pillarAnalysis;
+    }
+    
+    // Filter to only selected pillars
+    const filtered = {};
+    Object.entries(pillarAnalysis).forEach(([pillarId, data]) => {
+      if (selectedPillars.includes(pillarId)) {
+        filtered[pillarId] = data;
+      }
+    });
+    
+    console.log('📊 [Benchmark] Filtered pillars:', {
+      total: Object.keys(pillarAnalysis).length,
+      selected: selectedPillars.length,
+      filtered: Object.keys(filtered).length,
+      pillarIds: Object.keys(filtered)
+    });
+    
+    return filtered;
+  }, [benchmarkData?.pillarAnalysis, selectedPillars]);
+
   useEffect(() => {
     // Original loading simulation
     setTimeout(() => setLoading(false), 500);
@@ -1419,33 +1447,6 @@ const IndustryBenchmarkingReport = () => {
   const { executiveSummary, competitivePositioning, pillarAnalysis, competitiveIntelligence, strategicRecommendations, metadata } = benchmarkData;
   const TierIcon = getTierIcon(competitivePositioning?.overallRanking?.tier);
   const tierColors = getTierColor(competitivePositioning?.overallRanking?.tier);
-
-  // Filter pillar analysis to only include selected pillars
-  const filteredPillarAnalysis = React.useMemo(() => {
-    if (!pillarAnalysis) return {};
-    
-    // If no pillars selected (old assessment or empty), show all
-    if (!selectedPillars || selectedPillars.length === 0) {
-      return pillarAnalysis;
-    }
-    
-    // Filter to only selected pillars
-    const filtered = {};
-    Object.entries(pillarAnalysis).forEach(([pillarId, data]) => {
-      if (selectedPillars.includes(pillarId)) {
-        filtered[pillarId] = data;
-      }
-    });
-    
-    console.log('📊 [Benchmark] Filtered pillars:', {
-      total: Object.keys(pillarAnalysis).length,
-      selected: selectedPillars.length,
-      filtered: Object.keys(filtered).length,
-      pillarIds: Object.keys(filtered)
-    });
-    
-    return filtered;
-  }, [pillarAnalysis, selectedPillars]);
 
   // Use score from metadata if available (preferred), otherwise fallback to prop or calculate from filtered pillars
   const actualScore = metadata?.overallScore || overallScore || (
