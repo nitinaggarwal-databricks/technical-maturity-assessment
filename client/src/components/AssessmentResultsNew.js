@@ -3482,7 +3482,7 @@ const AssessmentResultsNew = () => {
                 text: '#1e293b'
               },
               'data_engineering': {
-                primary: '#059669',
+                primary: '#f97316',
                 text: '#1e293b'
               },
               'analytics_bi': {
