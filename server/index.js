@@ -1636,16 +1636,17 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         industry: assessment.industry,
         completedAt: assessment.completedAt,
         startedAt: assessment.startedAt,
-        isPartialAssessment: fullyCompletedAreas.length < assessmentFramework.assessmentAreas.length,
+        isPartialAssessment: fullyCompletedAreas.length < availableAreas.length, // 🚨 Compare against selected pillars, not all 6
         completedPillars: fullyCompletedAreas.length, // 🚨 Changed to fully completed count
-        totalPillars: assessmentFramework.assessmentAreas.length,
+        totalPillars: availableAreas.length, // 🚨 Use selected pillars count, not always 6
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,
         totalQuestions: totalQuestions,
         completionPercentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0,
         lastModified: assessment.lastModified,
         lastEditor: assessment.lastEditor,
-        editHistory: assessment.editHistory || []
+        editHistory: assessment.editHistory || [],
+        selectedPillars: selectedPillars // 🆕 Include selected pillars in response
       },
       overall: recommendations.overall, // ADAPTIVE: includes currentScore, futureScore, gap, level, summary
       categoryDetails,
@@ -1661,6 +1662,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
       whatsNew: recommendations.whatsNew, // ADAPTIVE: Latest Databricks features
+      selectedPillars: selectedPillars, // 🆕 Include selected pillars in top-level response
       pillarStatus: assessmentFramework.assessmentAreas.map(area => {
         const isCompleted = assessment.completedCategories.includes(area.id);
         const hasResponses = areasWithResponses.some(a => a.id === area.id);
