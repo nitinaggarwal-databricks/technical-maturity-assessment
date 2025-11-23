@@ -1829,7 +1829,12 @@ const AssessmentResults = ({ currentAssessment, framework }) => {
                     // Navigate to first category to edit responses
                     const firstCategory = framework?.assessmentAreas?.[0];
                     if (firstCategory) {
-                      navigate(`/assessment/${assessmentId}/${firstCategory.id}`);
+                      // Check if assessment has selectedPillars
+                      const selectedPillars = currentAssessment?.selectedPillars;
+                      const targetPillar = (selectedPillars && selectedPillars.length > 0) 
+                        ? selectedPillars[0] 
+                        : firstCategory.id;
+                      navigate(`/assessment/${assessmentId}/${targetPillar}`);
                       
                     }
                   }}

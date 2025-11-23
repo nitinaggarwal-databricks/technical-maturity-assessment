@@ -3284,7 +3284,14 @@ const AssessmentResultsNew = () => {
               {/* Secondary Group - Orange + Green */}
               <ButtonGroup>
                 <ActionButton
-                  onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+                  onClick={() => {
+                    // Navigate to first selected pillar, or platform_governance as fallback
+                    const selectedPillars = results?.selectedPillars || results?.assessmentInfo?.selectedPillars;
+                    const targetPillar = (selectedPillars && selectedPillars.length > 0) 
+                      ? selectedPillars[0] 
+                      : 'platform_governance';
+                    navigate(`/assessment/${assessmentId}/${targetPillar}`);
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
