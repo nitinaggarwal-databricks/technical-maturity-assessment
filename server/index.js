@@ -3010,6 +3010,21 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       specificPillars
     });
     
+    // Determine selectedPillars for the sample assessment
+    let selectedPillars;
+    if (specificPillars && specificPillars.length > 0) {
+      selectedPillars = specificPillars;
+    } else if (completionLevel === 'partial') {
+      // Use the completed categories as selected pillars
+      selectedPillars = sampleAssessment.completedCategories;
+    } else if (completionLevel === 'minimal') {
+      // Use the completed categories as selected pillars
+      selectedPillars = sampleAssessment.completedCategories;
+    } else {
+      // Full assessment - all pillars selected
+      selectedPillars = assessmentFramework.assessmentAreas.map(a => a.id);
+    }
+    
     // Save to PostgreSQL
     const assessmentRepo = require('./db/assessmentRepository');
     await assessmentRepo.create({
@@ -3025,7 +3040,8 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       completedCategories: sampleAssessment.completedCategories,
       responses: sampleAssessment.responses,
       editHistory: sampleAssessment.editHistory || [],
-      startedAt: sampleAssessment.startedAt || new Date().toISOString()
+      startedAt: sampleAssessment.startedAt || new Date().toISOString(),
+      selectedPillars: selectedPillars // 🆕 Add selected pillars to sample assessments
     });
     
     console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);
