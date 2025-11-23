@@ -1072,6 +1072,27 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   useEffect(() => {
     const loadAreaData = async () => {
       if (assessmentId && categoryId) {
+        // Check if current pillar is selected BEFORE making API call
+        if (currentAssessment && framework) {
+          const selectedPillars = currentAssessment.selectedPillars;
+          
+          // Only check if selectedPillars is explicitly set (not undefined)
+          if (selectedPillars && Array.isArray(selectedPillars)) {
+            if (!selectedPillars.includes(categoryId)) {
+              console.warn(`⚠️ Pillar ${categoryId} is not selected for this assessment. Redirecting...`);
+              
+              // Redirect to first selected pillar
+              if (selectedPillars.length > 0) {
+                navigate(`/assessment/${assessmentId}/${selectedPillars[0]}`, { replace: true });
+              } else {
+                // No pillars selected? Redirect to assessment list
+                navigate('/assessments', { replace: true });
+              }
+              return; // Don't proceed with loading area data
+            }
+          }
+        }
+        
         try {
           setLoading(true);
           const areaData = await assessmentService.getCategoryQuestions(assessmentId, categoryId);
@@ -1199,7 +1220,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     };
 
     loadAreaData();
-  }, [assessmentId, categoryId, targetDimensionIndex, targetQuestionId]);
+  }, [assessmentId, categoryId, targetDimensionIndex, targetQuestionId, currentAssessment, framework, navigate]);
 
   // Log current state for debugging
   useEffect(() => {
