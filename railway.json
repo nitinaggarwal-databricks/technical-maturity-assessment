@@ -1,0 +1,16 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "echo 'Starting build...' && cd databricks-maturity-assessment && npm install && cd client && rm -rf build node_modules/.cache && npm install && npm run build && echo 'Build complete!'"
+  },
+  "deploy": {
+    "startCommand": "cd databricks-maturity-assessment && NODE_ENV=production node server/index.js",
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+
+

@@ -1,0 +1,55 @@
+{
+  "name": "databricks-maturity-assessment",
+  "version": "1.0.0",
+  "description": "A comprehensive Databricks maturity assessment application",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm install && CI=false npm run build",
+    "install-all": "npm install && cd client && npm install",
+    "start": "NODE_ENV=production node server/index.js",
+    "heroku-postbuild": "cd client && npm install && CI=false npm run build",
+    "vercel-build": "cd client && npm install && CI=false npm run build",
+    "migrate": "node server/db/migrate.js",
+    "db:migrate": "node server/db/migrate.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cheerio": "^1.1.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.2",
+    "express-session": "^1.18.2",
+    "jspdf": "^2.5.1",
+    "nodemailer": "^6.9.1",
+    "openai": "^6.3.0",
+    "pg": "^8.16.3",
+    "uuid": "^9.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "chalk": "^5.6.2",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "databricks",
+    "maturity",
+    "assessment",
+    "analytics",
+    "data"
+  ],
+  "author": "Databricks Maturity Assessment Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

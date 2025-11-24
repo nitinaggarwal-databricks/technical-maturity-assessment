@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Production build
+client/build/
+
+# Data files (contains assessment data)
+server/data/assessments.json
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
