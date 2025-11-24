@@ -1276,32 +1276,32 @@ class IntelligentRecommendationEngine {
   mapPainPointsToFeatures(painPoints, pillarId) {
     // Map pain points to specific Databricks features that solve them
     const featureMap = {
-      // Platform Governance pain points
+      // Platform Governance pain points - ONLY Platform features
       'poor_isolation': ['Unity Catalog', 'Workspace Administration', 'Private Link', 'IP Access Lists'],
-      'quality_issues': ['Delta Live Tables', 'Lakehouse Monitoring', 'Data Quality Checks'],
+      'quality_issues': ['Unity Catalog', 'Data Classification', 'Compliance Security Profile', 'Audit Logs'],
       'compliance_gaps': ['Unity Catalog', 'Audit Logs', 'Compliance Security Profile', 'Data Classification'],
-      'compliance_risks': ['Unity Catalog', 'Audit Logs', 'Compliance Security Profile'],
-      'weak_access_control': ['Unity Catalog', 'Service Principals', 'Attribute-Based Access Control'],
-      'no_audit_logs': ['Audit Logs', 'System Tables', 'Unity Catalog Audit'],
-      'manual_provisioning': ['Databricks Asset Bundles', 'Terraform Provider', 'Databricks CLI'],
-      'no_iac': ['Databricks Asset Bundles', 'Terraform Provider', 'Databricks CLI'],
-      'resource_conflicts': ['Workspace Administration', 'Cluster Policies', 'Budget Alerts'],
+      'compliance_risks': ['Unity Catalog', 'Audit Logs', 'Compliance Security Profile', 'Data Classification'],
+      'weak_access_control': ['Unity Catalog', 'Service Principals', 'Attribute-Based Access Control', 'Row-Level Security'],
+      'no_audit_logs': ['Audit Logs', 'System Tables', 'Unity Catalog Audit', 'Compliance Security Profile'],
+      'manual_provisioning': ['Databricks Asset Bundles', 'Terraform Provider', 'Databricks CLI', 'Account Console'],
+      'no_iac': ['Databricks Asset Bundles', 'Terraform Provider', 'Databricks CLI', 'Workspace API'],
+      'resource_conflicts': ['Workspace Administration', 'Cluster Policies', 'Budget Alerts', 'Account Console'],
       
-      // Data Engineering pain points
-      'poor_quality': ['Delta Live Tables', 'Lakehouse Monitoring', 'Auto Loader'],
-      'pipeline_failures': ['Delta Live Tables', 'Workflows', 'Alerting'],
-      'manual_pipelines': ['Delta Live Tables', 'Workflows', 'Databricks Jobs'],
-      'no_monitoring': ['Lakehouse Monitoring', 'System Tables', 'Delta Live Tables Event Log'],
-      'scattered_data': ['Unity Catalog', 'Delta Sharing', 'Data Discovery'],
-      'error_handling': ['Delta Live Tables', 'Workflows', 'Alerting'],
-      'ingestion_issues': ['Auto Loader', 'Copy Into', 'Streaming Tables'],
+      // Data Engineering pain points - ONLY Data Eng features
+      'poor_quality': ['Delta Live Tables', 'Auto Loader', 'Streaming Tables', 'Change Data Capture'],
+      'pipeline_failures': ['Delta Live Tables', 'Workflows', 'Databricks Jobs', 'Alerting'],
+      'manual_pipelines': ['Delta Live Tables', 'Workflows', 'Databricks Jobs', 'Auto Loader'],
+      'no_monitoring': ['Delta Live Tables Event Log', 'Workflows', 'Job Monitoring', 'Alerting'],
+      'scattered_data': ['Delta Lake', 'Auto Loader', 'Streaming Tables', 'Workflows'],
+      'error_handling': ['Delta Live Tables', 'Workflows', 'Alerting', 'Job Retries'],
+      'ingestion_issues': ['Auto Loader', 'Copy Into', 'Streaming Tables', 'Change Data Capture'],
       
-      // Analytics & BI pain points
+      // Analytics & BI pain points - ONLY Analytics features
       'slow_queries': ['Photon', 'Liquid Clustering', 'Predictive I/O', 'Serverless SQL'],
-      'inconsistent_performance': ['Serverless SQL', 'Photon', 'Result Caching'],
-      'no_caching': ['Result Caching', 'Delta Caching', 'Disk Caching'],
-      'limited_monitoring': ['Query History', 'Query Profile', 'System Tables'],
-      'access_bottlenecks': ['SQL Warehouses', 'Serverless SQL', 'Partner Connect'],
+      'inconsistent_performance': ['Serverless SQL', 'Photon', 'Result Caching', 'Query Optimization'],
+      'no_caching': ['Result Caching', 'Delta Caching', 'Disk Caching', 'Serverless SQL'],
+      'limited_monitoring': ['Query History', 'Query Profile', 'SQL Warehouses', 'Dashboards'],
+      'access_bottlenecks': ['SQL Warehouses', 'Serverless SQL', 'Partner Connect', 'Databricks SQL'],
       'loss_of_trust': ['Databricks SQL', 'Dashboards', 'Genie Spaces', 'Semantic Layer'],
       'conflicting_reports': ['Databricks SQL', 'Dashboards', 'Semantic Layer', 'Genie'],
       'conflicting_kpis': ['Semantic Layer', 'Dashboards', 'SQL Warehouses', 'Genie'],
@@ -1314,33 +1314,33 @@ class IntelligentRecommendationEngine {
       'data_silos': ['Lakehouse Federation', 'Partner Connect', 'SQL Warehouses', 'Databricks SQL'],
       'no_data_products': ['Databricks SQL', 'Dashboards', 'Genie Spaces', 'SQL Warehouses'],
       
-      // Machine Learning pain points
-      'no_experiment_tracking': ['MLflow Tracking', 'MLflow Autologging', 'Experiments'],
-      'no_model_registry': ['MLflow Model Registry', 'Unity Catalog for Models'],
-      'scattered_artifacts': ['MLflow Model Registry', 'Unity Catalog'],
-      'no_model_monitoring': ['Lakehouse Monitoring', 'Model Serving Metrics'],
-      'manual_retraining': ['MLflow Webhooks', 'Workflows', 'AutoML'],
-      'no_feature_store': ['Feature Store', 'Online Tables', 'Feature Serving'],
-      'model_failures': ['Model Serving', 'Lakehouse Monitoring', 'AI Gateway'],
+      // Machine Learning pain points - ONLY ML features
+      'no_experiment_tracking': ['MLflow Tracking', 'MLflow Autologging', 'Experiments', 'MLflow UI'],
+      'no_model_registry': ['MLflow Model Registry', 'Model Versioning', 'Model Aliases', 'Model Lineage'],
+      'scattered_artifacts': ['MLflow Model Registry', 'MLflow Tracking', 'Experiments', 'Artifacts Store'],
+      'no_model_monitoring': ['Model Serving Metrics', 'Model Monitoring', 'Inference Tables', 'MLflow'],
+      'manual_retraining': ['MLflow Webhooks', 'Workflows', 'AutoML', 'Model Serving'],
+      'no_feature_store': ['Feature Store', 'Online Tables', 'Feature Serving', 'Feature Engineering'],
+      'model_failures': ['Model Serving', 'Model Monitoring', 'Inference Tables', 'MLflow'],
       
-      // GenAI pain points
-      'no_genai_strategy': ['AI Playground', 'Mosaic AI Agent Framework', 'AI Functions'],
-      'unclear_use_cases': ['AI Playground', 'Solution Accelerators', 'Vector Search'],
-      'no_vector_search': ['Vector Search', 'Online Tables', 'Delta Sync'],
-      'prompt_management': ['AI Playground', 'MLflow', 'AI Gateway'],
-      'no_rag': ['Mosaic AI Agent Framework', 'Vector Search'],
-      'reputation_risk': ['Mosaic AI Model Serving', 'AI Gateway', 'Audit Logs'],
-      'compliance_risk': ['AI Gateway', 'Audit Logs', 'Model Monitoring'],
+      // GenAI pain points - ONLY GenAI features
+      'no_genai_strategy': ['AI Playground', 'Mosaic AI Agent Framework', 'AI Functions', 'Foundation Models'],
+      'unclear_use_cases': ['AI Playground', 'Solution Accelerators', 'Vector Search', 'AI Functions'],
+      'no_vector_search': ['Vector Search', 'Online Tables', 'Delta Sync', 'Mosaic AI'],
+      'prompt_management': ['AI Playground', 'MLflow', 'AI Gateway', 'Prompt Engineering'],
+      'no_rag': ['Mosaic AI Agent Framework', 'Vector Search', 'AI Functions', 'Foundation Models'],
+      'reputation_risk': ['Mosaic AI Model Serving', 'AI Gateway', 'Model Monitoring', 'AI Functions'],
+      'compliance_risk': ['AI Gateway', 'Model Monitoring', 'AI Functions', 'Mosaic AI'],
       
-      // Operational Excellence pain points
-      'no_coe': ['Databricks Academy', 'Professional Services', 'Partner Network'],
-      'unclear_charter': ['Unity Catalog', 'System Tables', 'Account Console'],
-      'resource_constraints': ['Databricks Academy', 'Professional Services', 'Community'],
-      'standards_gaps': ['Databricks Asset Bundles', 'Cluster Policies', 'Unity Catalog'],
-      'adoption_challenges': ['Databricks Assistant', 'Solution Accelerators'],
-      'no_training': ['Databricks Academy', 'Partner Training'],
-      'poor_collaboration': ['Repos', 'Git Integration', 'Comments'],
-      'no_cost_tracking': ['System Tables', 'Budget Alerts']
+      // Operational Excellence pain points - ONLY Ops features
+      'no_coe': ['Databricks Academy', 'Professional Services', 'Partner Network', 'Community'],
+      'unclear_charter': ['System Tables', 'Account Console', 'Workspace Administration', 'Usage Analytics'],
+      'resource_constraints': ['Databricks Academy', 'Professional Services', 'Community', 'Documentation'],
+      'standards_gaps': ['Databricks Asset Bundles', 'Cluster Policies', 'Workspace Templates', 'Best Practices'],
+      'adoption_challenges': ['Databricks Assistant', 'Solution Accelerators', 'Databricks Academy', 'Community'],
+      'no_training': ['Databricks Academy', 'Partner Training', 'Certification Programs', 'Learning Paths'],
+      'poor_collaboration': ['Repos', 'Git Integration', 'Comments', 'Notebooks'],
+      'no_cost_tracking': ['System Tables', 'Budget Alerts', 'Usage Analytics', 'Cost Management']
     };
     
     const features = new Set();
