@@ -1,0 +1,94 @@
+# Databricks App Configuration
+# Technical Maturity Assessment Platform
+
+# App metadata
+name: databricks-maturity-assessment
+display_name: "Databricks Technical Maturity Assessment"
+description: "Enterprise-grade assessment platform for evaluating and improving Databricks technical maturity across 6 key pillars"
+
+# Runtime configuration
+command:
+  - "npm"
+  - "start"
+
+# Environment variables
+env:
+  - name: NODE_ENV
+    value: production
+  - name: PORT
+    value: "8080"
+  - name: DATABASE_URL
+    value: "{{secrets/DATABASE_URL}}"
+  - name: SESSION_SECRET
+    value: "{{secrets/SESSION_SECRET}}"
+  - name: OPENAI_API_KEY
+    value: "{{secrets/OPENAI_API_KEY}}"
+  - name: SMTP_HOST
+    value: "{{secrets/SMTP_HOST}}"
+  - name: SMTP_PORT
+    value: "{{secrets/SMTP_PORT}}"
+  - name: SMTP_USER
+    value: "{{secrets/SMTP_USER}}"
+  - name: SMTP_PASS
+    value: "{{secrets/SMTP_PASS}}"
+  - name: EMAIL_FROM
+    value: "{{secrets/EMAIL_FROM}}"
+
+# Resource requirements
+resources:
+  cpu: "2"
+  memory: "4Gi"
+  storage: "10Gi"
+
+# Health check
+health_check:
+  path: "/api/health"
+  interval: 30
+  timeout: 10
+  unhealthy_threshold: 3
+  healthy_threshold: 2
+
+# Networking
+port: 8080
+
+# Startup configuration
+startup:
+  timeout: 300
+  
+# Scaling (optional)
+min_instances: 1
+max_instances: 3
+
+# Build configuration
+build:
+  # Install Node.js dependencies
+  pre_build:
+    - "npm install"
+    - "cd client && npm install"
+  
+  # Build React frontend
+  build:
+    - "cd client && npm run build"
+  
+  # Post-build cleanup
+  post_build:
+    - "rm -rf client/node_modules/.cache"
+
+# Volume mounts (optional - for persistent data)
+volumes:
+  - name: data
+    mount_path: /app/data
+    size: 5Gi
+
+# Permissions
+permissions:
+  - "databricks-sql-access"
+  - "unity-catalog-access"
+
+# Tags
+tags:
+  - maturity-assessment
+  - analytics
+  - databricks
+  - enterprise
+
