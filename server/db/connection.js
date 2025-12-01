@@ -54,34 +54,45 @@ class DatabaseConnection {
       }
 
       console.log('🔌 Connecting to PostgreSQL database...');
+      console.log(`🔍 DATABASE_URL format: ${databaseUrl.substring(0, 50)}...`);
       
       // Parse the connection string manually to handle @ in username
       let poolConfig;
-      try {
-        const url = new URL(databaseUrl);
-        poolConfig = {
-          host: url.hostname,
-          port: parseInt(url.port) || 5432,
-          database: url.pathname.slice(1), // Remove leading /
-          user: decodeURIComponent(url.username),
-          password: decodeURIComponent(url.password),
-          ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-          max: 20,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 10000,
-        };
-        console.log(`📊 Connecting to: ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
-        console.log(`👤 User: ${poolConfig.user}`);
-      } catch (parseError) {
-        console.error('❌ Failed to parse DATABASE_URL:', parseError.message);
-        console.warn('⚠️  Falling back to connection string method');
-        poolConfig = {
-          connectionString: databaseUrl,
-          ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-          max: 20,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 10000,
-        };
+      
+      // Check if it starts with postgresql:// or postgres://
+      if (databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://')) {
+        try {
+          const url = new URL(databaseUrl);
+          poolConfig = {
+            host: url.hostname,
+            port: parseInt(url.port) || 5432,
+            database: url.pathname.slice(1), // Remove leading /
+            user: decodeURIComponent(url.username),
+            password: decodeURIComponent(url.password),
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+            max: 20,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 10000,
+          };
+          console.log(`📊 Connecting to: ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
+          console.log(`👤 User: ${poolConfig.user}`);
+        } catch (parseError) {
+          console.error('❌ Failed to parse DATABASE_URL:', parseError.message);
+          console.error('❌ URL value:', databaseUrl.substring(0, 100));
+          console.warn('⚠️  Falling back to connection string method');
+          poolConfig = {
+            connectionString: databaseUrl,
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+            max: 20,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 10000,
+          };
+        }
+      } else {
+        console.error('❌ DATABASE_URL does not start with postgresql:// or postgres://');
+        console.error('❌ Actual value:', databaseUrl.substring(0, 100));
+        console.warn('⚠️  Falling back to file-based storage');
+        return false;
       }
       
       this.pool = new Pool(poolConfig);
