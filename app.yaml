@@ -8,6 +8,8 @@ env:
     value: production
   - name: PORT
     value: "8080"
+  - name: DATABASE_URL
+    value: "{{secrets/maturity-assessment/LAKEBASE_DATABASE_URL}}"
   - name: SESSION_SECRET
-    value: "databricks-maturity-assessment-secret-2025"
+    value: "{{secrets/maturity-assessment/SESSION_SECRET}}"
 
