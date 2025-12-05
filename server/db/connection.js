@@ -87,19 +87,22 @@ class DatabaseConnection {
         if (databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://')) {
           try {
             const url = new URL(databaseUrl);
+            const sslMode = url.searchParams.get('sslmode');
+            
             poolConfig = {
               host: url.hostname,
               port: parseInt(url.port) || 5432,
               database: url.pathname.slice(1), // Remove leading /
               user: decodeURIComponent(url.username),
               password: decodeURIComponent(url.password),
-              ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+              ssl: sslMode === 'disable' ? false : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
               max: 20,
               idleTimeoutMillis: 30000,
               connectionTimeoutMillis: 10000,
             };
             console.log(`📊 Connecting to: ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
             console.log(`👤 User: ${poolConfig.user}`);
+            console.log(`🔒 SSL Mode: ${sslMode || 'default'}`);
           } catch (parseError) {
             console.error('❌ Failed to parse DATABASE_URL:', parseError.message);
             console.error('❌ URL value:', databaseUrl.substring(0, 100));

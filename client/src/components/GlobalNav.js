@@ -866,7 +866,7 @@ const GlobalNav = () => {
                             setAssignmentsDropdownOpen(false);
                           }}>
                             <FiUsers />
-                            Manage Assignments
+                            Manage Users
                           </DropdownItem>
                         </>
                       )}
