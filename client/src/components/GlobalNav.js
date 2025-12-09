@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiMonitor } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiMonitor, FiCpu } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -814,6 +814,14 @@ const GlobalNav = () => {
                       <FiList />
                       All Assessments
                     </DropdownItem>
+                    <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      navigate('/genai-readiness');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiCpu />
+                      Gen AI Readiness
+                    </DropdownItem>
                     {currentUser.role === 'admin' && !currentUser.testMode && (
                       <DropdownItem onClick={() => {
                         navigate('/admin/questions');
@@ -1050,6 +1058,10 @@ const GlobalNav = () => {
             <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assessments')}>
               <FiFileText size={16} />
               My Assessments
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/genai-readiness')}>
+              <FiCpu size={16} />
+              Gen AI Readiness
             </MobileSecondaryCTAButton>
             {currentUser.role !== 'consumer' && (
               <>

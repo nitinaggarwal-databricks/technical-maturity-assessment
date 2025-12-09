@@ -34,6 +34,8 @@ import QuestionAssignmentManager from './components/QuestionAssignmentManager';
 import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
+import GenAIReadiness from './components/GenAIReadiness';
+import GenAIReadinessReport from './components/GenAIReadinessReport';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -301,6 +303,24 @@ function App() {
           <Route 
             path="/deep-dive" 
             element={<DeepDive />} 
+          />
+          
+          <Route 
+            path="/genai-readiness" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadiness />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/genai-readiness/report/:id" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadinessReport />
+              </ProtectedRoute>
+            } 
           />
           
           <Route 
