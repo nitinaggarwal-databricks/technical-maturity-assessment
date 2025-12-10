@@ -182,16 +182,44 @@ router.get('/assessments/:id/excel', async (req, res) => {
     };
     summarySheet.getRow(1).font.color = { argb: 'FFFFFFFF' };
     
-    // Responses Sheet
+    // Responses Sheet - Detailed
     const responsesSheet = workbook.addWorksheet('Responses');
     responsesSheet.columns = [
-      { header: 'Question ID', key: 'questionId', width: 20 },
-      { header: 'Response Value', key: 'value', width: 15 }
+      { header: 'Dimension', key: 'dimension', width: 25 },
+      { header: 'Question', key: 'question', width: 60 },
+      { header: 'Option 1', key: 'option1', width: 50 },
+      { header: 'Option 2', key: 'option2', width: 50 },
+      { header: 'Option 3', key: 'option3', width: 50 },
+      { header: 'Option 4', key: 'option4', width: 50 },
+      { header: 'Option 5', key: 'option5', width: 50 },
+      { header: 'Selected Answer', key: 'selectedAnswer', width: 50 },
+      { header: 'Score', key: 'score', width: 10 }
     ];
     
     const responses = assessment.responses;
-    Object.entries(responses).forEach(([questionId, value]) => {
-      responsesSheet.addRow({ questionId, value });
+    
+    // Map responses to framework questions
+    genAIFramework.dimensions.forEach(dimension => {
+      dimension.questions.forEach(question => {
+        const responseValue = responses[question.id];
+        if (responseValue !== undefined) {
+          const selectedOption = question.options.find(opt => opt.value === responseValue);
+          
+          const row = {
+            dimension: dimension.name,
+            question: question.text,
+            option1: question.options[0] ? `${question.options[0].label} (${question.options[0].score} pts)` : '',
+            option2: question.options[1] ? `${question.options[1].label} (${question.options[1].score} pts)` : '',
+            option3: question.options[2] ? `${question.options[2].label} (${question.options[2].score} pts)` : '',
+            option4: question.options[3] ? `${question.options[3].label} (${question.options[3].score} pts)` : '',
+            option5: question.options[4] ? `${question.options[4].label} (${question.options[4].score} pts)` : '',
+            selectedAnswer: selectedOption ? selectedOption.label : 'N/A',
+            score: selectedOption ? selectedOption.score : 0
+          };
+          
+          responsesSheet.addRow(row);
+        }
+      });
     });
     
     // Style responses header
@@ -202,6 +230,30 @@ router.get('/assessments/:id/excel', async (req, res) => {
       fgColor: { argb: 'FF667EEA' }
     };
     responsesSheet.getRow(1).font.color = { argb: 'FFFFFFFF' };
+    
+    // Highlight selected answer column
+    responsesSheet.getColumn('selectedAnswer').eachCell((cell, rowNumber) => {
+      if (rowNumber > 1) { // Skip header
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFF0CD' } // Light yellow
+        };
+        cell.font = { bold: true };
+      }
+    });
+    
+    // Highlight score column
+    responsesSheet.getColumn('score').eachCell((cell, rowNumber) => {
+      if (rowNumber > 1) { // Skip header
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFD4EDDA' } // Light green
+        };
+        cell.font = { bold: true };
+      }
+    });
     
     // Scores Sheet
     const scoresSheet = workbook.addWorksheet('Dimension Scores');
