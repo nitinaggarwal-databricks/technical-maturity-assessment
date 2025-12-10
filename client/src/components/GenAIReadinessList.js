@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FiEdit2, FiDownload, FiUpload, FiCopy, FiTrash2, FiEye, FiShare2 } from 'react-icons/fi';
 import './GenAIReadinessList.css';
 
 const GenAIReadinessList = () => {
@@ -25,7 +26,8 @@ const GenAIReadinessList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, e) => {
+    e.stopPropagation();
     if (!window.confirm('Are you sure you want to delete this assessment?')) {
       return;
     }
@@ -37,6 +39,99 @@ const GenAIReadinessList = () => {
       console.error('Error deleting assessment:', error);
       alert('Failed to delete assessment');
     }
+  };
+
+  const handleEdit = (id, e) => {
+    e.stopPropagation();
+    // Navigate to edit mode (same as creating new assessment but with pre-filled data)
+    navigate(`/genai-readiness/edit/${id}`);
+  };
+
+  const handleClone = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const response = await axios.get(`/api/genai-readiness/assessments/${id}`);
+      const original = response.data;
+      
+      // Create a clone with new name
+      const cloneName = prompt('Enter name for cloned assessment:', `${original.customerName} (Copy)`);
+      if (!cloneName) return;
+
+      const cloned = {
+        customerName: cloneName,
+        responses: original.responses,
+        scores: original.scores,
+        totalScore: original.totalScore,
+        maxScore: original.maxScore,
+        maturityLevel: original.maturityLevel,
+        completedAt: new Date().toISOString()
+      };
+
+      const cloneResponse = await axios.post('/api/genai-readiness/assessments', cloned);
+      
+      // Reload assessments
+      loadAssessments();
+      alert('Assessment cloned successfully!');
+    } catch (error) {
+      console.error('Error cloning assessment:', error);
+      alert('Failed to clone assessment');
+    }
+  };
+
+  const handleDownloadExcel = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const response = await axios.get(`/api/genai-readiness/assessments/${id}/excel`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const assessment = assessments.find(a => a.id === id);
+      link.setAttribute('download', `GenAI_Readiness_${assessment?.customerName || 'Assessment'}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading Excel:', error);
+      alert('Excel download feature coming soon!');
+    }
+  };
+
+  const handleUploadExcel = (id, e) => {
+    e.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx,.xls';
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        await axios.post(`/api/genai-readiness/assessments/${id}/upload-excel`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        loadAssessments();
+        alert('Excel uploaded successfully!');
+      } catch (error) {
+        console.error('Error uploading Excel:', error);
+        alert('Excel upload feature coming soon!');
+      }
+    };
+    input.click();
+  };
+
+  const handleShare = (id, e) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/genai-readiness/report/${id}`;
+    navigator.clipboard.writeText(url);
+    alert('Report link copied to clipboard!');
   };
 
   const getMaturityColor = (level) => {
@@ -206,16 +301,53 @@ const GenAIReadinessList = () => {
 
               <div className="card-actions">
                 <button
-                  className="btn-view"
+                  className="action-icon view-icon"
                   onClick={() => navigate(`/genai-readiness/report/${assessment.id}`)}
+                  title="View Report"
                 >
-                  View Report
+                  <FiEye />
                 </button>
                 <button
-                  className="btn-delete"
-                  onClick={() => handleDelete(assessment.id)}
+                  className="action-icon edit-icon"
+                  onClick={(e) => handleEdit(assessment.id, e)}
+                  title="Edit Assessment"
                 >
-                  Delete
+                  <FiEdit2 />
+                </button>
+                <button
+                  className="action-icon clone-icon"
+                  onClick={(e) => handleClone(assessment.id, e)}
+                  title="Clone Assessment"
+                >
+                  <FiCopy />
+                </button>
+                <button
+                  className="action-icon download-icon"
+                  onClick={(e) => handleDownloadExcel(assessment.id, e)}
+                  title="Download Excel"
+                >
+                  <FiDownload />
+                </button>
+                <button
+                  className="action-icon upload-icon"
+                  onClick={(e) => handleUploadExcel(assessment.id, e)}
+                  title="Upload Excel"
+                >
+                  <FiUpload />
+                </button>
+                <button
+                  className="action-icon share-icon"
+                  onClick={(e) => handleShare(assessment.id, e)}
+                  title="Share Report Link"
+                >
+                  <FiShare2 />
+                </button>
+                <button
+                  className="action-icon delete-icon"
+                  onClick={(e) => handleDelete(assessment.id, e)}
+                  title="Delete Assessment"
+                >
+                  <FiTrash2 />
                 </button>
               </div>
             </div>

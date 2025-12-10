@@ -316,6 +316,15 @@ function App() {
           />
           
           <Route 
+            path="/genai-readiness/edit/:id" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadiness />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/genai-readiness/list" 
             element={
               <ProtectedRoute>

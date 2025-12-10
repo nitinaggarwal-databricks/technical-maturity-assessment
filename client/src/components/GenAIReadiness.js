@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './GenAIReadiness.css';
 
 const GenAIReadiness = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get assessment ID for edit mode
   const [framework, setFramework] = useState(null);
   const [responses, setResponses] = useState({});
   const [currentDimension, setCurrentDimension] = useState(0);
@@ -12,10 +13,15 @@ const GenAIReadiness = () => {
   const [saving, setSaving] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [showNameModal, setShowNameModal] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [assessmentId, setAssessmentId] = useState(null);
 
   useEffect(() => {
     loadFramework();
-  }, []);
+    if (id) {
+      loadExistingAssessment(id);
+    }
+  }, [id]);
 
   const loadFramework = async () => {
     try {
@@ -25,6 +31,23 @@ const GenAIReadiness = () => {
     } catch (error) {
       console.error('Error loading framework:', error);
       setLoading(false);
+    }
+  };
+
+  const loadExistingAssessment = async (assessmentId) => {
+    try {
+      const response = await axios.get(`/api/genai-readiness/assessments/${assessmentId}`);
+      const assessment = response.data;
+      
+      setCustomerName(assessment.customerName);
+      setResponses(assessment.responses);
+      setEditMode(true);
+      setAssessmentId(assessmentId);
+      setShowNameModal(false);
+    } catch (error) {
+      console.error('Error loading assessment:', error);
+      alert('Failed to load assessment for editing');
+      navigate('/genai-readiness/list');
     }
   };
 
@@ -82,7 +105,7 @@ const GenAIReadiness = () => {
       const scores = calculateScore();
       const maturityLevel = getMaturityLevel(scores.total);
       
-      const assessment = {
+      const assessmentData = {
         customerName: customerName.trim(),
         responses,
         scores: scores.byDimension,
@@ -92,7 +115,15 @@ const GenAIReadiness = () => {
         completedAt: new Date().toISOString()
       };
 
-      const response = await axios.post('/api/genai-readiness/assessments', assessment);
+      let response;
+      if (editMode && assessmentId) {
+        // Update existing assessment
+        response = await axios.put(`/api/genai-readiness/assessments/${assessmentId}`, assessmentData);
+        response.data.id = assessmentId;
+      } else {
+        // Create new assessment
+        response = await axios.post('/api/genai-readiness/assessments', assessmentData);
+      }
       
       // Navigate to report page
       navigate(`/genai-readiness/report/${response.data.id}`);
