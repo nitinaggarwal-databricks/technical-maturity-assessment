@@ -187,11 +187,7 @@ router.get('/assessments/:id/excel', async (req, res) => {
     responsesSheet.columns = [
       { header: 'Dimension', key: 'dimension', width: 25 },
       { header: 'Question', key: 'question', width: 60 },
-      { header: 'Option 1', key: 'option1', width: 50 },
-      { header: 'Option 2', key: 'option2', width: 50 },
-      { header: 'Option 3', key: 'option3', width: 50 },
-      { header: 'Option 4', key: 'option4', width: 50 },
-      { header: 'Option 5', key: 'option5', width: 50 },
+      { header: 'All Options', key: 'allOptions', width: 80 },
       { header: 'Selected Answer', key: 'selectedAnswer', width: 50 },
       { header: 'Score', key: 'score', width: 10 }
     ];
@@ -205,19 +201,23 @@ router.get('/assessments/:id/excel', async (req, res) => {
         if (responseValue !== undefined) {
           const selectedOption = question.options.find(opt => opt.value === responseValue);
           
+          // Combine all options into one cell with line breaks
+          const allOptionsText = question.options.map((opt, idx) => 
+            `L${idx + 1}: ${opt.label} (${opt.score} pts)`
+          ).join('\n');
+          
           const row = {
             dimension: dimension.name,
             question: question.text,
-            option1: question.options[0] ? `${question.options[0].label} (${question.options[0].score} pts)` : '',
-            option2: question.options[1] ? `${question.options[1].label} (${question.options[1].score} pts)` : '',
-            option3: question.options[2] ? `${question.options[2].label} (${question.options[2].score} pts)` : '',
-            option4: question.options[3] ? `${question.options[3].label} (${question.options[3].score} pts)` : '',
-            option5: question.options[4] ? `${question.options[4].label} (${question.options[4].score} pts)` : '',
+            allOptions: allOptionsText,
             selectedAnswer: selectedOption ? selectedOption.label : 'N/A',
             score: selectedOption ? selectedOption.score : 0
           };
           
-          responsesSheet.addRow(row);
+          const addedRow = responsesSheet.addRow(row);
+          
+          // Enable text wrapping for the all options cell
+          addedRow.getCell('allOptions').alignment = { wrapText: true, vertical: 'top' };
         }
       });
     });
