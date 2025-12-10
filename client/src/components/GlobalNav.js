@@ -820,7 +820,14 @@ const GlobalNav = () => {
                       setAssessmentsDropdownOpen(false);
                     }}>
                       <FiCpu />
-                      Gen AI Readiness
+                      New Gen AI Assessment
+                    </DropdownItem>
+                    <DropdownItem onClick={() => {
+                      navigate('/genai-readiness/list');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiList />
+                      Gen AI Assessments
                     </DropdownItem>
                     {currentUser.role === 'admin' && !currentUser.testMode && (
                       <DropdownItem onClick={() => {
@@ -1061,7 +1068,11 @@ const GlobalNav = () => {
             </MobileSecondaryCTAButton>
             <MobileSecondaryCTAButton onClick={() => handleNavigate('/genai-readiness')}>
               <FiCpu size={16} />
-              Gen AI Readiness
+              New Gen AI Assessment
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/genai-readiness/list')}>
+              <FiList size={16} />
+              Gen AI Assessments
             </MobileSecondaryCTAButton>
             {currentUser.role !== 'consumer' && (
               <>

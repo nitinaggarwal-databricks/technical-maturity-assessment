@@ -36,6 +36,7 @@ import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
 import GenAIReadiness from './components/GenAIReadiness';
 import GenAIReadinessReport from './components/GenAIReadinessReport';
+import GenAIReadinessList from './components/GenAIReadinessList';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -310,6 +311,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <GenAIReadiness />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/genai-readiness/list" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadinessList />
               </ProtectedRoute>
             } 
           />
