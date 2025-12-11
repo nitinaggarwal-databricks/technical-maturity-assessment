@@ -102,29 +102,7 @@ const GenAIReadinessList = () => {
 
   const handleUploadExcel = (id, e) => {
     e.stopPropagation();
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.xlsx,.xls';
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        await axios.post(`/api/genai-readiness/assessments/${id}/upload-excel`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        
-        loadAssessments();
-        alert('Excel uploaded successfully!');
-      } catch (error) {
-        console.error('Error uploading Excel:', error);
-        alert('Excel upload feature coming soon!');
-      }
-    };
-    input.click();
+    alert('📤 Excel Upload Feature\n\nThis feature is coming soon! You can currently:\n\n✅ Download assessments to Excel\n✅ Edit assessments in the UI\n✅ Clone existing assessments\n\nStay tuned for Excel import functionality!');
   };
 
   const handleShare = (id, e) => {
