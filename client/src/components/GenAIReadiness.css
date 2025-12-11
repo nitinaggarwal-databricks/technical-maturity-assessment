@@ -1,7 +1,7 @@
 .genai-readiness-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 100px 20px 20px 20px; /* Added top padding for fixed header */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
 }
@@ -515,7 +515,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .genai-readiness-container {
-    padding: 10px;
+    padding: 90px 10px 10px 10px; /* Adjusted top padding for mobile */
   }
 
   .genai-header {
