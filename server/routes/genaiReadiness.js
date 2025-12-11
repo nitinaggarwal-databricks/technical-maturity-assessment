@@ -307,12 +307,108 @@ router.get('/assessments/:id/excel', async (req, res) => {
 // Upload assessment from Excel
 router.post('/assessments/:id/upload-excel', async (req, res) => {
   try {
-    // This is a placeholder for Excel upload functionality
-    // In production, you would parse the uploaded Excel file and update the assessment
-    res.status(501).json({ message: 'Excel upload feature coming soon' });
+    const { id } = req.params;
+    
+    if (!req.files || !req.files.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const file = req.files.file;
+    
+    // Parse Excel file
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.data);
+    
+    const responsesSheet = workbook.getWorksheet('Responses');
+    if (!responsesSheet) {
+      return res.status(400).json({ error: 'Responses sheet not found in Excel file' });
+    }
+
+    // Extract responses from Excel
+    const responses = {};
+    const newScores = {};
+    
+    // Skip header row (row 1) and iterate through data rows
+    responsesSheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header
+      
+      const dimension = row.getCell(1).value; // Dimension name
+      const question = row.getCell(2).value; // Question text
+      const allOptions = row.getCell(3).value; // All options (not used for parsing)
+      const selectedAnswer = row.getCell(4).value; // Selected answer text
+      const score = row.getCell(5).value; // Score
+      
+      if (!selectedAnswer || !dimension) return;
+      
+      // Find the question in the framework by matching dimension and question text
+      const frameworkDimension = genAIFramework.dimensions.find(d => d.name === dimension);
+      if (!frameworkDimension) return;
+      
+      const frameworkQuestion = frameworkDimension.questions.find(q => q.text === question);
+      if (!frameworkQuestion) return;
+      
+      // Find the option that matches the selected answer text
+      const selectedOption = frameworkQuestion.options.find(opt => opt.label === selectedAnswer);
+      if (!selectedOption) return;
+      
+      // Store the response value
+      responses[frameworkQuestion.id] = selectedOption.value;
+    });
+
+    // Recalculate scores based on responses
+    let totalScore = 0;
+    
+    genAIFramework.dimensions.forEach(dimension => {
+      let dimensionScore = 0;
+      
+      dimension.questions.forEach(question => {
+        const responseValue = responses[question.id];
+        if (responseValue !== undefined) {
+          const selectedOption = question.options.find(opt => opt.value === responseValue);
+          if (selectedOption) {
+            dimensionScore += selectedOption.score;
+          }
+        }
+      });
+      
+      newScores[dimension.id] = {
+        score: dimensionScore,
+        maxScore: dimension.maxScore,
+        percentage: Math.round((dimensionScore / dimension.maxScore) * 100)
+      };
+      
+      totalScore += dimensionScore;
+    });
+
+    // Determine maturity level
+    const maturityLevel = genAIFramework.maturityLevels.find(level => 
+      totalScore >= level.min && totalScore <= level.max
+    );
+
+    // Update assessment in database
+    await db.query(
+      `UPDATE genai_assessments 
+       SET responses = $1, scores = $2, total_score = $3, 
+           maturity_level = $4, updated_at = NOW()
+       WHERE id = $5`,
+      [
+        JSON.stringify(responses),
+        JSON.stringify(newScores),
+        totalScore,
+        maturityLevel?.level || null,
+        id
+      ]
+    );
+
+    res.json({ 
+      message: 'Assessment updated successfully from Excel',
+      totalScore,
+      maturityLevel: maturityLevel?.level,
+      responsesCount: Object.keys(responses).length
+    });
   } catch (error) {
     console.error('Error uploading Excel:', error);
-    res.status(500).json({ error: 'Failed to upload Excel file' });
+    res.status(500).json({ error: 'Failed to upload Excel file: ' + error.message });
   }
 });
 

@@ -102,7 +102,51 @@ const GenAIReadinessList = () => {
 
   const handleUploadExcel = (id, e) => {
     e.stopPropagation();
-    alert('📤 Excel Upload Feature\n\nThis feature is coming soon! You can currently:\n\n✅ Download assessments to Excel\n✅ Edit assessments in the UI\n✅ Clone existing assessments\n\nStay tuned for Excel import functionality!');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx,.xls';
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const confirmed = window.confirm(
+        `Upload Excel for Assessment?\n\n` +
+        `This will update the assessment with responses from the Excel file.\n\n` +
+        `Make sure the Excel file:\n` +
+        `• Was downloaded from this app\n` +
+        `• Has the 'Responses' sheet\n` +
+        `• Selected answers match the option text exactly\n\n` +
+        `Continue?`
+      );
+      
+      if (!confirmed) return;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(
+          `/api/genai-readiness/assessments/${id}/upload-excel`, 
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }
+        );
+        
+        loadAssessments();
+        alert(
+          `✅ Excel Uploaded Successfully!\n\n` +
+          `Total Score: ${response.data.totalScore}\n` +
+          `Maturity Level: ${response.data.maturityLevel}\n` +
+          `Responses Updated: ${response.data.responsesCount}`
+        );
+      } catch (error) {
+        console.error('Error uploading Excel:', error);
+        const errorMsg = error.response?.data?.error || 'Failed to upload Excel file';
+        alert(`❌ Upload Failed\n\n${errorMsg}\n\nPlease ensure:\n• File is a valid Excel (.xlsx)\n• 'Responses' sheet exists\n• Selected answers match exactly`);
+      }
+    };
+    input.click();
   };
 
   const handleShare = (id, e) => {
