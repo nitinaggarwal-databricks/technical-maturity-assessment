@@ -1,9 +1,0 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "npm install && cd client && rm -rf build node_modules/.cache && npm install && npm run build && cd .."
-
-[deploy]
-startCommand = "NODE_ENV=production node server/index.js"
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
-
