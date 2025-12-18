@@ -26,3 +26,9 @@ Thumbs.db
 *.swo
 *~
 
+
+# Databricks secrets and tokens
+databricks-maturity-assessment/app.yaml.bak
+databricks-maturity-assessment/get-oauth-from-pat.sh
+databricks-maturity-assessment/get_sp_token.sh
+databricks-maturity-assessment/refresh-lakebase-token.sh

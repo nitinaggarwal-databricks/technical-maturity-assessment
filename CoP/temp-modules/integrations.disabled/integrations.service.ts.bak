@@ -1,0 +1,88 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { TenantGuard } from '../auth/tenant.guard';
+
+/**
+ * Integrations Service
+ * 
+ * Manages external integrations:
+ * - Databricks workspaces (API access)
+ * - Slack/Teams webhooks
+ * - Google Calendar / Outlook
+ * 
+ * Security: config field stores sensitive data (tokens, secrets)
+ * TODO: Encrypt config at rest or use secrets manager
+ */
+@Injectable()
+export class IntegrationsService {
+  constructor(
+    private prisma: PrismaService,
+    private tenantGuard: TenantGuard,
+  ) {}
+
+  async findByCustomer(customerId: string, user: any) {
+    this.tenantGuard.enforceCustomerAccess(user, customerId);
+
+    return this.prisma.integration.findMany({
+      where: { customerId },
+      select: {
+        id: true,
+        type: true,
+        displayName: true,
+        isActive: true,
+        createdAt: true,
+        // Don't expose config (contains secrets)
+      },
+    });
+  }
+
+  async create(customerId: string, data: any, user: any) {
+    this.tenantGuard.enforceCustomerAccess(user, customerId);
+
+    return this.prisma.integration.create({
+      data: {
+        customerId,
+        type: data.type,
+        displayName: data.displayName,
+        config: data.config,
+      },
+    });
+  }
+
+  /**
+   * Get Databricks integration config for a customer
+   */
+  async getDatabricksConfig(customerId: string): Promise<any | null> {
+    const integration = await this.prisma.integration.findFirst({
+      where: { customerId, type: 'databricks', isActive: true },
+    });
+    return integration?.config ?? null;
+  }
+
+  /**
+   * Send Slack notification (if integration exists)
+   */
+  async sendSlackNotification(
+    customerId: string,
+    message: string,
+  ): Promise<void> {
+    const integration = await this.prisma.integration.findFirst({
+      where: { customerId, type: 'slack', isActive: true },
+    });
+    if (!integration) return;
+
+    const webhookUrl = integration.config?.webhookUrl;
+    if (!webhookUrl) return;
+
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: message }),
+      });
+    } catch (error) {
+      console.error('Slack notification failed:', error);
+    }
+  }
+}
+

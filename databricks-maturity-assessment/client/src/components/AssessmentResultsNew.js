@@ -597,7 +597,7 @@ const PillarSection = styled(motion.div)`
 `;
 
 const PillarHeader = styled.div`
-  background: ${props => props.$gradient || 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'};
+  background: ${props => props.$accentColor || '#1B3B6F'};
   padding: 24px 32px;
   border-bottom: 2px solid ${props => props.$borderColor || '#e2e8f0'};
   display: flex;
@@ -605,17 +605,6 @@ const PillarHeader = styled.div`
   justify-content: space-between;
   gap: 16px;
   position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: ${props => props.$accentColor || '#e2e8f0'};
-    opacity: 0.6;
-  }
 
   .pillar-info {
     display: flex;
@@ -626,13 +615,13 @@ const PillarHeader = styled.div`
 
   .pillar-icon {
     font-size: 2rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   }
 
   h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: ${props => props.$textColor || '#1e293b'};
+    color: white;
     margin: 0;
     letter-spacing: -0.01em;
   }
@@ -689,9 +678,12 @@ const EditActionButton = styled.button`
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: ${props => props.$variant === 'danger' ? '#fee2e2' : props.$variant === 'success' ? '#d1fae5' : '#eff6ff'};
-  color: ${props => props.$variant === 'danger' ? '#dc2626' : props.$variant === 'success' ? '#059669' : '#3b82f6'};
-  border: 1px solid ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#bfdbfe'};
+  background: ${props => 
+    props.$variant === 'danger' ? 'rgba(239, 68, 68, 0.9)' : 
+    props.$variant === 'success' ? 'rgba(16, 185, 129, 0.9)' : 
+    'rgba(255, 255, 255, 0.15)'};
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -699,7 +691,10 @@ const EditActionButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.$variant === 'danger' ? '#fecaca' : props.$variant === 'success' ? '#86efac' : '#dbeafe'};
+    background: ${props => 
+      props.$variant === 'danger' ? 'rgba(220, 38, 38, 1)' : 
+      props.$variant === 'success' ? 'rgba(5, 150, 105, 1)' : 
+      'rgba(255, 255, 255, 0.25)'};
     transform: translateY(-1px);
   }
 
@@ -717,8 +712,8 @@ const ColorPickerButton = styled.button`
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 2px solid #e2e8f0;
-  background: ${props => props.$color || '#f8fafc'};
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: ${props => props.$color || 'rgba(255, 255, 255, 0.15)'};
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -3284,7 +3279,14 @@ const AssessmentResultsNew = () => {
               {/* Secondary Group - Orange + Green */}
               <ButtonGroup>
                 <ActionButton
-                  onClick={() => navigate(`/assessment/${assessmentId}/platform_governance`)}
+                  onClick={() => {
+                    // Navigate to first selected pillar, or platform_governance as fallback
+                    const selectedPillars = results?.selectedPillars || results?.assessmentInfo?.selectedPillars;
+                    const targetPillar = (selectedPillars && selectedPillars.length > 0) 
+                      ? selectedPillars[0] 
+                      : 'platform_governance';
+                    navigate(`/assessment/${assessmentId}/${targetPillar}`);
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
@@ -3480,7 +3482,7 @@ const AssessmentResultsNew = () => {
                 text: '#1e293b'
               },
               'data_engineering': {
-                primary: '#059669',
+                primary: '#f97316',
                 text: '#1e293b'
               },
               'analytics_bi': {
@@ -3574,7 +3576,7 @@ const AssessmentResultsNew = () => {
                   <div className="pillar-info" onClick={() => toggleSection(`pillar-${pillar.id}`)} style={{ cursor: 'pointer', flex: 1 }}>
                     <span className="pillar-icon">{pillar.icon}</span>
                     <h3>{pillar.name}</h3>
-                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: pillarColorScheme.text, opacity: 0.6 }}>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: 'white', opacity: 0.9 }}>
                       {customizations.collapsedSections[`pillar-${pillar.id}`] ? (
                         <FiChevronDown size={24} />
                       ) : (

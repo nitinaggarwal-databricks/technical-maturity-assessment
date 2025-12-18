@@ -1,0 +1,160 @@
+// SCHEMA EXTENSIONS FOR AUTH, INTEGRATIONS, AI, NOTIFICATIONS
+// 
+// Add these to your main schema.prisma file
+
+// 1. USER EXTENSIONS (add to User model)
+model User {
+  // ... existing fields ...
+  
+  isAdmin     Boolean  @default(false)  // Platform admin flag
+  customerIds String[] @default([])     // Multi-tenant: accessible customer IDs
+  preferences Json?                     // User preferences (notifications, UI settings)
+  lastLoginAt DateTime?                 // Track last login
+}
+
+// 2. INTEGRATIONS
+model Integration {
+  id           String   @id @default(uuid())
+  customerId   String
+  type         String   // 'databricks', 'slack', 'teams', 'google_calendar'
+  displayName  String
+  config       Json     // Provider-specific configuration
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([type])
+}
+
+// 3. DISCUSSIONS / Q&A
+model DiscussionThread {
+  id          String   @id @default(uuid())
+  copId       String
+  title       String
+  body        String?
+  createdById String
+  isPinned    Boolean  @default(false)
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cop     Cop                @relation(fields: [copId], references: [id], onDelete: Cascade)
+  creator User               @relation(fields: [createdById], references: [id])
+  replies DiscussionReply[]
+
+  @@index([copId])
+  @@index([createdById])
+}
+
+model DiscussionReply {
+  id          String   @id @default(uuid())
+  threadId    String
+  body        String
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  thread  DiscussionThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  creator User             @relation(fields: [createdById], references: [id])
+
+  @@index([threadId])
+  @@index([createdById])
+}
+
+// 4. NOTIFICATIONS
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // 'event_created', 'survey_published', 'champion_recognized', etc.
+  title       String
+  body        String?
+  relatedType String?  // 'cop', 'event', 'survey'
+  relatedId   String?
+  isRead      Boolean  @default(false)
+  sentAt      DateTime @default(now())
+  readAt      DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([sentAt])
+}
+
+// 5. AI SUMMARIES / CACHE
+model AiSummary {
+  id          String   @id @default(uuid())
+  entityType  String   // 'survey', 'cop_advice', 'newsletter'
+  entityId    String
+  summaryType String   // 'survey_feedback', 'advisor_recommendations', 'newsletter_draft'
+  content     Json     // AI-generated content (structured)
+  model       String?  // 'dbrx-instruct', 'gpt-4', etc.
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+
+  @@unique([entityType, entityId, summaryType])
+  @@index([entityId])
+  @@index([createdAt])
+}
+
+// 6. READINESS ASSESSMENTS
+model ReadinessAssessment {
+  id          String   @id @default(uuid())
+  customerId  String
+  completedBy String   // userId
+  score       Float    // 0-100
+  dimension1  Float    // Leadership alignment
+  dimension2  Float    // Technical readiness
+  dimension3  Float    // Change management
+  dimension4  Float    // Use case clarity
+  responses   Json     // Full question/answer data
+  createdAt   DateTime @default(now())
+
+  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  completedByUser User @relation(fields: [completedBy], references: [id])
+
+  @@index([customerId])
+  @@index([score])
+}
+
+// 7. TEMPLATES (CoP Design Studio)
+model CopTemplate {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  industry    String?
+  useCase     String?
+  config      Json     // Template structure (phases, events, content)
+  isPublic    Boolean  @default(true)
+  usageCount  Int      @default(0)
+  createdById String
+  createdAt   DateTime @default(now())
+
+  creator User @relation(fields: [createdById], references: [id])
+
+  @@index([industry])
+  @@index([isPublic])
+}
+
+// 8. AUDIT LOG
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String   // 'create', 'update', 'delete', 'view'
+  entityType String  // 'cop', 'event', 'user', etc.
+  entityId  String?
+  changes   Json?    // Before/after for updates
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+

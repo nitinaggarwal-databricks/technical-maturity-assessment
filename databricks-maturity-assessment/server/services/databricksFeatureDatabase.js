@@ -64,7 +64,7 @@ class DatabricksFeatureDatabase {
         FROM databricks_features f
         INNER JOIN feature_pain_point_mapping fpm ON f.id = fpm.feature_id
         WHERE fpm.pain_point_value = ANY($1)
-          AND (fpm.pillar = $2 OR fpm.pillar IS NULL)
+          AND fpm.pillar = $2
           AND f.ga_status IN ('GA', 'Public Preview')
         GROUP BY f.id, f.name, f.category, f.short_description, f.detailed_description, 
                  f.release_date, f.ga_quarter, f.ga_status, f.documentation_url, 

@@ -30,9 +30,13 @@ import AssessmentDetails from './components/AssessmentDetails';
 import FeedbackForm from './components/FeedbackForm';
 import FeedbackList from './components/FeedbackList';
 import QuestionManager from './components/QuestionManager';
+import QuestionAssignmentManager from './components/QuestionAssignmentManager';
 import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
+import GenAIReadiness from './components/GenAIReadiness';
+import GenAIReadinessReport from './components/GenAIReadinessReport';
+import GenAIReadinessList from './components/GenAIReadinessList';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -303,6 +307,42 @@ function App() {
           />
           
           <Route 
+            path="/genai-readiness" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadiness />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/genai-readiness/edit/:id" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadiness />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/genai-readiness/list" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadinessList />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/genai-readiness/report/:id" 
+            element={
+              <ProtectedRoute>
+                <GenAIReadinessReport />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/dashboard" 
             element={
               <AssessmentDashboard 
@@ -471,6 +511,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <QuestionManager />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/question-assignments" 
+            element={
+              <ProtectedRoute>
+                <QuestionAssignmentManager />
               </ProtectedRoute>
             }
           />

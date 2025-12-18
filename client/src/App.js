@@ -14,7 +14,7 @@ import AssessmentStart from './components/AssessmentStart';
 import AssessmentQuestion from './components/AssessmentQuestion';
 import AssessmentResults from './components/AssessmentResultsNew';
 import AssessmentManagement from './components/AssessmentsListNew';
-import AssessmentDashboard from './components/AssessmentDashboard';
+// AssessmentDashboard removed - route now redirects to /assessments
 import Dashboard from './components/DashboardNew';
 import LoadingSpinner from './components/LoadingSpinner';
 import ExecutiveCommandCenter from './components/ExecutiveCommandCenter';
@@ -33,6 +33,7 @@ import QuestionManager from './components/QuestionManager';
 import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
+import DataCleanup from './components/DataCleanup';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -304,24 +305,12 @@ function App() {
           
           <Route 
             path="/dashboard" 
-            element={
-              <AssessmentDashboard 
-                currentAssessment={currentAssessment}
-                framework={assessmentFramework}
-                onLogout={handleLogout}
-              />
-            } 
+            element={<Navigate to="/assessments" replace />}
           />
           
           <Route 
             path="/dashboard/:assessmentId" 
-            element={
-              <AssessmentDashboard 
-                currentAssessment={currentAssessment}
-                framework={assessmentFramework}
-                onLogout={handleLogout}
-              />
-            } 
+            element={<Navigate to="/assessments" replace />}
           />
           
           {/* Removed /explore route - all content is on home page with scroll navigation */}
@@ -412,6 +401,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserManagement />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/data-cleanup" 
+            element={
+              <ProtectedRoute>
+                <DataCleanup />
               </ProtectedRoute>
             }
           />

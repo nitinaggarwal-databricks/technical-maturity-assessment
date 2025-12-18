@@ -7,8 +7,12 @@ import jsPDF from 'jspdf';
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 80px 0 10px 0;
+  padding: 120px 0 40px 0;
   overflow-x: hidden;
+  
+  @media (max-width: 768px) {
+    padding: 100px 0 40px 0;
+  }
   
   @media print {
     padding: 0;
@@ -18,7 +22,7 @@ const PageContainer = styled.div`
 
 const FloatingSlideshowButton = styled.button`
   position: fixed;
-  top: 100px;
+  top: 80px;
   right: 40px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -33,11 +37,18 @@ const FloatingSlideshowButton = styled.button`
   gap: 10px;
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 900;
   
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  }
+  
+  @media (max-width: 768px) {
+    top: 72px;
+    right: 24px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
   
   @media print {

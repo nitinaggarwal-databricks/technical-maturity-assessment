@@ -1,0 +1,259 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id           String   @id @default(uuid())
+  name         String
+  industry     String?
+  region       String?
+  accountOwner String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cops Cop[]
+}
+
+model Cop {
+  id          String   @id @default(uuid())
+  customerId  String
+  name        String
+  mission     String?
+  vision      String?
+  charterUrl  String?
+  phase       CopPhase @default(FOUNDATION)
+  isActive    Boolean  @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  
+  memberships   CopMembership[]
+  events        Event[]
+  contentAssets ContentAsset[]
+  surveys       Survey[]
+  kpiMetrics    KpiMetric[]
+  useCases      UseCase[]
+  champions     Champion[]
+}
+
+enum CopPhase {
+  FOUNDATION
+  LAUNCH
+  GROWTH
+  OPTIMIZATION
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  fullName  String?
+  company   String?
+  role      String?
+  persona   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships        CopMembership[]
+  eventRegistrations EventRegistration[]
+  eventAttendance    EventAttendance[]
+  createdContent     ContentAsset[]
+  contentEngagements ContentEngagement[]
+  createdSurveys     Survey[]
+  surveyResponses    SurveyResponse[]
+  createdUseCases    UseCase[]
+  championsReceived  Champion[]
+  championsGiven     Champion[] @relation("ChampionCreator")
+}
+
+model CopMembership {
+  id             String   @id @default(uuid())
+  copId          String
+  userId         String
+  membershipRole String
+  joinedAt       DateTime @default(now())
+
+  cop  Cop  @relation(fields: [copId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([copId, userId])
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  copId       String
+  title       String
+  description String?
+  eventType   String?
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String?
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cop Cop @relation(fields: [copId], references: [id])
+
+  registrations EventRegistration[]
+  attendance    EventAttendance[]
+  surveys       Survey[]
+}
+
+model EventRegistration {
+  id           String   @id @default(uuid())
+  eventId      String
+  userId       String
+  registeredAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+}
+
+model EventAttendance {
+  id       String    @id @default(uuid())
+  eventId  String
+  userId   String
+  attended Boolean
+  joinedAt DateTime?
+  leftAt   DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+}
+
+model ContentAsset {
+  id          String   @id @default(uuid())
+  copId       String?
+  title       String
+  description String?
+  url         String
+  assetType   String?
+  skillLevel  String?
+  personaTag  String?
+  tags        String[]
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  cop         Cop?                @relation(fields: [copId], references: [id])
+  creator     User?               @relation(fields: [createdById], references: [id])
+  engagements ContentEngagement[]
+}
+
+model ContentEngagement {
+  id             String   @id @default(uuid())
+  assetId        String
+  userId         String
+  engagementType String
+  occurredAt     DateTime @default(now())
+
+  asset ContentAsset @relation(fields: [assetId], references: [id])
+  user  User         @relation(fields: [userId], references: [id])
+}
+
+model Survey {
+  id          String   @id @default(uuid())
+  copId       String?
+  eventId     String?
+  surveyType  String
+  title       String
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  cop       Cop?             @relation(fields: [copId], references: [id])
+  event     Event?           @relation(fields: [eventId], references: [id])
+  creator   User?            @relation(fields: [createdById], references: [id])
+  questions SurveyQuestion[]
+  responses SurveyResponse[]
+}
+
+model SurveyQuestion {
+  id           String   @id @default(uuid())
+  surveyId     String
+  questionText String
+  questionType String
+  position     Int
+
+  survey  Survey         @relation(fields: [surveyId], references: [id])
+  answers SurveyAnswer[]
+}
+
+model SurveyResponse {
+  id          String   @id @default(uuid())
+  surveyId    String
+  userId      String?
+  submittedAt DateTime @default(now())
+
+  survey  Survey         @relation(fields: [surveyId], references: [id])
+  user    User?          @relation(fields: [userId], references: [id])
+  answers SurveyAnswer[]
+}
+
+model SurveyAnswer {
+  id          String @id @default(uuid())
+  responseId  String
+  questionId  String
+  answerValue String
+
+  response SurveyResponse @relation(fields: [responseId], references: [id])
+  question SurveyQuestion @relation(fields: [questionId], references: [id])
+}
+
+model KpiMetric {
+  id          String   @id @default(uuid())
+  copId       String
+  metricName  String
+  metricValue Float
+  metricDate  DateTime
+  createdAt   DateTime @default(now())
+
+  cop Cop @relation(fields: [copId], references: [id])
+
+  @@unique([copId, metricName, metricDate])
+}
+
+model UseCase {
+  id              String   @id @default(uuid())
+  copId           String
+  title           String
+  problem         String?
+  solution        String?
+  architectureUrl String?
+  productsUsed    String[]
+  outcomes        String?
+  businessImpact  Json?
+  createdById     String?
+  createdAt       DateTime @default(now())
+
+  cop     Cop   @relation(fields: [copId], references: [id])
+  creator User? @relation(fields: [createdById], references: [id])
+}
+
+model Champion {
+  id          String   @id @default(uuid())
+  copId       String
+  userId      String
+  month       DateTime
+  awardType   String
+  citation    String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  cop     Cop   @relation(fields: [copId], references: [id])
+  user    User  @relation(fields: [userId], references: [id])
+  creator User? @relation("ChampionCreator", fields: [createdById], references: [id])
+
+  @@unique([copId, userId, month, awardType])
+}

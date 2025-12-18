@@ -44,24 +44,86 @@ class DatabaseConnection {
     }
 
     try {
-      // Railway provides DATABASE_URL automatically when you provision PostgreSQL
-      const databaseUrl = process.env.DATABASE_URL;
-      
-      if (!databaseUrl) {
-        console.warn('⚠️  DATABASE_URL not found - PostgreSQL not configured');
-        console.warn('⚠️  Falling back to file-based storage');
-        return false;
-      }
-
       console.log('🔌 Connecting to PostgreSQL database...');
       
-      this.pool = new Pool({
-        connectionString: databaseUrl,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-        max: 20, // Maximum number of clients in the pool
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000,
-      });
+      // Check for individual Lakebase environment variables first (Databricks Apps)
+      const lakebaseHost = process.env.LAKEBASE_HOST;
+      const lakebasePort = process.env.LAKEBASE_PORT;
+      const lakebaseDatabase = process.env.LAKEBASE_DATABASE;
+      const lakebaseUser = process.env.LAKEBASE_USER;
+      const lakebasePassword = process.env.LAKEBASE_PASSWORD;
+      
+      let poolConfig;
+      
+      if (lakebaseHost && lakebaseDatabase && lakebaseUser && lakebasePassword) {
+        // Use individual environment variables (Databricks Apps)
+        console.log('📊 Using Lakebase environment variables');
+        poolConfig = {
+          host: lakebaseHost,
+          port: parseInt(lakebasePort) || 5432,
+          database: lakebaseDatabase,
+          user: lakebaseUser,
+          password: lakebasePassword,
+          ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+          max: 20,
+          idleTimeoutMillis: 30000,
+          connectionTimeoutMillis: 10000,
+        };
+        console.log(`📊 Connecting to: ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
+        console.log(`👤 User: ${poolConfig.user}`);
+      } else {
+        // Fall back to DATABASE_URL (Railway)
+        const databaseUrl = process.env.DATABASE_URL;
+        
+        if (!databaseUrl) {
+          console.warn('⚠️  DATABASE_URL not found - PostgreSQL not configured');
+          console.warn('⚠️  Falling back to file-based storage');
+          return false;
+        }
+
+        console.log(`🔍 DATABASE_URL format: ${databaseUrl.substring(0, 50)}...`);
+        
+        // Check if it starts with postgresql:// or postgres://
+        if (databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://')) {
+          try {
+            const url = new URL(databaseUrl);
+            const sslMode = url.searchParams.get('sslmode');
+            
+            poolConfig = {
+              host: url.hostname,
+              port: parseInt(url.port) || 5432,
+              database: url.pathname.slice(1), // Remove leading /
+              user: decodeURIComponent(url.username),
+              password: decodeURIComponent(url.password),
+              ssl: sslMode === 'disable' ? false : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
+              max: 20,
+              idleTimeoutMillis: 30000,
+              connectionTimeoutMillis: 10000,
+            };
+            console.log(`📊 Connecting to: ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
+            console.log(`👤 User: ${poolConfig.user}`);
+            console.log(`🔒 SSL Mode: ${sslMode || 'default'}`);
+          } catch (parseError) {
+            console.error('❌ Failed to parse DATABASE_URL:', parseError.message);
+            console.error('❌ URL value:', databaseUrl.substring(0, 100));
+            console.warn('⚠️  Falling back to connection string method');
+            poolConfig = {
+              connectionString: databaseUrl,
+              ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+              max: 20,
+              idleTimeoutMillis: 30000,
+              connectionTimeoutMillis: 10000,
+            };
+          }
+        } else {
+          console.error('❌ DATABASE_URL does not start with postgresql:// or postgres://');
+          console.error('❌ Actual value:', databaseUrl.substring(0, 100));
+          console.warn('⚠️  Falling back to file-based storage');
+          return false;
+        }
+      }
+      
+      this.pool = new Pool(poolConfig);
 
       // Test connection
       const client = await this.pool.connect();

@@ -13,7 +13,11 @@ const API_URL = process.env.REACT_APP_API_URL ||
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 100px 20px 40px 20px;
+  padding: 120px 20px 40px 20px;
+
+  @media (max-width: 768px) {
+    padding: 100px 20px 40px 20px;
+  }
 `;
 
 const ContentWrapper = styled.div`

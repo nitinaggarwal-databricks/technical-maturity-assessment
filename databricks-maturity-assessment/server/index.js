@@ -45,6 +45,7 @@ const customQuestionsRoutes = require('./routes/custom-questions');
 const excelRoutes = require('./routes/excel');
 const questionEditsRoutes = require('./routes/questionEdits');
 const questionAssignmentsRoutes = require('./routes/questionAssignments');
+const genaiReadinessRoutes = require('./routes/genaiReadiness');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -56,6 +57,7 @@ app.use('/api/custom-questions', customQuestionsRoutes);
 app.use('/api/assessment-excel', excelRoutes);
 app.use('/api/question-edits', questionEditsRoutes);
 app.use('/api/question-assignments', questionAssignmentsRoutes);
+app.use('/api/genai-readiness', genaiReadinessRoutes);
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -352,7 +354,7 @@ app.get('/api/assessment/framework', async (req, res) => {
 // Start new assessment
 app.post('/api/assessment/start', async (req, res) => {
   try {
-    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
+    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription, selectedPillars } = req.body;
     
     if (!contactEmail) {
       return res.status(400).json({
@@ -368,8 +370,25 @@ app.post('/api/assessment/start', async (req, res) => {
       });
     }
 
+    if (!industry) {
+      return res.status(400).json({
+        success: false,
+        message: 'Industry is required'
+      });
+    }
+
+    if (!selectedPillars || selectedPillars.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one pillar must be selected'
+      });
+    }
+
     const assessmentRepo = require('./db/assessmentRepository');
     const assessmentId = uuidv4();
+    
+    // Get the first selected pillar as the starting category
+    const firstPillar = selectedPillars[0];
     
     await assessmentRepo.create({
       id: assessmentId,
@@ -377,10 +396,11 @@ app.post('/api/assessment/start', async (req, res) => {
       assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || 'Not specified',
       contactEmail,
-      industry: industry || 'Not specified',
+      industry,
+      selectedPillars: selectedPillars, // Store selected pillars
       status: 'in_progress',
       progress: 0,
-      currentCategory: assessmentFramework.assessmentAreas[0].id,
+      currentCategory: firstPillar,
       completedCategories: [],
       responses: {},
       editHistory: [],
@@ -391,10 +411,11 @@ app.post('/api/assessment/start', async (req, res) => {
       success: true,
       data: {
       assessmentId,
-      currentCategory: assessmentFramework.assessmentAreas[0].id,
-      totalCategories: assessmentFramework.assessmentAreas.length,
+      currentCategory: firstPillar,
+      totalCategories: selectedPillars.length,
       assessmentName,
-      assessmentDescription
+      assessmentDescription,
+      selectedPillars
       }
     });
   } catch (error) {
@@ -450,7 +471,9 @@ app.get('/api/assessment/:id/status', async (req, res) => {
     }
 
     const completedCats = assessment.completedCategories || [];
-    const progress = (completedCats.length / assessmentFramework.assessmentAreas.length) * 100;
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    const totalPillars = selectedPillars.length;
+    const progress = (completedCats.length / totalPillars) * 100;
 
     res.json({
       success: true,
@@ -464,6 +487,7 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         contactName: assessment.contactName || '',
         contactRole: assessment.contactRole || '',
         industry: assessment.industry,
+        selectedPillars: selectedPillars, // Include selected pillars
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
@@ -494,6 +518,16 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
+      });
+    }
+
+    // Check if this pillar is selected for this assessment
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    if (!selectedPillars.includes(categoryId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'This pillar is not selected for this assessment',
+        selectedPillars
       });
     }
 
@@ -1151,8 +1185,14 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('Assessment responses:', JSON.stringify(assessment.responses, null, 2));
     console.log('Has responses:', hasAnyResponses, 'Completed categories:', assessment.completedCategories.length);
     
-    // Calculate total questions and answered questions
-    const totalQuestions = assessmentFramework.assessmentAreas.reduce((total, area) => {
+    // Filter to only selected pillars
+    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
+    const availableAreas = assessmentFramework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+    console.log(`📊 Selected pillars: ${selectedPillars.join(', ')}`);
+    console.log(`📊 Available areas for calculation: ${availableAreas.length}`);
+    
+    // Calculate total questions and answered questions (only for selected pillars)
+    const totalQuestions = availableAreas.reduce((total, area) => {
       return total + area.dimensions.reduce((dimTotal, dim) => {
         return dimTotal + (dim.questions?.length || 0);
       }, 0);
@@ -1181,7 +1221,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     // Find areas with any responses (completed or partial)
     const areasWithResponses = hasAnyResponses 
-      ? assessmentFramework.assessmentAreas.filter(area => {
+      ? availableAreas.filter(area => {
           // Check if there are any responses for this area
           const hasAreaResponses = Object.keys(assessment.responses).some(key => {
             // Skip comment and skipped keys
@@ -1598,16 +1638,17 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         industry: assessment.industry,
         completedAt: assessment.completedAt,
         startedAt: assessment.startedAt,
-        isPartialAssessment: fullyCompletedAreas.length < assessmentFramework.assessmentAreas.length,
+        isPartialAssessment: fullyCompletedAreas.length < availableAreas.length, // 🚨 Compare against selected pillars, not all 6
         completedPillars: fullyCompletedAreas.length, // 🚨 Changed to fully completed count
-        totalPillars: assessmentFramework.assessmentAreas.length,
+        totalPillars: availableAreas.length, // 🚨 Use selected pillars count, not always 6
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,
         totalQuestions: totalQuestions,
         completionPercentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0,
         lastModified: assessment.lastModified,
         lastEditor: assessment.lastEditor,
-        editHistory: assessment.editHistory || []
+        editHistory: assessment.editHistory || [],
+        selectedPillars: selectedPillars // 🆕 Include selected pillars in response
       },
       overall: recommendations.overall, // ADAPTIVE: includes currentScore, futureScore, gap, level, summary
       categoryDetails,
@@ -1623,6 +1664,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
       whatsNew: recommendations.whatsNew, // ADAPTIVE: Latest Databricks features
+      selectedPillars: selectedPillars, // 🆕 Include selected pillars in top-level response
       pillarStatus: assessmentFramework.assessmentAreas.map(area => {
         const isCompleted = assessment.completedCategories.includes(area.id);
         const hasResponses = areasWithResponses.some(a => a.id === area.id);
@@ -2970,6 +3012,21 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       specificPillars
     });
     
+    // Determine selectedPillars for the sample assessment
+    let selectedPillars;
+    if (specificPillars && specificPillars.length > 0) {
+      selectedPillars = specificPillars;
+    } else if (completionLevel === 'partial') {
+      // Use the completed categories as selected pillars
+      selectedPillars = sampleAssessment.completedCategories;
+    } else if (completionLevel === 'minimal') {
+      // Use the completed categories as selected pillars
+      selectedPillars = sampleAssessment.completedCategories;
+    } else {
+      // Full assessment - all pillars selected
+      selectedPillars = assessmentFramework.assessmentAreas.map(a => a.id);
+    }
+    
     // Save to PostgreSQL
     const assessmentRepo = require('./db/assessmentRepository');
     await assessmentRepo.create({
@@ -2985,7 +3042,8 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       completedCategories: sampleAssessment.completedCategories,
       responses: sampleAssessment.responses,
       editHistory: sampleAssessment.editHistory || [],
-      startedAt: sampleAssessment.startedAt || new Date().toISOString()
+      startedAt: sampleAssessment.startedAt || new Date().toISOString(),
+      selectedPillars: selectedPillars // 🆕 Add selected pillars to sample assessments
     });
     
     console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);

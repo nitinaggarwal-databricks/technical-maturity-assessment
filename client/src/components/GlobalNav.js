@@ -981,6 +981,13 @@ const GlobalNav = () => {
                           <FiMessageSquare />
                           View All Feedback
                         </DropdownItem>
+                        <DropdownItem onClick={() => {
+                          navigate('/data-cleanup');
+                          setAdminDropdownOpen(false);
+                        }}>
+                          <FiSettings />
+                          Data Cleanup
+                        </DropdownItem>
                       </>
                     )}
                     <DropdownDivider />

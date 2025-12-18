@@ -143,7 +143,12 @@ const ExecutiveSummary = () => {
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={() => {
-                navigate(`/assessment/${assessmentId}/platform_governance`);
+                // Navigate to first selected pillar, or platform_governance as fallback
+                const selectedPillars = results?.selectedPillars || results?.assessmentInfo?.selectedPillars;
+                const targetPillar = (selectedPillars && selectedPillars.length > 0) 
+                  ? selectedPillars[0] 
+                  : 'platform_governance';
+                navigate(`/assessment/${assessmentId}/${targetPillar}`);
                 
               }}
               style={{

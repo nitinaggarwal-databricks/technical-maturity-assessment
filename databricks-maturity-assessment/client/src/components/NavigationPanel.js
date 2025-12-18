@@ -95,22 +95,29 @@ const PillarHeader = styled(motion.div)`
   display: flex;
   align-items: center;
   padding: 12px 20px;
-  cursor: pointer;
+  cursor: ${props => props.$isDisabled ? 'not-allowed' : 'pointer'};
   transition: all 0.2s ease;
   border-left: 4px solid transparent;
+  opacity: ${props => props.$isDisabled ? '0.4' : '1'};
+  pointer-events: ${props => props.$isDisabled ? 'none' : 'auto'};
 
   &:hover {
-    background: #f3f4f6;
+    background: ${props => props.$isDisabled ? 'transparent' : '#f3f4f6'};
   }
 
-  ${props => props.$isActive && `
+  ${props => props.$isActive && !props.$isDisabled && `
     background: #eff6ff;
     border-left-color: #3b82f6;
   `}
 
-  ${props => props.$isCompleted && `
+  ${props => props.$isCompleted && !props.$isDisabled && `
     background: #f0fdf4;
     border-left-color: #10b981;
+  `}
+  
+  ${props => props.$isDisabled && `
+    background: #f9fafb;
+    border-left-color: #e5e7eb;
   `}
 `;
 
@@ -127,7 +134,7 @@ const PillarInfo = styled.div`
 
 const PillarName = styled.div`
   font-weight: 600;
-  color: #1f2937;
+  color: ${props => props.$isDisabled ? '#9ca3af' : '#1f2937'};
   font-size: 14px;
   line-height: 1.2;
   margin-bottom: 2px;
@@ -570,6 +577,30 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
 
       <PillarList>
         {framework.assessmentAreas?.map((pillar) => {
+          // Check if this pillar is selected for this assessment
+          const selectedPillars = currentAssessment?.selectedPillars;
+          // Backward compatibility logic:
+          // - If selectedPillars is undefined/null: old assessment before feature → allow all pillars
+          // - If selectedPillars is empty array []: old assessment or data issue → allow all pillars for safety
+          // - If selectedPillars has items: only allow those specific pillars
+          const isOldOrEmptyAssessment = !selectedPillars || (Array.isArray(selectedPillars) && selectedPillars.length === 0);
+          const isSelected = isOldOrEmptyAssessment || selectedPillars.includes(pillar.id);
+          
+          // Debug logging (only log once per pillar)
+          if (pillar.id === 'platform_governance') {
+            console.log('🔍 NavigationPanel Debug:', {
+              assessmentId: currentAssessment?.assessmentId,
+              rawSelectedPillars: currentAssessment?.selectedPillars,
+              selectedPillarsType: typeof currentAssessment?.selectedPillars,
+              selectedPillarsIsArray: Array.isArray(currentAssessment?.selectedPillars),
+              selectedPillarsLength: currentAssessment?.selectedPillars?.length,
+              selectedPillars,
+              isOldOrEmptyAssessment,
+              currentPillar: pillar.id,
+              isSelected
+            });
+          }
+          
           const isExpanded = expandedPillars.has(pillar.id);
           const isActive = categoryId === pillar.id;
           const isCompleted = pillarProgress[pillar.id]?.completed || false;
@@ -601,22 +632,24 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
               <PillarHeader
                 $isActive={isActive}
                 $isCompleted={isCompleted}
-                onClick={() => togglePillar(pillar.id)}
-                whileHover={{ x: 2 }}
-                whileTap={{ scale: 0.98 }}
+                $isDisabled={!isSelected}
+                onClick={() => isSelected && togglePillar(pillar.id)}
+                whileHover={{ x: isSelected ? 2 : 0 }}
+                whileTap={{ scale: isSelected ? 0.98 : 1 }}
               >
                 <PillarIcon>
                   {isCompleted ? (
-                    <FiCheckCircle size={20} color="#10b981" />
+                    <FiCheckCircle size={20} color={isSelected ? "#10b981" : "#d1d5db"} />
                   ) : (
-                    <FiCircle size={20} color="#6b7280" />
+                    <FiCircle size={20} color={isSelected ? "#6b7280" : "#d1d5db"} />
                   )}
                 </PillarIcon>
                 
                 <PillarInfo>
-                  <PillarName>
+                  <PillarName $isDisabled={!isSelected}>
                     <span style={{ marginRight: '8px', fontSize: '1.1rem' }}>{pillarIcon}</span>
                     {pillar.name}
+                    {!isSelected && <span style={{ marginLeft: '8px', fontSize: '0.75rem', fontWeight: 400, color: '#9ca3af' }}>(Not Selected)</span>}
                   </PillarName>
                   <PillarProgress>
                     {/* 🆕 Progress circles */}
@@ -655,7 +688,7 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
               </PillarHeader>
 
               <AnimatePresence>
-                {isExpanded && (
+                {isExpanded && isSelected && (
                   <DimensionList
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}

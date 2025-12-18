@@ -975,6 +975,28 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     setIsAdmin(currentUser && currentUser.role === 'admin' && !currentUser.testMode);
   }, []);
 
+  // Check if current pillar is selected - redirect if not
+  useEffect(() => {
+    if (currentAssessment && categoryId && framework) {
+      const selectedPillars = currentAssessment.selectedPillars;
+      
+      // Only check if selectedPillars is explicitly set (not undefined)
+      if (selectedPillars && Array.isArray(selectedPillars)) {
+        if (!selectedPillars.includes(categoryId)) {
+          console.warn(`⚠️ Pillar ${categoryId} is not selected for this assessment. Redirecting to first selected pillar.`);
+          
+          // Redirect to first selected pillar
+          if (selectedPillars.length > 0) {
+            navigate(`/assessment/${assessmentId}/${selectedPillars[0]}`, { replace: true });
+          } else {
+            // No pillars selected? Redirect to assessment list
+            navigate('/assessments', { replace: true });
+          }
+        }
+      }
+    }
+  }, [currentAssessment, categoryId, framework, assessmentId, navigate]);
+
   // Note: Question edits are now loaded and applied within loadAreaData useEffect above
   // This ensures edits are applied immediately when the area data is fetched
 
@@ -1022,7 +1044,11 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   // Calculate and update progress
   const updateProgress = useCallback(() => {
     if (framework && currentAssessment && onUpdateStatus) {
-      const totalQuestions = framework.assessmentAreas.reduce((total, area) => {
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      
+      const totalQuestions = availablePillars.reduce((total, area) => {
         return total + (area.dimensions?.reduce((dimTotal, dim) => {
           return dimTotal + (dim.questions?.length || 0);
         }, 0) || 0);
@@ -1046,6 +1072,27 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
   useEffect(() => {
     const loadAreaData = async () => {
       if (assessmentId && categoryId) {
+        // Check if current pillar is selected BEFORE making API call
+        if (currentAssessment && framework) {
+          const selectedPillars = currentAssessment.selectedPillars;
+          
+          // Only check if selectedPillars is explicitly set (not undefined)
+          if (selectedPillars && Array.isArray(selectedPillars)) {
+            if (!selectedPillars.includes(categoryId)) {
+              console.warn(`⚠️ Pillar ${categoryId} is not selected for this assessment. Redirecting...`);
+              
+              // Redirect to first selected pillar
+              if (selectedPillars.length > 0) {
+                navigate(`/assessment/${assessmentId}/${selectedPillars[0]}`, { replace: true });
+              } else {
+                // No pillars selected? Redirect to assessment list
+                navigate('/assessments', { replace: true });
+              }
+              return; // Don't proceed with loading area data
+            }
+          }
+        }
+        
         try {
           setLoading(true);
           const areaData = await assessmentService.getCategoryQuestions(assessmentId, categoryId);
@@ -1173,7 +1220,7 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
     };
 
     loadAreaData();
-  }, [assessmentId, categoryId, targetDimensionIndex, targetQuestionId]);
+  }, [assessmentId, categoryId, targetDimensionIndex, targetQuestionId, currentAssessment, framework, navigate]);
 
   // Log current state for debugging
   useEffect(() => {
@@ -1733,11 +1780,14 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       setCurrentQuestionIndex(prev => prev - 1);
     } else {
       // On first question - navigate to previous pillar's last question
-      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      const currentPillarIndex = availablePillars.findIndex(area => area.id === categoryId);
       
       if (currentPillarIndex > 0) {
         // Go to previous pillar
-        const previousPillar = framework.assessmentAreas[currentPillarIndex - 1];
+        const previousPillar = availablePillars[currentPillarIndex - 1];
         navigate(`/assessment/${assessmentId}/${previousPillar.id}`);
         
       } else {
@@ -1775,11 +1825,14 @@ const AssessmentQuestion = ({ framework, currentAssessment, onUpdateStatus }) =>
       const completedCategories = updatedAssessment?.completedCategories || currentAssessment?.completedCategories || [];
       
       // Find the next pillar in sequence (regardless of completion status)
-      const currentPillarIndex = framework.assessmentAreas.findIndex(area => area.id === categoryId);
-      const nextPillar = framework.assessmentAreas[currentPillarIndex + 1]; // Get next pillar in sequence
+      // Filter to only selected pillars
+      const selectedPillars = currentAssessment?.selectedPillars || framework.assessmentAreas.map(a => a.id);
+      const availablePillars = framework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
+      const currentPillarIndex = availablePillars.findIndex(area => area.id === categoryId);
+      const nextPillar = availablePillars[currentPillarIndex + 1]; // Get next pillar in sequence
       
       // Show appropriate message if all pillars completed
-      if (!nextPillar && completedCategories.length === framework.assessmentAreas.length) {
+      if (!nextPillar && completedCategories.length === availablePillars.length) {
         toast.success('🎉 All pillars completed! You can now view your Overall Assessment Results.', {
           duration: 5000
         });

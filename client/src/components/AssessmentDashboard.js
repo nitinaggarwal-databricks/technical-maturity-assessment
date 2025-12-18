@@ -20,9 +20,14 @@ import * as assessmentService from '../services/assessmentService';
 import LoadingSpinner from './LoadingSpinner';
 
 const DashboardContainer = styled.div`
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px 20px;
+  padding: 120px 20px 40px 20px;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 100px 20px 40px 20px;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -53,9 +58,9 @@ const WelcomeSubtitle = styled.p`
 `;
 
 const LogoutButton = styled(motion.button)`
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  position: fixed;
+  top: 80px;
+  right: 40px;
   background: #ef4444;
   color: white;
   border: none;
@@ -67,10 +72,20 @@ const LogoutButton = styled(motion.button)`
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
+  z-index: 900;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 
   &:hover {
     background: #dc2626;
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    top: 72px;
+    right: 24px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -201,7 +216,7 @@ const PillarStatus = styled.div`
   align-items: center;
   gap: 4px;
   font-size: 0.9rem;
-  color: ${props => props.completed ? '#10b981' : '#f59e0b'};
+  color: ${props => props.$completed ? '#10b981' : '#f59e0b'};
 `;
 
 const PillarProgress = styled.div`
@@ -296,6 +311,23 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
     loadAssessment();
   }, [assessmentId, propAssessment]);
 
+  // Auto-redirect completed assessments to results page
+  // DISABLED: Only redirect if assessment has actual valid responses
+  useEffect(() => {
+    if (assessment && framework?.assessmentAreas) {
+      const completedPillars = assessment.completedCategories?.length || 0;
+      const totalPillars = framework.assessmentAreas.length || 6;
+      const hasValidResponses = assessment.responses && Object.keys(assessment.responses).length > 0;
+      const isCompleted = completedPillars === totalPillars && totalPillars > 0 && hasValidResponses;
+      
+      // Only redirect if assessment is truly complete with valid responses
+      if (isCompleted && assessment.id) {
+        console.log('Assessment is complete with valid responses, redirecting to results page...');
+        navigate(`/results/${assessment.id}`, { replace: true });
+      }
+    }
+  }, [assessment, framework, navigate]);
+
   if (loading) {
     return (
       <DashboardContainer>
@@ -343,6 +375,16 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
   const currentAssessment = assessment;
 
   const handleContinueAssessment = () => {
+    console.log('Continue Assessment clicked');
+    console.log('Current Assessment:', currentAssessment);
+    console.log('Framework areas:', framework?.assessmentAreas);
+    
+    if (!currentAssessment?.id) {
+      console.error('No assessment ID found');
+      toast.error('Cannot continue - assessment ID is missing');
+      return;
+    }
+    
     // Find the first incomplete pillar or go to the first one
     const incompletePillar = framework?.assessmentAreas?.find(area => 
       !currentAssessment.completedCategories?.includes(area.id)
@@ -350,12 +392,23 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
     
     const targetPillar = incompletePillar || framework?.assessmentAreas?.[0];
     if (targetPillar) {
+      console.log('Navigating to:', `/assessment/${currentAssessment.id}/${targetPillar.id}`);
       navigate(`/assessment/${currentAssessment.id}/${targetPillar.id}`);
+    } else {
+      console.error('No target pillar found');
+      toast.error('Cannot find pillar to continue');
     }
   };
 
   const handleViewResults = () => {
-    navigate(`/results/${currentAssessment.id}`);
+    console.log('View Results clicked');
+    console.log('Assessment ID:', currentAssessment.id);
+    if (currentAssessment?.id) {
+      navigate(`/results/${currentAssessment.id}`);
+    } else {
+      console.error('No assessment ID for results');
+      toast.error('Cannot view results - assessment ID is missing');
+    }
   };
 
   const handleLogout = () => {
@@ -376,6 +429,16 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
   const completedPillars = currentAssessment.completedCategories?.length || 0;
   const totalPillars = framework?.assessmentAreas?.length || 6;
   const progress = Math.round((completedPillars / totalPillars) * 100);
+  const isNewAssessment = completedPillars === 0;
+
+  // 🐛 DEBUG: Log assessment details
+  console.log('=== ASSESSMENT DASHBOARD DEBUG ===');
+  console.log('Assessment object:', currentAssessment);
+  console.log('Assessment ID:', currentAssessment.id);
+  console.log('Assessment assessmentId:', currentAssessment.assessmentId);
+  console.log('Completed categories:', currentAssessment.completedCategories);
+  console.log('Framework areas:', framework?.assessmentAreas?.map(a => a.id));
+  console.log('===================================');
 
   return (
     <DashboardContainer>
@@ -394,8 +457,13 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <WelcomeTitle>Welcome Back!</WelcomeTitle>
-          <WelcomeSubtitle>Continue your Databricks maturity assessment</WelcomeSubtitle>
+          <WelcomeTitle>{isNewAssessment ? 'Welcome!' : 'Welcome Back!'}</WelcomeTitle>
+          <WelcomeSubtitle>
+            {isNewAssessment 
+              ? 'Start your Databricks maturity assessment journey'
+              : `Continue your assessment - ${progress}% complete`
+            }
+          </WelcomeSubtitle>
         </WelcomeSection>
 
         <AssessmentCard
@@ -455,12 +523,21 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                  onClick={() => navigate(`/assessment/${currentAssessment.id}/${pillar.id}`)}
+                  onClick={() => {
+                    console.log('Pillar clicked:', pillar.id);
+                    console.log('Assessment ID:', currentAssessment.id);
+                    if (currentAssessment.id && pillar.id) {
+                      navigate(`/assessment/${currentAssessment.id}/${pillar.id}`);
+                    } else {
+                      console.error('Missing assessment ID or pillar ID');
+                      toast.error('Cannot open pillar - assessment ID is missing');
+                    }
+                  }}
                   style={{ cursor: 'pointer' }}
                 >
                   <PillarHeader>
                     <PillarName>{pillar.name}</PillarName>
-                    <PillarStatus completed={isCompleted}>
+                    <PillarStatus $completed={isCompleted}>
                       {isCompleted ? <FiCheckCircle size={16} /> : <FiClock size={16} />}
                       {isCompleted ? 'Complete' : 'Pending'}
                     </PillarStatus>
@@ -481,7 +558,7 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
               whileTap={{ scale: 0.98 }}
             >
               <FiPlay size={16} />
-              Continue Assessment
+              {isNewAssessment ? 'Start Assessment' : 'Continue Assessment'}
             </ActionButton>
             
             {completedPillars > 0 && (
@@ -492,7 +569,7 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
                 whileTap={{ scale: 0.98 }}
               >
                 <FiTrendingUp size={16} />
-                View Results
+                View Progress Report
               </ActionButton>
             )}
             
@@ -503,7 +580,7 @@ const AssessmentDashboard = ({ currentAssessment: propAssessment, framework, onL
               whileTap={{ scale: 0.98 }}
             >
               <FiEdit3 size={16} />
-              Past Assessments
+              All Assessments
             </ActionButton>
           </ActionButtons>
         </AssessmentCard>

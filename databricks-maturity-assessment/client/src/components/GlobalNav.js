@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiMonitor } from 'react-icons/fi';
+import { FiMenu, FiX, FiPlay, FiList, FiLogIn, FiLogOut, FiUser, FiFileText, FiUsers, FiSend, FiChevronDown, FiLock, FiUserPlus, FiMail, FiMessageSquare, FiSettings, FiBook, FiMonitor, FiCpu } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import authService from '../services/authService';
@@ -814,6 +814,21 @@ const GlobalNav = () => {
                       <FiList />
                       All Assessments
                     </DropdownItem>
+                    <DropdownDivider />
+                    <DropdownItem onClick={() => {
+                      navigate('/genai-readiness');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiCpu />
+                      New Gen AI Assessment
+                    </DropdownItem>
+                    <DropdownItem onClick={() => {
+                      navigate('/genai-readiness/list');
+                      setAssessmentsDropdownOpen(false);
+                    }}>
+                      <FiList />
+                      Gen AI Assessments
+                    </DropdownItem>
                     {currentUser.role === 'admin' && !currentUser.testMode && (
                       <DropdownItem onClick={() => {
                         navigate('/admin/questions');
@@ -853,13 +868,22 @@ const GlobalNav = () => {
                         Assign Users
                       </DropdownItem>
                       {currentUser.role === 'admin' && (
-                        <DropdownItem onClick={() => {
-                          navigate('/user-management');
-                          setAssignmentsDropdownOpen(false);
-                        }}>
-                          <FiUsers />
-                          Manage Assignments
-                        </DropdownItem>
+                        <>
+                          <DropdownItem onClick={() => {
+                            navigate('/question-assignments');
+                            setAssignmentsDropdownOpen(false);
+                          }}>
+                            <FiFileText />
+                            Assign Questions
+                          </DropdownItem>
+                          <DropdownItem onClick={() => {
+                            navigate('/user-management');
+                            setAssignmentsDropdownOpen(false);
+                          }}>
+                            <FiUsers />
+                            Manage Users
+                          </DropdownItem>
+                        </>
                       )}
                     </DropdownMenu>
                   </DropdownContainer>
@@ -1042,6 +1066,14 @@ const GlobalNav = () => {
               <FiFileText size={16} />
               My Assessments
             </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/genai-readiness')}>
+              <FiCpu size={16} />
+              New Gen AI Assessment
+            </MobileSecondaryCTAButton>
+            <MobileSecondaryCTAButton onClick={() => handleNavigate('/genai-readiness/list')}>
+              <FiList size={16} />
+              Gen AI Assessments
+            </MobileSecondaryCTAButton>
             {currentUser.role !== 'consumer' && (
               <>
                 <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
@@ -1060,10 +1092,16 @@ const GlobalNav = () => {
               </MobileSecondaryCTAButton>
             )}
             {currentUser.role === 'admin' && (
-              <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
-                <FiUsers size={16} />
-                Manage Assignments
-              </MobileSecondaryCTAButton>
+              <>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/question-assignments')}>
+                  <FiFileText size={16} />
+                  Assign Questions
+                </MobileSecondaryCTAButton>
+                <MobileSecondaryCTAButton onClick={() => handleNavigate('/user-management')}>
+                  <FiUsers size={16} />
+                  Manage Assignments
+                </MobileSecondaryCTAButton>
+              </>
             )}
             <MobileCTAButton onClick={() => handleNavigate('/start')}>
               Start Assessment →

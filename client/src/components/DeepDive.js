@@ -150,7 +150,7 @@ const PageHeader = styled.div`
 // Slideshow/Presentation Mode Styles
 const PresentationButton = styled(motion.button)`
   position: fixed;
-  top: 100px;
+  top: 80px;
   right: 32px;
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
@@ -166,7 +166,7 @@ const PresentationButton = styled(motion.button)`
   gap: 10px;
   transition: all 0.3s ease;
   white-space: nowrap;
-  z-index: 999;
+  z-index: 900;
 
   &:hover {
     background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
@@ -175,14 +175,14 @@ const PresentationButton = styled(motion.button)`
   }
 
   @media (max-width: 1024px) {
-    top: 90px;
+    top: 76px;
     right: 24px;
     padding: 12px 20px;
     font-size: 14px;
   }
   
   @media (max-width: 768px) {
-    top: 80px;
+    top: 72px;
     right: 16px;
     padding: 10px 16px;
     font-size: 13px;

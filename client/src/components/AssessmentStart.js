@@ -6,11 +6,15 @@ import { FiMail, FiArrowRight, FiFileText, FiEdit3 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const StartContainer = styled.div`
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 120px 20px 40px 20px;
+
+  @media (max-width: 768px) {
+    padding: 100px 20px 40px 20px;
+  }
 `;
 
 const FormCard = styled(motion.div)`

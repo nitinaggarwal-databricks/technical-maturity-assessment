@@ -1257,8 +1257,13 @@ const AssessmentsListNew = () => {
                       <ActionButton
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(`[AssessmentsListNew] Edit clicked, navigating to: /assessment/${assessmentId}/platform_governance`);
-                          navigate(`/assessment/${assessmentId}/platform_governance`);
+                          // Navigate to first selected pillar, or platform_governance as fallback
+                          const selectedPillars = assessment.selected_pillars;
+                          const targetPillar = (selectedPillars && selectedPillars.length > 0) 
+                            ? selectedPillars[0] 
+                            : 'platform_governance';
+                          console.log(`[AssessmentsListNew] Edit clicked, navigating to: /assessment/${assessmentId}/${targetPillar}`);
+                          navigate(`/assessment/${assessmentId}/${targetPillar}`);
                         }}
                         title="Edit assessment"
                       >
