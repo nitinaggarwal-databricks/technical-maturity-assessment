@@ -152,6 +152,11 @@ class AuthService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
+  // Get session ID
+  getSessionId() {
+    return localStorage.getItem('sessionId');
+  }
+
   // Get all users (admin only)
   async getAllUsers(role = null) {
     try {
