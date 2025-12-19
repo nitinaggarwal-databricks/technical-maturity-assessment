@@ -2508,20 +2508,24 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
          LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
          WHERE a.assigned_author_id = $1 
             OR a.user_id = $1
-            OR qa.assigned_to = $1`,
+            OR qa.assigned_to = $1
+         ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
-      pgAssessments = authorAssessmentsQuery.rows;
+      // Map raw SQL results to proper format
+      pgAssessments = authorAssessmentsQuery.rows.map(row => assessmentRepo.mapRowToAssessment(row));
     } else {
       // Consumers (role='consumer') see only assessments they're assigned to complete
       const consumerAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
          FROM assessments a
          INNER JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE qa.assigned_to = $1`,
+         WHERE qa.assigned_to = $1
+         ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
-      pgAssessments = consumerAssessmentsQuery.rows;
+      // Map raw SQL results to proper format
+      pgAssessments = consumerAssessmentsQuery.rows.map(row => assessmentRepo.mapRowToAssessment(row));
     }
     
     for (const assessment of pgAssessments) {
