@@ -782,10 +782,6 @@ const AssessmentsListNew = () => {
       toast.error(`Failed to ${action} results`, { id: 'release' });
     }
   };
-      console.error('Error deleting assessment:', error);
-      
-    }
-  };
 
   // Handle Excel Export
   const handleExportToExcel = async (assessment, e) => {
