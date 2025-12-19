@@ -2509,8 +2509,6 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
       // Authors see assessments they're assigned to OR created OR filling out as consumer
       const authorAssessmentsQuery = await db.query(
-        `SELECT DISTINCT a.* 
-         FROM assessments a
         `SELECT a.* 
          FROM assessments a
          WHERE a.user_id = $1
@@ -2548,10 +2546,9 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       });
     } else {
       // Consumers (role='consumer') see only assessments they're assigned to complete
+      console.log('[GET /api/assessments] Fetching consumer assessments');
+      const consumerAssessmentsQuery = await db.query(
         `SELECT a.* 
-         FROM assessments a
-         WHERE a.user_id = $1
-         ORDER BY a.updated_at DESC`,
          FROM assessments a
          WHERE a.user_id = $1
          ORDER BY a.updated_at DESC`,
