@@ -17,6 +17,7 @@ import {
 } from 'react-icons/fi';
 import EditAssessmentModal from './EditAssessmentModal';
 import * as assessmentService from '../services/assessmentService';
+import authService from '../services/authService';
 
 const NavigationContainer = styled.div`
   width: 350px;
@@ -494,8 +495,11 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
     setIsSubmitting(true);
     setSubmissionProgress(0);
     
-    // Authentic progress messages
-    const progressSteps = [
+    const currentUser = authService.getUser();
+    const isAdmin = currentUser?.role === 'admin';
+    
+    // Different progress messages for admin vs non-admin
+    const progressSteps = isAdmin ? [
       { progress: 10, message: 'Analyzing assessment responses...' },
       { progress: 25, message: 'Calculating maturity scores...' },
       { progress: 40, message: 'Generating recommendations...' },
@@ -504,6 +508,11 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       { progress: 85, message: 'Calculating business impact...' },
       { progress: 95, message: 'Finalizing report...' },
       { progress: 100, message: 'Assessment complete!' }
+    ] : [
+      { progress: 20, message: 'Submitting your assessment...' },
+      { progress: 50, message: 'Processing responses...' },
+      { progress: 80, message: 'Finalizing submission...' },
+      { progress: 100, message: 'Thank you for your submission!' }
     ];
 
     try {
@@ -514,15 +523,25 @@ const NavigationPanel = ({ framework, currentAssessment, onAssessmentUpdate }) =
       for (const step of progressSteps) {
         setSubmissionProgress(step.progress);
         setSubmissionMessage(step.message);
-        await new Promise(resolve => setTimeout(resolve, 1250)); // 10 seconds total / 8 steps
+        await new Promise(resolve => setTimeout(resolve, isAdmin ? 1250 : 800));
       }
       
-      // Navigate to results
-      navigate(`/results/${assessmentId}`);
+      // Navigate based on role
+      if (isAdmin) {
+        // Admins can see results immediately
+        navigate(`/results/${assessmentId}`);
+      } else {
+        // Authors and consumers get thank you message
+        toast.success(
+          'Thank you for your submission! Please reach out to your Databricks Account Team for next steps.',
+          { duration: 6000 }
+        );
+        navigate('/assessments');
+      }
     } catch (error) {
       console.error('Error submitting assessment:', error);
+      toast.error('Failed to submit assessment');
       setIsSubmitting(false);
-      
     }
   };
 
