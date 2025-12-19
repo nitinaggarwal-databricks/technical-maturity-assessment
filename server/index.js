@@ -50,6 +50,7 @@ const dataCleanupRoutes = require('./routes/dataCleanup');
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/assignments', assignmentRoutes);
+app.use('/api/author', require('./routes/authorValidation')); // Enhanced Author features
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/chat', chatRoutes);
