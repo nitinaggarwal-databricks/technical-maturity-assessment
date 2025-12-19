@@ -34,6 +34,9 @@ import ChatWidget from './components/ChatWidget';
 import UserGuide from './components/UserGuide';
 import PitchDeck from './components/PitchDeck';
 import DataCleanup from './components/DataCleanup';
+import ResponseReviewPanel from './components/ResponseReviewPanel';
+import ValidationDashboard from './components/ValidationDashboard';
+import SubmissionWorkflow from './components/SubmissionWorkflow';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -410,6 +413,34 @@ function App() {
             element={
               <ProtectedRoute>
                 <DataCleanup />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Enhanced Author Role Routes */}
+          <Route 
+            path="/author/review-responses/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <ResponseReviewPanel />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/author/validation-dashboard/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <ValidationDashboard />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/author/submit/:assessmentId" 
+            element={
+              <ProtectedRoute>
+                <SubmissionWorkflow />
               </ProtectedRoute>
             }
           />
