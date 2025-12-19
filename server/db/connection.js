@@ -48,9 +48,11 @@ class DatabaseConnection {
       const databaseUrl = process.env.DATABASE_URL;
       
       if (!databaseUrl) {
-        console.warn('⚠️  DATABASE_URL not found - PostgreSQL not configured');
-        console.warn('⚠️  Falling back to file-based storage');
-        return false;
+        const error = new Error('DATABASE_URL environment variable is required. PostgreSQL must be configured.');
+        console.error('❌ DATABASE_URL not found - PostgreSQL is required');
+        console.error('❌ Please set DATABASE_URL environment variable');
+        console.error('❌ Example: postgresql://user:password@host:5432/database');
+        throw error;
       }
 
       console.log('🔌 Connecting to PostgreSQL database...');
@@ -82,10 +84,10 @@ class DatabaseConnection {
 
     } catch (error) {
       console.error('❌ Failed to connect to PostgreSQL:', error.message);
-      console.error('⚠️  Falling back to file-based storage');
-      // Mark as initialized even when PostgreSQL fails (file-based fallback)
-      this.isInitialized = true;
-      return false;
+      console.error('❌ Application cannot start without PostgreSQL');
+      console.error('❌ Please configure DATABASE_URL environment variable');
+      // Don't mark as initialized - this will prevent the app from starting
+      throw error;
     }
   }
 
@@ -166,7 +168,7 @@ class DatabaseConnection {
    */
   async query(text, params) {
     if (!this.isInitialized || !this.pool) {
-      throw new Error('PostgreSQL not available. Using file-based storage.');
+      throw new Error('PostgreSQL not initialized. Database connection is required.');
     }
 
     const start = Date.now();

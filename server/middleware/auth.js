@@ -1,8 +1,4 @@
 const userRepository = require('../db/userRepository');
-const fileUserStore = require('../db/fileUserStore');
-
-// Track file store initialization
-let fileStoreInitialized = false;
 
 // Middleware to check if user is authenticated
 async function requireAuth(req, res, next) {
@@ -21,19 +17,7 @@ async function requireAuth(req, res, next) {
   
   try {
     console.log('[Auth Middleware] Calling userRepository.verifySession...');
-    let session = null;
-    
-    try {
-      session = await userRepository.verifySession(sessionId);
-    } catch (dbError) {
-      // If PostgreSQL is not available, fall back to file storage
-      console.log('[Auth Middleware] PostgreSQL not available, using file storage');
-      if (!fileStoreInitialized) {
-        await fileUserStore.initialize();
-        fileStoreInitialized = true;
-      }
-      session = await fileUserStore.verifySession(sessionId);
-    }
+    const session = await userRepository.verifySession(sessionId);
     
     console.log('[Auth Middleware] Session verification result:', session);
     
