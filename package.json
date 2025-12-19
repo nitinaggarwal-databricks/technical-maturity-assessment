@@ -13,7 +13,8 @@
     "heroku-postbuild": "cd client && npm install && CI=false npm run build",
     "vercel-build": "cd client && npm install && CI=false npm run build",
     "migrate": "node server/db/migrate.js",
-    "db:migrate": "node server/db/migrate.js"
+    "db:migrate": "node server/db/migrate.js",
+    "db:migrate:schema": "node server/run-migrations.js"
   },
   "dependencies": {
     "axios": "^1.13.2",
