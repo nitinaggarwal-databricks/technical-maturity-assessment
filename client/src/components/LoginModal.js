@@ -127,39 +127,6 @@ const Subtitle = styled.p`
   margin-bottom: 24px;
 `;
 
-const TestCredentials = styled.div`
-  background: ${props => props.$isDatabricks ? '#fff5f5' : '#eff6ff'};
-  border: 1px solid ${props => props.$isDatabricks ? '#fecaca' : '#bfdbfe'};
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-`;
-
-const TestCredentialsTitle = styled.div`
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: ${props => props.$isDatabricks ? '#dc2626' : '#2563eb'};
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const TestCredentialsList = styled.div`
-  font-size: 0.813rem;
-  color: #475569;
-  line-height: 1.6;
-  
-  strong {
-    font-weight: 600;
-    color: #1e293b;
-  }
-  
-  div {
-    margin-bottom: 4px;
-  }
-`;
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -346,24 +313,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                   : 'Sign in to access your assessments'
                 }
               </Subtitle>
-
-              <TestCredentials $isDatabricks={isDatabricks}>
-                <TestCredentialsTitle $isDatabricks={isDatabricks}>
-                  🔑 Test Credentials
-                </TestCredentialsTitle>
-                <TestCredentialsList>
-                  {isDatabricks ? (
-                    <>
-                      <div><strong>Admin:</strong> admin@databricks.com / admin123</div>
-                      <div><strong>Author:</strong> author@databricks.com / author123</div>
-                    </>
-                  ) : (
-                    <>
-                      <div><strong>Consumer:</strong> consumer@example.com / consumer123</div>
-                    </>
-                  )}
-                </TestCredentialsList>
-              </TestCredentials>
 
               {error && <ErrorMessage>{error}</ErrorMessage>}
 
