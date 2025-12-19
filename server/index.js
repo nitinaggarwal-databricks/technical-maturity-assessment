@@ -2512,8 +2512,26 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
-      // Map raw SQL results to proper format
-      pgAssessments = authorAssessmentsQuery.rows.map(row => assessmentRepo.mapRowToAssessment(row));
+      // Map raw SQL results to proper format (snake_case to camelCase)
+      pgAssessments = authorAssessmentsQuery.rows.map(row => ({
+        id: row.id,
+        assessmentName: row.assessment_name,
+        assessmentDescription: row.assessment_description,
+        organizationName: row.organization_name,
+        contactEmail: row.contact_email,
+        industry: row.industry,
+        status: row.status,
+        progress: row.progress,
+        currentCategory: row.current_category,
+        completedCategories: row.completed_categories || [],
+        responses: row.responses || {},
+        editHistory: row.edit_history || [],
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        updatedAt: row.updated_at,
+        createdAt: row.created_at,
+        user_id: row.user_id,
+      }));
     } else {
       // Consumers (role='consumer') see only assessments they're assigned to complete
       const consumerAssessmentsQuery = await db.query(
@@ -2524,8 +2542,26 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
-      // Map raw SQL results to proper format
-      pgAssessments = consumerAssessmentsQuery.rows.map(row => assessmentRepo.mapRowToAssessment(row));
+      // Map raw SQL results to proper format (snake_case to camelCase)
+      pgAssessments = consumerAssessmentsQuery.rows.map(row => ({
+        id: row.id,
+        assessmentName: row.assessment_name,
+        assessmentDescription: row.assessment_description,
+        organizationName: row.organization_name,
+        contactEmail: row.contact_email,
+        industry: row.industry,
+        status: row.status,
+        progress: row.progress,
+        currentCategory: row.current_category,
+        completedCategories: row.completed_categories || [],
+        responses: row.responses || {},
+        editHistory: row.edit_history || [],
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        updatedAt: row.updated_at,
+        createdAt: row.created_at,
+        user_id: row.user_id,
+      }));
     }
     
     for (const assessment of pgAssessments) {
