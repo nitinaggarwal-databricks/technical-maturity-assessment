@@ -20,6 +20,7 @@ const featureDB = require('./services/databricksFeatureDatabase');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 const industryBenchmarkingService = require('./services/industryBenchmarkingService');
 const db = require('./db/connection');
+const { requireAuth } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,11 +46,14 @@ const customQuestionsRoutes = require('./routes/custom-questions');
 const excelRoutes = require('./routes/excel');
 const questionEditsRoutes = require('./routes/questionEdits');
 const questionAssignmentsRoutes = require('./routes/questionAssignments');
-const genaiReadinessRoutes = require('./routes/genaiReadiness');
+const dataCleanupRoutes = require('./routes/dataCleanup');
+const authorValidationRoutes = require('./routes/authorValidation');
+const { requireAdmin } = require('./middleware/auth');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/assignments', assignmentRoutes);
+app.use('/api/author', require('./routes/authorValidation')); // Enhanced Author features
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/chat', chatRoutes);
@@ -57,7 +61,46 @@ app.use('/api/custom-questions', customQuestionsRoutes);
 app.use('/api/assessment-excel', excelRoutes);
 app.use('/api/question-edits', questionEditsRoutes);
 app.use('/api/question-assignments', questionAssignmentsRoutes);
-app.use('/api/genai-readiness', genaiReadinessRoutes);
+app.use('/api/data-cleanup', dataCleanupRoutes);
+
+// Admin endpoint to release/unrelease assessment results
+app.post('/api/admin/release-results/:assessmentId', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { assessmentId } = req.params;
+    const { release } = req.body; // true to release, false to unrelease
+    const currentUser = req.user;
+
+    const result = await db.query(
+      `UPDATE assessments
+       SET results_released = $1,
+           results_released_by = $2,
+           results_released_at = $3
+       WHERE id = $4
+       RETURNING *`,
+      [release, release ? currentUser.id : null, release ? new Date() : null, assessmentId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: release ? 'Results released successfully' : 'Results unreleased successfully',
+      assessment: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error releasing/unreleasing results:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update results release status',
+      error: error.message
+    });
+  }
+});
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -352,9 +395,9 @@ app.get('/api/assessment/framework', async (req, res) => {
 });
 
 // Start new assessment
-app.post('/api/assessment/start', async (req, res) => {
+app.post('/api/assessment/start', requireAuth, async (req, res) => {
   try {
-    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription, selectedPillars } = req.body;
+    const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
     
     if (!contactEmail) {
       return res.status(400).json({
@@ -370,25 +413,8 @@ app.post('/api/assessment/start', async (req, res) => {
       });
     }
 
-    if (!industry) {
-      return res.status(400).json({
-        success: false,
-        message: 'Industry is required'
-      });
-    }
-
-    if (!selectedPillars || selectedPillars.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'At least one pillar must be selected'
-      });
-    }
-
     const assessmentRepo = require('./db/assessmentRepository');
     const assessmentId = uuidv4();
-    
-    // Get the first selected pillar as the starting category
-    const firstPillar = selectedPillars[0];
     
     await assessmentRepo.create({
       id: assessmentId,
@@ -396,26 +422,25 @@ app.post('/api/assessment/start', async (req, res) => {
       assessmentDescription: assessmentDescription || '',
       organizationName: organizationName || 'Not specified',
       contactEmail,
-      industry,
-      selectedPillars: selectedPillars, // Store selected pillars
+      industry: industry || 'Not specified',
       status: 'in_progress',
       progress: 0,
-      currentCategory: firstPillar,
+      currentCategory: assessmentFramework.assessmentAreas[0].id,
       completedCategories: [],
       responses: {},
       editHistory: [],
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
+      userId: req.user.id  // Set the creator's user ID
     });
 
     res.json({
       success: true,
       data: {
       assessmentId,
-      currentCategory: firstPillar,
-      totalCategories: selectedPillars.length,
+      currentCategory: assessmentFramework.assessmentAreas[0].id,
+      totalCategories: assessmentFramework.assessmentAreas.length,
       assessmentName,
-      assessmentDescription,
-      selectedPillars
+      assessmentDescription
       }
     });
   } catch (error) {
@@ -471,9 +496,7 @@ app.get('/api/assessment/:id/status', async (req, res) => {
     }
 
     const completedCats = assessment.completedCategories || [];
-    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
-    const totalPillars = selectedPillars.length;
-    const progress = (completedCats.length / totalPillars) * 100;
+    const progress = (completedCats.length / assessmentFramework.assessmentAreas.length) * 100;
 
     res.json({
       success: true,
@@ -487,7 +510,6 @@ app.get('/api/assessment/:id/status', async (req, res) => {
         contactName: assessment.contactName || '',
         contactRole: assessment.contactRole || '',
         industry: assessment.industry,
-        selectedPillars: selectedPillars, // Include selected pillars
         status: assessment.status,
         progress: Math.round(progress),
         currentCategory: assessment.currentCategory,
@@ -518,16 +540,6 @@ app.get('/api/assessment/:id/category/:categoryId', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
-      });
-    }
-
-    // Check if this pillar is selected for this assessment
-    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
-    if (!selectedPillars.includes(categoryId)) {
-      return res.status(403).json({
-        success: false,
-        message: 'This pillar is not selected for this assessment',
-        selectedPillars
       });
     }
 
@@ -1134,7 +1146,7 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 });
 
 // Generate assessment results and recommendations (ADAPTIVE with live data)
-app.get('/api/assessment/:id/results', async (req, res) => {
+app.get('/api/assessment/:id/results', requireAuth, async (req, res) => {
   try {
     console.log(`🎯 [RESULTS ENDPOINT] Request for assessment: ${req.params.id}`);
     
@@ -1147,6 +1159,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     });
 
     const { id } = req.params;
+    const currentUser = req.user;
     
     // Try PostgreSQL first, then fallback to file storage
     const assessmentRepo = require('./db/assessmentRepository');
@@ -1159,6 +1172,16 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
+      });
+    }
+    
+    // Check if results are released (only for non-admin users)
+    if (currentUser.role !== 'admin' && !assessment.results_released) {
+      console.log(`🔒 [RESULTS ENDPOINT] Results not released for assessment ${id}`);
+      return res.status(403).json({
+        success: false,
+        message: 'Results have not been released yet. Please contact your administrator.',
+        resultsReleased: false
       });
     }
     
@@ -1185,14 +1208,8 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     console.log('Assessment responses:', JSON.stringify(assessment.responses, null, 2));
     console.log('Has responses:', hasAnyResponses, 'Completed categories:', assessment.completedCategories.length);
     
-    // Filter to only selected pillars
-    const selectedPillars = assessment.selectedPillars || assessmentFramework.assessmentAreas.map(a => a.id);
-    const availableAreas = assessmentFramework.assessmentAreas.filter(area => selectedPillars.includes(area.id));
-    console.log(`📊 Selected pillars: ${selectedPillars.join(', ')}`);
-    console.log(`📊 Available areas for calculation: ${availableAreas.length}`);
-    
-    // Calculate total questions and answered questions (only for selected pillars)
-    const totalQuestions = availableAreas.reduce((total, area) => {
+    // Calculate total questions and answered questions
+    const totalQuestions = assessmentFramework.assessmentAreas.reduce((total, area) => {
       return total + area.dimensions.reduce((dimTotal, dim) => {
         return dimTotal + (dim.questions?.length || 0);
       }, 0);
@@ -1221,7 +1238,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     
     // Find areas with any responses (completed or partial)
     const areasWithResponses = hasAnyResponses 
-      ? availableAreas.filter(area => {
+      ? assessmentFramework.assessmentAreas.filter(area => {
           // Check if there are any responses for this area
           const hasAreaResponses = Object.keys(assessment.responses).some(key => {
             // Skip comment and skipped keys
@@ -1638,17 +1655,16 @@ app.get('/api/assessment/:id/results', async (req, res) => {
         industry: assessment.industry,
         completedAt: assessment.completedAt,
         startedAt: assessment.startedAt,
-        isPartialAssessment: fullyCompletedAreas.length < availableAreas.length, // 🚨 Compare against selected pillars, not all 6
+        isPartialAssessment: fullyCompletedAreas.length < assessmentFramework.assessmentAreas.length,
         completedPillars: fullyCompletedAreas.length, // 🚨 Changed to fully completed count
-        totalPillars: availableAreas.length, // 🚨 Use selected pillars count, not always 6
+        totalPillars: assessmentFramework.assessmentAreas.length,
         pillarsWithResponses: areasWithResponses.length,
         questionsAnswered: answeredQuestions,
         totalQuestions: totalQuestions,
         completionPercentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0,
         lastModified: assessment.lastModified,
         lastEditor: assessment.lastEditor,
-        editHistory: assessment.editHistory || [],
-        selectedPillars: selectedPillars // 🆕 Include selected pillars in response
+        editHistory: assessment.editHistory || []
       },
       overall: recommendations.overall, // ADAPTIVE: includes currentScore, futureScore, gap, level, summary
       categoryDetails,
@@ -1664,7 +1680,6 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       riskAreas: recommendations.riskAreas,
       executiveSummary: recommendations.executiveSummary || '', // ADAPTIVE: Executive summary
       whatsNew: recommendations.whatsNew, // ADAPTIVE: Latest Databricks features
-      selectedPillars: selectedPillars, // 🆕 Include selected pillars in top-level response
       pillarStatus: assessmentFramework.assessmentAreas.map(area => {
         const isCompleted = assessment.completedCategories.includes(area.id);
         const hasResponses = areasWithResponses.some(a => a.id === area.id);
@@ -1706,7 +1721,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
 });
 
 // Get industry benchmarking report
-app.get('/api/assessment/:id/benchmark', async (req, res) => {
+app.get('/api/assessment/:id/benchmark', requireAuth, async (req, res) => {
   try {
     console.log(`🎯 [BENCHMARK ENDPOINT] Request for assessment: ${req.params.id}`);
     
@@ -1719,6 +1734,7 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
     });
 
     const { id } = req.params;
+    const currentUser = req.user;
     const assessmentRepo = require('./db/assessmentRepository');
     const assessment = await assessmentRepo.findById(id);
 
@@ -1727,6 +1743,16 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
+      });
+    }
+    
+    // Check if results are released (only for non-admin users)
+    if (currentUser.role !== 'admin' && !assessment.results_released) {
+      console.log(`🔒 [BENCHMARK ENDPOINT] Results not released for assessment ${id}`);
+      return res.status(403).json({
+        success: false,
+        message: 'Benchmark report has not been released yet. Please contact your administrator.',
+        resultsReleased: false
       });
     }
     
@@ -2460,51 +2486,153 @@ app.use((err, req, res, next) => {
 });
 
 // Get all assessments (PostgreSQL only)
-app.get('/api/assessments', async (req, res) => {
+app.get('/api/assessments', requireAuth, async (req, res) => {
   try {
+    console.log(`[GET /api/assessments] User: ${req.user.email}, Role: ${req.user.role}, ID: ${req.user.id}`);
+    
     const assessmentRepo = require('./db/assessmentRepository');
     const userRepo = require('./db/userRepository');
+    const currentUser = req.user;
     
     let assessmentsList = [];
     
-    // Query PostgreSQL assessments with user info
-    const pgAssessments = await assessmentRepo.findAll();
+    // Query PostgreSQL assessments with user info - filtered by role
+    let pgAssessments;
+    
+    if (currentUser.role === 'admin') {
+      // Admins see all assessments
+      console.log('[GET /api/assessments] Fetching all assessments (admin)');
+      pgAssessments = await assessmentRepo.findAll();
+    } else if (currentUser.role === 'author') {
+      console.log('[GET /api/assessments] Fetching author assessments');
+      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
+      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
+      // Authors see assessments they're assigned to OR created OR filling out as consumer
+      const authorAssessmentsQuery = await db.query(
+        `SELECT DISTINCT a.* 
+         FROM assessments a
+         LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
+         WHERE qa.assigned_author_id = $1 
+            OR a.user_id = $1
+            OR qa.assigned_to = $1
+         ORDER BY a.updated_at DESC`,
+        [currentUser.id]
+      );
+      console.log(`[GET /api/assessments] Found ${authorAssessmentsQuery.rows.length} assessments for author`);
+      
+      // Map raw SQL results to proper format (snake_case to camelCase)
+      pgAssessments = authorAssessmentsQuery.rows.map(row => {
+        try {
+          return {
+            id: row.id,
+            assessmentName: row.assessment_name,
+            assessmentDescription: row.assessment_description,
+            organizationName: row.organization_name,
+            contactEmail: row.contact_email,
+            industry: row.industry,
+            status: row.status,
+            progress: row.progress,
+            currentCategory: row.current_category,
+            completedCategories: row.completed_categories || [],
+            responses: row.responses || {},
+            editHistory: row.edit_history || [],
+            startedAt: row.started_at,
+            completedAt: row.completed_at,
+            updatedAt: row.updated_at,
+            createdAt: row.created_at,
+            user_id: row.user_id,
+          };
+        } catch (mapError) {
+          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
+          throw mapError;
+        }
+      });
+    } else {
+      // Consumers (role='consumer') see only assessments they're assigned to complete
+      console.log('[GET /api/assessments] Fetching consumer assessments');
+      const consumerAssessmentsQuery = await db.query(
+        `SELECT DISTINCT a.* 
+         FROM assessments a
+         INNER JOIN question_assignments qa ON a.id = qa.assessment_id
+         WHERE qa.assigned_to = $1
+         ORDER BY a.updated_at DESC`,
+        [currentUser.id]
+      );
+      console.log(`[GET /api/assessments] Found ${consumerAssessmentsQuery.rows.length} assessments for consumer`);
+      
+      // Map raw SQL results to proper format (snake_case to camelCase)
+      pgAssessments = consumerAssessmentsQuery.rows.map(row => {
+        try {
+          return {
+            id: row.id,
+            assessmentName: row.assessment_name,
+            assessmentDescription: row.assessment_description,
+            organizationName: row.organization_name,
+            contactEmail: row.contact_email,
+            industry: row.industry,
+            status: row.status,
+            progress: row.progress,
+            currentCategory: row.current_category,
+            completedCategories: row.completed_categories || [],
+            responses: row.responses || {},
+            editHistory: row.edit_history || [],
+            startedAt: row.started_at,
+            completedAt: row.completed_at,
+            updatedAt: row.updated_at,
+            createdAt: row.created_at,
+            user_id: row.user_id,
+          };
+        } catch (mapError) {
+          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
+          throw mapError;
+        }
+      });
+    }
+    
+    console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
+    console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
     
     for (const assessment of pgAssessments) {
-      let creatorName = 'Unknown';
-      const userId = assessment.user_id || assessment.userId;
-      if (userId) {
-        try {
-          const user = await userRepo.findById(userId);
-          if (user) {
-            creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+      try {
+        let creatorName = 'Unknown';
+        const userId = assessment.user_id || assessment.userId;
+        if (userId) {
+          try {
+            const user = await userRepo.findById(userId);
+            if (user) {
+              creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+            }
+          } catch (err) {
+            console.warn('Could not fetch user:', err.message);
           }
-        } catch (err) {
-          console.warn('Could not fetch user:', err.message);
         }
+        
+        assessmentsList.push({
+          id: assessment.id,
+          organization_name: assessment.organizationName || '',
+          contact_email: assessment.contactEmail || '',
+          contact_name: '',
+          contact_role: '',
+          industry: assessment.industry || '',
+          assessment_name: assessment.assessmentName || 'Untitled Assessment',
+          assessment_description: assessment.assessmentDescription || '',
+          status: assessment.status || 'in_progress',
+          started_at: assessment.startedAt,
+          created_at: assessment.createdAt,
+          updated_at: assessment.updatedAt,
+          completed_at: assessment.completedAt,
+          completedCategories: assessment.completedCategories || [],
+          completed_categories: assessment.completedCategories || [],
+          total_categories: assessmentFramework.assessmentAreas.length,
+          progress: assessment.progress || 0,
+          creator_name: creatorName,
+          user_id: userId,
+          results_released: assessment.results_released || false
+        });
+      } catch (itemError) {
+        console.error('[GET /api/assessments] Error processing assessment:', itemError, 'Assessment ID:', assessment?.id);
+        // Continue processing other assessments
       }
-      
-      assessmentsList.push({
-        id: assessment.id,
-        organization_name: assessment.organizationName || '',
-        contact_email: assessment.contactEmail || '',
-        contact_name: '',
-        contact_role: '',
-        industry: assessment.industry || '',
-        assessment_name: assessment.assessmentName || 'Untitled Assessment',
-        assessment_description: assessment.assessmentDescription || '',
-        status: assessment.status || 'in_progress',
-        started_at: assessment.startedAt,
-        created_at: assessment.createdAt,
-        updated_at: assessment.updatedAt,
-        completed_at: assessment.completedAt,
-        completedCategories: assessment.completedCategories || [],
-        completed_categories: assessment.completedCategories || [],
-        total_categories: assessmentFramework.assessmentAreas.length,
-        progress: assessment.progress || 0,
-        creator_name: creatorName,
-        user_id: userId
-      });
     }
     
     console.log(`✅ Fetched ${assessmentsList.length} assessments from PostgreSQL`);
@@ -2950,7 +3078,7 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
 });
 
 // Create new assessment
-app.post('/api/assessment', async (req, res) => {
+app.post('/api/assessment', requireAuth, async (req, res) => {
   try {
     const { organizationName, industry, contactEmail, assessmentName } = req.body;
     
@@ -2977,7 +3105,8 @@ app.post('/api/assessment', async (req, res) => {
       completedCategories: [],
       responses: {},
       editHistory: [],
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
+      userId: req.user.id  // Set the creator's user ID
     });
     
     console.log(`✅ New assessment created: ${newId} (${assessmentName})`);
@@ -3000,32 +3129,17 @@ app.post('/api/assessment', async (req, res) => {
 });
 
 // Generate sample assessment with random realistic data
-app.post('/api/assessment/generate-sample', async (req, res) => {
+app.post('/api/assessment/generate-sample', requireAuth, async (req, res) => {
   try {
     const { completionLevel = 'full', specificPillars = null } = req.body;
     
-    console.log(`🎲 Generating sample assessment with completion level: ${completionLevel}`);
+    console.log(`🎲 Generating sample assessment with completion level: ${completionLevel} for user: ${req.user.email}`);
     
     // Generate sample assessment
     const sampleAssessment = sampleAssessmentGenerator.generateSampleAssessment({
       completionLevel,
       specificPillars
     });
-    
-    // Determine selectedPillars for the sample assessment
-    let selectedPillars;
-    if (specificPillars && specificPillars.length > 0) {
-      selectedPillars = specificPillars;
-    } else if (completionLevel === 'partial') {
-      // Use the completed categories as selected pillars
-      selectedPillars = sampleAssessment.completedCategories;
-    } else if (completionLevel === 'minimal') {
-      // Use the completed categories as selected pillars
-      selectedPillars = sampleAssessment.completedCategories;
-    } else {
-      // Full assessment - all pillars selected
-      selectedPillars = assessmentFramework.assessmentAreas.map(a => a.id);
-    }
     
     // Save to PostgreSQL
     const assessmentRepo = require('./db/assessmentRepository');
@@ -3043,7 +3157,7 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       responses: sampleAssessment.responses,
       editHistory: sampleAssessment.editHistory || [],
       startedAt: sampleAssessment.startedAt || new Date().toISOString(),
-      selectedPillars: selectedPillars // 🆕 Add selected pillars to sample assessments
+      userId: req.user.id  // Set the creator's user ID
     });
     
     console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);

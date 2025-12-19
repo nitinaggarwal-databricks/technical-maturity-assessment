@@ -13,10 +13,20 @@ const api = axios.create({
   },
 });
 
-// Request interceptor
+// Request interceptor - Add session ID to all requests
 api.interceptors.request.use(
   (config) => {
     console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    
+    // Add session ID from localStorage to headers
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      config.headers['x-session-id'] = sessionId;
+      console.log('Added session ID to request');
+    } else {
+      console.warn('No session ID found in localStorage');
+    }
+    
     return config;
   },
   (error) => {
