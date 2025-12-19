@@ -2488,6 +2488,8 @@ app.use((err, req, res, next) => {
 // Get all assessments (PostgreSQL only)
 app.get('/api/assessments', requireAuth, async (req, res) => {
   try {
+    console.log(`[GET /api/assessments] User: ${req.user.email}, Role: ${req.user.role}, ID: ${req.user.id}`);
+    
     const assessmentRepo = require('./db/assessmentRepository');
     const userRepo = require('./db/userRepository');
     const currentUser = req.user;
@@ -2499,8 +2501,12 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
     
     if (currentUser.role === 'admin') {
       // Admins see all assessments
+      console.log('[GET /api/assessments] Fetching all assessments (admin)');
       pgAssessments = await assessmentRepo.findAll();
     } else if (currentUser.role === 'author') {
+      console.log('[GET /api/assessments] Fetching author assessments');
+      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
+      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
       // Authors see assessments they're assigned to OR created OR filling out as consumer
       const authorAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
@@ -2512,28 +2518,38 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
+      console.log(`[GET /api/assessments] Found ${authorAssessmentsQuery.rows.length} assessments for author`);
+      
       // Map raw SQL results to proper format (snake_case to camelCase)
-      pgAssessments = authorAssessmentsQuery.rows.map(row => ({
-        id: row.id,
-        assessmentName: row.assessment_name,
-        assessmentDescription: row.assessment_description,
-        organizationName: row.organization_name,
-        contactEmail: row.contact_email,
-        industry: row.industry,
-        status: row.status,
-        progress: row.progress,
-        currentCategory: row.current_category,
-        completedCategories: row.completed_categories || [],
-        responses: row.responses || {},
-        editHistory: row.edit_history || [],
-        startedAt: row.started_at,
-        completedAt: row.completed_at,
-        updatedAt: row.updated_at,
-        createdAt: row.created_at,
-        user_id: row.user_id,
-      }));
+      pgAssessments = authorAssessmentsQuery.rows.map(row => {
+        try {
+          return {
+            id: row.id,
+            assessmentName: row.assessment_name,
+            assessmentDescription: row.assessment_description,
+            organizationName: row.organization_name,
+            contactEmail: row.contact_email,
+            industry: row.industry,
+            status: row.status,
+            progress: row.progress,
+            currentCategory: row.current_category,
+            completedCategories: row.completed_categories || [],
+            responses: row.responses || {},
+            editHistory: row.edit_history || [],
+            startedAt: row.started_at,
+            completedAt: row.completed_at,
+            updatedAt: row.updated_at,
+            createdAt: row.created_at,
+            user_id: row.user_id,
+          };
+        } catch (mapError) {
+          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
+          throw mapError;
+        }
+      });
     } else {
       // Consumers (role='consumer') see only assessments they're assigned to complete
+      console.log('[GET /api/assessments] Fetching consumer assessments');
       const consumerAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
          FROM assessments a
@@ -2542,63 +2558,81 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
+      console.log(`[GET /api/assessments] Found ${consumerAssessmentsQuery.rows.length} assessments for consumer`);
+      
       // Map raw SQL results to proper format (snake_case to camelCase)
-      pgAssessments = consumerAssessmentsQuery.rows.map(row => ({
-        id: row.id,
-        assessmentName: row.assessment_name,
-        assessmentDescription: row.assessment_description,
-        organizationName: row.organization_name,
-        contactEmail: row.contact_email,
-        industry: row.industry,
-        status: row.status,
-        progress: row.progress,
-        currentCategory: row.current_category,
-        completedCategories: row.completed_categories || [],
-        responses: row.responses || {},
-        editHistory: row.edit_history || [],
-        startedAt: row.started_at,
-        completedAt: row.completed_at,
-        updatedAt: row.updated_at,
-        createdAt: row.created_at,
-        user_id: row.user_id,
-      }));
+      pgAssessments = consumerAssessmentsQuery.rows.map(row => {
+        try {
+          return {
+            id: row.id,
+            assessmentName: row.assessment_name,
+            assessmentDescription: row.assessment_description,
+            organizationName: row.organization_name,
+            contactEmail: row.contact_email,
+            industry: row.industry,
+            status: row.status,
+            progress: row.progress,
+            currentCategory: row.current_category,
+            completedCategories: row.completed_categories || [],
+            responses: row.responses || {},
+            editHistory: row.edit_history || [],
+            startedAt: row.started_at,
+            completedAt: row.completed_at,
+            updatedAt: row.updated_at,
+            createdAt: row.created_at,
+            user_id: row.user_id,
+          };
+        } catch (mapError) {
+          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
+          throw mapError;
+        }
+      });
     }
     
+    console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
+    console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
+    
     for (const assessment of pgAssessments) {
-      let creatorName = 'Unknown';
-      const userId = assessment.user_id || assessment.userId;
-      if (userId) {
-        try {
-          const user = await userRepo.findById(userId);
-          if (user) {
-            creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+      try {
+        let creatorName = 'Unknown';
+        const userId = assessment.user_id || assessment.userId;
+        if (userId) {
+          try {
+            const user = await userRepo.findById(userId);
+            if (user) {
+              creatorName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+            }
+          } catch (err) {
+            console.warn('Could not fetch user:', err.message);
           }
-        } catch (err) {
-          console.warn('Could not fetch user:', err.message);
         }
+        
+        assessmentsList.push({
+          id: assessment.id,
+          organization_name: assessment.organizationName || '',
+          contact_email: assessment.contactEmail || '',
+          contact_name: '',
+          contact_role: '',
+          industry: assessment.industry || '',
+          assessment_name: assessment.assessmentName || 'Untitled Assessment',
+          assessment_description: assessment.assessmentDescription || '',
+          status: assessment.status || 'in_progress',
+          started_at: assessment.startedAt,
+          created_at: assessment.createdAt,
+          updated_at: assessment.updatedAt,
+          completed_at: assessment.completedAt,
+          completedCategories: assessment.completedCategories || [],
+          completed_categories: assessment.completedCategories || [],
+          total_categories: assessmentFramework.assessmentAreas.length,
+          progress: assessment.progress || 0,
+          creator_name: creatorName,
+          user_id: userId,
+          results_released: assessment.results_released || false
+        });
+      } catch (itemError) {
+        console.error('[GET /api/assessments] Error processing assessment:', itemError, 'Assessment ID:', assessment?.id);
+        // Continue processing other assessments
       }
-      
-      assessmentsList.push({
-        id: assessment.id,
-        organization_name: assessment.organizationName || '',
-        contact_email: assessment.contactEmail || '',
-        contact_name: '',
-        contact_role: '',
-        industry: assessment.industry || '',
-        assessment_name: assessment.assessmentName || 'Untitled Assessment',
-        assessment_description: assessment.assessmentDescription || '',
-        status: assessment.status || 'in_progress',
-        started_at: assessment.startedAt,
-        created_at: assessment.createdAt,
-        updated_at: assessment.updatedAt,
-        completed_at: assessment.completedAt,
-        completedCategories: assessment.completedCategories || [],
-        completed_categories: assessment.completedCategories || [],
-        total_categories: assessmentFramework.assessmentAreas.length,
-        progress: assessment.progress || 0,
-        creator_name: creatorName,
-        user_id: userId
-      });
     }
     
     console.log(`✅ Fetched ${assessmentsList.length} assessments from PostgreSQL`);
