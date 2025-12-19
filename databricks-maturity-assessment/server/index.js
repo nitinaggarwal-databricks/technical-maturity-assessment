@@ -2512,7 +2512,7 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
         `SELECT DISTINCT a.* 
          FROM assessments a
          LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE qa.assigned_author_id = $1 
+         WHERE a.assigned_author_id = $1 
             OR a.user_id = $1
             OR qa.assigned_to = $1
          ORDER BY a.updated_at DESC`,
