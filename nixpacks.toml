@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = 'NODE_ENV=production node server/index.js'
+cmd = 'npm run db:migrate:schema && NODE_ENV=production node server/index.js'
