@@ -465,8 +465,10 @@ const GlobalNav = () => {
     // Redirect based on role
     if (user.role === 'consumer') {
       navigate('/my-assessments');
-    } else if (user.role === 'author' || user.role === 'admin') {
+    } else if (user.role === 'admin') {
       navigate('/insights-dashboard');
+    } else if (user.role === 'author') {
+      navigate('/assessments');
     }
   };
 
@@ -766,8 +768,8 @@ const GlobalNav = () => {
           <ActionButtons>
             {currentUser ? (
               <>
-                {/* Dashboard Button */}
-                {currentUser.role !== 'consumer' && (
+                {/* Dashboard Button - Admin Only */}
+                {currentUser.role === 'admin' && (
                   <SecondaryCTAButton onClick={() => navigate('/insights-dashboard')}>
                     Dashboard
                   </SecondaryCTAButton>
@@ -1063,16 +1065,18 @@ const GlobalNav = () => {
               <FiFileText size={16} />
               My Assessments
             </MobileSecondaryCTAButton>
-            {currentUser.role !== 'consumer' && (
-              <>
-                <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
-                  Dashboard
-                </MobileSecondaryCTAButton>
-                <MobileSecondaryCTAButton onClick={handleTrySample}>
-                  <FiPlay size={16} />
-                  Try Sample
-                </MobileSecondaryCTAButton>
-              </>
+            {/* Dashboard - Admin Only */}
+            {currentUser.role === 'admin' && (
+              <MobileSecondaryCTAButton onClick={() => handleNavigate('/insights-dashboard')}>
+                Dashboard
+              </MobileSecondaryCTAButton>
+            )}
+            {/* Try Sample - Admin and Author */}
+            {(currentUser.role === 'admin' || currentUser.role === 'author') && (
+              <MobileSecondaryCTAButton onClick={handleTrySample}>
+                <FiPlay size={16} />
+                Try Sample
+              </MobileSecondaryCTAButton>
             )}
             {(currentUser.role === 'admin' || currentUser.role === 'author') && (
               <MobileSecondaryCTAButton onClick={() => handleNavigate('/my-assignments')}>

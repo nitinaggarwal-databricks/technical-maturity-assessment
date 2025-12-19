@@ -43,12 +43,23 @@ import AuthorAssignmentsList from './components/AuthorAssignmentsList';
 import * as assessmentService from './services/assessmentService';
 import authService from './services/authService';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
+// Protected Route Component with Role-based Access Control
+const ProtectedRoute = ({ children, requiredRole }) => {
   const isAuthenticated = authService.isAuthenticated();
   
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
+  }
+  
+  // If a specific role is required, check it
+  if (requiredRole) {
+    const currentUser = authService.getUser();
+    const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    
+    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+      toast.error('You do not have permission to access this page');
+      return <Navigate to="/" replace />;
+    }
   }
   
   return children;
@@ -296,7 +307,7 @@ function App() {
           <Route 
             path="/insights-dashboard" 
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Dashboard />
               </ProtectedRoute>
             } 
