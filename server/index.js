@@ -2500,19 +2500,19 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       // Admins see all assessments
       pgAssessments = await assessmentRepo.findAll();
     } else if (currentUser.role === 'author') {
-      // Authors see assessments they're assigned to OR created
+      // Authors see assessments they're assigned to OR created OR filling out as consumer
       const authorAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
          FROM assessments a
          LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
          WHERE a.assigned_author_id = $1 
-            OR a.created_by = $1
+            OR a.user_id = $1
             OR qa.assigned_to = $1`,
         [currentUser.id]
       );
       pgAssessments = authorAssessmentsQuery.rows;
     } else {
-      // Consumers see only assessments they're assigned to
+      // Consumers (role='consumer') see only assessments they're assigned to complete
       const consumerAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
          FROM assessments a
