@@ -395,7 +395,7 @@ app.get('/api/assessment/framework', async (req, res) => {
 });
 
 // Start new assessment
-app.post('/api/assessment/start', async (req, res) => {
+app.post('/api/assessment/start', requireAuth, async (req, res) => {
   try {
     const { organizationName, contactEmail, contactName, contactRole, industry, assessmentName, assessmentDescription } = req.body;
     
@@ -429,7 +429,8 @@ app.post('/api/assessment/start', async (req, res) => {
       completedCategories: [],
       responses: {},
       editHistory: [],
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
+      userId: req.user.id  // Set the creator's user ID
     });
 
     res.json({
@@ -3003,7 +3004,7 @@ app.post('/api/assessment/:id/debug/complete', async (req, res) => {
 });
 
 // Create new assessment
-app.post('/api/assessment', async (req, res) => {
+app.post('/api/assessment', requireAuth, async (req, res) => {
   try {
     const { organizationName, industry, contactEmail, assessmentName } = req.body;
     
@@ -3030,7 +3031,8 @@ app.post('/api/assessment', async (req, res) => {
       completedCategories: [],
       responses: {},
       editHistory: [],
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
+      userId: req.user.id  // Set the creator's user ID
     });
     
     console.log(`✅ New assessment created: ${newId} (${assessmentName})`);
@@ -3053,11 +3055,11 @@ app.post('/api/assessment', async (req, res) => {
 });
 
 // Generate sample assessment with random realistic data
-app.post('/api/assessment/generate-sample', async (req, res) => {
+app.post('/api/assessment/generate-sample', requireAuth, async (req, res) => {
   try {
     const { completionLevel = 'full', specificPillars = null } = req.body;
     
-    console.log(`🎲 Generating sample assessment with completion level: ${completionLevel}`);
+    console.log(`🎲 Generating sample assessment with completion level: ${completionLevel} for user: ${req.user.email}`);
     
     // Generate sample assessment
     const sampleAssessment = sampleAssessmentGenerator.generateSampleAssessment({
@@ -3080,7 +3082,8 @@ app.post('/api/assessment/generate-sample', async (req, res) => {
       completedCategories: sampleAssessment.completedCategories,
       responses: sampleAssessment.responses,
       editHistory: sampleAssessment.editHistory || [],
-      startedAt: sampleAssessment.startedAt || new Date().toISOString()
+      startedAt: sampleAssessment.startedAt || new Date().toISOString(),
+      userId: req.user.id  // Set the creator's user ID
     });
     
     console.log(`✅ Sample assessment created in PostgreSQL: ${sampleAssessment.id} (${sampleAssessment.assessmentName})`);

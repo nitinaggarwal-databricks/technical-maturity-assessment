@@ -13,8 +13,8 @@ class AssessmentRepository {
       INSERT INTO assessments (
         id, assessment_name, assessment_description, organization_name,
         contact_email, industry, status, progress, current_category,
-        completed_categories, responses, edit_history, started_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        completed_categories, responses, edit_history, started_at, user_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING *
     `;
 
@@ -32,6 +32,7 @@ class AssessmentRepository {
       JSON.stringify(assessment.responses || {}),
       JSON.stringify(assessment.editHistory || []),
       assessment.startedAt || new Date().toISOString(),
+      assessment.userId || assessment.user_id || null,
     ];
 
     try {
