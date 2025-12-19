@@ -23,7 +23,11 @@ import {
   FiClock,
   FiBarChart2,
   FiMonitor,
-  FiPrinter
+  FiPrinter,
+  FiLock,
+  FiMail,
+  FiHome,
+  FiArrowLeft
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import html2canvas from 'html2canvas';
@@ -1603,9 +1607,242 @@ const PrintButton = styled(motion.button)`
   }
 `;
 
+// ================================
+// Results Not Released Components
+// ================================
+const ResultsNotReleasedContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 700px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 60px 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+
+  @media (max-width: 768px) {
+    padding: 40px 24px;
+  }
+`;
+
+const LockIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+`;
+
+const Title = styled.h1`
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 16px 0;
+  color: white;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const Subtitle = styled.p`
+  font-size: 1.125rem;
+  text-align: center;
+  margin: 0 0 48px 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+`;
+
+const WhatNextSection = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const WhatNextTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  color: white;
+`;
+
+const WhatNextList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const WhatNextItem = styled.li`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+`;
+
+const ContactSection = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+`;
+
+const ContactTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: white;
+`;
+
+const ContactText = styled.p`
+  font-size: 1rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+`;
+
+const ResultsActionButtons = styled(motion.div)`
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const ResultsActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 // =======================
 // COMPONENT
 // =======================
+
+// Results Not Released Component
+const ResultsNotReleased = ({ assessmentId }) => {
+  const navigate = useNavigate();
+  return (
+    <ResultsNotReleasedContainer>
+      <ContentWrapper>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <LockIconContainer>
+            <FiLock size={64} color="#fff" />
+          </LockIconContainer>
+          <Title>Results Are Being Prepared</Title>
+          <Subtitle>
+            The results for this assessment are currently being reviewed and will be released by your administrator soon.
+          </Subtitle>
+        </motion.div>
+
+        <WhatNextSection
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <WhatNextTitle>What's Next?</WhatNextTitle>
+          <WhatNextList>
+            <WhatNextItem>
+              <FiCheckCircle size={20} color="#34d399" />
+              <span>Your submission has been received and is under review.</span>
+            </WhatNextItem>
+            <WhatNextItem>
+              <FiClock size={20} color="#fcd34d" />
+              <span>An administrator will validate the responses and finalize the report.</span>
+            </WhatNextItem>
+            <WhatNextItem>
+              <FiShare2 size={20} color="#60a5fa" />
+              <span>Once approved, the results will be officially released.</span>
+            </WhatNextItem>
+            <WhatNextItem>
+              <FiMail size={20} color="#a78bfa" />
+              <span>You will be notified when the report is available for viewing.</span>
+            </WhatNextItem>
+          </WhatNextList>
+        </WhatNextSection>
+
+        <ContactSection
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <ContactTitle>Need Assistance?</ContactTitle>
+          <ContactText>
+            If you have any questions or require immediate access, please contact your Databricks Account Team.
+          </ContactText>
+        </ContactSection>
+
+        <ResultsActionButtons
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <ResultsActionButton onClick={() => navigate('/assessments')}>
+            <FiArrowLeft /> Back to Assessments
+          </ResultsActionButton>
+          <ResultsActionButton onClick={() => navigate('/')}>
+            <FiHome /> Go Home
+          </ResultsActionButton>
+        </ResultsActionButtons>
+      </ContentWrapper>
+    </ResultsNotReleasedContainer>
+  );
+};
 
 const AssessmentResultsNew = () => {
   const { assessmentId } = useParams();
@@ -2843,6 +3080,13 @@ const AssessmentResultsNew = () => {
 
   if (error) {
     console.error('[AssessmentResultsNew] Rendering error state:', error);
+    
+    // Check if results haven't been released - show custom UI
+    if (error === "Results have not been released yet. Please contact your administrator.") {
+      return <ResultsNotReleased assessmentId={assessmentId} />;
+    }
+    
+    // For other errors, show generic error message
     return (
       <PageContainer>
         <div style={{ 
