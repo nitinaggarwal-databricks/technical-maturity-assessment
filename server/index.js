@@ -20,6 +20,7 @@ const featureDB = require('./services/databricksFeatureDatabase');
 const sampleAssessmentGenerator = require('./utils/sampleAssessmentGenerator');
 const industryBenchmarkingService = require('./services/industryBenchmarkingService');
 const db = require('./db/connection');
+const { requireAuth } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -2421,15 +2422,43 @@ app.use((err, req, res, next) => {
 });
 
 // Get all assessments (PostgreSQL only)
-app.get('/api/assessments', async (req, res) => {
+app.get('/api/assessments', requireAuth, async (req, res) => {
   try {
     const assessmentRepo = require('./db/assessmentRepository');
     const userRepo = require('./db/userRepository');
+    const currentUser = req.user;
     
     let assessmentsList = [];
     
-    // Query PostgreSQL assessments with user info
-    const pgAssessments = await assessmentRepo.findAll();
+    // Query PostgreSQL assessments with user info - filtered by role
+    let pgAssessments;
+    
+    if (currentUser.role === 'admin') {
+      // Admins see all assessments
+      pgAssessments = await assessmentRepo.findAll();
+    } else if (currentUser.role === 'author') {
+      // Authors see assessments they're assigned to OR created
+      const authorAssessmentsQuery = await db.query(
+        `SELECT DISTINCT a.* 
+         FROM assessments a
+         LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
+         WHERE a.assigned_author_id = $1 
+            OR a.created_by = $1
+            OR qa.assigned_to = $1`,
+        [currentUser.id]
+      );
+      pgAssessments = authorAssessmentsQuery.rows;
+    } else {
+      // Consumers see only assessments they're assigned to
+      const consumerAssessmentsQuery = await db.query(
+        `SELECT DISTINCT a.* 
+         FROM assessments a
+         INNER JOIN question_assignments qa ON a.id = qa.assessment_id
+         WHERE qa.assigned_to = $1`,
+        [currentUser.id]
+      );
+      pgAssessments = consumerAssessmentsQuery.rows;
+    }
     
     for (const assessment of pgAssessments) {
       let creatorName = 'Unknown';

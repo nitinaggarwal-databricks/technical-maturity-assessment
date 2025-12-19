@@ -37,6 +37,7 @@ import DataCleanup from './components/DataCleanup';
 import ResponseReviewPanel from './components/ResponseReviewPanel';
 import ValidationDashboard from './components/ValidationDashboard';
 import SubmissionWorkflow from './components/SubmissionWorkflow';
+import AuthorAssignmentsList from './components/AuthorAssignmentsList';
 
 // Services
 import * as assessmentService from './services/assessmentService';
@@ -418,6 +419,15 @@ function App() {
           />
           
           {/* Enhanced Author Role Routes */}
+          <Route 
+            path="/author/assignments" 
+            element={
+              <ProtectedRoute>
+                <AuthorAssignmentsList />
+              </ProtectedRoute>
+            }
+          />
+          
           <Route 
             path="/author/review-responses/:assessmentId" 
             element={
