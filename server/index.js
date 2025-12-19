@@ -2511,10 +2511,9 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       const authorAssessmentsQuery = await db.query(
         `SELECT DISTINCT a.* 
          FROM assessments a
-         LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE a.assigned_author_id = $1 
-            OR a.user_id = $1
-            OR qa.assigned_to = $1
+        `SELECT a.* 
+         FROM assessments a
+         WHERE a.user_id = $1
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
@@ -2549,12 +2548,12 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       });
     } else {
       // Consumers (role='consumer') see only assessments they're assigned to complete
-      console.log('[GET /api/assessments] Fetching consumer assessments');
-      const consumerAssessmentsQuery = await db.query(
-        `SELECT DISTINCT a.* 
+        `SELECT a.* 
          FROM assessments a
-         INNER JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE qa.assigned_to = $1
+         WHERE a.user_id = $1
+         ORDER BY a.updated_at DESC`,
+         FROM assessments a
+         WHERE a.user_id = $1
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
