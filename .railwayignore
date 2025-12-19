@@ -1,0 +1,7 @@
+# Railway ignore file
+# Force cache invalidation
+node_modules/
+.git/
+.env.local
+*.log
+
