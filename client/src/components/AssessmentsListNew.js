@@ -678,13 +678,17 @@ const AssessmentsListNew = () => {
       const result = await assessmentService.generateSampleAssessment(level);
       
       if (result && result.id) {
-        
+        toast.success('Sample assessment generated! You can review and edit before submitting.', { id: 'sample' });
         await fetchAssessments();
-        navigate(`/results/${result.id}`);
+        
+        // Navigate to assessment questions page instead of results
+        // This allows users to review/edit the sample and submit properly
+        // (Non-admins will then see thank you message instead of results)
+        navigate(`/assessment/${result.id}/platform_governance`);
       }
     } catch (error) {
       console.error('Error generating sample:', error);
-      
+      toast.error('Failed to generate sample assessment', { id: 'sample' });
     }
   };
 
