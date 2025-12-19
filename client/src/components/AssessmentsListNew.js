@@ -14,12 +14,16 @@ import {
   FiChevronDown,
   FiCopy,
   FiTrash2,
-  FiAlertTriangle
+  FiAlertTriangle,
+  FiUnlock,
+  FiLock
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import * as assessmentService from '../services/assessmentService';
 import excelService from '../services/excelService';
 import { exportAssessmentToExcel } from '../services/excelExportService';
+import authService from '../services/authService';
+import axios from 'axios';
 
 // =======================
 // STYLED COMPONENTS
@@ -631,6 +635,8 @@ const AssessmentsListNew = () => {
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [uploadingExcel, setUploadingExcel] = useState(null); // Track which assessment is being uploaded
   const fileInputRef = React.useRef(null);
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'admin';
 
   useEffect(() => {
     fetchAssessments();
@@ -735,6 +741,43 @@ const AssessmentsListNew = () => {
       // Refresh the assessments list
       await fetchAssessments();
     } catch (error) {
+      console.error('Error deleting assessment:', error);
+      
+    }
+  };
+
+  const handleToggleResultsRelease = async (assessmentId, currentReleaseStatus, event) => {
+    event.stopPropagation();
+    
+    const action = currentReleaseStatus ? 'unrelease' : 'release';
+    const actionLabel = currentReleaseStatus ? 'Unreleasing' : 'Releasing';
+    
+    try {
+      toast.loading(`${actionLabel} results...`, { id: 'release' });
+      
+      const API_URL = process.env.REACT_APP_API_URL || 
+        (window.location.hostname === 'localhost' ? 'http://localhost:5001/api' : '/api');
+      
+      const sessionId = authService.getSessionId();
+      
+      await axios.post(
+        `${API_URL}/admin/release-results/${assessmentId}`,
+        { release: !currentReleaseStatus },
+        { headers: { 'x-session-id': sessionId } }
+      );
+      
+      toast.success(
+        currentReleaseStatus ? 'Results unreleased successfully' : 'Results released successfully',
+        { id: 'release' }
+      );
+      
+      // Refresh the assessments list
+      await fetchAssessments();
+    } catch (error) {
+      console.error(`Error ${action}ing results:`, error);
+      toast.error(`Failed to ${action} results`, { id: 'release' });
+    }
+  };
       console.error('Error deleting assessment:', error);
       
     }
@@ -1285,6 +1328,15 @@ const AssessmentsListNew = () => {
                       >
                         <FiCopy />
                       </ActionButton>
+                      {isAdmin && (
+                        <ActionButton
+                          onClick={(e) => handleToggleResultsRelease(assessmentId, assessment.results_released, e)}
+                          title={assessment.results_released ? 'Unrelease results (hide from users)' : 'Release results (visible to users)'}
+                          style={{ color: assessment.results_released ? '#f59e0b' : '#10b981' }}
+                        >
+                          {assessment.results_released ? <FiLock /> : <FiUnlock />}
+                        </ActionButton>
+                      )}
                       <ActionButton
                         onClick={(e) => handleDeleteAssessment(assessmentId, assessment.assessment_name, e)}
                         title="Delete this assessment"

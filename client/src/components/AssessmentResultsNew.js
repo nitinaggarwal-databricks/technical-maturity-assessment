@@ -1751,7 +1751,14 @@ const AssessmentResultsNew = () => {
     } catch (err) {
       console.error('[AssessmentResultsNew] Error fetching results:', err);
       console.error('[AssessmentResultsNew] Error stack:', err.stack);
-      setError(err.message || 'Failed to load assessment results');
+      
+      // Check if results are not released (403 error)
+      if (err.response?.status === 403 && err.response?.data?.resultsReleased === false) {
+        setError('Results have not been released yet. Please contact your administrator.');
+      } else {
+        setError(err.message || 'Failed to load assessment results');
+      }
+      
       setResults(null);
       
       if (showRefreshToast) {

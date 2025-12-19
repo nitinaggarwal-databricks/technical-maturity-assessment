@@ -47,6 +47,8 @@ const excelRoutes = require('./routes/excel');
 const questionEditsRoutes = require('./routes/questionEdits');
 const questionAssignmentsRoutes = require('./routes/questionAssignments');
 const dataCleanupRoutes = require('./routes/dataCleanup');
+const authorValidationRoutes = require('./routes/authorValidation');
+const { requireAdmin } = require('./middleware/auth');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -60,6 +62,45 @@ app.use('/api/assessment-excel', excelRoutes);
 app.use('/api/question-edits', questionEditsRoutes);
 app.use('/api/question-assignments', questionAssignmentsRoutes);
 app.use('/api/data-cleanup', dataCleanupRoutes);
+
+// Admin endpoint to release/unrelease assessment results
+app.post('/api/admin/release-results/:assessmentId', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { assessmentId } = req.params;
+    const { release } = req.body; // true to release, false to unrelease
+    const currentUser = req.user;
+
+    const result = await db.query(
+      `UPDATE assessments
+       SET results_released = $1,
+           results_released_by = $2,
+           results_released_at = $3
+       WHERE id = $4
+       RETURNING *`,
+      [release, release ? currentUser.id : null, release ? new Date() : null, assessmentId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Assessment not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: release ? 'Results released successfully' : 'Results unreleased successfully',
+      assessment: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error releasing/unreleasing results:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update results release status',
+      error: error.message
+    });
+  }
+});
 
 // Persistent storage for assessments
 // Use Railway volume path if available, otherwise fallback to local path
@@ -1104,7 +1145,7 @@ app.get('/api/assessment/:id/adaptive-results', async (req, res) => {
 });
 
 // Generate assessment results and recommendations (ADAPTIVE with live data)
-app.get('/api/assessment/:id/results', async (req, res) => {
+app.get('/api/assessment/:id/results', requireAuth, async (req, res) => {
   try {
     console.log(`🎯 [RESULTS ENDPOINT] Request for assessment: ${req.params.id}`);
     
@@ -1117,6 +1158,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
     });
 
     const { id } = req.params;
+    const currentUser = req.user;
     
     // Try PostgreSQL first, then fallback to file storage
     const assessmentRepo = require('./db/assessmentRepository');
@@ -1129,6 +1171,16 @@ app.get('/api/assessment/:id/results', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
+      });
+    }
+    
+    // Check if results are released (only for non-admin users)
+    if (currentUser.role !== 'admin' && !assessment.results_released) {
+      console.log(`🔒 [RESULTS ENDPOINT] Results not released for assessment ${id}`);
+      return res.status(403).json({
+        success: false,
+        message: 'Results have not been released yet. Please contact your administrator.',
+        resultsReleased: false
       });
     }
     
@@ -1668,7 +1720,7 @@ app.get('/api/assessment/:id/results', async (req, res) => {
 });
 
 // Get industry benchmarking report
-app.get('/api/assessment/:id/benchmark', async (req, res) => {
+app.get('/api/assessment/:id/benchmark', requireAuth, async (req, res) => {
   try {
     console.log(`🎯 [BENCHMARK ENDPOINT] Request for assessment: ${req.params.id}`);
     
@@ -1681,6 +1733,7 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
     });
 
     const { id } = req.params;
+    const currentUser = req.user;
     const assessmentRepo = require('./db/assessmentRepository');
     const assessment = await assessmentRepo.findById(id);
 
@@ -1689,6 +1742,16 @@ app.get('/api/assessment/:id/benchmark', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Assessment not found'
+      });
+    }
+    
+    // Check if results are released (only for non-admin users)
+    if (currentUser.role !== 'admin' && !assessment.results_released) {
+      console.log(`🔒 [BENCHMARK ENDPOINT] Results not released for assessment ${id}`);
+      return res.status(403).json({
+        success: false,
+        message: 'Benchmark report has not been released yet. Please contact your administrator.',
+        resultsReleased: false
       });
     }
     
