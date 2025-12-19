@@ -1,6 +1,6 @@
 {
   "name": "databricks-maturity-assessment",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive Databricks maturity assessment application",
   "main": "server/index.js",
   "scripts": {
