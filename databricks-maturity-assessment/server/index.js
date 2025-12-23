@@ -2509,12 +2509,9 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
       // Authors see assessments they're assigned to OR created OR filling out as consumer
       const authorAssessmentsQuery = await db.query(
-        `SELECT DISTINCT a.* 
+        `SELECT a.* 
          FROM assessments a
-         LEFT JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE a.assigned_author_id = $1 
-            OR a.user_id = $1
-            OR qa.assigned_to = $1
+         WHERE a.user_id = $1
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
@@ -2547,46 +2544,10 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
           throw mapError;
         }
       });
-    } else {
-      // Consumers (role='consumer') see only assessments they're assigned to complete
-      console.log('[GET /api/assessments] Fetching consumer assessments');
-      const consumerAssessmentsQuery = await db.query(
-        `SELECT DISTINCT a.* 
-         FROM assessments a
-         INNER JOIN question_assignments qa ON a.id = qa.assessment_id
-         WHERE qa.assigned_to = $1
-         ORDER BY a.updated_at DESC`,
-        [currentUser.id]
-      );
-      console.log(`[GET /api/assessments] Found ${consumerAssessmentsQuery.rows.length} assessments for consumer`);
-      
-      // Map raw SQL results to proper format (snake_case to camelCase)
-      pgAssessments = consumerAssessmentsQuery.rows.map(row => {
-        try {
-          return {
-            id: row.id,
-            assessmentName: row.assessment_name,
-            assessmentDescription: row.assessment_description,
-            organizationName: row.organization_name,
-            contactEmail: row.contact_email,
-            industry: row.industry,
-            status: row.status,
-            progress: row.progress,
-            currentCategory: row.current_category,
-            completedCategories: row.completed_categories || [],
-            responses: row.responses || {},
-            editHistory: row.edit_history || [],
-            startedAt: row.started_at,
-            completedAt: row.completed_at,
-            updatedAt: row.updated_at,
-            createdAt: row.created_at,
-            user_id: row.user_id,
-          };
-        } catch (mapError) {
-          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
-          throw mapError;
-        }
-      });
+      // Consumers (role='consumer') see all assessments
+      // TODO: Filter by assignments once question_assignments table is implemented
+      console.log('[GET /api/assessments] Fetching consumer assessments (showing all until assignments implemented)');
+      pgAssessments = await assessmentRepo.findAll();
     }
     
     console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
