@@ -2504,14 +2504,14 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
       console.log('[GET /api/assessments] Fetching all assessments (admin)');
       pgAssessments = await assessmentRepo.findAll();
     } else if (currentUser.role === 'author') {
-      console.log('[GET /api/assessments] Fetching author assessments');
-      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
-      console.log('[GET /api/assessments] Query params: user_id =', currentUser.id);
-      // Authors see assessments they're assigned to OR created OR filling out as consumer
+      console.log('[GET /api/assessments] Fetching author assessments from user_assignments');
+      // Authors see: assessments they created OR are assigned to
       const authorAssessmentsQuery = await db.query(
-        `SELECT a.* 
+        `SELECT DISTINCT a.* 
          FROM assessments a
-         WHERE a.user_id = $1
+         LEFT JOIN user_assignments ua ON a.id::text = ua.assessment_id::text
+         WHERE a.user_id = $1 
+           OR (ua.user_id = $1 AND ua.role = 'author' AND ua.status != 'cancelled')
          ORDER BY a.updated_at DESC`,
         [currentUser.id]
       );
@@ -2544,10 +2544,49 @@ app.get('/api/assessments', requireAuth, async (req, res) => {
           throw mapError;
         }
       });
-      // Consumers (role='consumer') see all assessments
-      // TODO: Filter by assignments once question_assignments table is implemented
-      console.log('[GET /api/assessments] Fetching consumer assessments (showing all until assignments implemented)');
-      pgAssessments = await assessmentRepo.findAll();
+    } else {
+      // Consumers see ONLY assessments they're assigned to via user_assignments
+      console.log('[GET /api/assessments] Fetching consumer assessments from user_assignments');
+      const consumerAssessmentsQuery = await db.query(
+        `SELECT DISTINCT a.* 
+         FROM assessments a
+         INNER JOIN user_assignments ua ON a.id::text = ua.assessment_id::text
+         WHERE ua.user_id = $1 
+           AND ua.role = 'consumer'
+           AND ua.status != 'cancelled'
+         ORDER BY a.updated_at DESC`,
+        [currentUser.id]
+      );
+      console.log(`[GET /api/assessments] Found ${consumerAssessmentsQuery.rows.length} assigned assessments for consumer`);
+      
+      // Map raw SQL results to proper format (snake_case to camelCase)
+      pgAssessments = consumerAssessmentsQuery.rows.map(row => {
+        try {
+          return {
+            id: row.id,
+            assessmentName: row.assessment_name,
+            assessmentDescription: row.assessment_description,
+            organizationName: row.organization_name,
+            contactEmail: row.contact_email,
+            industry: row.industry,
+            status: row.status,
+            progress: row.progress,
+            currentCategory: row.current_category,
+            completedCategories: row.completed_categories || [],
+            responses: row.responses || {},
+            editHistory: row.edit_history || [],
+            startedAt: row.started_at,
+            completedAt: row.completed_at,
+            updatedAt: row.updated_at,
+            createdAt: row.created_at,
+            user_id: row.user_id,
+          };
+        } catch (mapError) {
+          console.error('[GET /api/assessments] Error mapping row:', mapError, 'Row:', row);
+          throw mapError;
+        }
+      });
+    }
     }
     
     console.log(`[GET /api/assessments] Processing ${pgAssessments.length} assessments`);
